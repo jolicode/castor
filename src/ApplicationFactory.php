@@ -11,7 +11,7 @@ class ApplicationFactory
     {
         $contextRegistry = new ContextRegistry();
         $finder = new TaskFinder($contextRegistry);
-        $path = getcwd();
+        $path = PathHelper::getCwd();
 
         // Find all potential commands / context
         $commandOrContextMethods = $finder->findTasks($path);

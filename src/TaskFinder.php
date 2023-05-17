@@ -14,7 +14,7 @@ class TaskFinder
     }
 
     /** @return iterable<TaskBuilder|ContextBuilder> */
-    public function findTasks(string $path): \Generator
+    public function findTasks(string $path): iterable
     {
         if (is_file($path)) {
             return $this->doFindTasks([$path]);
@@ -45,7 +45,7 @@ class TaskFinder
      *
      * @throws \ReflectionException
      */
-    private function doFindTasks(iterable $files): \Generator
+    private function doFindTasks(iterable $files): iterable
     {
         $existingFunctions = get_defined_functions()['user'];
 

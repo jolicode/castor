@@ -4,7 +4,7 @@ namespace Castor;
 
 use Symfony\Component\Process\Process;
 
-function parallel(...$closure): array
+function parallel(callable ...$closure): array
 {
     $fibers = [];
     foreach ($closure as $item) {

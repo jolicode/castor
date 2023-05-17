@@ -30,6 +30,9 @@ class TaskAsCommand extends Command
         foreach ($this->function->getParameters() as $parameter) {
             $name = strtolower($parameter->getName());
             $type = $parameter->getType();
+            if (!$type instanceof \ReflectionNamedType) {
+                continue;
+            }
 
             if (null !== $type && Context::class === $type->getName()) {
                 continue;
@@ -53,9 +56,6 @@ class TaskAsCommand extends Command
         $contextName = $input->getOption('context');
         $contextBuilder = $this->contextRegistry->getContext($contextName);
 
-        if (null === $contextBuilder) {
-            throw new \Exception("Context {$contextName} does not exist");
-        }
 
         global $context;
         $context = $contextBuilder->build();
@@ -63,6 +63,9 @@ class TaskAsCommand extends Command
         foreach ($this->function->getParameters() as $parameter) {
             $name = strtolower($parameter->getName());
             $type = $parameter->getType();
+            if (!$type instanceof \ReflectionNamedType) {
+                continue;
+            }
 
             if (null !== $type && Context::class === $type->getName()) {
                 $args[] = $context;
