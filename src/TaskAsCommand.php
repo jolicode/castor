@@ -12,11 +12,14 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class TaskAsCommand extends Command
 {
-    public function __construct(Task $taskAttribute, private \ReflectionFunction $function, private ContextRegistry $contextRegistry)
-    {
+    public function __construct(
+        Task $taskAttribute,
+        private readonly \ReflectionFunction $function,
+        private readonly ContextRegistry $contextRegistry
+    ) {
         $commandName = $taskAttribute->name;
 
-        if (null !== $taskAttribute->namespace && '' !== $taskAttribute->namespace) {
+        if ($taskAttribute->namespace) {
             $commandName = $taskAttribute->namespace . ':' . $commandName;
         }
 
@@ -34,11 +37,11 @@ class TaskAsCommand extends Command
                 continue;
             }
 
-            if (null !== $type && Context::class === $type->getName()) {
+            if (Context::class === $type->getName()) {
                 continue;
             }
 
-            if (null !== $type && SymfonyStyle::class === $type->getName()) {
+            if (SymfonyStyle::class === $type->getName()) {
                 continue;
             }
 
@@ -66,13 +69,13 @@ class TaskAsCommand extends Command
                 continue;
             }
 
-            if (null !== $type && Context::class === $type->getName()) {
+            if (Context::class === $type->getName()) {
                 $args[] = $context;
 
                 continue;
             }
 
-            if (null !== $type && SymfonyStyle::class === $type->getName()) {
+            if (SymfonyStyle::class === $type->getName()) {
                 $args[] = new SymfonyStyle($input, $output);
 
                 continue;
