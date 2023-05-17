@@ -7,8 +7,6 @@ Castor is a PHP tool to create commands from a PHP function with helpers to exec
 As an example you could create a command that print 'Hello castor' by creating a file in `.castor/hello.php` with the following content:
 
 ```php
-
-```php
 <?php
 
 use Castor\Attribute\Task;
