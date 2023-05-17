@@ -5,8 +5,10 @@ namespace Castor;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputOption;
 
-class ApplicationFactory {
-    public static function create(): Application {
+class ApplicationFactory
+{
+    public static function create(): Application
+    {
         $contextRegistry = new ContextRegistry();
         $finder = new TaskFinder($contextRegistry);
         $path = getcwd();
@@ -19,16 +21,18 @@ class ApplicationFactory {
         foreach ($commandOrContextMethods as $commandOrContextMethod) {
             if ($commandOrContextMethod instanceof TaskBuilder) {
                 $taskBuilders[] = $commandOrContextMethod;
+
                 continue;
             }
 
             if ($commandOrContextMethod instanceof ContextBuilder) {
                 if ($commandOrContextMethod->isDefault()) {
-                    if ($defaultContext !== null) {
+                    if (null !== $defaultContext) {
                         throw new \Exception('Only one default context is allowed');
                     }
 
                     $defaultContext = $commandOrContextMethod;
+
                     continue;
                 }
 
@@ -36,7 +40,7 @@ class ApplicationFactory {
             }
         }
 
-        $contextRegistry->addContext('default', $defaultContext ?? new ContextBuilder(new Attribute\AsContext(default: true, name: 'default'), new \ReflectionFunction(function() {
+        $contextRegistry->addContext('default', $defaultContext ?? new ContextBuilder(new Attribute\AsContext(default: true, name: 'default'), new \ReflectionFunction(function () {
             return new Context();
         })));
 
@@ -44,7 +48,7 @@ class ApplicationFactory {
         $contextNames = implode('|', $contextRegistry->getContextsName());
 
         $inputDefinition = $application->getDefinition();
-        $inputDefinition->addOption(new InputOption('context', null, InputOption::VALUE_REQUIRED, "The context to use ($contextNames)", 'default'));
+        $inputDefinition->addOption(new InputOption('context', null, InputOption::VALUE_REQUIRED, "The context to use ({$contextNames})", 'default'));
 
         foreach ($taskBuilders as $taskBuilder) {
             $application->add($taskBuilder->getCommand());

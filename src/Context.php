@@ -2,7 +2,8 @@
 
 namespace Castor;
 
-class Context extends \ArrayObject {
+class Context extends \ArrayObject
+{
     public string $currentDirectory;
 
     public function __construct(
