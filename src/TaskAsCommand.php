@@ -17,7 +17,11 @@ class TaskAsCommand extends Command
         $commandName = $taskAttribute->name;
 
         if (null !== $taskAttribute->namespace && '' !== $taskAttribute->namespace) {
-            $commandName = $taskAttribute->namespace . ':' . $commandName;
+            if ($commandName && $commandName !== '__task') {
+                $commandName = $taskAttribute->namespace . ':' . $commandName;
+            } else {
+                $commandName = $taskAttribute->namespace;
+            }
         }
 
         parent::__construct($commandName);
