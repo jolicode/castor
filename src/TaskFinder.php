@@ -47,7 +47,6 @@ class TaskFinder
      */
     private function doFindTasks(iterable $files): \Generator
     {
-        $methods = [];
         $existingFunctions = get_defined_functions()['user'];
 
         foreach ($files as $file) {

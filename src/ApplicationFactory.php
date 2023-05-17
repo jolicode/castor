@@ -28,7 +28,7 @@ class ApplicationFactory
             if ($commandOrContextMethod instanceof ContextBuilder) {
                 if ($commandOrContextMethod->isDefault()) {
                     if (null !== $defaultContext) {
-                        throw new \Exception('Only one default context is allowed');
+                        throw new \LogicException('Only one default context is allowed');
                     }
 
                     $defaultContext = $commandOrContextMethod;

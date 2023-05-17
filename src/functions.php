@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Castor;
 
 use Symfony\Component\Process\Process;
@@ -38,10 +36,13 @@ function parallel(...$closure): array
     return array_map(fn ($fiber) => $fiber->getReturn(), $fibers);
 }
 
-function exec(string|array $command, array $parameters = [], ?string $workingDirectory = null,
+function exec(
+    string|array $command,
+    ?string $workingDirectory = null,
     array $environment = [],
-    array $options = [], bool $tty = false, float|null $timeout = 60): int
-{
+    bool $tty = false,
+    float|null $timeout = 60
+): int {
     global $context;
 
     if (null === $workingDirectory) {
