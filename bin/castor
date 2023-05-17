@@ -1,0 +1,15 @@
+#!/usr/bin/env php
+<?php
+
+use Castor\ApplicationFactory;
+use Doctrine\Common\Annotations\AnnotationRegistry;
+
+if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+    $loader = require(__DIR__ . '/../vendor/autoload.php');
+} elseif (file_exists(__DIR__ . '/../../../../vendor/autoload.php')) {
+    $loader = require(__DIR__ . '/../../../../vendor/autoload.php');
+} else {
+    throw new \RuntimeException('Unable to load autoloader.');
+}
+
+$application = ApplicationFactory::create()->run();
