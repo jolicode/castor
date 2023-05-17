@@ -2,7 +2,8 @@
 
 namespace Castor;
 
-class Context extends \ArrayObject {
+class Context extends \ArrayObject
+{
     public string $currentDirectory;
 
     public function __construct(
@@ -11,6 +12,6 @@ class Context extends \ArrayObject {
     ) {
         parent::__construct($data, \ArrayObject::ARRAY_AS_PROPS);
 
-        $this->currentDirectory = getcwd();
+        $this->currentDirectory = PathHelper::getCwd();
     }
 }

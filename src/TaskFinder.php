@@ -6,17 +6,17 @@ use Castor\Attribute\AsContext;
 use Castor\Attribute\Task;
 use Symfony\Component\Finder\Finder;
 
-class TaskFinder {
+class TaskFinder
+{
     public function __construct(
         private ContextRegistry $contextRegistry
     ) {
     }
 
-
     /** @return iterable<TaskBuilder|ContextBuilder> */
-    public function findTasks(string $path): \Generator
+    public function findTasks(string $path): iterable
     {
-        if (\is_file($path)) {
+        if (is_file($path)) {
             return $this->doFindTasks([$path]);
         }
 
@@ -31,7 +31,8 @@ class TaskFinder {
             $files = Finder::create()
                 ->files()
                 ->name('*.php')
-                ->in($directory->getRealPath());
+                ->in($directory->getRealPath())
+            ;
 
             yield from $this->doFindTasks($files);
         }
@@ -44,10 +45,9 @@ class TaskFinder {
      *
      * @throws \ReflectionException
      */
-    private function doFindTasks(iterable $files): \Generator
+    private function doFindTasks(iterable $files): iterable
     {
-        $methods = [];
-        $existingFunctions = \get_defined_functions()['user'];
+        $existingFunctions = get_defined_functions()['user'];
 
         foreach ($files as $file) {
             $path = $file;
@@ -60,7 +60,7 @@ class TaskFinder {
 
             require_once $path;
 
-            $newExistingFunctions = \get_defined_functions()['user'];
+            $newExistingFunctions = get_defined_functions()['user'];
 
             $newFunctions = array_diff($newExistingFunctions, $existingFunctions);
             $existingFunctions = $newExistingFunctions;
@@ -69,14 +69,14 @@ class TaskFinder {
                 $reflectionFunction = new \ReflectionFunction($functionName);
                 $attributes = $reflectionFunction->getAttributes(Task::class);
 
-                if (count($attributes) > 0) {
+                if (\count($attributes) > 0) {
                     $taskAttribute = $attributes[0]->newInstance();
 
-                    if ($taskAttribute->name === '') {
+                    if ('' === $taskAttribute->name) {
                         $taskAttribute->name = $reflectionFunction->getShortName();
                     }
 
-                    if ($taskAttribute->namespace === null) {
+                    if (null === $taskAttribute->namespace) {
                         $taskAttribute->namespace = $namespace;
                     }
 
@@ -87,10 +87,10 @@ class TaskFinder {
 
                 $attributes = $reflectionFunction->getAttributes(AsContext::class);
 
-                if (count($attributes) > 0) {
+                if (\count($attributes) > 0) {
                     $contextAttribute = $attributes[0]->newInstance();
 
-                    if ($contextAttribute->name === '') {
+                    if ('' === $contextAttribute->name) {
                         $contextAttribute->name = $reflectionFunction->getShortName();
                     }
 

@@ -16,7 +16,7 @@ class TaskAsCommand extends Command
     {
         $commandName = $taskAttribute->name;
 
-        if ($taskAttribute->namespace !== null && $taskAttribute->namespace !== '') {
+        if (null !== $taskAttribute->namespace && '' !== $taskAttribute->namespace) {
             $commandName = $taskAttribute->namespace . ':' . $commandName;
         }
 
@@ -27,16 +27,18 @@ class TaskAsCommand extends Command
 
     protected function configure(): void
     {
-
         foreach ($this->function->getParameters() as $parameter) {
             $name = strtolower($parameter->getName());
             $type = $parameter->getType();
-
-            if ($type !== null && $type->getName() === Context::class) {
+            if (!$type instanceof \ReflectionNamedType) {
                 continue;
             }
 
-            if ($type !== null && $type->getName() === SymfonyStyle::class) {
+            if (null !== $type && Context::class === $type->getName()) {
+                continue;
+            }
+
+            if (null !== $type && SymfonyStyle::class === $type->getName()) {
                 continue;
             }
 
@@ -54,9 +56,6 @@ class TaskAsCommand extends Command
         $contextName = $input->getOption('context');
         $contextBuilder = $this->contextRegistry->getContext($contextName);
 
-        if ($contextBuilder === null) {
-            throw new \Exception("Context $contextName does not exist");
-        }
 
         global $context;
         $context = $contextBuilder->build();
@@ -64,14 +63,19 @@ class TaskAsCommand extends Command
         foreach ($this->function->getParameters() as $parameter) {
             $name = strtolower($parameter->getName());
             $type = $parameter->getType();
-
-            if ($type !== null && $type->getName() === Context::class) {
-                $args[] = $context;
+            if (!$type instanceof \ReflectionNamedType) {
                 continue;
             }
 
-            if ($type !== null && $type->getName() === SymfonyStyle::class) {
+            if (null !== $type && Context::class === $type->getName()) {
+                $args[] = $context;
+
+                continue;
+            }
+
+            if (null !== $type && SymfonyStyle::class === $type->getName()) {
                 $args[] = new SymfonyStyle($input, $output);
+
                 continue;
             }
 
@@ -86,11 +90,11 @@ class TaskAsCommand extends Command
 
         $result = $this->function->invoke(...$args);
 
-        if ($result === null) {
+        if (null === $result) {
             return 0;
         }
 
-        if (is_int($result)) {
+        if (\is_int($result)) {
             return $result;
         }
 

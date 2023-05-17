@@ -1,12 +1,10 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Castor;
 
 use Symfony\Component\Process\Process;
 
-function parallel(...$closure): array
+function parallel(callable ...$closure): array
 {
     $fibers = [];
     foreach ($closure as $item) {
@@ -38,19 +36,22 @@ function parallel(...$closure): array
     return array_map(fn ($fiber) => $fiber->getReturn(), $fibers);
 }
 
-function exec(string|array $command, array $parameters = [], ?string $workingDirectory = null,
-                 array $environment = [],
-                 array $options = [], bool $tty = false, float | null $timeout = 60): int
-{
+function exec(
+    string|array $command,
+    ?string $workingDirectory = null,
+    array $environment = [],
+    bool $tty = false,
+    float|null $timeout = 60
+): int {
     global $context;
 
-    if ($workingDirectory === null) {
+    if (null === $workingDirectory) {
         $workingDirectory = $context->currentDirectory;
     }
 
     $environment = array_merge($context->environment, $environment);
 
-    if (is_array($command)) {
+    if (\is_array($command)) {
         $process = new Process($command, $workingDirectory, $environment, null, $timeout);
     } else {
         $process = Process::fromShellCommandline($command, $workingDirectory, $environment, null, $timeout);
@@ -65,10 +66,10 @@ function exec(string|array $command, array $parameters = [], ?string $workingDir
     }
 
     $process->start(function ($type, $bytes) {
-        if ($type === Process::OUT) {
-            fwrite(STDOUT, $bytes);
+        if (Process::OUT === $type) {
+            fwrite(\STDOUT, $bytes);
         } else {
-            fwrite(STDERR, $bytes);
+            fwrite(\STDERR, $bytes);
         }
     });
 
@@ -87,7 +88,7 @@ function cd(string $path): void
     global $context;
 
     // if path is absolute
-    if (strpos($path, '/') === 0) {
+    if (0 === strpos($path, '/')) {
         $context->currentDirectory = $path;
     } else {
         $context->currentDirectory = realpath($context->currentDirectory . '/' . $path);

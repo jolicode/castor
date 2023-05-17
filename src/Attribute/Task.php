@@ -9,7 +9,6 @@ class Task
         public string $name = '',
         public string|null $namespace = null,
         public string $description = ''
-    )
-    {
+    ) {
     }
 }
