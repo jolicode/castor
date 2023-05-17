@@ -108,3 +108,28 @@ function cd(string $path): void
         $context->currentDirectory = PathHelper::realpath($context->currentDirectory . '/' . $path);
     }
 }
+
+// Inspired from https://github.com/tartley/rerun2
+const WATCH_SCRIPT = <<<'SCRIPT'
+inotifywait --recursive --quiet --format '%e %w%f' \
+    --event='modify,close_write,move,create,delete' \
+    --exclude='\.git|\..*\.swp|\.cache' \
+    .
+SCRIPT;
+
+function watch(string $path, callable $function): void
+{
+    if (exec('command -v inotifywait', quiet: true) > 0) {
+        fwrite(\STDOUT, 'inotifywait is not installed. You may need to install a package named "inotify-tools".' . PHP_EOL);
+
+        return;
+    }
+
+    cd($path);
+    fwrite(\STDOUT, sprintf('Waiting for changes in %s...', $path) . PHP_EOL);
+
+    while(true) {
+        exec(WATCH_SCRIPT, quiet: true, timeout: null);
+        $function();
+    }
+}
