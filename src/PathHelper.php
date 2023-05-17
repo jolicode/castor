@@ -14,4 +14,15 @@ class PathHelper
 
         return $cwd;
     }
+
+    public static function realpath(string $path): string
+    {
+        $realpath = realpath($path);
+
+        if (false === $realpath) {
+            throw new \RuntimeException(sprintf('Directory "%s" not found.', $path));
+        }
+
+        return $realpath;
+    }
 }

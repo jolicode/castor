@@ -4,11 +4,11 @@ namespace Castor;
 
 use Symfony\Component\Process\Process;
 
-function parallel(callable ...$closure): array
+function parallel(callable ...$callbacks): array
 {
     $fibers = [];
-    foreach ($closure as $item) {
-        $fiber = new \Fiber($item);
+    foreach ($callbacks as $callbacks) {
+        $fiber = new \Fiber($callbacks);
         $fiber->start();
 
         $fibers[] = $fiber;
@@ -44,7 +44,7 @@ function exec(
     float|null $timeout = 60,
     bool $quiet = false,
 ): int {
-    global $context;
+    $context = ContextRegistry::$currentContext;
 
     if (null === $workingDirectory) {
         $workingDirectory = $context->currentDirectory;
@@ -90,12 +90,12 @@ function exec(
 
 function cd(string $path): void
 {
-    global $context;
+    $context = ContextRegistry::$currentContext;
 
     // if path is absolute
     if (0 === strpos($path, '/')) {
         $context->currentDirectory = $path;
     } else {
-        $context->currentDirectory = realpath($context->currentDirectory . '/' . $path);
+        $context->currentDirectory = PathHelper::realpath($context->currentDirectory . '/' . $path);
     }
 }
