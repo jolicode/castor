@@ -32,6 +32,19 @@ The name of the file without the extension is the namespace of the command, in
 this case `hello`. The name of the function is the name of the command, in this
 case `castor`.
 
+## Autocomplete
+
+If you use bash, you can enable autocomplete for castor by executing the following command:
+
+```
+castor completion | sudo tee /etc/bash_completion.d/castor
+```
+
+Others shells are also supported. To get the list of supported shells, run:
+```
+castor completion --help
+```
+
 ## Installation
 
 ### Manually
