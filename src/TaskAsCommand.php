@@ -56,7 +56,6 @@ class TaskAsCommand extends Command
         $contextName = $input->getOption('context');
         $contextBuilder = $this->contextRegistry->getContext($contextName);
 
-
         global $context;
         $context = $contextBuilder->build();
 
