@@ -1,6 +1,7 @@
 <?php
 
 $finder = PhpCsFixer\Finder::create()
+    ->ignoreVCSIgnored(true)
     ->in(__DIR__)
     ->append([
         __FILE__,
