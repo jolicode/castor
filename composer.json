@@ -1,26 +1,31 @@
 {
     "name": "jolicode/castor",
     "description": "Asynchronous task runner",
-    "type": "library",
-    "require": {
-        "symfony/console": "^6.2",
-        "symfony/finder": "^6.2",
-        "symfony/process": "^6.2"
-    },
+    "keywords": ["async", "task", "runner", "parallel", "process", "castor"],
     "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "Castor\\": "src/"
-        },
-        "files": ["src/functions.php"]
-    },
+    "type": "project",
     "authors": [
         {
             "name": "Joel Wurtz",
             "email": "jwurtz@jolicode.com"
         }
     ],
+    "autoload": {
+        "psr-4": {
+            "Castor\\": "src/"
+        },
+        "files": ["src/functions.php"]
+    },
+    "require": {
+        "symfony/console": "^6.2",
+        "symfony/finder": "^6.2",
+        "symfony/process": "^6.2"
+    },
     "bin": [
         "bin/castor"
-    ]
+    ],
+    "config": {
+        "sort-packages": true
+    }
+
 }
