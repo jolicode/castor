@@ -2,6 +2,7 @@
 
 namespace Castor;
 
+use Castor\Attribute\Arg;
 use Castor\Attribute\Task;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -29,6 +30,8 @@ class TaskAsCommand extends Command
     {
         foreach ($this->function->getParameters() as $parameter) {
             $name = strtolower($parameter->getName());
+            $shortcut = null;
+            $description = '';
             $type = $parameter->getType();
             if (!$type instanceof \ReflectionNamedType) {
                 continue;
@@ -42,10 +45,19 @@ class TaskAsCommand extends Command
                 continue;
             }
 
+            $argAttribute = $parameter->getAttributes(Arg::class);
+
+            if (0 !== \count($argAttribute)) {
+                $argAttributeInstance = $argAttribute[0]->newInstance();
+                $name = $argAttributeInstance->name ?: $name;
+                $description = $argAttributeInstance->description ?: $description;
+                $shortcut = $argAttributeInstance->shortcut ?: $shortcut;
+            }
+
             if ($parameter->isOptional()) {
-                $this->addOption($name, null, InputOption::VALUE_OPTIONAL, '', $parameter->getDefaultValue());
+                $this->addOption($name, $shortcut, InputOption::VALUE_OPTIONAL, $description, $parameter->getDefaultValue());
             } else {
-                $this->addArgument($parameter->getName(), InputArgument::REQUIRED);
+                $this->addArgument($parameter->getName(), InputArgument::REQUIRED, $description);
             }
         }
     }
@@ -76,6 +88,13 @@ class TaskAsCommand extends Command
                 $args[] = new SymfonyStyle($input, $output);
 
                 continue;
+            }
+
+            $argAttribute = $parameter->getAttributes(Arg::class);
+
+            if (0 !== \count($argAttribute)) {
+                $argAttributeInstance = $argAttribute[0]->newInstance();
+                $name = $argAttributeInstance->name ?: $name;
             }
 
             if ($parameter->isOptional()) {
