@@ -109,27 +109,40 @@ function cd(string $path): void
     }
 }
 
-// Inspired from https://github.com/tartley/rerun2
-const WATCH_SCRIPT = <<<'SCRIPT'
-inotifywait --recursive --quiet --format '%e %w%f' \
-    --event='modify,close_write,move,create,delete' \
-    --exclude='\.git|\..*\.swp|\.cache' \
-    .
-SCRIPT;
-
-function watch(string $path, callable $function): void
+function watch(string $path, callable $callable, bool $verbose = false): void
 {
-    if (exec('command -v inotifywait', quiet: true) > 0) {
-        fwrite(\STDOUT, 'inotifywait is not installed. You may need to install a package named "inotify-tools".' . PHP_EOL);
+    $isWindows = '\\' === \DIRECTORY_SEPARATOR;
 
-        return;
+    if (is_dir($path)) {
+        $path = rtrim($path, '/');
+        $path .= '/...';
     }
 
-    cd($path);
-    fwrite(\STDOUT, sprintf('Waiting for changes in %s...', $path) . PHP_EOL);
+    $process = new Process(
+        [__DIR__ . '/../watcher/bin/watcher' . ($isWindows ? '.exe' : ''), $path],
+        timeout: null,
+    );
 
-    while(true) {
-        exec(WATCH_SCRIPT, quiet: true, timeout: null);
-        $function();
+    if ($verbose) {
+        fwrite(\STDOUT, sprintf('Waiting for changes in "%s".', $path) . \PHP_EOL);
     }
+
+    $process->mustRun(function ($type, $bytes) use ($verbose, $callable) {
+        if (Process::ERR === $type) {
+            fwrite(\STDERR, $bytes);
+
+            return;
+        }
+
+        $lines = explode("\n", trim($bytes));
+
+        foreach ($lines as $line) {
+            ['name' => $name, 'operation' => $operation] = json_decode($line, true, 512, \JSON_THROW_ON_ERROR);
+            if ($verbose) {
+                fwrite(\STDOUT, sprintf('File "%s", Operation: "%s".', $name, $operation) . \PHP_EOL);
+            }
+
+            $callable($name, $operation);
+        }
+    });
 }
