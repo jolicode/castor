@@ -43,7 +43,7 @@ function exec(
     bool $tty = false,
     float|null $timeout = 60,
     bool $quiet = false,
-): int {
+): Process {
     $context = ContextRegistry::$currentContext;
 
     if (null === $workingDirectory) {
@@ -85,7 +85,9 @@ function exec(
         }
     }
 
-    return $process->wait();
+    $process->wait();
+
+    return $process;
 }
 
 function cd(string $path): void
