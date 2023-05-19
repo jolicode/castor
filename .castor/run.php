@@ -1,5 +1,7 @@
 <?php
 
+namespace run;
+
 use Castor\Attribute\Task;
 
 use function Castor\exec;

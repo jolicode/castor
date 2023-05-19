@@ -1,6 +1,6 @@
 <?php
 
-namespace Castor\Example;
+namespace context;
 
 use Castor\Attribute\AsContext;
 use Castor\Attribute\Task;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Castor\Example;
+namespace rename;
 
 use Castor\Attribute\Task;
 
