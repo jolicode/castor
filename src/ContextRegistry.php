@@ -13,10 +13,10 @@ class ContextRegistry
 
     public function getContext(string $name): ContextBuilder
     {
-        return $this->contexts[$name];
+        return $this->contexts[$name] ?? throw new \RuntimeException(sprintf('Context "%s" not found.', $name));
     }
 
-    public function getContextsName(): array
+    public function getContextNames(): array
     {
         return array_keys($this->contexts);
     }

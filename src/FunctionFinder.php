@@ -6,18 +6,13 @@ use Castor\Attribute\AsContext;
 use Castor\Attribute\Task;
 use Symfony\Component\Finder\Finder;
 
-class TaskFinder
+class FunctionFinder
 {
-    public function __construct(
-        private ContextRegistry $contextRegistry
-    ) {
-    }
-
-    /** @return iterable<TaskBuilder|ContextBuilder> */
-    public function findTasks(string $path): iterable
+    /** @return iterable<TaskDescriptor|ContextBuilder> */
+    public function findFunctions(string $path): iterable
     {
         if (is_file($path)) {
-            return $this->doFindTasks([$path]);
+            return $this->doFindFunctions([$path]);
         }
 
         $finder = Finder::create()
@@ -34,18 +29,18 @@ class TaskFinder
                 ->in($directory->getRealPath())
             ;
 
-            yield from $this->doFindTasks($files);
+            yield from $this->doFindFunctions($files);
         }
     }
 
     /**
      * @param iterable<string|\SplFileInfo> $files
      *
-     * @return iterable<TaskBuilder|ContextBuilder>
+     * @return iterable<TaskDescriptor|ContextBuilder>
      *
      * @throws \ReflectionException
      */
-    private function doFindTasks(iterable $files): iterable
+    private function doFindFunctions(iterable $files): iterable
     {
         $existingFunctions = get_defined_functions()['user'];
 
@@ -80,7 +75,7 @@ class TaskFinder
                         $taskAttribute->namespace = $namespace;
                     }
 
-                    yield new TaskBuilder($taskAttribute, $reflectionFunction, $this->contextRegistry);
+                    yield new TaskDescriptor($taskAttribute, $reflectionFunction);
 
                     continue;
                 }
