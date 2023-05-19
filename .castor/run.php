@@ -2,10 +2,12 @@
 
 use Castor\Attribute\Task;
 
+use function Castor\exec;
+
 #[Task(description: 'A simple task that does not output anything')]
 function run()
 {
-    $process = \Castor\exec('ls -alh', quiet: true);
+    $process = exec('ls -alh', quiet: true);
 
     echo "OUPUT: \n" . $process->getOutput();
     echo "\nERR: \n" . $process->getErrorOutput();

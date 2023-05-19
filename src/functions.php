@@ -2,6 +2,8 @@
 
 namespace Castor;
 
+use Joli\JoliNotif\Notification;
+use Joli\JoliNotif\NotifierFactory;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
@@ -55,6 +57,7 @@ function exec(
     bool $quiet = false,
     callable $callback = null,
     bool $allowFailure = false,
+    bool $notify = false,
 ): Process {
     $context = ContextRegistry::$currentContext;
 
@@ -103,6 +106,10 @@ function exec(
 
     $exitCode = $process->wait();
 
+    if ($notify) {
+        notify(sprintf('The command "%s" has been finished %s.', $process->getCommandLine(), 0 === $exitCode ? 'successfully' : 'with an error'));
+    }
+
     if (0 !== $exitCode && !$allowFailure) {
         throw new ProcessFailedException($process);
     }
@@ -120,6 +127,21 @@ function cd(string $path): void
     } else {
         $context->currentDirectory = PathHelper::realpath($context->currentDirectory . '/' . $path);
     }
+}
+
+function notify(string $message): void
+{
+    static $notifier;
+
+    $notifier ??= NotifierFactory::create();
+
+    $notification =
+        (new Notification())
+            ->setTitle('Castor')
+            ->setBody($message)
+    ;
+
+    $notifier->send($notification);
 }
 
 /** @param (callable(string, string) : (false|null)) $function */

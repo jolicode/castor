@@ -17,9 +17,10 @@
         "files": ["src/functions.php"]
     },
     "require": {
+        "jolicode/jolinotif": "^2.5",
         "symfony/console": "^6.2",
         "symfony/finder": "^6.2",
-        "symfony/process": "^6.2",
+        "symfony/process": "^6.2@dev",
         "symfony/string": "^6.2",
         "symfony/translation-contracts": "^3.2"
     },
@@ -27,7 +28,9 @@
         "bin/castor"
     ],
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "platform": {
+            "php": "8.1"
+        }
     }
-
 }
