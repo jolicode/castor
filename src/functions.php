@@ -4,11 +4,14 @@ namespace Castor;
 
 use Symfony\Component\Process\Process;
 
+/**
+ * @return array<mixed>
+ */
 function parallel(callable ...$callbacks): array
 {
     $fibers = [];
-    foreach ($callbacks as $callbacks) {
-        $fiber = new \Fiber($callbacks);
+    foreach ($callbacks as $callback) {
+        $fiber = new \Fiber($callback);
         $fiber->start();
 
         $fibers[] = $fiber;
@@ -36,6 +39,10 @@ function parallel(callable ...$callbacks): array
     return array_map(fn ($fiber) => $fiber->getReturn(), $fibers);
 }
 
+/**
+ * @param string|array<string>  $command
+ * @param array<string, string> $environment
+ */
 function exec(
     string|array $command,
     ?string $workingDirectory = null,

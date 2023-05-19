@@ -7,9 +7,3 @@ parameters:
     checkGenericClassInNonGenericObjectType: false
     excludePaths:
         analyse: []
-    ignoreErrors:
-        - '{Property .* type has no value type specified in iterable type array\.}'
-        - '{Method .* has parameter .* with no value type specified in iterable type array\.}'
-        - '{Method .* return type has no value type specified in iterable type array\.}'
-        - '{Function .* has parameter .* with no value type specified in iterable type array\.}'
-        - '{Function .* return type has no value type specified in iterable type array\.}'
