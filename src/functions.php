@@ -36,14 +36,13 @@ function parallel(callable ...$closure): array
     return array_map(fn ($fiber) => $fiber->getReturn(), $fibers);
 }
 
-function exec(
+function process(
     string|array $command,
     ?string $workingDirectory = null,
     array $environment = [],
     bool $tty = false,
     float|null $timeout = 60,
-    bool $quiet = false,
-): int {
+): Process {
     global $context;
 
     if (null === $workingDirectory) {
@@ -60,11 +59,23 @@ function exec(
 
     if ($tty) {
         $process->setTty(true);
-        $process->setInput(\STDIN);
     } else {
         $process->setPty(true);
-        $process->setInput(\STDIN);
     }
+
+    return $process;
+}
+
+function exec(
+    string|array $command,
+    ?string $workingDirectory = null,
+    array $environment = [],
+    bool $tty = false,
+    float|null $timeout = 60,
+    bool $quiet = false,
+): int {
+    $process = process($command, $workingDirectory, $environment, $tty, $timeout);
+    $process->setInput(\STDIN);
 
     $process->start(function ($type, $bytes) use ($quiet) {
         if ($quiet) {
@@ -86,6 +97,37 @@ function exec(
     }
 
     return $process->wait();
+}
+
+function capture(
+    string|array $command,
+    ?string $workingDirectory = null,
+    array $environment = [],
+    bool $tty = false,
+    float|null $timeout = 60,
+): array {
+    $process = process($command, $workingDirectory, $environment, $tty, $timeout);
+    $stdout = '';
+    $stderr = '';
+
+    $process->start(function ($type, $bytes) use (&$stdout, &$stderr) {
+        if (Process::OUT === $type) {
+            $stdout .= $bytes;
+        } else {
+            $stderr .= $bytes;
+        }
+    });
+
+    if (\Fiber::getCurrent()) {
+        while ($process->isRunning()) {
+            \Fiber::suspend();
+            usleep(1_000);
+        }
+    }
+
+    $exitCode = $process->wait();
+
+    return [$stdout, $stderr, $exitCode];
 }
 
 function cd(string $path): void
