@@ -125,7 +125,21 @@ function watch(string $path, callable $function): void
         $binary = 'watcher.exe';
     }
 
-    $command = [__DIR__ . '/../watcher/bin/' . $binary, $path];
+    $binaryPath = __DIR__ . '/../watcher/bin/' . $binary;
+
+    if (str_starts_with(__FILE__, 'phar:')) {
+        static $tmpPath;
+
+        if (null === $tmpPath) {
+            $tmpPath = sys_get_temp_dir() . '/' . $binary;
+            copy($binaryPath, $tmpPath);
+            chmod($tmpPath, 0o755);
+        }
+
+        $binaryPath = $tmpPath;
+    }
+
+    $command = [$binaryPath, $path];
     $buffer = '';
 
     exec($command, pty: false, timeout: null, callback: static function ($type, $bytes, $process) use ($function, &$buffer) {
