@@ -4,7 +4,7 @@ namespace Castor;
 
 class ContextRegistry
 {
-    public static Context $currentContext;
+    private static Context $currentContext;
 
     /** @var array<string, ContextBuilder> */
     private array $contexts = [];
@@ -25,5 +25,15 @@ class ContextRegistry
     public function getContextNames(): array
     {
         return array_keys($this->contexts);
+    }
+
+    public static function setCurrentContext(Context $context): void
+    {
+        self::$currentContext = $context;
+    }
+
+    public static function getCurrentContext(): Context
+    {
+        return self::$currentContext ??= new Context();
     }
 }

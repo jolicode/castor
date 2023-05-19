@@ -59,7 +59,7 @@ function exec(
     bool $allowFailure = false,
     bool $notify = false,
 ): Process {
-    $context = ContextRegistry::$currentContext;
+    $context = ContextRegistry::getCurrentContext();
 
     if (null === $workingDirectory) {
         $workingDirectory = $context->currentDirectory;
@@ -119,7 +119,7 @@ function exec(
 
 function cd(string $path): void
 {
-    $context = ContextRegistry::$currentContext;
+    $context = ContextRegistry::getCurrentContext();
 
     // if path is absolute
     if (0 === strpos($path, '/')) {
