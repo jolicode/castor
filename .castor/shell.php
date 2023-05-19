@@ -2,8 +2,10 @@
 
 use Castor\Attribute\Task;
 
+use function Castor\exec;
+
 #[Task(description: 'A simple task that run a bash')]
 function bash()
 {
-    \Castor\exec('bash', tty: true);
+    exec('bash', tty: true);
 }

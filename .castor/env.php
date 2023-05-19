@@ -17,7 +17,7 @@ function context_env(): Context
 }
 
 #[Task(description: 'A simple task that use environment variables')]
-function env(Context $context)
+function env()
 {
-    exec('echo $FOO $BAR', environment: ['BAR' => 'tata']);
+    exec('echo foo: \"$FOO\", bar: \"$BAR\"', environment: ['BAR' => 'tata']);
 }
