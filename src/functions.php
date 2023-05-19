@@ -53,6 +53,7 @@ function exec(
     float|null $timeout = 60,
     bool $quiet = false,
     callable $callback = null,
+    bool $allowFailure = false,
 ): Process {
     $context = ContextRegistry::$currentContext;
 
@@ -99,7 +100,11 @@ function exec(
         }
     }
 
-    $process->wait();
+    $exitCode = $process->wait();
+
+    if (0 !== $exitCode && !$allowFailure) {
+        throw new \RuntimeException('Process exited with code ' . $exitCode, code: $exitCode);
+    }
 
     return $process;
 }
