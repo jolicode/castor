@@ -2,8 +2,10 @@
 
 use Castor\Attribute\Task;
 
+use function Castor\exec;
+
 #[Task(description: 'A simple task that does not output anything')]
 function quiet()
 {
-    \Castor\exec('ls -alh', quiet: true);
+    exec('ls -alh', quiet: true);
 }

@@ -14,3 +14,11 @@ function args(
 ) {
     exec(['echo', $required, $test2]);
 }
+
+#[Task(description: 'This a another task with arguments, work without attributes')]
+function another_args(
+    string $required,
+    int $test2 = 1
+) {
+    exec(['echo', $required, $test2]);
+}
