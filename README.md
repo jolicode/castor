@@ -6,7 +6,7 @@ execute processes.
 ## Usage
 
 As an example you could create a command that print "Hello castor" by creating a
-file in `.castor/hello.php` with the following content:
+file in `.castor.php` with the following content:
 
 ```php
 <?php

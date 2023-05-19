@@ -12,6 +12,8 @@ class FunctionFinder
     /** @return iterable<TaskDescriptor|ContextBuilder> */
     public function findFunctions(string $path): iterable
     {
+        yield from $this->doFindFunctions([new SplFileInfo($path . '/.castor.php', '.castor.php', '.castor')]);
+
         $finder = Finder::create()
             ->directories()
             ->ignoreDotFiles(false)
