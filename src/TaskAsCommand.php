@@ -71,8 +71,8 @@ class TaskAsCommand extends Command
         $contextName = $input->getOption('context');
         $contextBuilder = $this->contextRegistry->getContext($contextName);
 
-        global $context;
         $context = $contextBuilder->build();
+        ContextRegistry::$currentContext = $context;
 
         foreach ($this->function->getParameters() as $parameter) {
             $name = strtolower($parameter->getName());

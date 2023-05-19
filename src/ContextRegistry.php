@@ -4,6 +4,8 @@ namespace Castor;
 
 class ContextRegistry
 {
+    public static Context $currentContext;
+
     private array $contexts = [];
 
     public function addContext(string $name, ContextBuilder $context): void
