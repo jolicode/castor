@@ -2,6 +2,7 @@
 
 namespace Castor;
 
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 /**
@@ -53,6 +54,7 @@ function exec(
     float|null $timeout = 60,
     bool $quiet = false,
     callable $callback = null,
+    bool $allowFailure = false,
 ): Process {
     $context = ContextRegistry::$currentContext;
 
@@ -99,7 +101,11 @@ function exec(
         }
     }
 
-    $process->wait();
+    $exitCode = $process->wait();
+
+    if (0 !== $exitCode && !$allowFailure) {
+        throw new ProcessFailedException($process);
+    }
 
     return $process;
 }
