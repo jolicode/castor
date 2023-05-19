@@ -9,6 +9,6 @@ function run()
 
     echo "OUPUT: \n" . $process->getOutput();
     echo "\nERR: \n" . $process->getErrorOutput();
-    echo "\nExit code: " .  $process->getExitCode();
+    echo "\nExit code: " . $process->getExitCode();
     echo "\n";
 }
