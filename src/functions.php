@@ -125,7 +125,7 @@ function watch(string $path, callable $function): void
         $binary = 'watcher.exe';
     }
 
-    $command = [__DIR__ . \DIRECTORY_SEPARATOR . '..' . \DIRECTORY_SEPARATOR . 'watcher' . \DIRECTORY_SEPARATOR . 'bin' . \DIRECTORY_SEPARATOR . $binary, $path];
+    $command = [__DIR__ . '/../watcher/bin/' . $binary, $path];
     $buffer = '';
 
     exec($command, pty: false, timeout: null, callback: static function ($type, $bytes, $process) use ($function, &$buffer) {
