@@ -10,7 +10,7 @@ class ApplicationFactory
     public static function create(): Application
     {
         $finder = new FunctionFinder();
-        $path = PathHelper::getCwd();
+        $path = PathHelper::getRoot();
 
         // Find all potential commands / context
         $functions = $finder->findFunctions($path);

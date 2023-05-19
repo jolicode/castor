@@ -4,15 +4,25 @@ namespace Castor;
 
 class PathHelper
 {
-    public static function getCwd(): string
+    public static function getRoot(): string
     {
-        $cwd = getcwd();
+        static $root;
 
-        if (false === $cwd) {
-            throw new \RuntimeException('Unable to get current working directory.');
+        if (null === $root) {
+            $path = getcwd() ?: '/';
+
+            while (!file_exists($path . '/.castor.php')) {
+                if ('/' === $path) {
+                    throw new \RuntimeException('Could not find root `.castor.php` file.');
+                }
+
+                $path = \dirname($path);
+            }
+
+            $root = $path;
         }
 
-        return $cwd;
+        return $root;
     }
 
     public static function realpath(string $path): string

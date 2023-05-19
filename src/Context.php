@@ -23,6 +23,6 @@ class Context extends \ArrayObject
     ) {
         parent::__construct($array, \ArrayObject::ARRAY_AS_PROPS);
 
-        $this->currentDirectory = PathHelper::getCwd();
+        $this->currentDirectory = PathHelper::getRoot();
     }
 }
