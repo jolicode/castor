@@ -2,6 +2,7 @@
 
 namespace Castor;
 
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 /**
@@ -103,7 +104,7 @@ function exec(
     $exitCode = $process->wait();
 
     if (0 !== $exitCode && !$allowFailure) {
-        throw new \RuntimeException('Process exited with code ' . $exitCode, code: $exitCode);
+        throw new ProcessFailedException($process);
     }
 
     return $process;
