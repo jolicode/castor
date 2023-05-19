@@ -1,0 +1,19 @@
+{
+  "base-path": "../../",
+  "force-autodiscovery": true,
+  "finder": [
+    {
+      "in": ".",
+      "name": [
+        "watcher",
+        "watcher.exe"
+      ]
+    }
+  ],
+  "blacklist": [
+    ".castor"
+  ],
+  "git-version": "package_version",
+  "main": "bin/castor",
+  "output": "tools/phar/build/castor.phar"
+}
