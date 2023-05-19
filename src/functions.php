@@ -41,7 +41,8 @@ function exec(
     ?string $workingDirectory = null,
     array $environment = [],
     bool $tty = false,
-    float|null $timeout = 60
+    float|null $timeout = 60,
+    bool $quiet = false,
 ): int {
     global $context;
 
@@ -65,7 +66,11 @@ function exec(
         $process->setInput(\STDIN);
     }
 
-    $process->start(function ($type, $bytes) {
+    $process->start(function ($type, $bytes) use ($quiet) {
+        if ($quiet) {
+            return;
+        }
+
         if (Process::OUT === $type) {
             fwrite(\STDOUT, $bytes);
         } else {
