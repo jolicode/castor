@@ -17,6 +17,7 @@
         "files": ["src/functions.php"]
     },
     "require": {
+        "jolicode/jolinotif": "^2.5",
         "symfony/console": "^6.2",
         "symfony/finder": "^6.2",
         "symfony/process": "^6.2",
