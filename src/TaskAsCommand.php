@@ -10,13 +10,16 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\String\Slugger\AsciiSlugger;
+
+use function Symfony\Component\String\u;
 
 class TaskAsCommand extends Command
 {
     public function __construct(
         Task $taskAttribute,
         private readonly \ReflectionFunction $function,
-        private readonly ContextRegistry $contextRegistry
+        private readonly ContextRegistry $contextRegistry,
     ) {
         $commandName = $taskAttribute->name;
 
@@ -31,8 +34,10 @@ class TaskAsCommand extends Command
 
     protected function configure(): void
     {
+        $slugger = new AsciiSlugger();
+
         foreach ($this->function->getParameters() as $parameter) {
-            $name = strtolower($parameter->getName());
+            $name = $slugger->slug(u($parameter->getName())->snake())->lower()->toString();
             $shortcut = null;
             $description = '';
             $type = $parameter->getType();
@@ -70,12 +75,13 @@ class TaskAsCommand extends Command
         $args = [];
         $contextName = $input->getOption('context');
         $contextBuilder = $this->contextRegistry->getContext($contextName);
+        $slugger = new AsciiSlugger();
 
         $context = $contextBuilder->build();
         ContextRegistry::$currentContext = $context;
 
         foreach ($this->function->getParameters() as $parameter) {
-            $name = strtolower($parameter->getName());
+            $name = $slugger->slug(u($parameter->getName())->snake())->lower()->toString();
             $type = $parameter->getType();
             if (!$type instanceof \ReflectionNamedType) {
                 continue;

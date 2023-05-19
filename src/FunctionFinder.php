@@ -5,6 +5,9 @@ namespace Castor;
 use Castor\Attribute\AsContext;
 use Castor\Attribute\Task;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\String\Slugger\AsciiSlugger;
+
+use function Symfony\Component\String\u;
 
 class FunctionFinder
 {
@@ -43,6 +46,7 @@ class FunctionFinder
     private function doFindFunctions(iterable $files): iterable
     {
         $existingFunctions = get_defined_functions()['user'];
+        $slugger = new AsciiSlugger();
 
         foreach ($files as $file) {
             $path = $file;
@@ -52,6 +56,8 @@ class FunctionFinder
                 $namespace = $path->getBasename('.php');
                 $path = $path->getRealPath();
             }
+
+            $namespace = $slugger->slug(u($namespace)->snake())->lower()->toString();
 
             require_once $path;
 
@@ -68,7 +74,7 @@ class FunctionFinder
                     $taskAttribute = $attributes[0]->newInstance();
 
                     if ('' === $taskAttribute->name) {
-                        $taskAttribute->name = $reflectionFunction->getShortName();
+                        $taskAttribute->name = $slugger->slug(u($reflectionFunction->getShortName())->snake())->lower()->toString();
                     }
 
                     if (null === $taskAttribute->namespace) {
