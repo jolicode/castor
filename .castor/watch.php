@@ -14,7 +14,18 @@ function fs_change()
 }
 
 #[Task(description: 'A simple task that watch on filesystem changes')]
-function parralel()
+function stop()
+{
+    watch(dirname(__DIR__) . '/...', function ($name, $type) {
+        echo "File {$name} has been {$type}\n";
+
+        return false;
+    });
+    echo "Stop watching\n";
+}
+
+#[Task(description: 'A simple task that watch on filesystem changes')]
+function parallel_change()
 {
     parallel(
         function () {

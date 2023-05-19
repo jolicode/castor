@@ -42,7 +42,7 @@ function parallel(callable ...$callbacks): array
 /**
  * @param string|array<string>  $command
  * @param array<string, string> $environment
- * @param (callable(string, string) :void)|null $callback
+ * @param (callable(string, string, Process) :void)|null $callback
  */
 function exec(
     string|array $command,
@@ -86,7 +86,11 @@ function exec(
         };
     }
 
-    $process->start($callback);
+    $process->start(function ($type, $bytes) use ($callback, $process) {
+        if ($callback) {
+            $callback($type, $bytes, $process);
+        }
+    });
 
     if (\Fiber::getCurrent()) {
         while ($process->isRunning()) {
@@ -112,7 +116,7 @@ function cd(string $path): void
     }
 }
 
-/** @param (callable(string, string) :void) $function */
+/** @param (callable(string, string) : (false|null)) $function */
 function watch(string $path, callable $function): void
 {
     $binary = 'watcher';
@@ -124,7 +128,7 @@ function watch(string $path, callable $function): void
     $command = [__DIR__ . \DIRECTORY_SEPARATOR . '..' . \DIRECTORY_SEPARATOR . 'watcher' . \DIRECTORY_SEPARATOR . 'bin' . \DIRECTORY_SEPARATOR . $binary, $path];
     $buffer = '';
 
-    exec($command, pty: false, timeout: null, callback: static function ($type, $bytes) use ($function, &$buffer) {
+    exec($command, pty: false, timeout: null, callback: static function ($type, $bytes, $process) use ($function, &$buffer) {
         if (Process::OUT === $type) {
             $data = $buffer . $bytes;
             $lines = explode("\n", $data);
@@ -146,7 +150,12 @@ function watch(string $path, callable $function): void
                     break;
                 }
 
-                $function($eventLine['name'], $eventLine['operation']);
+                $result = $function($eventLine['name'], $eventLine['operation']);
+
+                if (false === $result) {
+                    $process->stop();
+                }
+
                 array_shift($lines);
             }
         } else {
