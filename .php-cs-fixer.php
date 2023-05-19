@@ -2,6 +2,7 @@
 
 $finder = PhpCsFixer\Finder::create()
     ->ignoreVCSIgnored(true)
+    ->ignoreDotFiles(false)
     ->in(__DIR__)
     ->append([
         __FILE__,
