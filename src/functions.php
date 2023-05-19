@@ -42,14 +42,17 @@ function parallel(callable ...$callbacks): array
 /**
  * @param string|array<string>  $command
  * @param array<string, string> $environment
+ * @param (callable(string, string) :void)|null $callback
  */
 function exec(
     string|array $command,
     ?string $workingDirectory = null,
     array $environment = [],
     bool $tty = false,
+    bool $pty = true,
     float|null $timeout = 60,
     bool $quiet = false,
+    callable $callback = null,
 ): Process {
     $context = ContextRegistry::$currentContext;
 
@@ -68,22 +71,22 @@ function exec(
     if ($tty) {
         $process->setTty(true);
         $process->setInput(\STDIN);
-    } else {
+    } elseif ($pty) {
         $process->setPty(true);
         $process->setInput(\STDIN);
     }
 
-    $process->start(function ($type, $bytes) use ($quiet) {
-        if ($quiet) {
-            return;
-        }
+    if (!$quiet && !$callback) {
+        $callback = static function ($type, $bytes) {
+            if (Process::OUT === $type) {
+                fwrite(\STDOUT, $bytes);
+            } else {
+                fwrite(\STDERR, $bytes);
+            }
+        };
+    }
 
-        if (Process::OUT === $type) {
-            fwrite(\STDOUT, $bytes);
-        } else {
-            fwrite(\STDERR, $bytes);
-        }
-    });
+    $process->start($callback);
 
     if (\Fiber::getCurrent()) {
         while ($process->isRunning()) {
@@ -109,27 +112,45 @@ function cd(string $path): void
     }
 }
 
-// Inspired from https://github.com/tartley/rerun2
-const WATCH_SCRIPT = <<<'SCRIPT'
-inotifywait --recursive --quiet --format '%e %w%f' \
-    --event='modify,close_write,move,create,delete' \
-    --exclude='\.git|\..*\.swp|\.cache' \
-    .
-SCRIPT;
-
+/** @param (callable(string, string) :void) $function */
 function watch(string $path, callable $function): void
 {
-    if (exec('command -v inotifywait', quiet: true) > 0) {
-        fwrite(\STDOUT, 'inotifywait is not installed. You may need to install a package named "inotify-tools".' . PHP_EOL);
+    $binary = 'watcher';
 
-        return;
+    if ('\\' === \DIRECTORY_SEPARATOR) {
+        $binary = 'watcher.exe';
     }
 
-    cd($path);
-    fwrite(\STDOUT, sprintf('Waiting for changes in %s...', $path) . PHP_EOL);
+    $command = [__DIR__ . \DIRECTORY_SEPARATOR . '..' . \DIRECTORY_SEPARATOR . 'watcher' . \DIRECTORY_SEPARATOR . 'bin' . \DIRECTORY_SEPARATOR . $binary, $path];
+    $buffer = '';
 
-    while(true) {
-        exec(WATCH_SCRIPT, quiet: true, timeout: null);
-        $function();
-    }
+    exec($command, pty: false, timeout: null, callback: static function ($type, $bytes) use ($function, &$buffer) {
+        if (Process::OUT === $type) {
+            $data = $buffer . $bytes;
+            $lines = explode("\n", $data);
+
+            while (!empty($lines)) {
+                $line = trim($lines[0]);
+
+                if ('' === $line) {
+                    array_shift($lines);
+
+                    continue;
+                }
+
+                try {
+                    $eventLine = json_decode($line, true, 512, \JSON_THROW_ON_ERROR);
+                } catch (\JsonException $e) {
+                    $buffer = implode("\n", $lines);
+
+                    break;
+                }
+
+                $function($eventLine['name'], $eventLine['operation']);
+                array_shift($lines);
+            }
+        } else {
+            fwrite(\STDERR, "ERROR: {$type} : " . $bytes);
+        }
+    });
 }

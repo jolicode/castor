@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"github.com/rjeczalik/notify"
-	"log"
 	"os"
 )
 
@@ -41,7 +40,7 @@ func main() {
 			})
 
 			if err != nil {
-				log.Fatal("json.Marshal failed: ", err)
+				os.Stderr.WriteString(err.Error())
 			}
 
 			// send json to stdout
@@ -51,7 +50,7 @@ func main() {
 	}()
 
 	if err := notify.Watch(directory, eventChannel, notify.All); err != nil {
-		log.Fatal(err)
+		os.Stderr.WriteString(err.Error())
 	}
 
 	defer notify.Stop(eventChannel)
