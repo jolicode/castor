@@ -1,6 +1,6 @@
 <?php
 
-namespace Castor\Example;
+namespace output;
 
 use Castor\Attribute\Task;
 use Symfony\Component\Console\Style\SymfonyStyle;

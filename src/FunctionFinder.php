@@ -5,19 +5,13 @@ namespace Castor;
 use Castor\Attribute\AsContext;
 use Castor\Attribute\Task;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\String\Slugger\AsciiSlugger;
-
-use function Symfony\Component\String\u;
+use Symfony\Component\Finder\SplFileInfo;
 
 class FunctionFinder
 {
     /** @return iterable<TaskDescriptor|ContextBuilder> */
     public function findFunctions(string $path): iterable
     {
-        if (is_file($path)) {
-            return $this->doFindFunctions([$path]);
-        }
-
         $finder = Finder::create()
             ->directories()
             ->ignoreDotFiles(false)
@@ -37,7 +31,7 @@ class FunctionFinder
     }
 
     /**
-     * @param iterable<string|\SplFileInfo> $files
+     * @param iterable<SplFileInfo> $files
      *
      * @return iterable<TaskDescriptor|ContextBuilder>
      *
@@ -46,20 +40,9 @@ class FunctionFinder
     private function doFindFunctions(iterable $files): iterable
     {
         $existingFunctions = get_defined_functions()['user'];
-        $slugger = new AsciiSlugger();
 
         foreach ($files as $file) {
-            $path = $file;
-            $namespace = str_replace('.php', '', $file);
-
-            if ($path instanceof \SplFileInfo) {
-                $namespace = $path->getBasename('.php');
-                $path = $path->getRealPath();
-            }
-
-            $namespace = $slugger->slug(u($namespace)->snake())->lower()->toString();
-
-            require_once $path;
+            castor_require($file->getRealPath());
 
             $newExistingFunctions = get_defined_functions()['user'];
 
@@ -74,11 +57,13 @@ class FunctionFinder
                     $taskAttribute = $attributes[0]->newInstance();
 
                     if ('' === $taskAttribute->name) {
-                        $taskAttribute->name = $slugger->slug(u($reflectionFunction->getShortName())->snake())->lower()->toString();
+                        $taskAttribute->name = SluggerHelper::slug($reflectionFunction->getShortName());
                     }
 
                     if (null === $taskAttribute->namespace) {
-                        $taskAttribute->namespace = $namespace;
+                        $ns = str_replace('/', ':', \dirname(str_replace('\\', '/', $reflectionFunction->getName())));
+                        $ns = implode(':', array_map(SluggerHelper::slug(...), explode(':', $ns)));
+                        $taskAttribute->namespace = $ns;
                     }
 
                     yield new TaskDescriptor($taskAttribute, $reflectionFunction);
@@ -104,4 +89,10 @@ class FunctionFinder
             }
         }
     }
+}
+
+// Don't leak internal variables
+function castor_require(string $file): void
+{
+    require_once $file;
 }

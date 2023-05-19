@@ -11,6 +11,8 @@ file in `.castor/hello.php` with the following content:
 ```php
 <?php
 
+namespace hello;
+
 use Castor\Attribute\Task;
 use function Castor\exec;
 

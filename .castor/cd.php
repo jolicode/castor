@@ -1,6 +1,6 @@
 <?php
 
-namespace Castor\Example;
+namespace cd;
 
 use Castor\Attribute\Task;
 

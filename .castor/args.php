@@ -1,6 +1,6 @@
 <?php
 
-namespace Castor\Example;
+namespace args;
 
 use Castor\Attribute\Arg;
 use Castor\Attribute\Task;

@@ -1,5 +1,7 @@
 <?php
 
+namespace quiet;
+
 use Castor\Attribute\Task;
 
 use function Castor\exec;
