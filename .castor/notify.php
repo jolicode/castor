@@ -8,7 +8,7 @@ use function Castor\exec;
 use function Castor\notify;
 
 #[Task(description: 'Send a notification when the task finishes')]
-function notifyOnFinish()
+function notify_on_finish()
 {
     exec(['sleep', '2'], notify: true);
 }
