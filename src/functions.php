@@ -43,35 +43,29 @@ function parallel(callable ...$callbacks): array
 }
 
 /**
- * @param string|array<string>  $command
- * @param array<string, string> $environment
+ * @param string|array<string> $command
  * @param (callable(string, string, Process) :void)|null $callback
  */
 function exec(
     string|array $command,
-    ?string $workingDirectory = null,
-    array $environment = [],
-    bool $tty = false,
-    bool $pty = true,
-    float|null $timeout = 60,
     bool $quiet = false,
     callable $callback = null,
     bool $allowFailure = false,
     bool $notify = false,
+    Context $context = null,
+    bool|null $tty = null,
+    bool|null $pty = null,
 ): Process {
-    $context = ContextRegistry::getCurrentContext();
-
-    if (null === $workingDirectory) {
-        $workingDirectory = $context->currentDirectory;
-    }
-
-    $environment = array_merge($context->environment, $environment);
+    $context ??= new Context();
 
     if (\is_array($command)) {
-        $process = new Process($command, $workingDirectory, $environment, null, $timeout);
+        $process = new Process($command, $context->currentDirectory, $context->environment, null, $context->timeout);
     } else {
-        $process = Process::fromShellCommandline($command, $workingDirectory, $environment, null, $timeout);
+        $process = Process::fromShellCommandline($command, $context->currentDirectory, $context->environment, null, $context->timeout);
     }
+
+    $tty ??= $context->tty;
+    $pty ??= $context->pty;
 
     if ($tty) {
         $process->setTty(true);
@@ -117,18 +111,6 @@ function exec(
     return $process;
 }
 
-function cd(string $path): void
-{
-    $context = ContextRegistry::getCurrentContext();
-
-    // if path is absolute
-    if (0 === strpos($path, '/')) {
-        $context->currentDirectory = $path;
-    } else {
-        $context->currentDirectory = PathHelper::realpath($context->currentDirectory . '/' . $path);
-    }
-}
-
 function notify(string $message): void
 {
     static $notifier;
@@ -145,8 +127,9 @@ function notify(string $message): void
 }
 
 /** @param (callable(string, string) : (false|null)) $function */
-function watch(string $path, callable $function): void
+function watch(string $path, callable $function, Context $context = null): void
 {
+    $context ??= new Context();
     $binary = 'watcher';
 
     if ('\\' === \DIRECTORY_SEPARATOR) {
@@ -167,10 +150,12 @@ function watch(string $path, callable $function): void
         $binaryPath = $tmpPath;
     }
 
+    $watchContext = $context->withTty(false)->withPty(false)->withTimeout(null);
+
     $command = [$binaryPath, $path];
     $buffer = '';
 
-    exec($command, pty: false, timeout: null, callback: static function ($type, $bytes, $process) use ($function, &$buffer) {
+    exec($command, callback: static function ($type, $bytes, $process) use ($function, &$buffer) {
         if (Process::OUT === $type) {
             $data = $buffer . $bytes;
             $lines = explode("\n", $data);
@@ -203,5 +188,5 @@ function watch(string $path, callable $function): void
         } else {
             fwrite(\STDERR, "ERROR: {$type} : " . $bytes);
         }
-    });
+    }, context: $watchContext);
 }

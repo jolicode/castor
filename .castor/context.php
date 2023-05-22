@@ -23,7 +23,7 @@ function defaultContext(): Context
 #[AsContext(name: 'exec')]
 function execContext(): Context
 {
-    $production = trim(exec('echo $PRODUCTION')->getOutput());
+    $production = trim(exec('echo $PRODUCTION', quiet: true)->getOutput());
 
     return new Context(['production' => (bool) $production]);
 }
