@@ -9,27 +9,33 @@ use Symfony\Component\Finder\SplFileInfo;
 
 class FunctionFinder
 {
+    private static bool $inFindFunctions = false;
+
     /** @return iterable<TaskDescriptor|ContextBuilder> */
-    public function findFunctions(string $path): iterable
+    public static function findFunctions(string $path): iterable
     {
-        yield from $this->doFindFunctions([new SplFileInfo($path . '/.castor.php', '.castor.php', '.castor')]);
+        self::$inFindFunctions = true;
 
-        $finder = Finder::create()
-            ->directories()
-            ->ignoreDotFiles(false)
-            ->name('.castor')
-            ->in($path)
-        ;
+        yield from self::doFindFunctions([new SplFileInfo($path . '/.castor.php', '.castor.php', '.castor')]);
 
-        foreach ($finder as $directory) {
+        $castorDirectory = $path . '/.castor';
+
+        if (is_dir($castorDirectory)) {
             $files = Finder::create()
                 ->files()
                 ->name('*.php')
-                ->in($directory->getRealPath())
+                ->in($castorDirectory)
             ;
 
-            yield from $this->doFindFunctions($files);
+            yield from self::doFindFunctions($files);
         }
+
+        self::$inFindFunctions = false;
+    }
+
+    public static function isInFindFunctions(): bool
+    {
+        return self::$inFindFunctions;
     }
 
     /**
@@ -39,7 +45,7 @@ class FunctionFinder
      *
      * @throws \ReflectionException
      */
-    private function doFindFunctions(iterable $files): iterable
+    private static function doFindFunctions(iterable $files): iterable
     {
         $existingFunctions = get_defined_functions()['user'];
 
