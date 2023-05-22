@@ -45,6 +45,7 @@ function parallel(callable ...$callbacks): array
 /**
  * @param string|array<string> $command
  * @param (callable(string, string, Process) :void)|null $callback
+ * @param array<string, string>|null $environment
  */
 function exec(
     string|array $command,
@@ -55,8 +56,18 @@ function exec(
     Context $context = null,
     bool|null $tty = null,
     bool|null $pty = null,
+    string $path = null,
+    array $environment = null,
 ): Process {
-    $context ??= new Context();
+    $context ??= ContextRegistry::getCurrentContext();
+
+    if ($path) {
+        $context = $context->withCd($path);
+    }
+
+    if ($environment) {
+        $context = $context->withEnvironment($environment);
+    }
 
     if (\is_array($command)) {
         $process = new Process($command, $context->currentDirectory, $context->environment, null, $context->timeout);
@@ -129,7 +140,7 @@ function notify(string $message): void
 /** @param (callable(string, string) : (false|null)) $function */
 function watch(string $path, callable $function, Context $context = null): void
 {
-    $context ??= new Context();
+    $context ??= ContextRegistry::getCurrentContext();
     $binary = 'watcher';
 
     if ('\\' === \DIRECTORY_SEPARATOR) {

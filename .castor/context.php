@@ -11,13 +11,13 @@ use function Castor\exec;
 #[AsContext(name: 'production')]
 function productionContext(): Context
 {
-    return new Context(['production' => true]);
+    return defaultContext()->withData(['production' => true]);
 }
 
 #[AsContext(default: true)]
 function defaultContext(): Context
 {
-    return new Context(['production' => false]);
+    return new Context(['production' => false, 'foo' => 'bar']);
 }
 
 #[AsContext(name: 'exec')]
@@ -36,4 +36,6 @@ function context(Context $context)
     } else {
         echo "development\n";
     }
+
+    echo "foo: {$context['foo']}\n";
 }

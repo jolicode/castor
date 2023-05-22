@@ -72,6 +72,7 @@ class TaskAsCommand extends Command
         $contextBuilder = $this->contextRegistry->getContext($contextName);
 
         $context = $contextBuilder->build();
+        ContextRegistry::setCurrentContext($context);
 
         foreach ($this->function->getParameters() as $parameter) {
             $name = SluggerHelper::slug($parameter->getName());
