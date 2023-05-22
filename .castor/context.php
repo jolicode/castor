@@ -18,7 +18,7 @@ function defaultContext(): Context
     return new Context(['production' => false]);
 }
 
-#[Task(description: 'A simple task that use context')]
+#[Task(description: 'A simple task that uses context')]
 function context(Context $context)
 {
     if ($context['production']) {

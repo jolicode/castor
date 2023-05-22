@@ -6,13 +6,13 @@ use Castor\Attribute\Task;
 
 use function Castor\exec;
 
-#[Task(description: 'A simple task that does not output anything')]
+#[Task(description: 'A simple task that only output process result')]
 function run()
 {
     $process = exec('ls -alh', quiet: true);
 
-    echo "OUPUT: \n" . $process->getOutput();
-    echo "\nERR: \n" . $process->getErrorOutput();
+    echo "Output: \n" . $process->getOutput();
+    echo "\nError output: \n" . $process->getErrorOutput();
     echo "\nExit code: " . $process->getExitCode();
     echo "\n";
 }
