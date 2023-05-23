@@ -1,45 +1,28 @@
-name: Continuous Integration
+name: Attach PHAR to the release
 
 on:
   release:
     types: [created]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  phar:
-    name: Create a PHAR
+  phar_release:
+    name: Create a PHAR and upload it
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: Build the PHAR
+        uses: ./.github/actions/phar
 
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.3.2
         env:
           GITHUB_TOKEN: ${{ github.token }}
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.1'
-
-      - name: Install dependencies (lib)
-        run: composer install --prefer-dist --no-progress --no-dev --optimize-autoloader --classmap-authoritative
-
-      - name: Install dependencies (PHAR builder)
-        run: composer install --prefer-dist --no-progress --optimize-autoloader --classmap-authoritative
-        working-directory: tools/phar
-
-      - name: Compile PHAR
-        run: vendor/bin/box compile
-        working-directory: tools/phar
-
-      - name: Ensure PHAR is OK
-        run: build/castor.phar --version
-        working-directory: tools/phar
 
       - name: Upload release binary
         uses: actions/upload-release-asset@v1.0.2
