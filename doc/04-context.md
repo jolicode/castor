@@ -9,16 +9,16 @@ The context is immutable, which means that every time you change a value, a new 
 
 ### Using the context
 
-The context is passed to the function if it has a `Castor\Context` type hint.
+The context is passed to the function if it has an argument type-hinted with `Castor\Context`.
 
 ```php
 use Castor\Context;
 
-#[AskTask]
+#[AsTask]
 function foo(Context $context): void
 {
     echo $context->currentDirectory; // will print the directory of the .castor.php file
-    $context = $context->withCd('/tmp'); // will create a new context with the current directory set to /tmp
+    $context = $context->withPath('/tmp'); // will create a new context with the current directory set to /tmp
     exec('pwd', context: $context); // will print /tmp
 }
 ```
@@ -37,14 +37,14 @@ function my_context(): Context
     return new Context(environment: ['FOO' => 'BAR']);
 }
 
-#[AskTask]
+#[AsTask]
 function foo(): void
 {
     exec('echo $FOO'); 
 }
 ```
 
-By default the `foo` command will print nothing as the `FOO` environment variable is not set. If you want to use your new context
+By default the `foo` command will not print anything as the `FOO` environment variable is not set. If you want to use your new context
 you can use the `--context` option.
 
 ```bash

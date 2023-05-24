@@ -3,7 +3,7 @@
 Castor use a simple convention to find commands. It will look for the first `.castor.php` file in the current directory 
 or in a parent directory.
 
-All functions in the file, with the `Castor\Attribute\AsTask` attribute will be transformed to commands. The name of the 
+In this file, all functions with the `Castor\Attribute\AsTask` attribute will be transformed as commands. The name of the 
 function will be the name of the command and the namespace will be the namespace of the command.
 
 For example, if you have the following file:

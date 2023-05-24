@@ -3,7 +3,7 @@
 When creating a function that will be used as a command, all the parameters of the function will be used as arguments of the command.
 
 ```php
-#[AskTask]
+#[AsTask]
 function command(
     string $firstArg,
     string $secondArg
@@ -12,7 +12,7 @@ function command(
 }
 ```
 
-Which can be called like this:
+Which can be called like that:
 
 ```bash
 $ php castor.phar command foo bar
@@ -24,7 +24,7 @@ foo bar
 You can make an argument optional by giving it a default value.
 
 ```php
-#[AskTask]
+#[AsTask]
 function command(
     string $firstArg,
     string $default = 'default'
