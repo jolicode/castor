@@ -2,7 +2,7 @@
 
 namespace Castor;
 
-use Castor\Attribute\Arg;
+use Castor\Attribute\AsArg;
 use Castor\Attribute\AsTask;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
@@ -52,7 +52,7 @@ class TaskAsCommand extends Command
                 continue;
             }
 
-            $argAttribute = $parameter->getAttributes(Arg::class);
+            $argAttribute = $parameter->getAttributes(AsArg::class);
 
             if (0 !== \count($argAttribute)) {
                 $argAttributeInstance = $argAttribute[0]->newInstance();
@@ -115,7 +115,7 @@ class TaskAsCommand extends Command
                 continue;
             }
 
-            $argAttribute = $parameter->getAttributes(Arg::class);
+            $argAttribute = $parameter->getAttributes(AsArg::class);
 
             if (0 !== \count($argAttribute)) {
                 $argAttributeInstance = $argAttribute[0]->newInstance();
