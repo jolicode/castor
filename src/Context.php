@@ -8,7 +8,7 @@ class Context implements \ArrayAccess
 
     /**
      * @param array<(int|string), mixed> $data The input parameter accepts an array or an Object
-     * @param array<string, string> $environment a list of environment variables to add to the command
+     * @param array<string, string> $environment A list of environment variables to add to the command
      */
     public function __construct(
         public readonly array $data = [],
@@ -17,6 +17,9 @@ class Context implements \ArrayAccess
         public readonly bool $tty = false,
         public readonly bool $pty = true,
         public readonly float|null $timeout = 60,
+        public readonly bool $quiet = false,
+        public readonly bool $allowFailure = false,
+        public readonly bool $notify = false,
     ) {
         $this->currentDirectory = $currentDirectory ?? PathHelper::getRoot();
     }
@@ -31,6 +34,9 @@ class Context implements \ArrayAccess
             $this->tty,
             $this->pty,
             $this->timeout,
+            $this->quiet,
+            $this->allowFailure,
+            $this->notify,
         );
     }
 
@@ -44,6 +50,9 @@ class Context implements \ArrayAccess
             $this->tty,
             $this->pty,
             $this->timeout,
+            $this->quiet,
+            $this->allowFailure,
+            $this->notify,
         );
     }
 
@@ -56,6 +65,9 @@ class Context implements \ArrayAccess
             $this->tty,
             $this->pty,
             $this->timeout,
+            $this->quiet,
+            $this->allowFailure,
+            $this->notify,
         );
     }
 
@@ -68,6 +80,9 @@ class Context implements \ArrayAccess
             $this->tty,
             $this->pty,
             $this->timeout,
+            $this->quiet,
+            $this->allowFailure,
+            $this->notify,
         );
     }
 
@@ -80,6 +95,9 @@ class Context implements \ArrayAccess
             $tty,
             $this->pty,
             $this->timeout,
+            $this->quiet,
+            $this->allowFailure,
+            $this->notify,
         );
     }
 
@@ -92,6 +110,9 @@ class Context implements \ArrayAccess
             $this->tty,
             $pty,
             $this->timeout,
+            $this->quiet,
+            $this->allowFailure,
+            $this->notify,
         );
     }
 
@@ -104,6 +125,54 @@ class Context implements \ArrayAccess
             $this->tty,
             $this->pty,
             $timeout,
+            $this->quiet,
+            $this->allowFailure,
+            $this->notify,
+        );
+    }
+
+    public function withQuiet(bool $quiet = true): self
+    {
+        return new self(
+            $this->data,
+            $this->environment,
+            $this->currentDirectory,
+            $this->tty,
+            $this->pty,
+            $this->timeout,
+            $quiet,
+            $this->allowFailure,
+            $this->notify,
+        );
+    }
+
+    public function withAllowFailure(bool $allowFailure = true): self
+    {
+        return new self(
+            $this->data,
+            $this->environment,
+            $this->currentDirectory,
+            $this->tty,
+            $this->pty,
+            $this->timeout,
+            $this->quiet,
+            $allowFailure,
+            $this->notify,
+        );
+    }
+
+    public function withNotify(bool $notify = true): self
+    {
+        return new self(
+            $this->data,
+            $this->environment,
+            $this->currentDirectory,
+            $this->tty,
+            $this->pty,
+            $this->timeout,
+            $this->quiet,
+            $this->allowFailure,
+            $notify,
         );
     }
 
