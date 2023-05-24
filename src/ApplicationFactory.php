@@ -2,12 +2,14 @@
 
 namespace Castor;
 
+use Castor\Console\Command\CastorFileNotFoundCommand;
 use Monolog\Logger;
 use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\SingleCommandApplication;
 
 class ApplicationFactory
 {
@@ -27,9 +29,16 @@ class ApplicationFactory
         $application->run($input, $output);
     }
 
-    public static function create(): Application
+    public static function create(): Application|SingleCommandApplication
     {
         $finder = new FunctionFinder();
+
+        try {
+            $path = PathHelper::getRoot();
+        } catch (\RuntimeException $e) {
+            return new CastorFileNotFoundCommand($e);
+        }
+
         $path = PathHelper::getRoot();
 
         // Find all potential commands / context
