@@ -3,7 +3,7 @@
 namespace Castor\Attribute;
 
 #[\Attribute(\Attribute::TARGET_PARAMETER)]
-class Arg
+class AsArg
 {
     /**
      * @param string|array<string>|null $shortcut

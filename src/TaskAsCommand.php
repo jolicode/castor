@@ -2,8 +2,9 @@
 
 namespace Castor;
 
-use Castor\Attribute\Arg;
+use Castor\Attribute\AsArg;
 use Castor\Attribute\AsTask;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -31,6 +32,13 @@ class TaskAsCommand extends Command
 
     protected function configure(): void
     {
+        static $classToByPass = [
+            Context::class,
+            SymfonyStyle::class,
+            Application::class,
+            InputInterface::class,
+            OutputInterface::class,
+        ];
         foreach ($this->function->getParameters() as $parameter) {
             $name = SluggerHelper::slug($parameter->getName());
             $shortcut = null;
@@ -40,15 +48,11 @@ class TaskAsCommand extends Command
                 continue;
             }
 
-            if (Context::class === $type->getName()) {
+            if (\in_array($type->getName(), $classToByPass, true)) {
                 continue;
             }
 
-            if (SymfonyStyle::class === $type->getName()) {
-                continue;
-            }
-
-            $argAttribute = $parameter->getAttributes(Arg::class);
+            $argAttribute = $parameter->getAttributes(AsArg::class);
 
             if (0 !== \count($argAttribute)) {
                 $argAttributeInstance = $argAttribute[0]->newInstance();
@@ -93,7 +97,25 @@ class TaskAsCommand extends Command
                 continue;
             }
 
-            $argAttribute = $parameter->getAttributes(Arg::class);
+            if (Application::class === $type->getName()) {
+                $args[] = $this->getApplication();
+
+                continue;
+            }
+
+            if (InputInterface::class === $type->getName()) {
+                $args[] = $input;
+
+                continue;
+            }
+
+            if (OutputInterface::class === $type->getName()) {
+                $args[] = $output;
+
+                continue;
+            }
+
+            $argAttribute = $parameter->getAttributes(AsArg::class);
 
             if (0 !== \count($argAttribute)) {
                 $argAttributeInstance = $argAttribute[0]->newInstance();
