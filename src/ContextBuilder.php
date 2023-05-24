@@ -14,11 +14,9 @@ class ContextBuilder
 
     public static function createDefault(): self
     {
-        $function = new \ReflectionFunction(fn () => new Context());
-
         return new self(
             new AsContext('default', true),
-            $function,
+            new \ReflectionFunction(fn () => new Context()),
         );
     }
 

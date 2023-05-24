@@ -59,13 +59,11 @@ class ApplicationFactory
                     continue;
                 }
 
-                $contextRegistry->addContext($function->getName(), $function);
+                $contextRegistry->addContextBuilder($function->getName(), $function);
             }
         }
 
-        $defaultContext ??= ContextBuilder::createDefault();
-
-        $contextRegistry->addContext('default', $defaultContext);
+        $contextRegistry->addContextBuilder('default', $defaultContext ?? ContextBuilder::createDefault());
 
         $application = new Application('castor');
         $contextNames = implode('|', $contextRegistry->getContextNames());

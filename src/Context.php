@@ -7,8 +7,8 @@ class Context implements \ArrayAccess
     public readonly string $currentDirectory;
 
     /**
-     * @param array<(int|string), mixed> $data The input parameter accepts an array or an Object
-     * @param array<string, string> $environment A list of environment variables to add to the command
+     * @param array<(int|string), mixed> $data        The input parameter accepts an array or an Object
+     * @param array<string, string>      $environment A list of environment variables to add to the command
      */
     public function __construct(
         public readonly array $data = [],
