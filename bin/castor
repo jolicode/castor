@@ -11,4 +11,4 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
     throw new \RuntimeException('Unable to load autoloader.');
 }
 
-$application = ApplicationFactory::create()->run();
+$application = ApplicationFactory::run();

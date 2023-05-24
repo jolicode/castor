@@ -2,10 +2,13 @@
 
 namespace Castor;
 
+use Psr\Log\LoggerInterface;
+
 /** @internal */
 class ContextRegistry
 {
     private static Context $currentContext;
+    private static LoggerInterface $logger;
 
     /** @var array<string, ContextBuilder> */
     private array $contexts = [];
@@ -36,5 +39,15 @@ class ContextRegistry
     public static function getCurrentContext(): Context
     {
         return self::$currentContext ??= new Context();
+    }
+
+    public static function setLogger(LoggerInterface $logger): void
+    {
+        self::$logger = $logger;
+    }
+
+    public static function getLogger(): LoggerInterface
+    {
+        return self::$logger ?? throw new \RuntimeException('Logger not set yet.');
     }
 }

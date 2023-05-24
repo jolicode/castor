@@ -2,11 +2,31 @@
 
 namespace Castor;
 
+use Monolog\Logger;
+use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 class ApplicationFactory
 {
+    public static function run(): void
+    {
+        $application = self::create();
+
+        $input = new ArgvInput();
+        $output = new ConsoleOutput();
+
+        $logger = new Logger('castor', [
+            new ConsoleHandler($output),
+        ]);
+
+        ContextRegistry::setLogger($logger);
+
+        $application->run($input, $output);
+    }
+
     public static function create(): Application
     {
         $finder = new FunctionFinder();
