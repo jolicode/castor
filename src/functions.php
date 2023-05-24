@@ -97,6 +97,8 @@ function exec(
         };
     }
 
+    log('Running command: ' . $process->getCommandLine(), 'debug');
+
     $process->start(function ($type, $bytes) use ($callback, $process) {
         if ($callback) {
             $callback($type, $bytes, $process);
