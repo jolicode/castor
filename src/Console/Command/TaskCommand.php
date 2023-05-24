@@ -3,6 +3,7 @@
 namespace Castor\Console\Command;
 
 use Castor\Attribute\AsArgument;
+use Castor\Attribute\AsCommandArgument;
 use Castor\Attribute\AsOption;
 use Castor\Attribute\AsTask;
 use Castor\Context;
@@ -55,64 +56,52 @@ class TaskCommand extends Command
                 continue;
             }
 
-            $argAttribute = $parameter->getAttributes(AsArgument::class)[0] ?? null;
-            if ($argAttribute) {
-                /** @var AsArgument */
-                $argAttributeInstance = $argAttribute->newInstance();
+            $commandArgumentAttribute = $parameter->getAttributes(AsCommandArgument::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null;
 
-                $name = $this->setParameterName($parameter, $argAttributeInstance->name);
-
+            if (!$commandArgumentAttribute) {
                 if ($parameter->isOptional()) {
-                    $mode = InputArgument::OPTIONAL;
+                    $commandArgumentAttribute = new AsOption();
                 } else {
-                    $mode = InputArgument::REQUIRED;
+                    $commandArgumentAttribute = new AsArgument();
                 }
-                if (($type = $parameter->getType()) instanceof \ReflectionNamedType && 'array' === $type->getName()) {
-                    $mode |= InputArgument::IS_ARRAY;
-                }
+            } else {
+                $commandArgumentAttribute = $commandArgumentAttribute->newInstance();
+            }
 
-                try {
+            $name = $this->setParameterName($parameter, $commandArgumentAttribute->name);
+
+            try {
+                if ($commandArgumentAttribute instanceof AsArgument) {
+                    if ($parameter->isOptional()) {
+                        $mode = InputArgument::OPTIONAL;
+                    } else {
+                        $mode = InputArgument::REQUIRED;
+                    }
+                    if (($type = $parameter->getType()) instanceof \ReflectionNamedType && 'array' === $type->getName()) {
+                        $mode |= InputArgument::IS_ARRAY;
+                    }
+
                     $this->addArgument(
                         $name,
                         $mode,
-                        $argAttributeInstance->description,
+                        $commandArgumentAttribute->description,
                         $parameter->isOptional() ? $parameter->getDefaultValue() : null,
-                        $argAttributeInstance->suggestedValues,
+                        $commandArgumentAttribute->suggestedValues,
                     );
-                } catch (LogicException $e) {
-                    throw new \LogicException(sprintf('The argument "%s" for command "%s" cannot be configured: "%s".', $parameter->getName(), $this->getName(), $e->getMessage()));
                 }
 
-                continue;
-            }
-            $argAttribute = $parameter->getAttributes(AsOption::class)[0] ?? null;
-            if ($argAttribute) {
-                /** @var AsOption */
-                $argAttributeInstance = $argAttribute->newInstance();
-
-                $name = $this->setParameterName($parameter, $argAttributeInstance->name);
-
-                try {
+                if ($commandArgumentAttribute instanceof AsOption) {
                     $this->addOption(
                         $name,
-                        $argAttributeInstance->shortcut,
-                        $mode = $argAttributeInstance->mode ?? InputOption::VALUE_OPTIONAL,
-                        $argAttributeInstance->description,
+                        $commandArgumentAttribute->shortcut,
+                        $mode = $commandArgumentAttribute->mode ?? InputOption::VALUE_OPTIONAL,
+                        $commandArgumentAttribute->description,
                         $parameter->isOptional() ? $parameter->getDefaultValue() : null,
-                        $argAttributeInstance->suggestedValues,
+                        $commandArgumentAttribute->suggestedValues,
                     );
-                } catch (LogicException $e) {
-                    throw new \LogicException(sprintf('The argument "%s" for command "%s" cannot be configured: "%s".', $parameter->getName(), $this->getName(), $e->getMessage()));
                 }
-
-                continue;
-            }
-
-            $name = $this->setParameterName($parameter, null);
-            if ($parameter->isOptional()) {
-                $this->addOption($name, null, InputOption::VALUE_OPTIONAL, '', $parameter->getDefaultValue());
-            } else {
-                $this->addArgument($parameter->getName(), InputArgument::REQUIRED, '');
+            } catch (LogicException $e) {
+                throw new \LogicException(sprintf('The argument "%s" for command "%s" cannot be configured: "%s".', $parameter->getName(), $this->getName(), $e->getMessage()));
             }
         }
     }

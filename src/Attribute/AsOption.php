@@ -3,7 +3,7 @@
 namespace Castor\Attribute;
 
 #[\Attribute(\Attribute::TARGET_PARAMETER)]
-class AsOption
+class AsOption extends AsCommandArgument
 {
     /**
      * @param string|array<string>|null $shortcut
