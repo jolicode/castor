@@ -2,9 +2,9 @@
 
 namespace foo;
 
-use Castor\Attribute\Task;
+use Castor\Attribute\AsTask;
 
-#[Task(description: 'A simple command that prints foo')]
+#[AsTask(description: 'A simple command that prints foo')]
 function foo()
 {
     echo "foo\n";

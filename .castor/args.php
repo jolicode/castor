@@ -3,11 +3,11 @@
 namespace args;
 
 use Castor\Attribute\Arg;
-use Castor\Attribute\Task;
+use Castor\Attribute\AsTask;
 
 use function Castor\exec;
 
-#[Task(description: 'This a task with arguments')]
+#[AsTask(description: 'This a task with arguments')]
 function args(
     #[Arg(description: 'This is a required argument')] string $required,
     #[Arg(name: 'optional', description: 'This is an optional test argument')] int $test2 = 1,
@@ -16,7 +16,7 @@ function args(
     exec(['echo', $required, $test2, $itsAlsoOptional]);
 }
 
-#[Task(description: 'This a another task with arguments, work without attributes')]
+#[AsTask(description: 'This a another task with arguments, work without attributes')]
 function another_args(
     string $required,
     int $test2 = 1

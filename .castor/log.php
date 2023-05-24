@@ -2,23 +2,23 @@
 
 namespace log;
 
-use Castor\Attribute\Task;
+use Castor\Attribute\AsTask;
 
 use function Castor\log;
 
-#[Task(description: 'Logs an "info" message (needs "-vv" option).')]
+#[AsTask(description: 'Logs an "info" message (needs "-vv" option).')]
 function info(): void
 {
     log('Hello, this is an "info" log message.', 'info');
 }
 
-#[Task(description: 'Logs an "error" message.')]
+#[AsTask(description: 'Logs an "error" message.')]
 function error(): void
 {
     log('Error!, this is an "error" log message.', 'error');
 }
 
-#[Task(description: 'Logs an "error" message.')]
+#[AsTask(description: 'Logs an "error" message.')]
 function with_context(): void
 {
     log('Hello, I\'have a context!', 'error', context: [
@@ -26,7 +26,7 @@ function with_context(): void
     ]);
 }
 
-#[Task(description: 'Logs some messages with different levels.')]
+#[AsTask(description: 'Logs some messages with different levels.')]
 function all_level(): void
 {
     $levels = [

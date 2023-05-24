@@ -13,10 +13,10 @@ file `.castor.php` with the following content:
 
 namespace hello;
 
-use Castor\Attribute\Task;
+use Castor\Attribute\AsTask;
 use function Castor\exec;
 
-#[Task]
+#[AsTask]
 function castor(): void
 {
     exec('echo "Hello castor"');

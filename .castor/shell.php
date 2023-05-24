@@ -2,17 +2,17 @@
 
 namespace shell;
 
-use Castor\Attribute\Task;
+use Castor\Attribute\AsTask;
 
 use function Castor\exec;
 
-#[Task(description: 'A simple task that runs a bash')]
+#[AsTask(description: 'A simple task that runs a bash')]
 function bash()
 {
     exec('bash', tty: true);
 }
 
-#[Task(description: 'A simple task that runs a sh')]
+#[AsTask(description: 'A simple task that runs a sh')]
 function sh()
 {
     exec('sh', tty: true);
