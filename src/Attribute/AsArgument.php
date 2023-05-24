@@ -3,7 +3,7 @@
 namespace Castor\Attribute;
 
 #[\Attribute(\Attribute::TARGET_PARAMETER)]
-class AsArgument
+class AsArgument extends AsCommandArgument
 {
     /**
      * @param array<string> $suggestedValues
