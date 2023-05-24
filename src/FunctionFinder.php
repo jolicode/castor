@@ -85,7 +85,7 @@ class FunctionFinder
                     $contextAttribute = $attributes[0]->newInstance();
 
                     if ('' === $contextAttribute->name) {
-                        $contextAttribute->name = $reflectionFunction->getShortName();
+                        $contextAttribute->name = SluggerHelper::slug($reflectionFunction->getShortName());
                     }
 
                     if ($contextAttribute->default) {

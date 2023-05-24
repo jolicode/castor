@@ -56,27 +56,12 @@ class Context implements \ArrayAccess
         );
     }
 
-    public function withCd(string $path): self
+    public function withPath(string $path): self
     {
         return new self(
             $this->data,
             $this->environment,
             str_starts_with($path, '/') ? $path : PathHelper::realpath($this->currentDirectory . '/' . $path),
-            $this->tty,
-            $this->pty,
-            $this->timeout,
-            $this->quiet,
-            $this->allowFailure,
-            $this->notify,
-        );
-    }
-
-    public function withDirectory(string $directory): self
-    {
-        return new self(
-            $this->data,
-            $this->environment,
-            $directory,
             $this->tty,
             $this->pty,
             $this->timeout,

@@ -67,8 +67,8 @@ function exec(
         $context = $context->withEnvironment($environment);
     }
 
-    if (null !== $path) {
-        $context = $context->withCd($path);
+    if ($path) {
+        $context = $context->withPath($path);
     }
 
     if (null !== $tty) {
