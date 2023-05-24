@@ -33,6 +33,12 @@ class ApplicationFactory
     {
         try {
             $rootDir = PathHelper::getRoot();
+            $stubDestinationPath = $rootDir . '/.castor.stub.php';
+
+            if (!file_exists($stubDestinationPath)) {
+                $stubSourcePath = __DIR__ . '/../../.castor.stub.php';
+                copy($stubSourcePath, $stubDestinationPath);
+            }
         } catch (\RuntimeException $e) {
             return new CastorFileNotFoundCommand($e);
         }

@@ -18,6 +18,11 @@ runs:
       shell: bash
       working-directory: tools/phar
 
+    - name: Generate stub
+      run: vendor/bin/generate-stubs ../../src > ../../.castor.stub.php
+      shell: bash
+      working-directory: tools/phar
+
     - name: Compile PHAR
       run: vendor/bin/box compile
       shell: bash
