@@ -2,10 +2,12 @@
 
 namespace Castor;
 
-use Castor\Attribute\AsArg;
+use Castor\Attribute\AsArgument;
+use Castor\Attribute\AsOption;
 use Castor\Attribute\AsTask;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -14,59 +16,100 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class TaskAsCommand extends Command
 {
+    private const SUPPORTED_PARAMETER_TYPES = [
+        Context::class,
+        SymfonyStyle::class,
+        Application::class,
+        InputInterface::class,
+        OutputInterface::class,
+    ];
+
+    /**
+     * @var array<string, string>
+     */
+    private array $argumentsMap = [];
+
     public function __construct(
         AsTask $taskAttribute,
         private readonly \ReflectionFunction $function,
         private readonly ContextRegistry $contextRegistry,
     ) {
-        $commandName = $taskAttribute->name;
+        $this->setDescription($taskAttribute->description);
+        $this->setAliases($taskAttribute->aliases);
 
+        $commandName = $taskAttribute->name;
         if ($taskAttribute->namespace) {
             $commandName = $taskAttribute->namespace . ':' . $commandName;
         }
 
         parent::__construct($commandName);
-
-        $this->setDescription($taskAttribute->description);
-
-        $this->setAliases($taskAttribute->aliases);
     }
 
     protected function configure(): void
     {
-        static $classToByPass = [
-            Context::class,
-            SymfonyStyle::class,
-            Application::class,
-            InputInterface::class,
-            OutputInterface::class,
-        ];
         foreach ($this->function->getParameters() as $parameter) {
-            $name = SluggerHelper::slug($parameter->getName());
-            $shortcut = null;
-            $description = '';
-            $type = $parameter->getType();
-            if (!$type instanceof \ReflectionNamedType) {
+            if (($type = $parameter->getType()) instanceof \ReflectionNamedType && \in_array($type->getName(), self::SUPPORTED_PARAMETER_TYPES, true)) {
                 continue;
             }
 
-            if (\in_array($type->getName(), $classToByPass, true)) {
+            $argAttribute = $parameter->getAttributes(AsArgument::class)[0] ?? null;
+            if ($argAttribute) {
+                /** @var AsArgument */
+                $argAttributeInstance = $argAttribute->newInstance();
+
+                $name = $this->setParameterName($parameter, $argAttributeInstance->name);
+
+                if ($parameter->isOptional()) {
+                    $mode = InputArgument::OPTIONAL;
+                } else {
+                    $mode = InputArgument::REQUIRED;
+                }
+                if (($type = $parameter->getType()) instanceof \ReflectionNamedType && 'array' === $type->getName()) {
+                    $mode |= InputArgument::IS_ARRAY;
+                }
+
+                try {
+                    $this->addArgument(
+                        $name,
+                        $mode,
+                        $argAttributeInstance->description,
+                        $parameter->isOptional() ? $parameter->getDefaultValue() : null,
+                        $argAttributeInstance->suggestedValues,
+                    );
+                } catch (LogicException $e) {
+                    throw new \LogicException(sprintf('The argument "%s" for command "%s" cannot be configured: "%s".', $parameter->getName(), $this->getName(), $e->getMessage()));
+                }
+
+                continue;
+            }
+            $argAttribute = $parameter->getAttributes(AsOption::class)[0] ?? null;
+            if ($argAttribute) {
+                /** @var AsOption */
+                $argAttributeInstance = $argAttribute->newInstance();
+
+                $name = $this->setParameterName($parameter, $argAttributeInstance->name);
+
+                try {
+                    $this->addOption(
+                        $name,
+                        $argAttributeInstance->shortcut,
+                        $mode = $argAttributeInstance->mode ?? InputOption::VALUE_OPTIONAL,
+                        $argAttributeInstance->description,
+                        $parameter->isOptional() ? $parameter->getDefaultValue() : null,
+                        $argAttributeInstance->suggestedValues,
+                    );
+                } catch (LogicException $e) {
+                    throw new \LogicException(sprintf('The argument "%s" for command "%s" cannot be configured: "%s".', $parameter->getName(), $this->getName(), $e->getMessage()));
+                }
+
                 continue;
             }
 
-            $argAttribute = $parameter->getAttributes(AsArg::class);
-
-            if (0 !== \count($argAttribute)) {
-                $argAttributeInstance = $argAttribute[0]->newInstance();
-                $name = $argAttributeInstance->name ?: $name;
-                $description = $argAttributeInstance->description ?: $description;
-                $shortcut = $argAttributeInstance->shortcut ?: $shortcut;
-            }
-
+            $name = $this->setParameterName($parameter, null);
             if ($parameter->isOptional()) {
-                $this->addOption($name, $shortcut, InputOption::VALUE_OPTIONAL, $description, $parameter->getDefaultValue());
+                $this->addOption($name, null, InputOption::VALUE_OPTIONAL, '', $parameter->getDefaultValue());
             } else {
-                $this->addArgument($parameter->getName(), InputArgument::REQUIRED, $description);
+                $this->addArgument($parameter->getName(), InputArgument::REQUIRED, '');
             }
         }
     }
@@ -81,56 +124,26 @@ class TaskAsCommand extends Command
         ContextRegistry::setCurrentContext($context);
 
         foreach ($this->function->getParameters() as $parameter) {
-            $name = SluggerHelper::slug($parameter->getName());
-            $type = $parameter->getType();
-            if (!$type instanceof \ReflectionNamedType) {
-                continue;
-            }
-
-            if (Context::class === $type->getName()) {
-                $args[] = $context;
-
-                continue;
-            }
-
-            if (SymfonyStyle::class === $type->getName()) {
-                $args[] = new SymfonyStyle($input, $output);
+            if (($type = $parameter->getType()) instanceof \ReflectionNamedType && \in_array($type->getName(), self::SUPPORTED_PARAMETER_TYPES, true)) {
+                $args[] = match ($type->getName()) {
+                    Context::class => $context,
+                    SymfonyStyle::class => new SymfonyStyle($input, $output),
+                    Application::class => $this->getApplication(),
+                    InputInterface::class => $input,
+                    OutputInterface::class => $output,
+                };
 
                 continue;
             }
 
-            if (Application::class === $type->getName()) {
-                $args[] = $this->getApplication();
-
-                continue;
-            }
-
-            if (InputInterface::class === $type->getName()) {
-                $args[] = $input;
-
-                continue;
-            }
-
-            if (OutputInterface::class === $type->getName()) {
-                $args[] = $output;
-
-                continue;
-            }
-
-            $argAttribute = $parameter->getAttributes(AsArg::class);
-
-            if (0 !== \count($argAttribute)) {
-                $argAttributeInstance = $argAttribute[0]->newInstance();
-                $name = $argAttributeInstance->name ?: $name;
-            }
-
-            if ($parameter->isOptional()) {
-                if ($input->hasOption($name)) {
-                    $args[] = $input->getOption($name);
-                }
-            } else {
+            $name = $this->getParameterName($parameter);
+            if ($input->hasArgument($name)) {
                 $args[] = $input->getArgument($name);
+
+                continue;
             }
+
+            $args[] = $input->getOption($name);
         }
 
         $result = $this->function->invoke(...$args);
@@ -144,5 +157,19 @@ class TaskAsCommand extends Command
         }
 
         return 0;
+    }
+
+    private function setParameterName(\ReflectionParameter $parameter, ?string $name): string
+    {
+        $name = SluggerHelper::slug($name ?? $parameter->getName());
+
+        $this->argumentsMap[$parameter->getName()] = $name;
+
+        return $name;
+    }
+
+    private function getParameterName(\ReflectionParameter $parameter): string
+    {
+        return $this->argumentsMap[$parameter->getName()];
     }
 }

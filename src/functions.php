@@ -44,9 +44,9 @@ function parallel(callable ...$callbacks): array
 }
 
 /**
- * @param string|array<string> $command
+ * @param string|array<string>                           $command
  * @param (callable(string, string, Process) :void)|null $callback
- * @param array<string, string>|null $environment
+ * @param array<string, string>|null                     $environment
  */
 function exec(
     string|array $command,
