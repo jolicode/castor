@@ -50,24 +50,49 @@ function parallel(callable ...$callbacks): array
  */
 function exec(
     string|array $command,
-    bool $quiet = false,
-    callable $callback = null,
-    bool $allowFailure = false,
-    bool $notify = false,
-    Context $context = null,
+    array|null $environment = null,
+    string|null $path = null,
     bool|null $tty = null,
     bool|null $pty = null,
-    string $path = null,
-    array $environment = null,
+    float|null $timeout = null,
+    bool|null $quiet = null,
+    bool|null $allowFailure = null,
+    bool|null $notify = null,
+    callable $callback = null,
+    Context $context = null,
 ): Process {
     $context ??= ContextRegistry::getCurrentContext();
 
-    if ($path) {
+    if (null !== $environment) {
+        $context = $context->withEnvironment($environment);
+    }
+
+    if (null !== $path) {
         $context = $context->withCd($path);
     }
 
-    if ($environment) {
-        $context = $context->withEnvironment($environment);
+    if (null !== $tty) {
+        $context = $context->withTty($tty);
+    }
+
+    if (null !== $pty) {
+        $context = $context->withPty($pty);
+    }
+
+    if (null !== $timeout) {
+        $context = $context->withTimeout($timeout);
+    }
+
+    if (null !== $quiet) {
+        $context = $context->withQuiet($quiet);
+    }
+
+    if (null !== $allowFailure) {
+        $context = $context->withAllowFailure($allowFailure);
+    }
+
+    if (null !== $notify) {
+        $context = $context->withNotify($notify);
     }
 
     if (\is_array($command)) {
@@ -76,18 +101,15 @@ function exec(
         $process = Process::fromShellCommandline($command, $context->currentDirectory, $context->environment, null, $context->timeout);
     }
 
-    $tty ??= $context->tty;
-    $pty ??= $context->pty;
-
-    if ($tty) {
+    if ($context->tty) {
         $process->setTty(true);
         $process->setInput(\STDIN);
-    } elseif ($pty) {
+    } elseif ($context->pty) {
         $process->setPty(true);
         $process->setInput(\STDIN);
     }
 
-    if (!$quiet && !$callback) {
+    if (!$context->quiet && !$callback) {
         $callback = static function ($type, $bytes) {
             if (Process::OUT === $type) {
                 fwrite(\STDOUT, $bytes);
@@ -114,11 +136,11 @@ function exec(
 
     $exitCode = $process->wait();
 
-    if ($notify) {
+    if ($context->notify) {
         notify(sprintf('The command "%s" has been finished %s.', $process->getCommandLine(), 0 === $exitCode ? 'successfully' : 'with an error'));
     }
 
-    if (0 !== $exitCode && !$allowFailure) {
+    if (0 !== $exitCode && !$context->allowFailure) {
         throw new ProcessFailedException($process);
     }
 
