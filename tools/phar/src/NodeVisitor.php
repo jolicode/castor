@@ -40,12 +40,10 @@ class NodeVisitor extends NodeVisitorAbstract
 
     public function leaveNode(Node $node, bool $preserveStack = false)
     {
-        if ($node instanceof Node\Stmt\Class_ || $node instanceof Node\Stmt\Interface_ || $node instanceof Node\Stmt\Function_ || $node instanceof Node\Stmt\ClassMethod) {
-            $docComment = $node->getDocComment();
+        $docComment = $node->getDocComment();
 
-            if (null !== $docComment && str_contains($docComment->getText(), '@internal')) {
-                return NodeTraverser::REMOVE_NODE;
-            }
+        if (null !== $docComment && str_contains($docComment->getText(), '@internal')) {
+            return NodeTraverser::REMOVE_NODE;
         }
 
         if ($node instanceof Node\Stmt\Namespace_) {
