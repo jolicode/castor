@@ -27,6 +27,8 @@ class TaskAsCommand extends Command
         parent::__construct($commandName);
 
         $this->setDescription($taskAttribute->description);
+
+        $this->setAliases($taskAttribute->aliases);
     }
 
     protected function configure(): void
