@@ -49,13 +49,6 @@ class Context implements \ArrayAccess
 
     public function withCd(string $path): self
     {
-        // if path is absolute
-        if (str_starts_with($path, '/')) {
-            $newCurrentDirectory = $path;
-        } else {
-            $newCurrentDirectory = PathHelper::realpath($this->currentDirectory . '/' . $path);
-        }
-
         return new self(
             $this->data,
             $this->environment,
