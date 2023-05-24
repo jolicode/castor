@@ -7,20 +7,20 @@ use Psr\Log\LoggerInterface;
 /** @internal */
 class ContextRegistry
 {
-    private static Context $currentContext;
+    private static Context $initialContext;
     private static LoggerInterface $logger;
 
     /** @var array<string, ContextBuilder> */
-    private array $contexts = [];
+    private array $contextBuilders = [];
 
-    public function addContext(string $name, ContextBuilder $context): void
+    public function addContextBuilder(string $name, ContextBuilder $context): void
     {
-        $this->contexts[$name] = $context;
+        $this->contextBuilders[$name] = $context;
     }
 
-    public function getContext(string $name): ContextBuilder
+    public function getContextBuilder(string $name): ContextBuilder
     {
-        return $this->contexts[$name] ?? throw new \RuntimeException(sprintf('Context "%s" not found.', $name));
+        return $this->contextBuilders[$name] ?? throw new \RuntimeException(sprintf('Context "%s" not found.', $name));
     }
 
     /**
@@ -28,17 +28,17 @@ class ContextRegistry
      */
     public function getContextNames(): array
     {
-        return array_keys($this->contexts);
+        return array_keys($this->contextBuilders);
     }
 
-    public static function setCurrentContext(Context $context): void
+    public static function setInitialContext(Context $initialContext): void
     {
-        self::$currentContext = $context;
+        self::$initialContext = $initialContext;
     }
 
-    public static function getCurrentContext(): Context
+    public static function getInitialContext(): Context
     {
-        return self::$currentContext ??= new Context();
+        return self::$initialContext ??= new Context();
     }
 
     public static function setLogger(LoggerInterface $logger): void
