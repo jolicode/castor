@@ -201,3 +201,11 @@ function watch(string $path, callable $function, Context $context = null): void
         }
     }, context: $watchContext);
 }
+
+/**
+ * @param array<string, mixed> $context
+ */
+function log(string $message, string $level = 'info', array $context = []): void
+{
+    ContextRegistry::getLogger()->log($level, $message, $context);
+}
