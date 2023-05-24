@@ -1,28 +1,28 @@
 <?php
 
 use Castor\Attribute\Task;
+use Castor\Context;
 
-use function Castor\cd;
 use function Castor\exec;
 use function Castor\parallel;
 
 #[Task(description: 'Build watcher for Unix system', namespace: 'watcher')]
-function unix()
+function unix(Context $c)
 {
-    cd(__DIR__ . \DIRECTORY_SEPARATOR . '..');
-    exec('go build -o bin/watcher -ldflags="-s -w" main.go', environment: ['GOOS' => 'linux', 'CGO_ENABLED' => '0']);
-    exec('upx --brute bin/watcher');
+    $c = $c->withCd(__DIR__ . '/..');
+    exec('go build -o bin/watcher -ldflags="-s -w" main.go', environment: ['GOOS' => 'linux', 'CGO_ENABLED' => '0'], context: $c);
+    exec('upx --brute bin/watcher', context: $c);
 }
 
 #[Task(description: 'Build watcher for Windows system', namespace: 'watcher')]
-function windows()
+function windows(Context $c)
 {
-    cd(__DIR__ . \DIRECTORY_SEPARATOR . '..');
-    exec('go build -o bin/watcher.exe -ldflags="-s -w" main.go', environment: ['GOOS' => 'windows', 'CGO_ENABLED' => '0']);
+    $c = $c->withCd(__DIR__ . '/..');
+    exec('go build -o bin/watcher.exe -ldflags="-s -w" main.go', environment: ['GOOS' => 'windows', 'CGO_ENABLED' => '0'], context: $c);
 }
 
 #[Task(description: 'Build watcher for all systems', namespace: 'watcher')]
-function build()
+function build(Context $c)
 {
-    parallel(fn () => unix(), fn () => windows());
+    parallel(fn () => unix($c), fn () => windows($c));
 }
