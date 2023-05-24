@@ -3,7 +3,7 @@
 namespace Castor;
 
 use Castor\Attribute\AsContext;
-use Castor\Attribute\Task;
+use Castor\Attribute\AsTask;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -59,7 +59,7 @@ class FunctionFinder
 
             foreach ($newFunctions as $functionName) {
                 $reflectionFunction = new \ReflectionFunction($functionName);
-                $attributes = $reflectionFunction->getAttributes(Task::class);
+                $attributes = $reflectionFunction->getAttributes(AsTask::class);
 
                 if (\count($attributes) > 0) {
                     $taskAttribute = $attributes[0]->newInstance();

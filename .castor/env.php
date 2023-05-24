@@ -3,7 +3,7 @@
 namespace env;
 
 use Castor\Attribute\AsContext;
-use Castor\Attribute\Task;
+use Castor\Attribute\AsTask;
 use Castor\Context;
 
 use function Castor\exec;
@@ -16,7 +16,7 @@ function context_env(): Context
     ]);
 }
 
-#[Task(description: 'A simple task that uses environment variables')]
+#[AsTask(description: 'A simple task that uses environment variables')]
 function env(Context $context)
 {
     exec('echo foo: \"$FOO\", bar: \"$BAR\"', context: $context->withEnvironment([

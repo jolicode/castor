@@ -3,7 +3,7 @@
 namespace Castor;
 
 use Castor\Attribute\Arg;
-use Castor\Attribute\Task;
+use Castor\Attribute\AsTask;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,7 +14,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class TaskAsCommand extends Command
 {
     public function __construct(
-        Task $taskAttribute,
+        AsTask $taskAttribute,
         private readonly \ReflectionFunction $function,
         private readonly ContextRegistry $contextRegistry,
     ) {

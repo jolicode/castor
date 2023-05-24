@@ -2,11 +2,11 @@
 
 namespace run;
 
-use Castor\Attribute\Task;
+use Castor\Attribute\AsTask;
 
 use function Castor\exec;
 
-#[Task(description: 'A simple task that only output process result')]
+#[AsTask(description: 'A simple task that only output process result')]
 function run()
 {
     $process = exec('ls -alh', quiet: true);

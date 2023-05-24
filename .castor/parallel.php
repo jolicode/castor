@@ -2,7 +2,7 @@
 
 namespace parallel;
 
-use Castor\Attribute\Task;
+use Castor\Attribute\AsTask;
 
 use function Castor\exec;
 use function Castor\parallel;
@@ -41,7 +41,7 @@ function embed_sleep()
     return [$foo, $bar];
 }
 
-#[Task(description: 'A simple task that sleeps for 5 and 7 seconds in parallel')]
+#[AsTask(description: 'A simple task that sleeps for 5 and 7 seconds in parallel')]
 function sleep()
 {
     $start = microtime(true);

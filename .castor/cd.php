@@ -2,12 +2,12 @@
 
 namespace cd;
 
-use Castor\Attribute\Task;
+use Castor\Attribute\AsTask;
 use Castor\Context;
 
 use function Castor\exec;
 
-#[Task(description: 'A simple command that changes directory')]
+#[AsTask(description: 'A simple command that changes directory')]
 function directory(Context $context)
 {
     exec(['pwd'], context: $context);

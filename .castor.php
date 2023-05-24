@@ -1,12 +1,12 @@
 <?php
 
-use Castor\Attribute\Task;
+use Castor\Attribute\AsTask;
 
 use function Castor\import;
 
 import(__DIR__ . '/watcher/.castor');
 
-#[Task(description: 'hello')]
+#[AsTask(description: 'hello')]
 function hello(): void
 {
     echo 'Hello world!';

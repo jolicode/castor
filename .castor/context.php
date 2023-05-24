@@ -3,7 +3,7 @@
 namespace context;
 
 use Castor\Attribute\AsContext;
-use Castor\Attribute\Task;
+use Castor\Attribute\AsTask;
 use Castor\Context;
 
 use function Castor\exec;
@@ -28,7 +28,7 @@ function execContext(): Context
     return new Context(['production' => (bool) $production]);
 }
 
-#[Task(description: 'A simple task that uses context')]
+#[AsTask(description: 'A simple task that uses context')]
 function context(Context $context)
 {
     if ($context['production']) {
