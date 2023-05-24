@@ -1,13 +1,21 @@
 <?php
 
-namespace Castor;
+namespace Castor\Console;
 
+use Castor\Console\Command\CastorFileNotFoundCommand;
+use Castor\Console\Command\TaskCommand;
+use Castor\ContextBuilder;
+use Castor\ContextRegistry;
+use Castor\FunctionFinder;
+use Castor\PathHelper;
+use Castor\TaskDescriptor;
 use Monolog\Logger;
 use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\SingleCommandApplication;
 
 class ApplicationFactory
 {
@@ -27,9 +35,16 @@ class ApplicationFactory
         $application->run($input, $output);
     }
 
-    public static function create(): Application
+    public static function create(): Application|SingleCommandApplication
     {
         $finder = new FunctionFinder();
+
+        try {
+            $path = PathHelper::getRoot();
+        } catch (\RuntimeException $e) {
+            return new CastorFileNotFoundCommand($e);
+        }
+
         $path = PathHelper::getRoot();
 
         // Find all potential commands / context
@@ -79,7 +94,7 @@ class ApplicationFactory
         ));
 
         foreach ($taskDescriptors as $taskDescriptor) {
-            $application->add(new TaskAsCommand($taskDescriptor->taskAttribute, $taskDescriptor->function, $contextRegistry));
+            $application->add(new TaskCommand($taskDescriptor->taskAttribute, $taskDescriptor->function, $contextRegistry));
         }
 
         return $application;

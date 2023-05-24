@@ -1,12 +1,12 @@
 #!/usr/bin/env php
 <?php
 
-use Castor\ApplicationFactory;
+use Castor\Console\ApplicationFactory;
 
-if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
-    $loader = require(__DIR__ . '/../vendor/autoload.php');
-} elseif (file_exists(__DIR__ . '/../../../../vendor/autoload.php')) {
-    $loader = require(__DIR__ . '/../../../../vendor/autoload.php');
+if (file_exists($file = __DIR__ . '/../vendor/autoload.php')) {
+    require $file;
+} elseif ($file = __DIR__ . '/../../../../vendor/autoload.php') {
+    require $file;
 } else {
     throw new \RuntimeException('Unable to load autoloader.');
 }
