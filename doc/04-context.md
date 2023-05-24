@@ -71,7 +71,7 @@ function __default_context(): Context
     return new Context(['foo' => 'bar'], currentDirectory: '/tmp');
 }
 
-#[AskTask]
+#[AsTask]
 function foo(Context $context): void
 {
     exec(['echo', $context['foo']]); // will print bar even if you do not use the --context option

@@ -4,7 +4,7 @@ Castor provides a `watch` function that will watch a file or a directory and a c
 when the file or directory changes.
 
 ```php
-#[AskTask]
+#[AsTask]
 function watch(): void
 {
     watch('src/', function ($file, $action) {
@@ -20,7 +20,7 @@ The action can be either `create`, `write`, `rename` or `remove` and the file wi
 By default the `watch` function will not watch subdirectories. You can change that by setting a specific path
 
 ```php
-#[AskTask]
+#[AsTask]
 function watch(): void
 {
     // watch recursively inside the src folder
@@ -36,7 +36,7 @@ The `watch` function will look at the return value of the callback function. If 
 the watch will stop.
 
 ```php
-#[AskTask]
+#[AsTask]
 function watch(): void
 {
     // watch recursively inside the src folder

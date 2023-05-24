@@ -4,7 +4,7 @@ The `parallel` function provides a simple way to execute functions in parallel, 
 function to finish before starting another one.
 
 ```php
-#[AskTask]
+#[AsTask]
 function foo(): void
 {
     [$foo, bar] = parallel(
@@ -29,7 +29,7 @@ only functions that use this concept will be executed in parallel, which is the 
 You can also watch in parallel multiple directories:
 
 ```
-#[AskTask]
+#[AsTask]
 function parallel_change()
 {
     parallel(

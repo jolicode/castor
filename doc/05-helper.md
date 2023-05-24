@@ -8,7 +8,7 @@ You can use it by type hinting it in your function.
 ```php
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-#[AskTask]
+#[AsTask]
 function foo(SymfonyStyle $io): void
 {
     $value = $io->ask('Tell me something');

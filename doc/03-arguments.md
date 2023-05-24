@@ -41,12 +41,12 @@ foo bar
 
 ### Overriding the argument name and description
 
-You can override the name and description of an argument by using the `Castor\Attribute\Argument` attribute.
+You can override the name and description of an argument by using the `Castor\Attribute\AsArgument` attribute:
 
 ```php
-#[AskTask]
+#[AsTask]
 function command(
-    #[Arg(name: 'foo', description: 'This is the foo argument')]
+    #[AsArgument(name: 'foo', description: 'This is the foo argument')]
     string $arg = 'bar',
 ) {
     exec(['echo', $arg]);
