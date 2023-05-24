@@ -9,9 +9,10 @@ class AsArgument extends AsCommandArgument
      * @param array<string> $suggestedValues
      */
     public function __construct(
-        public readonly string|null $name = null,
+        string|null $name = null,
         public readonly string $description = '',
         public readonly array $suggestedValues = [],
     ) {
+        parent::__construct($name);
     }
 }

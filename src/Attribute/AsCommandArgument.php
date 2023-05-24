@@ -2,7 +2,10 @@
 
 namespace Castor\Attribute;
 
-#[\Attribute(\Attribute::TARGET_PARAMETER)]
 abstract class AsCommandArgument
 {
+    public function __construct(
+        public readonly string|null $name = null,
+    ) {
+    }
 }

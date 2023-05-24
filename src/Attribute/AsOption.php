@@ -10,11 +10,12 @@ class AsOption extends AsCommandArgument
      * @param array<string>             $suggestedValues
      */
     public function __construct(
-        public string|null $name = null,
-        public string|array|null $shortcut = null,
-        public int|null $mode = null,
-        public string $description = '',
-        public array $suggestedValues = [],
+        string|null $name = null,
+        public readonly string|array|null $shortcut = null,
+        public readonly int|null $mode = null,
+        public readonly string $description = '',
+        public readonly array $suggestedValues = [],
     ) {
+        parent::__construct($name);
     }
 }
