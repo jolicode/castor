@@ -1,8 +1,14 @@
 <?php
 
-namespace Castor;
+namespace Castor\Console;
 
 use Castor\Console\Command\CastorFileNotFoundCommand;
+use Castor\Console\Command\TaskCommand;
+use Castor\ContextBuilder;
+use Castor\ContextRegistry;
+use Castor\FunctionFinder;
+use Castor\PathHelper;
+use Castor\TaskDescriptor;
 use Monolog\Logger;
 use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
 use Symfony\Component\Console\Application;
@@ -88,7 +94,7 @@ class ApplicationFactory
         ));
 
         foreach ($taskDescriptors as $taskDescriptor) {
-            $application->add(new TaskAsCommand($taskDescriptor->taskAttribute, $taskDescriptor->function, $contextRegistry));
+            $application->add(new TaskCommand($taskDescriptor->taskAttribute, $taskDescriptor->function, $contextRegistry));
         }
 
         return $application;

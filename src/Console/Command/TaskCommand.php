@@ -1,9 +1,12 @@
 <?php
 
-namespace Castor;
+namespace Castor\Console\Command;
 
 use Castor\Attribute\AsArg;
 use Castor\Attribute\AsTask;
+use Castor\Context;
+use Castor\ContextRegistry;
+use Castor\SluggerHelper;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -12,7 +15,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class TaskAsCommand extends Command
+class TaskCommand extends Command
 {
     public function __construct(
         AsTask $taskAttribute,
