@@ -36,7 +36,6 @@ class TaskCommand extends Command
     public function __construct(
         AsTask $taskAttribute,
         private readonly \ReflectionFunction $function,
-        private readonly ContextRegistry $contextRegistry,
     ) {
         $this->setDescription($taskAttribute->description);
         $this->setAliases($taskAttribute->aliases);
@@ -58,14 +57,12 @@ class TaskCommand extends Command
 
             $commandArgumentAttribute = $parameter->getAttributes(AsCommandArgument::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null;
 
-            if (!$commandArgumentAttribute) {
-                if ($parameter->isOptional()) {
-                    $commandArgumentAttribute = new AsOption();
-                } else {
-                    $commandArgumentAttribute = new AsArgument();
-                }
-            } else {
+            if ($commandArgumentAttribute) {
                 $commandArgumentAttribute = $commandArgumentAttribute->newInstance();
+            } elseif ($parameter->isOptional()) {
+                $commandArgumentAttribute = new AsOption();
+            } else {
+                $commandArgumentAttribute = new AsArgument();
             }
 
             $name = $this->setParameterName($parameter, $commandArgumentAttribute->name);
@@ -88,9 +85,7 @@ class TaskCommand extends Command
                         $parameter->isOptional() ? $parameter->getDefaultValue() : null,
                         $commandArgumentAttribute->suggestedValues,
                     );
-                }
-
-                if ($commandArgumentAttribute instanceof AsOption) {
+                } elseif ($commandArgumentAttribute instanceof AsOption) {
                     $this->addOption(
                         $name,
                         $commandArgumentAttribute->shortcut,
@@ -109,16 +104,11 @@ class TaskCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $args = [];
-        $contextName = $input->getOption('context');
-        $contextBuilder = $this->contextRegistry->getContextBuilder($contextName);
-
-        $context = $contextBuilder->build();
-        ContextRegistry::setInitialContext($context);
 
         foreach ($this->function->getParameters() as $parameter) {
             if (($type = $parameter->getType()) instanceof \ReflectionNamedType && \in_array($type->getName(), self::SUPPORTED_PARAMETER_TYPES, true)) {
                 $args[] = match ($type->getName()) {
-                    Context::class => $context,
+                    Context::class => ContextRegistry::getInitialContext(),
                     SymfonyStyle::class => new SymfonyStyle($input, $output),
                     Application::class => $this->getApplication(),
                     InputInterface::class => $input,

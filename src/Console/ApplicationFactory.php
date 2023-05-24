@@ -29,7 +29,7 @@ class ApplicationFactory
         $application->run($input, $output);
     }
 
-    public static function create(): Application|SingleCommandApplication
+    private static function create(): Application|SingleCommandApplication
     {
         try {
             $rootDir = PathHelper::getRoot();
