@@ -4,6 +4,7 @@ namespace Castor;
 
 use Castor\Attribute\AsContext;
 
+/** @internal */
 class ContextBuilder
 {
     public function __construct(

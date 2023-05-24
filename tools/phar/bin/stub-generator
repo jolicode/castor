@@ -1,0 +1,19 @@
+#!/usr/bin/env php
+<?php
+
+use Castor\Tools\Command\StubGeneratorCommand;
+use Symfony\Component\Console\Application;
+
+if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+    $loader = require(__DIR__ . '/../vendor/autoload.php');
+} elseif (file_exists(__DIR__ . '/../../../../vendor/autoload.php')) {
+    $loader = require(__DIR__ . '/../../../../vendor/autoload.php');
+} else {
+    throw new \RuntimeException('Unable to load autoloader.');
+}
+
+(new Application('stub-generator'))
+    ->add(new StubGeneratorCommand())
+    ->getApplication()
+    ->setDefaultCommand('stub-generator', true)
+    ->run();

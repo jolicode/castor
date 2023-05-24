@@ -11,6 +11,7 @@ use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\SingleCommandApplication;
 
+/** @internal */
 class ApplicationFactory
 {
     public static function run(): void

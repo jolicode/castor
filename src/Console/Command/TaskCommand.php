@@ -18,6 +18,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+/** @internal */
 class TaskCommand extends Command
 {
     private const SUPPORTED_PARAMETER_TYPES = [

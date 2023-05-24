@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3c25129a2b8673d6d83d0315053cdb2b",
+    "content-hash": "4c27167df2d5905b00c37f9a16ef9f80",
     "packages": [
         {
             "name": "amphp/amp",
@@ -1444,63 +1444,6 @@
                 "source": "https://github.com/paragonie/constant_time_encoding"
             },
             "time": "2022-06-14T06:56:20+00:00"
-        },
-        {
-            "name": "php-stubs/generator",
-            "version": "v0.8.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/php-stubs/generator.git",
-                "reference": "9b9067b2fc92394e4b6aee242f34440fe9d02d9c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/php-stubs/generator/zipball/9b9067b2fc92394e4b6aee242f34440fe9d02d9c",
-                "reference": "9b9067b2fc92394e4b6aee242f34440fe9d02d9c",
-                "shasum": ""
-            },
-            "require": {
-                "nikic/php-parser": "^4.10",
-                "php": "^7.3 || ^8.0",
-                "symfony/console": "^5.1 || ^6.0",
-                "symfony/filesystem": "^5.0 || ^6.0",
-                "symfony/finder": "^5.0 || ^6.0"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^2.16 || ^3.12",
-                "phpunit/phpunit": "^9.4",
-                "vimeo/psalm": "^4.1"
-            },
-            "bin": [
-                "bin/generate-stubs"
-            ],
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "StubsGenerator\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Giaco Corsiglia",
-                    "email": "GiacoCorsiglia@gmail.com"
-                }
-            ],
-            "description": "Generate stubs from any PHP code for IDE completion and static analysis.",
-            "homepage": "https://github.com/php-stubs/generator",
-            "keywords": [
-                "ide",
-                "static analysis"
-            ],
-            "support": {
-                "issues": "https://github.com/php-stubs/generator/issues",
-                "source": "https://github.com/php-stubs/generator/tree/v0.8.3"
-            },
-            "time": "2023-02-08T20:40:27+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",

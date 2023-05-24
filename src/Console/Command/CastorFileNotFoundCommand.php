@@ -7,6 +7,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\SingleCommandApplication;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+/** @internal */
 class CastorFileNotFoundCommand extends SingleCommandApplication
 {
     public function __construct(
