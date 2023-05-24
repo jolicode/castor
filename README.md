@@ -5,7 +5,8 @@ execute processes.
 
 ## Usage
 
-As an example, you could create a command that print "Hello castor" by creating a
+As an example, you could create a command that print "Hello castor" by creating
+a
 file `.castor.php` with the following content:
 
 ```php
@@ -36,13 +37,15 @@ case `castor`.
 
 ## Autocomplete
 
-If you use bash, you can enable autocomplete for castor by executing the following command:
+If you use bash, you can enable autocomplete for castor by executing the
+following command:
 
 ```
 castor completion | sudo tee /etc/bash_completion.d/castor
 ```
 
 Others shells are also supported. To get the list of supported shells, run:
+
 ```
 castor completion --help
 ```
