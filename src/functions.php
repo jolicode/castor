@@ -4,6 +4,7 @@ namespace Castor;
 
 use Joli\JoliNotif\Notification;
 use Joli\JoliNotif\NotifierFactory;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
@@ -208,4 +209,31 @@ function watch(string $path, callable $function, Context $context = null): void
 function log(string $message, string $level = 'info', array $context = []): void
 {
     ContextRegistry::getLogger()->log($level, $message, $context);
+}
+
+function import(string $path): void
+{
+    if (!FunctionFinder::isInFindFunctions()) {
+        throw new \LogicException('The import function cannot be dynamically invoked, use it a the root of the PHP file.');
+    }
+
+    if (!file_exists($path)) {
+        throw new \InvalidArgumentException(sprintf('The file "%s" does not exist.', $path));
+    }
+
+    if (is_file($path)) {
+        castor_require($path);
+    }
+
+    if (is_dir($path)) {
+        $files = Finder::create()
+            ->files()
+            ->name('*.php')
+            ->in($path)
+        ;
+
+        foreach ($files as $file) {
+            castor_require($file->getRealPath());
+        }
+    }
 }
