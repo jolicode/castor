@@ -21,13 +21,13 @@ jobs:
       - name: Upload the Linux PHAR
         uses: actions/upload-artifact@v3
         with:
-          name: 'castor'
+          name: 'castor.linux-amd64.phar'
           path: tools/phar/build/castor.linux-amd64.phar
           if-no-files-found: error
 
       - name: Upload the Windows PHAR
         uses: actions/upload-artifact@v3
         with:
-          name: 'castor'
+          name: 'castor-windows-amd64.phar'
           path: tools/phar/build/castor.windows-amd64.phar
           if-no-files-found: error
