@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "jolicode/jolinotif",
-            "version": "v2.5.0",
+            "version": "v2.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jolicode/JoliNotif.git",
-                "reference": "a10a7cb3bf6dbf8833d1d1f1f0554506cb1d9eaa"
+                "reference": "b8b1e85344137c37b647f663b6c0a8b2426cbb0a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jolicode/JoliNotif/zipball/a10a7cb3bf6dbf8833d1d1f1f0554506cb1d9eaa",
-                "reference": "a10a7cb3bf6dbf8833d1d1f1f0554506cb1d9eaa",
+                "url": "https://api.github.com/repos/jolicode/JoliNotif/zipball/b8b1e85344137c37b647f663b6c0a8b2426cbb0a",
+                "reference": "b8b1e85344137c37b647f663b6c0a8b2426cbb0a",
                 "shasum": ""
             },
             "require": {
@@ -58,7 +58,7 @@
             ],
             "support": {
                 "issues": "https://github.com/jolicode/JoliNotif/issues",
-                "source": "https://github.com/jolicode/JoliNotif/tree/v2.5.0"
+                "source": "https://github.com/jolicode/JoliNotif/tree/v2.5.2"
             },
             "funding": [
                 {
@@ -66,7 +66,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-12-24T13:38:12+00:00"
+            "time": "2023-05-24T18:53:01+00:00"
         },
         {
             "name": "monolog/monolog",

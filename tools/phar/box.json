@@ -4,6 +4,12 @@
     "watcher/bin/watcher",
     "watcher/bin/watcher.exe"
   ],
+  "finder-bin": [
+    {
+      "name": "/.*\\.exe|.*\\.dll/",
+      "in": "vendor/jolicode/jolinotif/bin"
+    }
+  ],
   "blacklist": [
     ".castor",
     "LICENSE",
