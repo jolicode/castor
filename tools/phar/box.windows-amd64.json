@@ -1,7 +1,6 @@
 {
   "base-path": "../../",
   "files-bin": [
-    "watcher/bin/watcher",
     "watcher/bin/watcher.exe",
     ".castor.stub.php"
   ],
@@ -28,5 +27,5 @@
   "check-requirements": false,
   "git-version": "package_version",
   "main": "bin/castor",
-  "output": "tools/phar/build/castor.phar"
+  "output": "tools/phar/build/castor.windows-amd64.phar"
 }

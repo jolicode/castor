@@ -24,12 +24,22 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
-      - name: Upload release binary
+      - name: Upload linux release binary
         uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ./tools/phar/build/castor.phar
-          asset_name: castor.phar
+          asset_path: ./tools/phar/build/castor.linux-amd64.phar
+          asset_name: castor.linux-amd64.phar
           asset_content_type: application/octet-stream
+
+      - name: Upload windows release binary
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+            GITHUB_TOKEN: ${{ github.token }}
+        with:
+            upload_url: ${{ steps.get_release.outputs.upload_url }}
+            asset_path: ./tools/phar/build/castor.windows-amd64.phar
+            asset_name: castor.windows-amd64.phar
+            asset_content_type: application/octet-stream
