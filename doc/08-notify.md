@@ -2,7 +2,7 @@
 
 Castor uses the [JoliNotif](https://github.com/jolicode/jolinotif) library to
 display notifications.
-You can use the `notify` function to display a desktop notification:
+You can use the `notify()` function to display a desktop notification:
 
 ```php
 #[AsTask]
@@ -14,7 +14,7 @@ function notify()
 
 ### Notify on exec
 
-You can use the `notify` argument of the `exec` function to display a
+You can use the `notify()` argument of the `exec()` function to display a
 notification when a command has been executed:
 
 ```php

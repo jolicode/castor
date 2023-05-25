@@ -1,6 +1,6 @@
 ## Exec function
 
-Castor provides a `Castor\exec` function to execute commands. It allows to run a
+Castor provides a `Castor\exec()` function to execute commands. It allows to run a
 sub process and execute whatever you want:
 
 ```php
@@ -22,9 +22,10 @@ string, arguments will not be escaped - use it carefully.
 
 ### Process object
 
-Under the hood, Castor uses the `Symfony\Component\Process\Process` object to
-execute the command. The `exec` function will return this object. So you can use
-the API of this class to interact with the process:
+Under the hood, Castor uses the
+[`Symfony\Component\Process\Process`](https://github.com/symfony/symfony/blob/6.3/src/Symfony/Component/Process/Process.php)
+object to execute the command. The `exec()` function will return this object. So
+you can use the API of this class to interact with the process:
 
 ```php
 #[AsTask]
@@ -103,11 +104,11 @@ function foo(): void
 }
 ```
 
-### Pty & Tty
+### PTY & TTY
 
-By default, Castor will use a pseudo terminal (pty) to execute the command,
+By default, Castor will use a pseudo terminal (PTY) to execute the command,
 which allows to have nice output in most cases.
-For some commands you may want to disable the pty and use a tty instead. You can
+For some commands you may want to disable the PTY and use a TTY instead. You can
 do that by setting the `tty` option to `true`:
 
 ```php
@@ -118,8 +119,9 @@ function foo(): void
 }
 ```
 
-> :warning: When using a tty, the output of the command is empty in the process
-> object (when using `getOutput()` or `getErrorOutput()`).
+> **Warning**
+> When using a TTY, the output of the command is empty in the process object
+> (when using `getOutput()` or `getErrorOutput()`).
 
 You can also disable the pty by setting the `pty` option to `false`. If `pty`
 and `tty` are both set to `false`, the standard input will not be forwarded to

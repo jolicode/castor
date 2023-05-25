@@ -84,3 +84,4 @@ Discover more by reading the docs
  * [Watching files](doc/06-watch.md)
  * [Parallel processing](doc/07-parallel.md)
  * [Notification](doc/08-notify.md)
+ * [Log](doc/09-log.md)

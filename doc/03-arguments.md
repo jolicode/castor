@@ -57,6 +57,52 @@ function command(
 ```
 
 ```bash
+$ php castor.phar command foo
+foo
+```
+
+### Overriding the option name and description
+
+If you prefer, you can force an argument to be an option by using the
+`Castor\Attribute\AsOption` attribute:
+
+```php
+#[AsTask]
+function command(
+    #[AsOption(name: 'foo', description: 'This is the foo option')]
+    string $arg = 'bar',
+) {
+    exec(['echo', $arg]);
+}
+```
+
+```bash
 $ php castor.phar command --foo=foo
 foo
 ```
+
+You can also configure the `mode` of the option. The `mode` determines how the
+option must be configured:
+
+```php
+#[AsTask]
+function command(
+    #[AsOption(description: 'This is the foo option', mode: InputOption::VALUE_NONE)]
+    bool $force,
+) {
+    if ($force) {
+        echo "command has been forced\n";
+    }
+}
+```
+
+```bash
+$ php castor.phar command --force
+command has been forced
+```
+
+---
+
+Please refer to the [Symfony
+documentation](https://symfony.com/doc/current/console/input.html#using-command-options)
+for more information.
