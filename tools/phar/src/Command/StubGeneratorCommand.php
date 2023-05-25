@@ -17,8 +17,8 @@ class StubGeneratorCommand extends SingleCommandApplication
     protected function configure()
     {
         $this->setName('stub-generator');
-        $this->addArgument('path', InputArgument::REQUIRED, 'Path to the project generating the stub');
-        $this->addArgument('dest', InputArgument::REQUIRED, 'Destination file of the stub');
+        $this->addArgument('path', InputArgument::OPTIONAL, 'Path to the project generating the stub', __DIR__ . '/../../../../src');
+        $this->addArgument('dest', InputArgument::OPTIONAL, 'Destination file of the stub', __DIR__ . '/../../../../.castor.stub.php');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
