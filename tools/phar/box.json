@@ -1,18 +1,25 @@
 {
   "base-path": "../../",
-  "force-autodiscovery": true,
-  "finder": [
-    {
-      "in": ".",
-      "name": [
-        "watcher",
-        "watcher.exe"
-      ]
-    }
+  "files": [
+    "watcher/bin/watcher",
+    "watcher/bin/watcher.exe"
   ],
   "blacklist": [
-    ".castor"
+    ".castor",
+    "LICENSE",
+    "Test",
+    "tools",
+    "vendor/psr/event-dispatcher",
+    "vendor/symfony/error-handler",
+    "vendor/symfony/event-dispatcher-contracts",
+    "vendor/symfony/http-foundation",
+    "vendor/symfony/service-contracts"
   ],
+  "compactors": [
+    "KevinGH\\Box\\Compactor\\Php"
+  ],
+  "compression": "GZ",
+  "check-requirements": false,
   "git-version": "package_version",
   "main": "bin/castor",
   "output": "tools/phar/build/castor.phar"
