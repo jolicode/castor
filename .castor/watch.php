@@ -7,7 +7,7 @@ use Castor\Attribute\AsTask;
 use function Castor\parallel;
 use function Castor\watch;
 
-#[AsTask(description: 'A simple task that watches on filesystem changes')]
+#[AsTask(description: 'Watches on filesystem changes')]
 function fs_change()
 {
     watch(\dirname(__DIR__) . '/...', function ($name, $type) {
@@ -15,7 +15,7 @@ function fs_change()
     });
 }
 
-#[AsTask(description: 'A simple task that watches on filesystem changes and stop after first change')]
+#[AsTask(description: 'Watches on filesystem changes and stop after first change')]
 function stop()
 {
     watch(\dirname(__DIR__) . '/...', function ($name, $type) {
@@ -26,7 +26,7 @@ function stop()
     echo "Stop watching\n";
 }
 
-#[AsTask(description: 'A simple task that watches on filesystem changes with 2 watchers in parallel')]
+#[AsTask(description: 'Watches on filesystem changes with 2 watchers in parallel')]
 function parallel_change()
 {
     parallel(

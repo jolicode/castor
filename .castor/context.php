@@ -28,7 +28,7 @@ function execContext(): Context
     return new Context(['production' => (bool) $production]);
 }
 
-#[AsTask(description: 'A simple task that uses context')]
+#[AsTask(description: 'Displays information about the context')]
 function context(Context $context)
 {
     if ($context['production']) {

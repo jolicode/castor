@@ -7,7 +7,7 @@ use Castor\Context;
 
 use function Castor\exec;
 
-#[AsTask(description: 'A simple command that changes directory')]
+#[AsTask(description: 'Changes directory')]
 function directory(Context $context)
 {
     exec(['pwd'], context: $context);
