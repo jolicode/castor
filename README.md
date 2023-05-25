@@ -71,3 +71,16 @@ ln -s $PWD/bin/castor $HOME/.local/bin/castor
 
 You can download the latest version of Castor as a PHAR file from the [releases
 page](https://github.com/jolicode/castor/releases)
+
+## Further documentation
+
+Discover more by reading the docs
+
+ * [Basic usage](doc/01-basic-usage.md)
+ * [The exec function](doc/02-exec.md)
+ * [Command arguments](doc/03-arguments.md)
+ * [Using the context](doc/04-context.md)
+ * [Asking something, progress bar and more](doc/05-helper.md)
+ * [Watching files](doc/06-watch.md)
+ * [Parallel processing](doc/07-parallel.md)
+ * [Notification](doc/08-notify.md)
