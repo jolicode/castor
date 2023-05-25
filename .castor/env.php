@@ -16,7 +16,7 @@ function context_env(): Context
     ]);
 }
 
-#[AsTask(description: 'A simple task that uses environment variables')]
+#[AsTask(description: 'Display environment variables')]
 function env(Context $context)
 {
     exec('echo foo: \"$FOO\", bar: \"$BAR\"', context: $context->withEnvironment([

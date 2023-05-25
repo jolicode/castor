@@ -6,13 +6,13 @@ use Castor\Attribute\AsTask;
 
 use function Castor\exec;
 
-#[AsTask(description: 'A simple task that runs a bash')]
+#[AsTask(description: 'Runs a bash')]
 function bash()
 {
     exec('bash', tty: true);
 }
 
-#[AsTask(description: 'A simple task that runs a sh')]
+#[AsTask(description: 'Runs a sh')]
 function sh()
 {
     exec('sh', tty: true);

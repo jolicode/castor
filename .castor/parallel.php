@@ -41,7 +41,7 @@ function embed_sleep()
     return [$foo, $bar];
 }
 
-#[AsTask(description: 'A simple task that sleeps for 5 and 7 seconds in parallel')]
+#[AsTask(description: 'Sleeps for 5,  7, and 10 seconds in parallel')]
 function sleep()
 {
     $start = microtime(true);
