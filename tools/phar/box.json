@@ -1,6 +1,6 @@
 {
   "base-path": "../../",
-  "files": [
+  "files-bin": [
     "watcher/bin/watcher",
     "watcher/bin/watcher.exe"
   ],
@@ -12,8 +12,7 @@
     "vendor/psr/event-dispatcher",
     "vendor/symfony/error-handler",
     "vendor/symfony/event-dispatcher-contracts",
-    "vendor/symfony/http-foundation",
-    "vendor/symfony/service-contracts"
+    "vendor/symfony/http-foundation"
   ],
   "compactors": [
     "KevinGH\\Box\\Compactor\\Php"
