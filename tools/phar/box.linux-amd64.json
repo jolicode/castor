@@ -1,0 +1,27 @@
+{
+  "base-path": "../../",
+  "files-bin": [
+    "watcher/bin/watcher",
+    ".castor.stub.php"
+  ],
+  "blacklist": [
+    ".castor",
+    "LICENSE",
+    "Test",
+    "tools",
+    "vendor/psr/event-dispatcher",
+    "vendor/symfony/error-handler",
+    "vendor/symfony/event-dispatcher-contracts",
+    "vendor/symfony/http-foundation",
+    ".exe",
+    ".dll"
+  ],
+  "compactors": [
+    "KevinGH\\Box\\Compactor\\Php"
+  ],
+  "compression": "GZ",
+  "check-requirements": false,
+  "git-version": "package_version",
+  "main": "bin/castor",
+  "output": "tools/phar/build/castor.linux-amd64.phar"
+}

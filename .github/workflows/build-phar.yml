@@ -18,9 +18,16 @@ jobs:
       - name: Build the PHAR
         uses: ./.github/actions/phar
 
-      - name: Upload the PHAR
+      - name: Upload the Linux PHAR
         uses: actions/upload-artifact@v3
         with:
           name: 'castor'
-          path: tools/phar/build/castor.phar
+          path: tools/phar/build/castor.linux-amd64.phar
+          if-no-files-found: error
+
+      - name: Upload the Windows PHAR
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'castor'
+          path: tools/phar/build/castor.windows-amd64.phar
           if-no-files-found: error
