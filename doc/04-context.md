@@ -1,15 +1,19 @@
 ## Context
 
-For every command that castor execute, it uses a context object. This object contains the default value for the `exec` 
-function (directory, environment variables, pty, tty, etc...).
+For every command that castor execute, it uses a context object. This object
+contains the default value for the `exec` or `watch` function (directory,
+environment variables, pty, tty, etc...).
 
-It also contains custom values that can be set by the user and reused in commands.
+It also contains custom values that can be set by the user and reused in
+commands.
 
-The context is immutable, which means that every time you change a value, a new context is created.
+The context is immutable, which means that every time you change a value, a new
+context is created.
 
 ### Using the context
 
-The context is passed to the function if it has an argument type-hinted with `Castor\Context`.
+The context is passed to the function if it has an argument type-hinted
+with `Castor\Context`:
 
 ```php
 use Castor\Context;
@@ -25,7 +29,8 @@ function foo(Context $context): void
 
 ### Creating a new context
 
-You can create a new context by declaring a function with the `Castor\Attribute\AsContext` attribute.
+You can create a new context by declaring a function with
+the `Castor\Attribute\AsContext` attribute:
 
 ```php
 use Castor\Attribute\AsContext;
@@ -44,8 +49,9 @@ function foo(): void
 }
 ```
 
-By default the `foo` command will not print anything as the `FOO` environment variable is not set. If you want to use your new context
-you can use the `--context` option.
+By default the `foo` command will not print anything as the `FOO` environment
+variable is not set. If you want to use your new context you can use
+the `--context` option:
 
 ```bash
 $ php castor.phar foo
@@ -54,12 +60,13 @@ $ php castor.phar foo --context=my-context
 BAR
 ```
 
-> You can override the context name by setting the `name` argument of the `AsContext` attribute.
+> You can override the context name by setting the `name` argument of
+> the `AsContext` attribute.
 
 ### Setting a default context
 
-You may want to set a default context for all your commands. You can do that by setting the `default` argument to true
-in the `AsContext` attribute.
+You may want to set a default context for all your commands. You can do that by
+setting the `default` argument to true in the `AsContext` attribute:
 
 ```php
 use Castor\Attribute\AsContext;

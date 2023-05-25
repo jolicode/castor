@@ -1,6 +1,7 @@
 ## Command arguments
 
-When creating a function that will be used as a command, all the parameters of the function will be used as arguments of the command.
+When creating a function that will be used as a command, all the parameters of
+the function will be used as arguments or options of the command:
 
 ```php
 #[AsTask]
@@ -21,7 +22,7 @@ foo bar
 
 ### Optional arguments
 
-You can make an argument optional by giving it a default value.
+You can make an argument optional by giving it a default value:
 
 ```php
 #[AsTask]
@@ -32,6 +33,7 @@ function command(
     exec(['echo', $firstArg, $secondArg]);
 }
 ```
+
 ```bash
 $ php castor.phar command foo
 foo default
@@ -41,7 +43,8 @@ foo bar
 
 ### Overriding the argument name and description
 
-You can override the name and description of an argument by using the `Castor\Attribute\AsArgument` attribute:
+You can override the name and description of an argument by using
+the `Castor\Attribute\AsArgument` attribute:
 
 ```php
 #[AsTask]
@@ -52,6 +55,7 @@ function command(
     exec(['echo', $arg]);
 }
 ```
+
 ```bash
 $ php castor.phar command --foo=foo
 foo

@@ -1,7 +1,7 @@
 ## Parallel execution
 
-The `parallel` function provides a simple way to execute functions in parallel, so you do not have to wait for a 
-function to finish before starting another one.
+The `parallel` function provides a simple way to execute functions in parallel,
+so you do not have to wait for a function to finish before starting another one:
 
 ```php
 #[AsTask]
@@ -21,8 +21,10 @@ function foo(): void
 }
 ```
 
-The parallel function use the `\Fiber` class to execute the functions in parallel. The code is not executed in parallel
-only functions that use this concept will be executed in parallel, which is the case for the `exec` and `watch` function.
+The parallel function use the `\Fiber` class to execute the functions in
+parallel. The code is not executed in parallel only functions using this concept
+will be executed in parallel, which is the case for the `exec` and `watch`
+function.
 
 ### Watching in parallel
 
