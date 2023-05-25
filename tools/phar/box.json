@@ -5,6 +5,12 @@
     "watcher/bin/watcher.exe",
     ".castor.stub.php"
   ],
+  "finder-bin": [
+    {
+      "name": "/.*\\.exe|.*\\.dll/",
+      "in": "vendor/jolicode/jolinotif/bin"
+    }
+  ],
   "blacklist": [
     ".castor",
     "LICENSE",
