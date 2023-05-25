@@ -6,13 +6,13 @@ use Castor\Tools\NodeVisitor;
 use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\SingleCommandApplication;
 use Symfony\Component\Finder\Finder;
 
-class StubGeneratorCommand extends Command
+class StubGeneratorCommand extends SingleCommandApplication
 {
     protected function configure()
     {

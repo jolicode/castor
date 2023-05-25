@@ -2,18 +2,14 @@
 <?php
 
 use Castor\Tools\Command\StubGeneratorCommand;
-use Symfony\Component\Console\Application;
 
-if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
-    $loader = require(__DIR__ . '/../vendor/autoload.php');
-} elseif (file_exists(__DIR__ . '/../../../../vendor/autoload.php')) {
-    $loader = require(__DIR__ . '/../../../../vendor/autoload.php');
+if (file_exists($file = __DIR__ . '/../vendor/autoload.php')) {
+    require $file;
+} elseif ($file = __DIR__ . '/../../../../vendor/autoload.php') {
+    require $file;
 } else {
-    throw new \RuntimeException('Unable to load autoloader.');
+    throw new \RuntimeException('Unable to find autoloader.');
 }
 
-(new Application('stub-generator'))
-    ->add(new StubGeneratorCommand())
-    ->getApplication()
-    ->setDefaultCommand('stub-generator', true)
+(new StubGeneratorCommand('stub-generator'))
     ->run();
