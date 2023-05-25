@@ -17,7 +17,7 @@ class StubGeneratorCommand extends SingleCommandApplication
     protected function configure()
     {
         $this->setName('stub-generator');
-        $this->addArgument('path', InputArgument::OPTIONAL, 'Path to the project generating the stub', __DIR__ . '/../../../../src');
+        $this->addArgument('path', InputArgument::OPTIONAL, 'Path to the project generating the stub', __DIR__ . '/../../../..');
         $this->addArgument('dest', InputArgument::OPTIONAL, 'Destination file of the stub', __DIR__ . '/../../../../.castor.stub.php');
     }
 
@@ -26,7 +26,23 @@ class StubGeneratorCommand extends SingleCommandApplication
         $path = $input->getArgument('path');
         $finder = new Finder();
 
-        $finder->files()->in($path)->name('*.php');
+        $finder
+            ->files()
+            ->in("{$path}/src")
+            ->append([
+                // Add some very frequently used classes
+                "{$path}/vendor/symfony/console/Application.php",
+                "{$path}/vendor/symfony/console/Input/InputOption.php",
+                "{$path}/vendor/symfony/console/Input/InputArgument.php",
+                "{$path}/vendor/symfony/console/Input/InputInterface.php",
+                "{$path}/vendor/symfony/console/Output/OutputInterface.php",
+                "{$path}/vendor/symfony/console/Style/SymfonyStyle.php",
+                "{$path}/vendor/symfony/process/Process.php",
+                "{$path}/vendor/symfony/finder/Finder.php",
+            ])
+            ->name('*.php')
+        ;
+
         $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
         $stmts = [];
 
@@ -34,7 +50,7 @@ class StubGeneratorCommand extends SingleCommandApplication
         $traverser->addVisitor(new NodeVisitor());
 
         foreach ($finder as $file) {
-            $fileStmts = $parser->parse($file->getContents());
+            $fileStmts = $parser->parse(file_get_contents($file->getPathname()));
             $stmts = array_merge($stmts, $traverser->traverse($fileStmts));
         }
 
