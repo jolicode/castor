@@ -1,5 +1,5 @@
-name: 'Build the PHAR'
-description: 'Build the PHAR for the current commit'
+name: 'Install PHAR tooling'
+description: 'Install PHAR tools to build the PHAR'
 
 runs:
   using: "composite"
