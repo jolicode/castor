@@ -21,6 +21,14 @@
     "symfony/console": "^6.2",
     "symfony/finder": "^6.2"
   },
+  "scripts": {
+    "post-install-cmd": [
+      "bin/stub-generator"
+    ],
+    "post-update-cmd": [
+      "bin/stub-generator"
+    ]
+  },
   "config": {
     "optimize-autoloader": true,
     "preferred-install": "dist",

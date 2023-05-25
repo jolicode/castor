@@ -9,17 +9,12 @@ runs:
       with:
         php-version: '8.1'
 
-    - name: Install dependencies (lib)
+    - name: Install dependencies (project)
       run: composer install --prefer-dist --no-progress --no-dev --optimize-autoloader --classmap-authoritative
       shell: bash
 
     - name: Install dependencies (PHAR builder)
       run: composer install --prefer-dist --no-progress --optimize-autoloader --classmap-authoritative
-      shell: bash
-      working-directory: tools/phar
-
-    - name: Generate stub
-      run: php bin/stub-generator ../../src ../../.castor.stub.php
       shell: bash
       working-directory: tools/phar
 
