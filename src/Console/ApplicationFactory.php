@@ -11,6 +11,7 @@ use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\SingleCommandApplication;
 
+/** @internal */
 class ApplicationFactory
 {
     public static function run(): void
@@ -33,6 +34,12 @@ class ApplicationFactory
     {
         try {
             $rootDir = PathHelper::getRoot();
+            $stubDestinationPath = $rootDir . '/.castor.stub.php';
+            $stubSourcePath = __DIR__ . '/../../.castor.stub.php';
+
+            if (!file_exists($stubDestinationPath) && file_exists($stubSourcePath)) {
+                copy($stubSourcePath, $stubDestinationPath);
+            }
         } catch (\RuntimeException $e) {
             return new CastorFileNotFoundCommand($e);
         }

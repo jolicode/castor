@@ -4,6 +4,7 @@ namespace Castor;
 
 use Castor\Attribute\AsTask;
 
+/** @internal */
 class TaskDescriptor
 {
     public function __construct(

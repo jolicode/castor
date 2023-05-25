@@ -7,6 +7,7 @@ use Castor\Attribute\AsTask;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
+/** @internal */
 class FunctionFinder
 {
     private static bool $inFindFunctions = false;
@@ -100,6 +101,7 @@ class FunctionFinder
 }
 
 // Don't leak internal variables
+/** @internal */
 function castor_require(string $file): void
 {
     require_once $file;

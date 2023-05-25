@@ -4,6 +4,7 @@ namespace Castor;
 
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
+/** @internal */
 class SluggerHelper
 {
     private static AsciiSlugger $slugger;
