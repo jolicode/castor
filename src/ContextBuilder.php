@@ -21,9 +21,14 @@ class ContextBuilder
         );
     }
 
-    public function build(): Context
+    public function getParameters(): array
     {
-        return $this->function->invoke();
+        return $this->function->getParameters();
+    }
+
+    public function build(...$args): Context
+    {
+        return $this->function->invoke(...$args);
     }
 
     public function isDefault(): bool

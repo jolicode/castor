@@ -20,6 +20,7 @@ class Context implements \ArrayAccess
         public readonly bool $quiet = false,
         public readonly bool $allowFailure = false,
         public readonly bool $notify = false,
+        public readonly VerbosityLevel $verbosityLevel = VerbosityLevel::NORMAL,
     ) {
         $this->currentDirectory = $currentDirectory ?? PathHelper::getRoot();
     }
@@ -37,6 +38,7 @@ class Context implements \ArrayAccess
             $this->quiet,
             $this->allowFailure,
             $this->notify,
+            $this->verbosityLevel,
         );
     }
 
@@ -53,6 +55,7 @@ class Context implements \ArrayAccess
             $this->quiet,
             $this->allowFailure,
             $this->notify,
+            $this->verbosityLevel,
         );
     }
 
@@ -68,6 +71,7 @@ class Context implements \ArrayAccess
             $this->quiet,
             $this->allowFailure,
             $this->notify,
+            $this->verbosityLevel,
         );
     }
 
@@ -83,6 +87,7 @@ class Context implements \ArrayAccess
             $this->quiet,
             $this->allowFailure,
             $this->notify,
+            $this->verbosityLevel,
         );
     }
 
@@ -98,6 +103,7 @@ class Context implements \ArrayAccess
             $this->quiet,
             $this->allowFailure,
             $this->notify,
+            $this->verbosityLevel,
         );
     }
 
@@ -113,6 +119,7 @@ class Context implements \ArrayAccess
             $this->quiet,
             $this->allowFailure,
             $this->notify,
+            $this->verbosityLevel,
         );
     }
 
@@ -128,6 +135,7 @@ class Context implements \ArrayAccess
             $quiet,
             $this->allowFailure,
             $this->notify,
+            $this->verbosityLevel,
         );
     }
 
@@ -143,6 +151,7 @@ class Context implements \ArrayAccess
             $this->quiet,
             $allowFailure,
             $this->notify,
+            $this->verbosityLevel,
         );
     }
 
@@ -158,6 +167,23 @@ class Context implements \ArrayAccess
             $this->quiet,
             $this->allowFailure,
             $notify,
+            $this->verbosityLevel,
+        );
+    }
+
+    public function withVerbosityLevel(VerbosityLevel $verbosityLevel): self
+    {
+        return new self(
+            $this->data,
+            $this->environment,
+            $this->currentDirectory,
+            $this->tty,
+            $this->pty,
+            $this->timeout,
+            $this->quiet,
+            $this->allowFailure,
+            $this->notify,
+            $verbosityLevel,
         );
     }
 
@@ -179,5 +205,25 @@ class Context implements \ArrayAccess
     public function offsetUnset(mixed $offset): void
     {
         throw new \LogicException('Context is immutable');
+    }
+
+    public function isQuiet(): bool
+    {
+        return VerbosityLevel::QUIET === $this->verbosityLevel;
+    }
+
+    public function isVerbose(): bool
+    {
+        return VerbosityLevel::VERBOSE <= $this->verbosityLevel;
+    }
+
+    public function isVeryVerbose(): bool
+    {
+        return VerbosityLevel::VERY_VERBOSE <= $this->verbosityLevel;
+    }
+
+    public function isDebug(): bool
+    {
+        return VerbosityLevel::DEBUG <= $this->verbosityLevel;
     }
 }

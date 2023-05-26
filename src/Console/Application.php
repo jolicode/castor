@@ -8,6 +8,7 @@ use Castor\ContextRegistry;
 use Castor\FunctionFinder;
 use Castor\Stub\StubsGenerator;
 use Castor\TaskDescriptor;
+use Castor\VerbosityLevel;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -35,6 +36,27 @@ class Application extends SymfonyApplication
     {
         (new StubsGenerator())->generateStubsIfNeeded($this->rootDir . '/.castor.stub.php');
 
+        $this->initializeApplication();
+
+        // Remove the try/catch when https://github.com/symfony/symfony/pull/50420 is released
+        try {
+            return parent::doRun($input, $output);
+        } catch (\Throwable $e) {
+            $this->renderThrowable($e, $output);
+
+            return 1;
+        }
+    }
+
+    protected function doRunCommand(Command $command, InputInterface $input, OutputInterface $output): int
+    {
+        $this->initializeContext($input, $output);
+
+        return parent::doRunCommand($command, $input, $output);
+    }
+
+    private function initializeApplication(): void
+    {
         // Find all potential commands / context
         $functions = (new FunctionFinder())->findFunctions($this->rootDir);
 
@@ -73,29 +95,39 @@ class Application extends SymfonyApplication
             'default',
             $this->contextRegistry->getContextNames(),
         ));
-
-        // Remove the try/catch when https://github.com/symfony/symfony/pull/50420 is released
-        try {
-            return parent::doRun($input, $output);
-        } catch (\Throwable $e) {
-            $this->renderThrowable($e, $output);
-
-            return 1;
-        }
     }
 
-    protected function doRunCommand(Command $command, InputInterface $input, OutputInterface $output): int
+    private function initializeContext(InputInterface $input, OutputInterface $output): void
     {
         // occurs when running `castor -h`
-        if ($input->hasOption('context')) {
-            $context = $this
-                ->contextRegistry
-                ->getContextBuilder($input->getOption('context'))
-                ->build()
-            ;
-            ContextRegistry::setInitialContext($context);
+        if (!$input->hasOption('context')) {
+            return;
         }
 
-        return parent::doRunCommand($command, $input, $output);
+        $builder = $this
+            ->contextRegistry
+            ->getContextBuilder($input->getOption('context'))
+        ;
+
+        $args = [];
+        $verbosityLevelSet = false;
+        foreach ($builder->getParameters() as $parameters) {
+            if ('verbosityLevel' === $parameters->getName() && VerbosityLevel::class === $parameters->getType()->getName()) {
+                $args[] = VerbosityLevel::fromSymfonyOutput($output);
+                $verbosityLevelSet = true;
+
+                continue;
+            }
+
+            throw new \LogicException(sprintf('Only the "int $verbosityLevel" parameter is supported in context builder named "%s".', $builder->getName()));
+        }
+
+        $context = $builder->build(...$args);
+
+        if (!$verbosityLevelSet) {
+            $context = $context->withVerbosityLevel(VerbosityLevel::fromSymfonyOutput($output));
+        }
+
+        ContextRegistry::setInitialContext($context);
     }
 }

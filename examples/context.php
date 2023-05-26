@@ -5,6 +5,7 @@ namespace context;
 use Castor\Attribute\AsContext;
 use Castor\Attribute\AsTask;
 use Castor\Context;
+use Castor\VerbosityLevel;
 
 use function Castor\exec;
 
@@ -15,9 +16,9 @@ function productionContext(): Context
 }
 
 #[AsContext(default: true)]
-function defaultContext(): Context
+function defaultContext(VerbosityLevel $verbosityLevel = VerbosityLevel::NORMAL): Context
 {
-    return new Context(['production' => false, 'foo' => 'bar']);
+    return new Context(['production' => false, 'foo' => 'bar'], verbosityLevel: $verbosityLevel);
 }
 
 #[AsContext(name: 'exec')]
@@ -36,6 +37,8 @@ function context(Context $context)
     } else {
         echo "development\n";
     }
+
+    echo "verbosity: {$context->verbosityLevel->value}\n";
 
     echo "foo: {$context['foo']}\n";
 }
