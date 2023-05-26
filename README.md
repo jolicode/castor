@@ -1,13 +1,22 @@
 # Castor
 
-Castor is a PHP tool to create commands from a PHP function with helpers to
-execute processes.
+Castor is a DX oriented task runner and command launcher built with PHP.
+
+It comes with many helpers to make your life easier:
+
+* arguments and options parsing
+* autocomplete
+* process execution
+* parallel processing
+* file watching
+* notification
+* logging
+* great DX
 
 ## Usage
 
 As an example, you could create a command that print "Hello castor" by creating
-a
-file `.castor.php` with the following content:
+a file `.castor.php` with the following content:
 
 ```php
 <?php
@@ -31,9 +40,43 @@ $ castor hello:castor
 Hello castor
 ```
 
-The name of the file without the extension is the namespace of the command, in
-this case `hello`. The name of the function is the name of the command, in this
-case `castor`.
+Then, you can go wild and create more complex commands:
+
+```php
+#[AsTask(description: 'Clean the infrastructure (remove container, volume, networks)')]
+function destroy(
+    SymfonyStyle $io,
+    #[AsOption(
+        description: 'Force the destruction without confirmation',
+        shortcut: 'f',
+        mode: InputOption::VALUE_NONE,
+    )]
+    bool $force,
+) {
+    if (!$force) {
+        $io->warning('This will permanently remove all containers, volumes, networks... created for this project.');
+        $io->note('You can use the --force option to avoid this confirmation.');
+
+        if (!$io->confirm('Are you sure?', false)) {
+            $io->comment('Aborted.');
+
+            return;
+        }
+    }
+
+    log('Destroying the infrastructure...')
+
+    exec('docker-compose down -v --remove-orphans --volumes --rmi=local');
+
+    notify('The infrastructure has been destroyed.')
+}
+```
+
+enhance
+
+If you want to read more usage, you can read the [basic
+usage](doc/01-basic-usage.md) documentation, or browse the [examples](examples)
+directory.
 
 ## Autocomplete
 
@@ -44,6 +87,8 @@ following command:
 castor completion | sudo tee /etc/bash_completion.d/castor
 ```
 
+Then reload your shell.
+
 Others shells are also supported. To get the list of supported shells, run:
 
 ```
@@ -52,9 +97,18 @@ castor completion --help
 
 ## Installation
 
+### As a PHAR
+
+You can download the latest version of Castor as a PHAR file from the [releases
+page](https://github.com/jolicode/castor/releases)
+
+You can also download the latest version by browsing [the build
+page](https://github.com/jolicode/castor/actions/workflows/build-phar.yml) and
+selecting the last build.
+
 ### Manually
 
-For now, you'll need to clone the repository and run `composer install` to
+You'll need to clone the repository and run `composer install` to
 install the project. Then create a symlink to the `castor` file in your `PATH`.
 
 ```bash
@@ -64,13 +118,6 @@ cd castor
 composer install
 ln -s $PWD/bin/castor $HOME/.local/bin/castor
 ```
-
-### As a PHAR
-
-**Note:** This is not yet available.
-
-You can download the latest version of Castor as a PHAR file from the [releases
-page](https://github.com/jolicode/castor/releases)
 
 ## Further documentation
 
