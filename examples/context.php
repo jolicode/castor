@@ -9,7 +9,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 use function Castor\exec;
 
-#[AsContext(default: true)]
+#[AsContext(default: true, name: 'my_default')]
 function defaultContext(): Context
 {
     return new Context([

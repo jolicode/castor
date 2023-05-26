@@ -4,7 +4,7 @@ namespace Castor\Console;
 
 use Castor\Console\Command\TaskCommand;
 use Castor\Context;
-use Castor\ContextBuilder;
+use Castor\ContextDescriptor;
 use Castor\ContextRegistry;
 use Castor\FunctionFinder;
 use Castor\Stub\StubsGenerator;
@@ -65,21 +65,21 @@ class Application extends SymfonyApplication
         foreach ($functions as $function) {
             if ($function instanceof TaskDescriptor) {
                 $this->add(new TaskCommand($function->taskAttribute, $function->function));
-            } elseif ($function instanceof ContextBuilder) {
-                $this->contextRegistry->addContextBuilder($function);
+            } elseif ($function instanceof ContextDescriptor) {
+                $this->contextRegistry->add($function);
             }
         }
 
-        $this->contextRegistry->setDefaultContextIfEmpty();
+        $this->contextRegistry->setDefaultIfEmpty();
 
-        $contextNames = $this->contextRegistry->getContextNames();
+        $contextNames = $this->contextRegistry->getNames();
         if ($contextNames) {
             $this->getDefinition()->addOption(new InputOption(
                 'context',
                 null,
                 InputOption::VALUE_REQUIRED,
                 sprintf('The context to use (%s)', implode('|', $contextNames)),
-                $this->contextRegistry->getDefaultContextBuilder()->getName(),
+                $this->contextRegistry->getDefault()->contextAttribute->name,
                 $contextNames,
             ));
         }
@@ -103,35 +103,31 @@ class Application extends SymfonyApplication
             return new Context();
         }
 
-        $builder = $this
-            ->contextRegistry
-            ->getContextBuilder($input->getOption('context'))
-        ;
-
         static $supportedParameterTypes = [
             SymfonyStyle::class,
             self::class,
             InputInterface::class,
             OutputInterface::class,
         ];
+        $descriptor = $this->contextRegistry->get($input->getOption('context'));
 
         $args = [];
-        foreach ($builder->getParameters() as $parameter) {
+        foreach ($descriptor->function->getParameters() as $parameter) {
             if (($type = $parameter->getType()) instanceof \ReflectionNamedType && \in_array($type->getName(), $supportedParameterTypes, true)) {
                 $args[] = match ($type->getName()) {
                     SymfonyStyle::class => new SymfonyStyle($input, $output),
                     self::class => $this,
                     InputInterface::class => $input,
                     OutputInterface::class => $output,
-                    default => throw new \LogicException(sprintf('Argument "%s" is not supported in context builder named "%s".', $parameter->getName(), $builder->getName())),
+                    default => throw new \LogicException(sprintf('Argument "%s" is not supported in context builder named "%s".', $parameter->getName(), $descriptor->function->getName())),
                 };
 
                 continue;
             }
 
-            throw new \LogicException(sprintf('Argument "%s" is not supported in context builder named "%s".', $parameter->getName(), $builder->getName()));
+            throw new \LogicException(sprintf('Argument "%s" is not supported in context builder named "%s".', $parameter->getName(), $descriptor->function->getName()));
         }
 
-        return $builder->build(...$args);
+        return $descriptor->function->invoke(...$args);
     }
 }

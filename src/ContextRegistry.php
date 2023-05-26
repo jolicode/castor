@@ -10,55 +10,60 @@ class ContextRegistry
     private static Context $initialContext;
     private static LoggerInterface $logger;
 
-    /** @var array<string, ContextBuilder> */
-    private array $contextBuilders = [];
-    private ?ContextBuilder $defaultContextBuilder = null;
+    /** @var array<string, ContextDescriptor> */
+    private array $descriptors = [];
+    private ?ContextDescriptor $default = null;
 
-    public function addContextBuilder(ContextBuilder $contextBuilder): void
+    public function add(ContextDescriptor $descriptor): void
     {
-        if (\array_key_exists($contextBuilder->getName(), $this->contextBuilders)) {
-            throw new \RuntimeException(sprintf('Context "%s" already exists.', $contextBuilder->getName()));
+        $name = $descriptor->contextAttribute->name;
+        if (\array_key_exists($name, $this->descriptors)) {
+            throw new \RuntimeException(sprintf('You cannot defined two context with the same name "%s". There is one defined in "%s" and another in "%s".', $name, $this->descriptors[$name]->function->getName(), $descriptor->function->getName()));
         }
 
-        $this->contextBuilders[$contextBuilder->getName()] = $contextBuilder;
+        $this->descriptors[$name] = $descriptor;
 
-        if ($contextBuilder->isDefault()) {
-            if ($this->defaultContextBuilder) {
-                throw new \RuntimeException(sprintf('Default context already set to "%s".', $this->defaultContextBuilder->getName()));
+        if ($descriptor->contextAttribute->default) {
+            if ($this->default) {
+                throw new \RuntimeException(sprintf('You cannot set multiple "default: true" context. There is one defined in "%s" and another in "%s".', $this->default->function->getName(), $descriptor->function->getName()));
             }
-            $this->defaultContextBuilder = $contextBuilder;
+            $this->default = $descriptor;
         }
     }
 
-    public function setDefaultContextIfEmpty(): void
+    public function setDefaultIfEmpty(): void
     {
-        if (!$this->defaultContextBuilder) {
-            if (1 === \count($this->contextBuilders)) {
-                $this->defaultContextBuilder = reset($this->contextBuilders);
-
-                return;
-            }
-
-            throw new \RuntimeException(sprintf('Since there are multiple contexts "%s", you must set a default context.', implode('", "', array_keys($this->contextBuilders))));
+        if ($this->default) {
+            return;
         }
+
+        if (!$this->descriptors) {
+            return;
+        }
+
+        if (1 < \count($this->descriptors)) {
+            throw new \RuntimeException(sprintf('Since there are multiple contexts "%s", you must set a "default: true" context.', implode('", "', array_keys($this->descriptors))));
+        }
+
+        $this->default = reset($this->descriptors);
     }
 
-    public function getDefaultContextBuilder(): ContextBuilder
+    public function getDefault(): ContextDescriptor
     {
-        return $this->defaultContextBuilder ?? throw new \RuntimeException('Default context not set yet.');
+        return $this->default ?? throw new \LogicException('Default descriptor not set yet.');
     }
 
-    public function getContextBuilder(string $name): ContextBuilder
+    public function get(string $name): ContextDescriptor
     {
-        return $this->contextBuilders[$name] ?? throw new \RuntimeException(sprintf('Context "%s" not found.', $name));
+        return $this->descriptors[$name] ?? throw new \RuntimeException(sprintf('Descriptor "%s" not found.', $name));
     }
 
     /**
      * @return array<string>
      */
-    public function getContextNames(): array
+    public function getNames(): array
     {
-        return array_keys($this->contextBuilders);
+        return array_keys($this->descriptors);
     }
 
     public static function setInitialContext(Context $initialContext): void
@@ -68,7 +73,8 @@ class ContextRegistry
 
     public static function getInitialContext(): Context
     {
-        return self::$initialContext ??= new Context();
+        // We always need a default context, for example when using exec() in a context builder
+        return self::$initialContext ?? new Context();
     }
 
     public static function setLogger(LoggerInterface $logger): void
@@ -78,6 +84,6 @@ class ContextRegistry
 
     public static function getLogger(): LoggerInterface
     {
-        return self::$logger ?? throw new \RuntimeException('Logger not set yet.');
+        return self::$logger ?? throw new \LogicException('Logger not set yet.');
     }
 }
