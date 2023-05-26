@@ -1,36 +1,58 @@
 <?php
 
-namespace Castor;
+namespace Castor\Attribute;
 
-/**
- * @return array<mixed>
- */
-function parallel(callable ...$callbacks) : array
+#[\Attribute(\Attribute::TARGET_PARAMETER)]
+class AsArgument extends AsCommandArgument
 {
+    /**
+     * @param array<string> $suggestedValues
+     */
+    public function __construct(string|null $name = null, public readonly string $description = '', public readonly array $suggestedValues = [])
+    {
+    }
 }
-/**
- * @param string|array<string>                           $command
- * @param (callable(string, string, Process) :void)|null $callback
- * @param array<string, string>|null                     $environment
- */
-function exec(string|array $command, array|null $environment = null, string|null $path = null, bool|null $tty = null, bool|null $pty = null, float|null $timeout = null, bool|null $quiet = null, bool|null $allowFailure = null, bool|null $notify = null, callable $callback = null, Context $context = null) : \Symfony\Component\Process\Process
+namespace Castor\Attribute;
+
+abstract class AsCommandArgument
 {
+    public function __construct(public readonly string|null $name = null)
+    {
+    }
 }
-function notify(string $message) : void
+namespace Castor\Attribute;
+
+#[\Attribute(\Attribute::TARGET_FUNCTION)]
+class AsContext
 {
+    public function __construct(public string $name = '', public bool $default = false)
+    {
+    }
 }
-/** @param (callable(string, string) : (false|null)) $function */
-function watch(string $path, callable $function, Context $context = null) : void
+namespace Castor\Attribute;
+
+#[\Attribute(\Attribute::TARGET_PARAMETER)]
+class AsOption extends AsCommandArgument
 {
+    /**
+     * @param string|array<string>|null $shortcut
+     * @param array<string>             $suggestedValues
+     */
+    public function __construct(string|null $name = null, public readonly string|array|null $shortcut = null, public readonly int|null $mode = null, public readonly string $description = '', public readonly array $suggestedValues = [])
+    {
+    }
 }
-/**
- * @param array<string, mixed> $context
- */
-function log(string $message, string $level = 'info', array $context = []) : void
+namespace Castor\Attribute;
+
+#[\Attribute(\Attribute::TARGET_FUNCTION)]
+class AsTask
 {
-}
-function import(string $path) : void
-{
+    /**
+     * @param array<string> $aliases
+     */
+    public function __construct(public string $name = '', public string|null $namespace = null, public string $description = '', public array $aliases = [])
+    {
+    }
 }
 namespace Castor;
 
@@ -86,60 +108,6 @@ class Context implements \ArrayAccess
     {
     }
 }
-namespace Castor\Attribute;
-
-#[\Attribute(\Attribute::TARGET_FUNCTION)]
-class AsContext
-{
-    public function __construct(public string $name = '', public bool $default = false)
-    {
-    }
-}
-namespace Castor\Attribute;
-
-abstract class AsCommandArgument
-{
-    public function __construct(public readonly string|null $name = null)
-    {
-    }
-}
-namespace Castor\Attribute;
-
-#[\Attribute(\Attribute::TARGET_FUNCTION)]
-class AsTask
-{
-    /**
-     * @param array<string> $aliases
-     */
-    public function __construct(public string $name = '', public string|null $namespace = null, public string $description = '', public array $aliases = [])
-    {
-    }
-}
-namespace Castor\Attribute;
-
-#[\Attribute(\Attribute::TARGET_PARAMETER)]
-class AsArgument extends AsCommandArgument
-{
-    /**
-     * @param array<string> $suggestedValues
-     */
-    public function __construct(string|null $name = null, public readonly string $description = '', public readonly array $suggestedValues = [])
-    {
-    }
-}
-namespace Castor\Attribute;
-
-#[\Attribute(\Attribute::TARGET_PARAMETER)]
-class AsOption extends AsCommandArgument
-{
-    /**
-     * @param string|array<string>|null $shortcut
-     * @param array<string>             $suggestedValues
-     */
-    public function __construct(string|null $name = null, public readonly string|array|null $shortcut = null, public readonly int|null $mode = null, public readonly string $description = '', public readonly array $suggestedValues = [])
-    {
-    }
-}
 namespace Castor;
 
 class PathHelper
@@ -150,6 +118,38 @@ class PathHelper
     public static function realpath(string $path) : string
     {
     }
+}
+namespace Castor;
+
+/**
+ * @return array<mixed>
+ */
+function parallel(callable ...$callbacks) : array
+{
+}
+/**
+ * @param string|array<string>                           $command
+ * @param (callable(string, string, Process) :void)|null $callback
+ * @param array<string, string>|null                     $environment
+ */
+function exec(string|array $command, array|null $environment = null, string|null $path = null, bool|null $tty = null, bool|null $pty = null, float|null $timeout = null, bool|null $quiet = null, bool|null $allowFailure = null, bool|null $notify = null, callable $callback = null, Context $context = null) : \Symfony\Component\Process\Process
+{
+}
+function notify(string $message) : void
+{
+}
+/** @param (callable(string, string) : (false|null)) $function */
+function watch(string $path, callable $function, Context $context = null) : void
+{
+}
+/**
+ * @param array<string, mixed> $context
+ */
+function log(string $message, string $level = 'info', array $context = []) : void
+{
+}
+function import(string $path) : void
+{
 }
 /*
  * This file is part of the Symfony package.
@@ -545,143 +545,6 @@ class Application implements \Symfony\Contracts\Service\ResetInterface
 namespace Symfony\Component\Console\Input;
 
 /**
- * Represents a command line option.
- *
- * @author Fabien Potencier <fabien@symfony.com>
- */
-class InputOption
-{
-    /**
-     * Do not accept input for the option (e.g. --yell). This is the default behavior of options.
-     */
-    public const VALUE_NONE = 1;
-    /**
-     * A value must be passed when the option is used (e.g. --iterations=5 or -i5).
-     */
-    public const VALUE_REQUIRED = 2;
-    /**
-     * The option may or may not have a value (e.g. --yell or --yell=loud).
-     */
-    public const VALUE_OPTIONAL = 4;
-    /**
-     * The option accepts multiple values (e.g. --dir=/foo --dir=/bar).
-     */
-    public const VALUE_IS_ARRAY = 8;
-    /**
-     * The option may have either positive or negative value (e.g. --ansi or --no-ansi).
-     */
-    public const VALUE_NEGATABLE = 16;
-    private string $name;
-    private string|array|null $shortcut;
-    private int $mode;
-    private string|int|bool|array|null|float $default;
-    private array|\Closure $suggestedValues;
-    private string $description;
-    /**
-     * @param string|array|null                                                             $shortcut        The shortcuts, can be null, a string of shortcuts delimited by | or an array of shortcuts
-     * @param int|null                                                                      $mode            The option mode: One of the VALUE_* constants
-     * @param string|bool|int|float|array|null                                              $default         The default value (must be null for self::VALUE_NONE)
-     * @param array|\Closure(CompletionInput,CompletionSuggestions):list<string|Suggestion> $suggestedValues The values used for input completion
-     *
-     * @throws InvalidArgumentException If option mode is invalid or incompatible
-     */
-    public function __construct(string $name, string|array $shortcut = null, int $mode = null, string $description = '', string|bool|int|float|array $default = null, array|\Closure $suggestedValues = [])
-    {
-    }
-    /**
-     * Returns the option shortcut.
-     */
-    public function getShortcut() : ?string
-    {
-    }
-    /**
-     * Returns the option name.
-     */
-    public function getName() : string
-    {
-    }
-    /**
-     * Returns true if the option accepts a value.
-     *
-     * @return bool true if value mode is not self::VALUE_NONE, false otherwise
-     */
-    public function acceptValue() : bool
-    {
-    }
-    /**
-     * Returns true if the option requires a value.
-     *
-     * @return bool true if value mode is self::VALUE_REQUIRED, false otherwise
-     */
-    public function isValueRequired() : bool
-    {
-    }
-    /**
-     * Returns true if the option takes an optional value.
-     *
-     * @return bool true if value mode is self::VALUE_OPTIONAL, false otherwise
-     */
-    public function isValueOptional() : bool
-    {
-    }
-    /**
-     * Returns true if the option can take multiple values.
-     *
-     * @return bool true if mode is self::VALUE_IS_ARRAY, false otherwise
-     */
-    public function isArray() : bool
-    {
-    }
-    public function isNegatable() : bool
-    {
-    }
-    /**
-     * @return void
-     */
-    public function setDefault(string|bool|int|float|array $default = null)
-    {
-    }
-    /**
-     * Returns the default value.
-     */
-    public function getDefault() : string|bool|int|float|array|null
-    {
-    }
-    /**
-     * Returns the description text.
-     */
-    public function getDescription() : string
-    {
-    }
-    public function hasCompletion() : bool
-    {
-    }
-    /**
-     * Adds suggestions to $suggestions for the current completion input.
-     *
-     * @see Command::complete()
-     */
-    public function complete(\Symfony\Component\Console\Completion\CompletionInput $input, \Symfony\Component\Console\Completion\CompletionSuggestions $suggestions) : void
-    {
-    }
-    /**
-     * Checks whether the given option equals this one.
-     */
-    public function equals(self $option) : bool
-    {
-    }
-}
-/*
- * This file is part of the Symfony package.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-namespace Symfony\Component\Console\Input;
-
-/**
  * Represents a command line argument.
  *
  * @author Fabien Potencier <fabien@symfony.com>
@@ -921,6 +784,143 @@ interface InputInterface
      * @return void
      */
     public function setInteractive(bool $interactive)
+    {
+    }
+}
+/*
+ * This file is part of the Symfony package.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+namespace Symfony\Component\Console\Input;
+
+/**
+ * Represents a command line option.
+ *
+ * @author Fabien Potencier <fabien@symfony.com>
+ */
+class InputOption
+{
+    /**
+     * Do not accept input for the option (e.g. --yell). This is the default behavior of options.
+     */
+    public const VALUE_NONE = 1;
+    /**
+     * A value must be passed when the option is used (e.g. --iterations=5 or -i5).
+     */
+    public const VALUE_REQUIRED = 2;
+    /**
+     * The option may or may not have a value (e.g. --yell or --yell=loud).
+     */
+    public const VALUE_OPTIONAL = 4;
+    /**
+     * The option accepts multiple values (e.g. --dir=/foo --dir=/bar).
+     */
+    public const VALUE_IS_ARRAY = 8;
+    /**
+     * The option may have either positive or negative value (e.g. --ansi or --no-ansi).
+     */
+    public const VALUE_NEGATABLE = 16;
+    private string $name;
+    private string|array|null $shortcut;
+    private int $mode;
+    private string|int|bool|array|null|float $default;
+    private array|\Closure $suggestedValues;
+    private string $description;
+    /**
+     * @param string|array|null                                                             $shortcut        The shortcuts, can be null, a string of shortcuts delimited by | or an array of shortcuts
+     * @param int|null                                                                      $mode            The option mode: One of the VALUE_* constants
+     * @param string|bool|int|float|array|null                                              $default         The default value (must be null for self::VALUE_NONE)
+     * @param array|\Closure(CompletionInput,CompletionSuggestions):list<string|Suggestion> $suggestedValues The values used for input completion
+     *
+     * @throws InvalidArgumentException If option mode is invalid or incompatible
+     */
+    public function __construct(string $name, string|array $shortcut = null, int $mode = null, string $description = '', string|bool|int|float|array $default = null, array|\Closure $suggestedValues = [])
+    {
+    }
+    /**
+     * Returns the option shortcut.
+     */
+    public function getShortcut() : ?string
+    {
+    }
+    /**
+     * Returns the option name.
+     */
+    public function getName() : string
+    {
+    }
+    /**
+     * Returns true if the option accepts a value.
+     *
+     * @return bool true if value mode is not self::VALUE_NONE, false otherwise
+     */
+    public function acceptValue() : bool
+    {
+    }
+    /**
+     * Returns true if the option requires a value.
+     *
+     * @return bool true if value mode is self::VALUE_REQUIRED, false otherwise
+     */
+    public function isValueRequired() : bool
+    {
+    }
+    /**
+     * Returns true if the option takes an optional value.
+     *
+     * @return bool true if value mode is self::VALUE_OPTIONAL, false otherwise
+     */
+    public function isValueOptional() : bool
+    {
+    }
+    /**
+     * Returns true if the option can take multiple values.
+     *
+     * @return bool true if mode is self::VALUE_IS_ARRAY, false otherwise
+     */
+    public function isArray() : bool
+    {
+    }
+    public function isNegatable() : bool
+    {
+    }
+    /**
+     * @return void
+     */
+    public function setDefault(string|bool|int|float|array $default = null)
+    {
+    }
+    /**
+     * Returns the default value.
+     */
+    public function getDefault() : string|bool|int|float|array|null
+    {
+    }
+    /**
+     * Returns the description text.
+     */
+    public function getDescription() : string
+    {
+    }
+    public function hasCompletion() : bool
+    {
+    }
+    /**
+     * Adds suggestions to $suggestions for the current completion input.
+     *
+     * @see Command::complete()
+     */
+    public function complete(\Symfony\Component\Console\Completion\CompletionInput $input, \Symfony\Component\Console\Completion\CompletionSuggestions $suggestions) : void
+    {
+    }
+    /**
+     * Checks whether the given option equals this one.
+     */
+    public function equals(self $option) : bool
     {
     }
 }
@@ -1251,6 +1251,524 @@ class SymfonyStyle extends OutputStyle
     {
     }
     private function createBlock(iterable $messages, string $type = null, string $style = null, string $prefix = ' ', bool $padding = false, bool $escape = false) : array
+    {
+    }
+}
+/*
+ * This file is part of the Symfony package.
+ *
+ * (c) Fabien Potencier <fabien@symfony.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+namespace Symfony\Component\Finder;
+
+/**
+ * Finder allows to build rules to find files and directories.
+ *
+ * It is a thin wrapper around several specialized iterator classes.
+ *
+ * All rules may be invoked several times.
+ *
+ * All methods return the current Finder object to allow chaining:
+ *
+ *     $finder = Finder::create()->files()->name('*.php')->in(__DIR__);
+ *
+ * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @implements \IteratorAggregate<string, SplFileInfo>
+ */
+class Finder implements \IteratorAggregate, \Countable
+{
+    public const IGNORE_VCS_FILES = 1;
+    public const IGNORE_DOT_FILES = 2;
+    public const IGNORE_VCS_IGNORED_FILES = 4;
+    private int $mode = 0;
+    private array $names = [];
+    private array $notNames = [];
+    private array $exclude = [];
+    private array $filters = [];
+    private array $depths = [];
+    private array $sizes = [];
+    private bool $followLinks = false;
+    private bool $reverseSorting = false;
+    private \Closure|int|false $sort = false;
+    private int $ignore = 0;
+    private array $dirs = [];
+    private array $dates = [];
+    private array $iterators = [];
+    private array $contains = [];
+    private array $notContains = [];
+    private array $paths = [];
+    private array $notPaths = [];
+    private bool $ignoreUnreadableDirs = false;
+    private static array $vcsPatterns = ['.svn', '_svn', 'CVS', '_darcs', '.arch-params', '.monotone', '.bzr', '.git', '.hg'];
+    public function __construct()
+    {
+    }
+    /**
+     * Creates a new Finder.
+     */
+    public static function create() : static
+    {
+    }
+    /**
+     * Restricts the matching to directories only.
+     *
+     * @return $this
+     */
+    public function directories() : static
+    {
+    }
+    /**
+     * Restricts the matching to files only.
+     *
+     * @return $this
+     */
+    public function files() : static
+    {
+    }
+    /**
+     * Adds tests for the directory depth.
+     *
+     * Usage:
+     *
+     *     $finder->depth('> 1') // the Finder will start matching at level 1.
+     *     $finder->depth('< 3') // the Finder will descend at most 3 levels of directories below the starting point.
+     *     $finder->depth(['>= 1', '< 3'])
+     *
+     * @param string|int|string[]|int[] $levels The depth level expression or an array of depth levels
+     *
+     * @return $this
+     *
+     * @see DepthRangeFilterIterator
+     * @see NumberComparator
+     */
+    public function depth(string|int|array $levels) : static
+    {
+    }
+    /**
+     * Adds tests for file dates (last modified).
+     *
+     * The date must be something that strtotime() is able to parse:
+     *
+     *     $finder->date('since yesterday');
+     *     $finder->date('until 2 days ago');
+     *     $finder->date('> now - 2 hours');
+     *     $finder->date('>= 2005-10-15');
+     *     $finder->date(['>= 2005-10-15', '<= 2006-05-27']);
+     *
+     * @param string|string[] $dates A date range string or an array of date ranges
+     *
+     * @return $this
+     *
+     * @see strtotime
+     * @see DateRangeFilterIterator
+     * @see DateComparator
+     */
+    public function date(string|array $dates) : static
+    {
+    }
+    /**
+     * Adds rules that files must match.
+     *
+     * You can use patterns (delimited with / sign), globs or simple strings.
+     *
+     *     $finder->name('*.php')
+     *     $finder->name('/\.php$/') // same as above
+     *     $finder->name('test.php')
+     *     $finder->name(['test.py', 'test.php'])
+     *
+     * @param string|string[] $patterns A pattern (a regexp, a glob, or a string) or an array of patterns
+     *
+     * @return $this
+     *
+     * @see FilenameFilterIterator
+     */
+    public function name(string|array $patterns) : static
+    {
+    }
+    /**
+     * Adds rules that files must not match.
+     *
+     * @param string|string[] $patterns A pattern (a regexp, a glob, or a string) or an array of patterns
+     *
+     * @return $this
+     *
+     * @see FilenameFilterIterator
+     */
+    public function notName(string|array $patterns) : static
+    {
+    }
+    /**
+     * Adds tests that file contents must match.
+     *
+     * Strings or PCRE patterns can be used:
+     *
+     *     $finder->contains('Lorem ipsum')
+     *     $finder->contains('/Lorem ipsum/i')
+     *     $finder->contains(['dolor', '/ipsum/i'])
+     *
+     * @param string|string[] $patterns A pattern (string or regexp) or an array of patterns
+     *
+     * @return $this
+     *
+     * @see FilecontentFilterIterator
+     */
+    public function contains(string|array $patterns) : static
+    {
+    }
+    /**
+     * Adds tests that file contents must not match.
+     *
+     * Strings or PCRE patterns can be used:
+     *
+     *     $finder->notContains('Lorem ipsum')
+     *     $finder->notContains('/Lorem ipsum/i')
+     *     $finder->notContains(['lorem', '/dolor/i'])
+     *
+     * @param string|string[] $patterns A pattern (string or regexp) or an array of patterns
+     *
+     * @return $this
+     *
+     * @see FilecontentFilterIterator
+     */
+    public function notContains(string|array $patterns) : static
+    {
+    }
+    /**
+     * Adds rules that filenames must match.
+     *
+     * You can use patterns (delimited with / sign) or simple strings.
+     *
+     *     $finder->path('some/special/dir')
+     *     $finder->path('/some\/special\/dir/') // same as above
+     *     $finder->path(['some dir', 'another/dir'])
+     *
+     * Use only / as dirname separator.
+     *
+     * @param string|string[] $patterns A pattern (a regexp or a string) or an array of patterns
+     *
+     * @return $this
+     *
+     * @see FilenameFilterIterator
+     */
+    public function path(string|array $patterns) : static
+    {
+    }
+    /**
+     * Adds rules that filenames must not match.
+     *
+     * You can use patterns (delimited with / sign) or simple strings.
+     *
+     *     $finder->notPath('some/special/dir')
+     *     $finder->notPath('/some\/special\/dir/') // same as above
+     *     $finder->notPath(['some/file.txt', 'another/file.log'])
+     *
+     * Use only / as dirname separator.
+     *
+     * @param string|string[] $patterns A pattern (a regexp or a string) or an array of patterns
+     *
+     * @return $this
+     *
+     * @see FilenameFilterIterator
+     */
+    public function notPath(string|array $patterns) : static
+    {
+    }
+    /**
+     * Adds tests for file sizes.
+     *
+     *     $finder->size('> 10K');
+     *     $finder->size('<= 1Ki');
+     *     $finder->size(4);
+     *     $finder->size(['> 10K', '< 20K'])
+     *
+     * @param string|int|string[]|int[] $sizes A size range string or an integer or an array of size ranges
+     *
+     * @return $this
+     *
+     * @see SizeRangeFilterIterator
+     * @see NumberComparator
+     */
+    public function size(string|int|array $sizes) : static
+    {
+    }
+    /**
+     * Excludes directories.
+     *
+     * Directories passed as argument must be relative to the ones defined with the `in()` method. For example:
+     *
+     *     $finder->in(__DIR__)->exclude('ruby');
+     *
+     * @param string|array $dirs A directory path or an array of directories
+     *
+     * @return $this
+     *
+     * @see ExcludeDirectoryFilterIterator
+     */
+    public function exclude(string|array $dirs) : static
+    {
+    }
+    /**
+     * Excludes "hidden" directories and files (starting with a dot).
+     *
+     * This option is enabled by default.
+     *
+     * @return $this
+     *
+     * @see ExcludeDirectoryFilterIterator
+     */
+    public function ignoreDotFiles(bool $ignoreDotFiles) : static
+    {
+    }
+    /**
+     * Forces the finder to ignore version control directories.
+     *
+     * This option is enabled by default.
+     *
+     * @return $this
+     *
+     * @see ExcludeDirectoryFilterIterator
+     */
+    public function ignoreVCS(bool $ignoreVCS) : static
+    {
+    }
+    /**
+     * Forces Finder to obey .gitignore and ignore files based on rules listed there.
+     *
+     * This option is disabled by default.
+     *
+     * @return $this
+     */
+    public function ignoreVCSIgnored(bool $ignoreVCSIgnored) : static
+    {
+    }
+    /**
+     * Adds VCS patterns.
+     *
+     * @see ignoreVCS()
+     *
+     * @param string|string[] $pattern VCS patterns to ignore
+     */
+    public static function addVCSPattern(string|array $pattern)
+    {
+    }
+    /**
+     * Sorts files and directories by an anonymous function.
+     *
+     * The anonymous function receives two \SplFileInfo instances to compare.
+     *
+     * This can be slow as all the matching files and directories must be retrieved for comparison.
+     *
+     * @return $this
+     *
+     * @see SortableIterator
+     */
+    public function sort(\Closure $closure) : static
+    {
+    }
+    /**
+     * Sorts files and directories by extension.
+     *
+     * This can be slow as all the matching files and directories must be retrieved for comparison.
+     *
+     * @return $this
+     *
+     * @see SortableIterator
+     */
+    public function sortByExtension() : static
+    {
+    }
+    /**
+     * Sorts files and directories by name.
+     *
+     * This can be slow as all the matching files and directories must be retrieved for comparison.
+     *
+     * @return $this
+     *
+     * @see SortableIterator
+     */
+    public function sortByName(bool $useNaturalSort = false) : static
+    {
+    }
+    /**
+     * Sorts files and directories by name case insensitive.
+     *
+     * This can be slow as all the matching files and directories must be retrieved for comparison.
+     *
+     * @return $this
+     *
+     * @see SortableIterator
+     */
+    public function sortByCaseInsensitiveName(bool $useNaturalSort = false) : static
+    {
+    }
+    /**
+     * Sorts files and directories by size.
+     *
+     * This can be slow as all the matching files and directories must be retrieved for comparison.
+     *
+     * @return $this
+     *
+     * @see SortableIterator
+     */
+    public function sortBySize() : static
+    {
+    }
+    /**
+     * Sorts files and directories by type (directories before files), then by name.
+     *
+     * This can be slow as all the matching files and directories must be retrieved for comparison.
+     *
+     * @return $this
+     *
+     * @see SortableIterator
+     */
+    public function sortByType() : static
+    {
+    }
+    /**
+     * Sorts files and directories by the last accessed time.
+     *
+     * This is the time that the file was last accessed, read or written to.
+     *
+     * This can be slow as all the matching files and directories must be retrieved for comparison.
+     *
+     * @return $this
+     *
+     * @see SortableIterator
+     */
+    public function sortByAccessedTime() : static
+    {
+    }
+    /**
+     * Reverses the sorting.
+     *
+     * @return $this
+     */
+    public function reverseSorting() : static
+    {
+    }
+    /**
+     * Sorts files and directories by the last inode changed time.
+     *
+     * This is the time that the inode information was last modified (permissions, owner, group or other metadata).
+     *
+     * On Windows, since inode is not available, changed time is actually the file creation time.
+     *
+     * This can be slow as all the matching files and directories must be retrieved for comparison.
+     *
+     * @return $this
+     *
+     * @see SortableIterator
+     */
+    public function sortByChangedTime() : static
+    {
+    }
+    /**
+     * Sorts files and directories by the last modified time.
+     *
+     * This is the last time the actual contents of the file were last modified.
+     *
+     * This can be slow as all the matching files and directories must be retrieved for comparison.
+     *
+     * @return $this
+     *
+     * @see SortableIterator
+     */
+    public function sortByModifiedTime() : static
+    {
+    }
+    /**
+     * Filters the iterator with an anonymous function.
+     *
+     * The anonymous function receives a \SplFileInfo and must return false
+     * to remove files.
+     *
+     * @return $this
+     *
+     * @see CustomFilterIterator
+     */
+    public function filter(\Closure $closure) : static
+    {
+    }
+    /**
+     * Forces the following of symlinks.
+     *
+     * @return $this
+     */
+    public function followLinks() : static
+    {
+    }
+    /**
+     * Tells finder to ignore unreadable directories.
+     *
+     * By default, scanning unreadable directories content throws an AccessDeniedException.
+     *
+     * @return $this
+     */
+    public function ignoreUnreadableDirs(bool $ignore = true) : static
+    {
+    }
+    /**
+     * Searches files and directories which match defined rules.
+     *
+     * @param string|string[] $dirs A directory path or an array of directories
+     *
+     * @return $this
+     *
+     * @throws DirectoryNotFoundException if one of the directories does not exist
+     */
+    public function in(string|array $dirs) : static
+    {
+    }
+    /**
+     * Returns an Iterator for the current Finder configuration.
+     *
+     * This method implements the IteratorAggregate interface.
+     *
+     * @return \Iterator<string, SplFileInfo>
+     *
+     * @throws \LogicException if the in() method has not been called
+     */
+    public function getIterator() : \Iterator
+    {
+    }
+    /**
+     * Appends an existing set of files/directories to the finder.
+     *
+     * The set can be another Finder, an Iterator, an IteratorAggregate, or even a plain array.
+     *
+     * @return $this
+     *
+     * @throws \InvalidArgumentException when the given argument is not iterable
+     */
+    public function append(iterable $iterator) : static
+    {
+    }
+    /**
+     * Check if any results were found.
+     */
+    public function hasResults() : bool
+    {
+    }
+    /**
+     * Counts all the results collected by the iterators.
+     */
+    public function count() : int
+    {
+    }
+    private function searchInDirectory(string $dir) : \Iterator
+    {
+    }
+    /**
+     * Normalizes given directory names by removing trailing slashes.
+     *
+     * Excluding: (s)ftp:// or ssh2.(s)ftp:// wrapper
+     */
+    private function normalizeDir(string $dir) : string
     {
     }
 }
@@ -2048,524 +2566,6 @@ class Process implements \IteratorAggregate
     {
     }
     private function getDefaultEnv() : array
-    {
-    }
-}
-/*
- * This file is part of the Symfony package.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-namespace Symfony\Component\Finder;
-
-/**
- * Finder allows to build rules to find files and directories.
- *
- * It is a thin wrapper around several specialized iterator classes.
- *
- * All rules may be invoked several times.
- *
- * All methods return the current Finder object to allow chaining:
- *
- *     $finder = Finder::create()->files()->name('*.php')->in(__DIR__);
- *
- * @author Fabien Potencier <fabien@symfony.com>
- *
- * @implements \IteratorAggregate<string, SplFileInfo>
- */
-class Finder implements \IteratorAggregate, \Countable
-{
-    public const IGNORE_VCS_FILES = 1;
-    public const IGNORE_DOT_FILES = 2;
-    public const IGNORE_VCS_IGNORED_FILES = 4;
-    private int $mode = 0;
-    private array $names = [];
-    private array $notNames = [];
-    private array $exclude = [];
-    private array $filters = [];
-    private array $depths = [];
-    private array $sizes = [];
-    private bool $followLinks = false;
-    private bool $reverseSorting = false;
-    private \Closure|int|false $sort = false;
-    private int $ignore = 0;
-    private array $dirs = [];
-    private array $dates = [];
-    private array $iterators = [];
-    private array $contains = [];
-    private array $notContains = [];
-    private array $paths = [];
-    private array $notPaths = [];
-    private bool $ignoreUnreadableDirs = false;
-    private static array $vcsPatterns = ['.svn', '_svn', 'CVS', '_darcs', '.arch-params', '.monotone', '.bzr', '.git', '.hg'];
-    public function __construct()
-    {
-    }
-    /**
-     * Creates a new Finder.
-     */
-    public static function create() : static
-    {
-    }
-    /**
-     * Restricts the matching to directories only.
-     *
-     * @return $this
-     */
-    public function directories() : static
-    {
-    }
-    /**
-     * Restricts the matching to files only.
-     *
-     * @return $this
-     */
-    public function files() : static
-    {
-    }
-    /**
-     * Adds tests for the directory depth.
-     *
-     * Usage:
-     *
-     *     $finder->depth('> 1') // the Finder will start matching at level 1.
-     *     $finder->depth('< 3') // the Finder will descend at most 3 levels of directories below the starting point.
-     *     $finder->depth(['>= 1', '< 3'])
-     *
-     * @param string|int|string[]|int[] $levels The depth level expression or an array of depth levels
-     *
-     * @return $this
-     *
-     * @see DepthRangeFilterIterator
-     * @see NumberComparator
-     */
-    public function depth(string|int|array $levels) : static
-    {
-    }
-    /**
-     * Adds tests for file dates (last modified).
-     *
-     * The date must be something that strtotime() is able to parse:
-     *
-     *     $finder->date('since yesterday');
-     *     $finder->date('until 2 days ago');
-     *     $finder->date('> now - 2 hours');
-     *     $finder->date('>= 2005-10-15');
-     *     $finder->date(['>= 2005-10-15', '<= 2006-05-27']);
-     *
-     * @param string|string[] $dates A date range string or an array of date ranges
-     *
-     * @return $this
-     *
-     * @see strtotime
-     * @see DateRangeFilterIterator
-     * @see DateComparator
-     */
-    public function date(string|array $dates) : static
-    {
-    }
-    /**
-     * Adds rules that files must match.
-     *
-     * You can use patterns (delimited with / sign), globs or simple strings.
-     *
-     *     $finder->name('*.php')
-     *     $finder->name('/\.php$/') // same as above
-     *     $finder->name('test.php')
-     *     $finder->name(['test.py', 'test.php'])
-     *
-     * @param string|string[] $patterns A pattern (a regexp, a glob, or a string) or an array of patterns
-     *
-     * @return $this
-     *
-     * @see FilenameFilterIterator
-     */
-    public function name(string|array $patterns) : static
-    {
-    }
-    /**
-     * Adds rules that files must not match.
-     *
-     * @param string|string[] $patterns A pattern (a regexp, a glob, or a string) or an array of patterns
-     *
-     * @return $this
-     *
-     * @see FilenameFilterIterator
-     */
-    public function notName(string|array $patterns) : static
-    {
-    }
-    /**
-     * Adds tests that file contents must match.
-     *
-     * Strings or PCRE patterns can be used:
-     *
-     *     $finder->contains('Lorem ipsum')
-     *     $finder->contains('/Lorem ipsum/i')
-     *     $finder->contains(['dolor', '/ipsum/i'])
-     *
-     * @param string|string[] $patterns A pattern (string or regexp) or an array of patterns
-     *
-     * @return $this
-     *
-     * @see FilecontentFilterIterator
-     */
-    public function contains(string|array $patterns) : static
-    {
-    }
-    /**
-     * Adds tests that file contents must not match.
-     *
-     * Strings or PCRE patterns can be used:
-     *
-     *     $finder->notContains('Lorem ipsum')
-     *     $finder->notContains('/Lorem ipsum/i')
-     *     $finder->notContains(['lorem', '/dolor/i'])
-     *
-     * @param string|string[] $patterns A pattern (string or regexp) or an array of patterns
-     *
-     * @return $this
-     *
-     * @see FilecontentFilterIterator
-     */
-    public function notContains(string|array $patterns) : static
-    {
-    }
-    /**
-     * Adds rules that filenames must match.
-     *
-     * You can use patterns (delimited with / sign) or simple strings.
-     *
-     *     $finder->path('some/special/dir')
-     *     $finder->path('/some\/special\/dir/') // same as above
-     *     $finder->path(['some dir', 'another/dir'])
-     *
-     * Use only / as dirname separator.
-     *
-     * @param string|string[] $patterns A pattern (a regexp or a string) or an array of patterns
-     *
-     * @return $this
-     *
-     * @see FilenameFilterIterator
-     */
-    public function path(string|array $patterns) : static
-    {
-    }
-    /**
-     * Adds rules that filenames must not match.
-     *
-     * You can use patterns (delimited with / sign) or simple strings.
-     *
-     *     $finder->notPath('some/special/dir')
-     *     $finder->notPath('/some\/special\/dir/') // same as above
-     *     $finder->notPath(['some/file.txt', 'another/file.log'])
-     *
-     * Use only / as dirname separator.
-     *
-     * @param string|string[] $patterns A pattern (a regexp or a string) or an array of patterns
-     *
-     * @return $this
-     *
-     * @see FilenameFilterIterator
-     */
-    public function notPath(string|array $patterns) : static
-    {
-    }
-    /**
-     * Adds tests for file sizes.
-     *
-     *     $finder->size('> 10K');
-     *     $finder->size('<= 1Ki');
-     *     $finder->size(4);
-     *     $finder->size(['> 10K', '< 20K'])
-     *
-     * @param string|int|string[]|int[] $sizes A size range string or an integer or an array of size ranges
-     *
-     * @return $this
-     *
-     * @see SizeRangeFilterIterator
-     * @see NumberComparator
-     */
-    public function size(string|int|array $sizes) : static
-    {
-    }
-    /**
-     * Excludes directories.
-     *
-     * Directories passed as argument must be relative to the ones defined with the `in()` method. For example:
-     *
-     *     $finder->in(__DIR__)->exclude('ruby');
-     *
-     * @param string|array $dirs A directory path or an array of directories
-     *
-     * @return $this
-     *
-     * @see ExcludeDirectoryFilterIterator
-     */
-    public function exclude(string|array $dirs) : static
-    {
-    }
-    /**
-     * Excludes "hidden" directories and files (starting with a dot).
-     *
-     * This option is enabled by default.
-     *
-     * @return $this
-     *
-     * @see ExcludeDirectoryFilterIterator
-     */
-    public function ignoreDotFiles(bool $ignoreDotFiles) : static
-    {
-    }
-    /**
-     * Forces the finder to ignore version control directories.
-     *
-     * This option is enabled by default.
-     *
-     * @return $this
-     *
-     * @see ExcludeDirectoryFilterIterator
-     */
-    public function ignoreVCS(bool $ignoreVCS) : static
-    {
-    }
-    /**
-     * Forces Finder to obey .gitignore and ignore files based on rules listed there.
-     *
-     * This option is disabled by default.
-     *
-     * @return $this
-     */
-    public function ignoreVCSIgnored(bool $ignoreVCSIgnored) : static
-    {
-    }
-    /**
-     * Adds VCS patterns.
-     *
-     * @see ignoreVCS()
-     *
-     * @param string|string[] $pattern VCS patterns to ignore
-     */
-    public static function addVCSPattern(string|array $pattern)
-    {
-    }
-    /**
-     * Sorts files and directories by an anonymous function.
-     *
-     * The anonymous function receives two \SplFileInfo instances to compare.
-     *
-     * This can be slow as all the matching files and directories must be retrieved for comparison.
-     *
-     * @return $this
-     *
-     * @see SortableIterator
-     */
-    public function sort(\Closure $closure) : static
-    {
-    }
-    /**
-     * Sorts files and directories by extension.
-     *
-     * This can be slow as all the matching files and directories must be retrieved for comparison.
-     *
-     * @return $this
-     *
-     * @see SortableIterator
-     */
-    public function sortByExtension() : static
-    {
-    }
-    /**
-     * Sorts files and directories by name.
-     *
-     * This can be slow as all the matching files and directories must be retrieved for comparison.
-     *
-     * @return $this
-     *
-     * @see SortableIterator
-     */
-    public function sortByName(bool $useNaturalSort = false) : static
-    {
-    }
-    /**
-     * Sorts files and directories by name case insensitive.
-     *
-     * This can be slow as all the matching files and directories must be retrieved for comparison.
-     *
-     * @return $this
-     *
-     * @see SortableIterator
-     */
-    public function sortByCaseInsensitiveName(bool $useNaturalSort = false) : static
-    {
-    }
-    /**
-     * Sorts files and directories by size.
-     *
-     * This can be slow as all the matching files and directories must be retrieved for comparison.
-     *
-     * @return $this
-     *
-     * @see SortableIterator
-     */
-    public function sortBySize() : static
-    {
-    }
-    /**
-     * Sorts files and directories by type (directories before files), then by name.
-     *
-     * This can be slow as all the matching files and directories must be retrieved for comparison.
-     *
-     * @return $this
-     *
-     * @see SortableIterator
-     */
-    public function sortByType() : static
-    {
-    }
-    /**
-     * Sorts files and directories by the last accessed time.
-     *
-     * This is the time that the file was last accessed, read or written to.
-     *
-     * This can be slow as all the matching files and directories must be retrieved for comparison.
-     *
-     * @return $this
-     *
-     * @see SortableIterator
-     */
-    public function sortByAccessedTime() : static
-    {
-    }
-    /**
-     * Reverses the sorting.
-     *
-     * @return $this
-     */
-    public function reverseSorting() : static
-    {
-    }
-    /**
-     * Sorts files and directories by the last inode changed time.
-     *
-     * This is the time that the inode information was last modified (permissions, owner, group or other metadata).
-     *
-     * On Windows, since inode is not available, changed time is actually the file creation time.
-     *
-     * This can be slow as all the matching files and directories must be retrieved for comparison.
-     *
-     * @return $this
-     *
-     * @see SortableIterator
-     */
-    public function sortByChangedTime() : static
-    {
-    }
-    /**
-     * Sorts files and directories by the last modified time.
-     *
-     * This is the last time the actual contents of the file were last modified.
-     *
-     * This can be slow as all the matching files and directories must be retrieved for comparison.
-     *
-     * @return $this
-     *
-     * @see SortableIterator
-     */
-    public function sortByModifiedTime() : static
-    {
-    }
-    /**
-     * Filters the iterator with an anonymous function.
-     *
-     * The anonymous function receives a \SplFileInfo and must return false
-     * to remove files.
-     *
-     * @return $this
-     *
-     * @see CustomFilterIterator
-     */
-    public function filter(\Closure $closure) : static
-    {
-    }
-    /**
-     * Forces the following of symlinks.
-     *
-     * @return $this
-     */
-    public function followLinks() : static
-    {
-    }
-    /**
-     * Tells finder to ignore unreadable directories.
-     *
-     * By default, scanning unreadable directories content throws an AccessDeniedException.
-     *
-     * @return $this
-     */
-    public function ignoreUnreadableDirs(bool $ignore = true) : static
-    {
-    }
-    /**
-     * Searches files and directories which match defined rules.
-     *
-     * @param string|string[] $dirs A directory path or an array of directories
-     *
-     * @return $this
-     *
-     * @throws DirectoryNotFoundException if one of the directories does not exist
-     */
-    public function in(string|array $dirs) : static
-    {
-    }
-    /**
-     * Returns an Iterator for the current Finder configuration.
-     *
-     * This method implements the IteratorAggregate interface.
-     *
-     * @return \Iterator<string, SplFileInfo>
-     *
-     * @throws \LogicException if the in() method has not been called
-     */
-    public function getIterator() : \Iterator
-    {
-    }
-    /**
-     * Appends an existing set of files/directories to the finder.
-     *
-     * The set can be another Finder, an Iterator, an IteratorAggregate, or even a plain array.
-     *
-     * @return $this
-     *
-     * @throws \InvalidArgumentException when the given argument is not iterable
-     */
-    public function append(iterable $iterator) : static
-    {
-    }
-    /**
-     * Check if any results were found.
-     */
-    public function hasResults() : bool
-    {
-    }
-    /**
-     * Counts all the results collected by the iterators.
-     */
-    public function count() : int
-    {
-    }
-    private function searchInDirectory(string $dir) : \Iterator
-    {
-    }
-    /**
-     * Normalizes given directory names by removing trailing slashes.
-     *
-     * Excluding: (s)ftp:// or ssh2.(s)ftp:// wrapper
-     */
-    private function normalizeDir(string $dir) : string
     {
     }
 }
