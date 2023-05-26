@@ -21,6 +21,9 @@ class ContextBuilder
         );
     }
 
+    /**
+     * @return array<\ReflectionParameter>
+     */
     public function getParameters(): array
     {
         return $this->function->getParameters();

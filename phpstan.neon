@@ -7,3 +7,8 @@ parameters:
     checkGenericClassInNonGenericObjectType: false
     excludePaths:
         analyse: []
+    ignoreErrors:
+        -
+            message: "#^Method Castor\\\\ContextBuilder\\:\\:build\\(\\) has parameter \\$args with no type specified\\.$#"
+            count: 1
+            path: src/ContextBuilder.php

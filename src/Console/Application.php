@@ -112,7 +112,7 @@ class Application extends SymfonyApplication
         $args = [];
         $verbosityLevelSet = false;
         foreach ($builder->getParameters() as $parameters) {
-            if ('verbosityLevel' === $parameters->getName() && VerbosityLevel::class === $parameters->getType()->getName()) {
+            if ('verbosityLevel' === $parameters->getName() && ($type = $parameters->getType()) instanceof \ReflectionNamedType && VerbosityLevel::class === $type->getName()) {
                 $args[] = VerbosityLevel::fromSymfonyOutput($output);
                 $verbosityLevelSet = true;
 

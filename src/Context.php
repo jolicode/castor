@@ -206,24 +206,4 @@ class Context implements \ArrayAccess
     {
         throw new \LogicException('Context is immutable');
     }
-
-    public function isQuiet(): bool
-    {
-        return VerbosityLevel::QUIET === $this->verbosityLevel;
-    }
-
-    public function isVerbose(): bool
-    {
-        return VerbosityLevel::VERBOSE <= $this->verbosityLevel;
-    }
-
-    public function isVeryVerbose(): bool
-    {
-        return VerbosityLevel::VERY_VERBOSE <= $this->verbosityLevel;
-    }
-
-    public function isDebug(): bool
-    {
-        return VerbosityLevel::DEBUG <= $this->verbosityLevel;
-    }
 }

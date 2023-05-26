@@ -20,6 +20,27 @@ enum VerbosityLevel: int
             OutputInterface::VERBOSITY_VERBOSE => self::VERBOSE,
             OutputInterface::VERBOSITY_VERY_VERBOSE => self::VERY_VERBOSE,
             OutputInterface::VERBOSITY_DEBUG => self::DEBUG,
+            default => throw new \InvalidArgumentException('Invalid verbosity level'),
         };
+    }
+
+    public function isQuiet(): bool
+    {
+        return self::QUIET->value === $this->value;
+    }
+
+    public function isVerbose(): bool
+    {
+        return self::VERBOSE->value <= $this->value;
+    }
+
+    public function isVeryVerbose(): bool
+    {
+        return self::VERY_VERBOSE->value <= $this->value;
+    }
+
+    public function isDebug(): bool
+    {
+        return self::DEBUG->value <= $this->value;
     }
 }
