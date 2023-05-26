@@ -9,25 +9,8 @@
       "email": "jwurtz@jolicode.com"
     }
   ],
-  "autoload": {
-    "psr-4": {
-      "Castor\\Tools\\": "src/"
-    }
-  },
   "require": {
-    "humbug/box": "^4.3.8",
-    "humbug/php-scoper": "^0.18.3",
-    "nikic/php-parser": "v4.15.5",
-    "symfony/console": "^6.2",
-    "symfony/finder": "^6.2"
-  },
-  "scripts": {
-    "post-install-cmd": [
-      "bin/stub-generator"
-    ],
-    "post-update-cmd": [
-      "bin/stub-generator"
-    ]
+    "humbug/box": "^4.3.8"
   },
   "config": {
     "optimize-autoloader": true,

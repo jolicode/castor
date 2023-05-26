@@ -1,11 +1,12 @@
 <?php
 
-namespace Castor\Tools;
+namespace Castor\Stub;
 
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
 
+/** @internal */
 class NodeVisitor extends NodeVisitorAbstract
 {
     private $currentUseStatements = [];

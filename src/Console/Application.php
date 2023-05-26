@@ -2,6 +2,7 @@
 
 namespace Castor\Console;
 
+use Castor\Console\Command\StubsGeneratorCommand;
 use Castor\Console\Command\TaskCommand;
 use Castor\ContextBuilder;
 use Castor\ContextRegistry;
@@ -30,6 +31,8 @@ class Application extends SymfonyApplication
     // is registered
     public function doRun(InputInterface $input, OutputInterface $output): int
     {
+        $this->add(new StubsGeneratorCommand());
+
         // Find all potential commands / context
         $functions = (new FunctionFinder())->findFunctions($this->rootDir);
 
