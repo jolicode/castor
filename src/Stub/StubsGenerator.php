@@ -81,10 +81,6 @@ final class StubsGenerator
             return true;
         }
 
-        if (Application::VERSION !== $matches[1]) {
-            return true;
-        }
-
-        return false;
+        return Application::VERSION !== $matches[1];
     }
 }
