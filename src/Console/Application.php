@@ -14,6 +14,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /** @internal */
 class Application extends SymfonyApplication
@@ -109,22 +110,33 @@ class Application extends SymfonyApplication
             ->getContextBuilder($input->getOption('context'))
         ;
 
+        static $supportedParameterTypes = [
+            SymfonyStyle::class,
+            self::class,
+            InputInterface::class,
+            OutputInterface::class,
+        ];
+
         $args = [];
-        $verbosityLevelSet = false;
-        foreach ($builder->getParameters() as $parameters) {
-            if ('verbosityLevel' === $parameters->getName() && ($type = $parameters->getType()) instanceof \ReflectionNamedType && VerbosityLevel::class === $type->getName()) {
-                $args[] = VerbosityLevel::fromSymfonyOutput($output);
-                $verbosityLevelSet = true;
+        foreach ($builder->getParameters() as $parameter) {
+            if (($type = $parameter->getType()) instanceof \ReflectionNamedType && \in_array($type->getName(), $supportedParameterTypes, true)) {
+                $args[] = match ($type->getName()) {
+                    SymfonyStyle::class => new SymfonyStyle($input, $output),
+                    self::class => $this,
+                    InputInterface::class => $input,
+                    OutputInterface::class => $output,
+                    default => throw new \LogicException(sprintf('Argument "%s" is not supported in context builder named "%s".', $parameter->getName(), $builder->getName())),
+                };
 
                 continue;
             }
 
-            throw new \LogicException(sprintf('Only the "int $verbosityLevel" parameter is supported in context builder named "%s".', $builder->getName()));
+            throw new \LogicException(sprintf('Argument "%s" is not supported in context builder named "%s".', $parameter->getName(), $builder->getName()));
         }
 
         $context = $builder->build(...$args);
 
-        if (!$verbosityLevelSet) {
+        if ($context->verbosityLevel->isNotConfigured()) {
             $context = $context->withVerbosityLevel(VerbosityLevel::fromSymfonyOutput($output));
         }
 

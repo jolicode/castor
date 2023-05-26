@@ -20,7 +20,7 @@ class Context implements \ArrayAccess
         public readonly bool $quiet = false,
         public readonly bool $allowFailure = false,
         public readonly bool $notify = false,
-        public readonly VerbosityLevel $verbosityLevel = VerbosityLevel::NORMAL,
+        public readonly VerbosityLevel $verbosityLevel = VerbosityLevel::NOT_CONFIGURED,
     ) {
         $this->currentDirectory = $currentDirectory ?? PathHelper::getRoot();
     }
@@ -194,7 +194,11 @@ class Context implements \ArrayAccess
 
     public function offsetGet(mixed $offset): mixed
     {
-        return $this->data[$offset] ?? throw new \RuntimeException(sprintf('The property "%s" does not exist in the current context.', $offset));
+        if (!\array_key_exists($offset, $this->data)) {
+            throw new \RuntimeException(sprintf('The property "%s" does not exist in the current context.', $offset));
+        }
+
+        return $this->data[$offset];
     }
 
     public function offsetSet(mixed $offset, mixed $value): void
