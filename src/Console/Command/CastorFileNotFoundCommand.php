@@ -42,6 +42,7 @@ class CastorFileNotFoundCommand extends SingleCommandApplication
         );
 
         $io->success('Project created. You can edit ".castor.php" and write your own tasks.');
+        $io->note('Run "castor" to see the available tasks.');
 
         return 0;
     }

@@ -8,6 +8,10 @@
         {
             "name": "Joel Wurtz",
             "email": "jwurtz@jolicode.com"
+        },
+        {
+            "name": "Grégoire Pineau",
+            "email": "lyrixx@lyrixx.info"
         }
     ],
     "autoload": {
