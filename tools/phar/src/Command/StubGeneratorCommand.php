@@ -39,6 +39,8 @@ class StubGeneratorCommand extends SingleCommandApplication
                 "{$path}/vendor/symfony/console/Style/SymfonyStyle.php",
                 "{$path}/vendor/symfony/process/Process.php",
                 "{$path}/vendor/symfony/finder/Finder.php",
+                "{$path}/vendor/symfony/filesystem/Filesystem.php",
+                "{$path}/vendor/symfony/filesystem/Path.php",
             ])
             ->name('*.php')
             ->sortByName()

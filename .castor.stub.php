@@ -1206,6 +1206,605 @@ class SymfonyStyle extends OutputStyle
     {
     }
 }
+namespace Symfony\Component\Filesystem;
+
+/**
+ * Provides basic utility to manipulate the file system.
+ *
+ * @author Fabien Potencier <fabien@symfony.com>
+ */
+class Filesystem
+{
+    private static $lastError;
+    /**
+     * Copies a file.
+     *
+     * If the target file is older than the origin file, it's always overwritten.
+     * If the target file is newer, it is overwritten only when the
+     * $overwriteNewerFiles option is set to true.
+     *
+     * @throws FileNotFoundException When originFile doesn't exist
+     * @throws IOException           When copy fails
+     */
+    public function copy(string $originFile, string $targetFile, bool $overwriteNewerFiles = false)
+    {
+    }
+    /**
+     * Creates a directory recursively.
+     *
+     * @throws IOException On any directory creation failure
+     */
+    public function mkdir(string|iterable $dirs, int $mode = 0777)
+    {
+    }
+    /**
+     * Checks the existence of files or directories.
+     */
+    public function exists(string|iterable $files) : bool
+    {
+    }
+    /**
+     * Sets access and modification time of file.
+     *
+     * @param int|null $time  The touch time as a Unix timestamp, if not supplied the current system time is used
+     * @param int|null $atime The access time as a Unix timestamp, if not supplied the current system time is used
+     *
+     * @throws IOException When touch fails
+     */
+    public function touch(string|iterable $files, int $time = null, int $atime = null)
+    {
+    }
+    /**
+     * Removes files or directories.
+     *
+     * @throws IOException When removal fails
+     */
+    public function remove(string|iterable $files)
+    {
+    }
+    private static function doRemove(array $files, bool $isRecursive) : void
+    {
+    }
+    /**
+     * Change mode for an array of files or directories.
+     *
+     * @param int  $mode      The new mode (octal)
+     * @param int  $umask     The mode mask (octal)
+     * @param bool $recursive Whether change the mod recursively or not
+     *
+     * @throws IOException When the change fails
+     */
+    public function chmod(string|iterable $files, int $mode, int $umask = 00, bool $recursive = false)
+    {
+    }
+    /**
+     * Change the owner of an array of files or directories.
+     *
+     * @param string|int $user      A user name or number
+     * @param bool       $recursive Whether change the owner recursively or not
+     *
+     * @throws IOException When the change fails
+     */
+    public function chown(string|iterable $files, string|int $user, bool $recursive = false)
+    {
+    }
+    /**
+     * Change the group of an array of files or directories.
+     *
+     * @param string|int $group     A group name or number
+     * @param bool       $recursive Whether change the group recursively or not
+     *
+     * @throws IOException When the change fails
+     */
+    public function chgrp(string|iterable $files, string|int $group, bool $recursive = false)
+    {
+    }
+    /**
+     * Renames a file or a directory.
+     *
+     * @throws IOException When target file or directory already exists
+     * @throws IOException When origin cannot be renamed
+     */
+    public function rename(string $origin, string $target, bool $overwrite = false)
+    {
+    }
+    /**
+     * Tells whether a file exists and is readable.
+     *
+     * @throws IOException When windows path is longer than 258 characters
+     */
+    private function isReadable(string $filename) : bool
+    {
+    }
+    /**
+     * Creates a symbolic link or copy a directory.
+     *
+     * @throws IOException When symlink fails
+     */
+    public function symlink(string $originDir, string $targetDir, bool $copyOnWindows = false)
+    {
+    }
+    /**
+     * Creates a hard link, or several hard links to a file.
+     *
+     * @param string|string[] $targetFiles The target file(s)
+     *
+     * @throws FileNotFoundException When original file is missing or not a file
+     * @throws IOException           When link fails, including if link already exists
+     */
+    public function hardlink(string $originFile, string|iterable $targetFiles)
+    {
+    }
+    /**
+     * @param string $linkType Name of the link type, typically 'symbolic' or 'hard'
+     */
+    private function linkException(string $origin, string $target, string $linkType)
+    {
+    }
+    /**
+     * Resolves links in paths.
+     *
+     * With $canonicalize = false (default)
+     *      - if $path does not exist or is not a link, returns null
+     *      - if $path is a link, returns the next direct target of the link without considering the existence of the target
+     *
+     * With $canonicalize = true
+     *      - if $path does not exist, returns null
+     *      - if $path exists, returns its absolute fully resolved final version
+     */
+    public function readlink(string $path, bool $canonicalize = false) : ?string
+    {
+    }
+    /**
+     * Given an existing path, convert it to a path relative to a given starting path.
+     */
+    public function makePathRelative(string $endPath, string $startPath) : string
+    {
+    }
+    /**
+     * Mirrors a directory to another.
+     *
+     * Copies files and directories from the origin directory into the target directory. By default:
+     *
+     *  - existing files in the target directory will be overwritten, except if they are newer (see the `override` option)
+     *  - files in the target directory that do not exist in the source directory will not be deleted (see the `delete` option)
+     *
+     * @param \Traversable|null $iterator Iterator that filters which files and directories to copy, if null a recursive iterator is created
+     * @param array             $options  An array of boolean options
+     *                                    Valid options are:
+     *                                    - $options['override'] If true, target files newer than origin files are overwritten (see copy(), defaults to false)
+     *                                    - $options['copy_on_windows'] Whether to copy files instead of links on Windows (see symlink(), defaults to false)
+     *                                    - $options['delete'] Whether to delete files that are not in the source directory (defaults to false)
+     *
+     * @throws IOException When file type is unknown
+     */
+    public function mirror(string $originDir, string $targetDir, \Traversable $iterator = null, array $options = [])
+    {
+    }
+    /**
+     * Returns whether the file path is an absolute path.
+     */
+    public function isAbsolutePath(string $file) : bool
+    {
+    }
+    /**
+     * Creates a temporary file with support for custom stream wrappers.
+     *
+     * @param string $prefix The prefix of the generated temporary filename
+     *                       Note: Windows uses only the first three characters of prefix
+     * @param string $suffix The suffix of the generated temporary filename
+     *
+     * @return string The new temporary filename (with path), or throw an exception on failure
+     */
+    public function tempnam(string $dir, string $prefix, string $suffix = '') : string
+    {
+    }
+    /**
+     * Atomically dumps content into a file.
+     *
+     * @param string|resource $content The data to write into the file
+     *
+     * @throws IOException if the file cannot be written to
+     */
+    public function dumpFile(string $filename, $content)
+    {
+    }
+    /**
+     * Appends content to an existing file.
+     *
+     * @param string|resource $content The content to append
+     * @param bool            $lock    Whether the file should be locked when writing to it
+     *
+     * @throws IOException If the file is not writable
+     */
+    public function appendToFile(string $filename, $content)
+    {
+    }
+    private function toIterable(string|iterable $files) : iterable
+    {
+    }
+    /**
+     * Gets a 2-tuple of scheme (may be null) and hierarchical part of a filename (e.g. file:///tmp -> [file, tmp]).
+     */
+    private function getSchemeAndHierarchy(string $filename) : array
+    {
+    }
+    private static function assertFunctionExists(string $func) : void
+    {
+    }
+    private static function box(string $func, mixed ...$args) : mixed
+    {
+    }
+}
+namespace Symfony\Component\Filesystem;
+
+/**
+ * Contains utility methods for handling path strings.
+ *
+ * The methods in this class are able to deal with both UNIX and Windows paths
+ * with both forward and backward slashes. All methods return normalized parts
+ * containing only forward slashes and no excess "." and ".." segments.
+ *
+ * @author Bernhard Schussek <bschussek@gmail.com>
+ * @author Thomas Schulz <mail@king2500.net>
+ * @author Théo Fidry <theo.fidry@gmail.com>
+ */
+final class Path
+{
+    /**
+     * The number of buffer entries that triggers a cleanup operation.
+     */
+    private const CLEANUP_THRESHOLD = 1250;
+    /**
+     * The buffer size after the cleanup operation.
+     */
+    private const CLEANUP_SIZE = 1000;
+    /**
+     * Buffers input/output of {@link canonicalize()}.
+     *
+     * @var array<string, string>
+     */
+    private static $buffer = [];
+    /**
+     * @var int
+     */
+    private static $bufferSize = 0;
+    /**
+     * Canonicalizes the given path.
+     *
+     * During normalization, all slashes are replaced by forward slashes ("/").
+     * Furthermore, all "." and ".." segments are removed as far as possible.
+     * ".." segments at the beginning of relative paths are not removed.
+     *
+     * ```php
+     * echo Path::canonicalize("\symfony\puli\..\css\style.css");
+     * // => /symfony/css/style.css
+     *
+     * echo Path::canonicalize("../css/./style.css");
+     * // => ../css/style.css
+     * ```
+     *
+     * This method is able to deal with both UNIX and Windows paths.
+     */
+    public static function canonicalize(string $path) : string
+    {
+    }
+    /**
+     * Normalizes the given path.
+     *
+     * During normalization, all slashes are replaced by forward slashes ("/").
+     * Contrary to {@link canonicalize()}, this method does not remove invalid
+     * or dot path segments. Consequently, it is much more efficient and should
+     * be used whenever the given path is known to be a valid, absolute system
+     * path.
+     *
+     * This method is able to deal with both UNIX and Windows paths.
+     */
+    public static function normalize(string $path) : string
+    {
+    }
+    /**
+     * Returns the directory part of the path.
+     *
+     * This method is similar to PHP's dirname(), but handles various cases
+     * where dirname() returns a weird result:
+     *
+     *  - dirname() does not accept backslashes on UNIX
+     *  - dirname("C:/symfony") returns "C:", not "C:/"
+     *  - dirname("C:/") returns ".", not "C:/"
+     *  - dirname("C:") returns ".", not "C:/"
+     *  - dirname("symfony") returns ".", not ""
+     *  - dirname() does not canonicalize the result
+     *
+     * This method fixes these shortcomings and behaves like dirname()
+     * otherwise.
+     *
+     * The result is a canonical path.
+     *
+     * @return string The canonical directory part. Returns the root directory
+     *                if the root directory is passed. Returns an empty string
+     *                if a relative path is passed that contains no slashes.
+     *                Returns an empty string if an empty string is passed.
+     */
+    public static function getDirectory(string $path) : string
+    {
+    }
+    /**
+     * Returns canonical path of the user's home directory.
+     *
+     * Supported operating systems:
+     *
+     *  - UNIX
+     *  - Windows8 and upper
+     *
+     * If your operating system or environment isn't supported, an exception is thrown.
+     *
+     * The result is a canonical path.
+     *
+     * @throws RuntimeException If your operating system or environment isn't supported
+     */
+    public static function getHomeDirectory() : string
+    {
+    }
+    /**
+     * Returns the root directory of a path.
+     *
+     * The result is a canonical path.
+     *
+     * @return string The canonical root directory. Returns an empty string if
+     *                the given path is relative or empty.
+     */
+    public static function getRoot(string $path) : string
+    {
+    }
+    /**
+     * Returns the file name without the extension from a file path.
+     *
+     * @param string|null $extension if specified, only that extension is cut
+     *                               off (may contain leading dot)
+     */
+    public static function getFilenameWithoutExtension(string $path, string $extension = null) : string
+    {
+    }
+    /**
+     * Returns the extension from a file path (without leading dot).
+     *
+     * @param bool $forceLowerCase forces the extension to be lower-case
+     */
+    public static function getExtension(string $path, bool $forceLowerCase = false) : string
+    {
+    }
+    /**
+     * Returns whether the path has an (or the specified) extension.
+     *
+     * @param string               $path       the path string
+     * @param string|string[]|null $extensions if null or not provided, checks if
+     *                                         an extension exists, otherwise
+     *                                         checks for the specified extension
+     *                                         or array of extensions (with or
+     *                                         without leading dot)
+     * @param bool                 $ignoreCase whether to ignore case-sensitivity
+     */
+    public static function hasExtension(string $path, $extensions = null, bool $ignoreCase = false) : bool
+    {
+    }
+    /**
+     * Changes the extension of a path string.
+     *
+     * @param string $path      The path string with filename.ext to change.
+     * @param string $extension new extension (with or without leading dot)
+     *
+     * @return string the path string with new file extension
+     */
+    public static function changeExtension(string $path, string $extension) : string
+    {
+    }
+    public static function isAbsolute(string $path) : bool
+    {
+    }
+    public static function isRelative(string $path) : bool
+    {
+    }
+    /**
+     * Turns a relative path into an absolute path in canonical form.
+     *
+     * Usually, the relative path is appended to the given base path. Dot
+     * segments ("." and "..") are removed/collapsed and all slashes turned
+     * into forward slashes.
+     *
+     * ```php
+     * echo Path::makeAbsolute("../style.css", "/symfony/puli/css");
+     * // => /symfony/puli/style.css
+     * ```
+     *
+     * If an absolute path is passed, that path is returned unless its root
+     * directory is different than the one of the base path. In that case, an
+     * exception is thrown.
+     *
+     * ```php
+     * Path::makeAbsolute("/style.css", "/symfony/puli/css");
+     * // => /style.css
+     *
+     * Path::makeAbsolute("C:/style.css", "C:/symfony/puli/css");
+     * // => C:/style.css
+     *
+     * Path::makeAbsolute("C:/style.css", "/symfony/puli/css");
+     * // InvalidArgumentException
+     * ```
+     *
+     * If the base path is not an absolute path, an exception is thrown.
+     *
+     * The result is a canonical path.
+     *
+     * @param string $basePath an absolute base path
+     *
+     * @throws InvalidArgumentException if the base path is not absolute or if
+     *                                  the given path is an absolute path with
+     *                                  a different root than the base path
+     */
+    public static function makeAbsolute(string $path, string $basePath) : string
+    {
+    }
+    /**
+     * Turns a path into a relative path.
+     *
+     * The relative path is created relative to the given base path:
+     *
+     * ```php
+     * echo Path::makeRelative("/symfony/style.css", "/symfony/puli");
+     * // => ../style.css
+     * ```
+     *
+     * If a relative path is passed and the base path is absolute, the relative
+     * path is returned unchanged:
+     *
+     * ```php
+     * Path::makeRelative("style.css", "/symfony/puli/css");
+     * // => style.css
+     * ```
+     *
+     * If both paths are relative, the relative path is created with the
+     * assumption that both paths are relative to the same directory:
+     *
+     * ```php
+     * Path::makeRelative("style.css", "symfony/puli/css");
+     * // => ../../../style.css
+     * ```
+     *
+     * If both paths are absolute, their root directory must be the same,
+     * otherwise an exception is thrown:
+     *
+     * ```php
+     * Path::makeRelative("C:/symfony/style.css", "/symfony/puli");
+     * // InvalidArgumentException
+     * ```
+     *
+     * If the passed path is absolute, but the base path is not, an exception
+     * is thrown as well:
+     *
+     * ```php
+     * Path::makeRelative("/symfony/style.css", "symfony/puli");
+     * // InvalidArgumentException
+     * ```
+     *
+     * If the base path is not an absolute path, an exception is thrown.
+     *
+     * The result is a canonical path.
+     *
+     * @throws InvalidArgumentException if the base path is not absolute or if
+     *                                  the given path has a different root
+     *                                  than the base path
+     */
+    public static function makeRelative(string $path, string $basePath) : string
+    {
+    }
+    /**
+     * Returns whether the given path is on the local filesystem.
+     */
+    public static function isLocal(string $path) : bool
+    {
+    }
+    /**
+     * Returns the longest common base path in canonical form of a set of paths or
+     * `null` if the paths are on different Windows partitions.
+     *
+     * Dot segments ("." and "..") are removed/collapsed and all slashes turned
+     * into forward slashes.
+     *
+     * ```php
+     * $basePath = Path::getLongestCommonBasePath(
+     *     '/symfony/css/style.css',
+     *     '/symfony/css/..'
+     * );
+     * // => /symfony
+     * ```
+     *
+     * The root is returned if no common base path can be found:
+     *
+     * ```php
+     * $basePath = Path::getLongestCommonBasePath(
+     *     '/symfony/css/style.css',
+     *     '/puli/css/..'
+     * );
+     * // => /
+     * ```
+     *
+     * If the paths are located on different Windows partitions, `null` is
+     * returned.
+     *
+     * ```php
+     * $basePath = Path::getLongestCommonBasePath(
+     *     'C:/symfony/css/style.css',
+     *     'D:/symfony/css/..'
+     * );
+     * // => null
+     * ```
+     */
+    public static function getLongestCommonBasePath(string ...$paths) : ?string
+    {
+    }
+    /**
+     * Joins two or more path strings into a canonical path.
+     */
+    public static function join(string ...$paths) : string
+    {
+    }
+    /**
+     * Returns whether a path is a base path of another path.
+     *
+     * Dot segments ("." and "..") are removed/collapsed and all slashes turned
+     * into forward slashes.
+     *
+     * ```php
+     * Path::isBasePath('/symfony', '/symfony/css');
+     * // => true
+     *
+     * Path::isBasePath('/symfony', '/symfony');
+     * // => true
+     *
+     * Path::isBasePath('/symfony', '/symfony/..');
+     * // => false
+     *
+     * Path::isBasePath('/symfony', '/puli');
+     * // => false
+     * ```
+     */
+    public static function isBasePath(string $basePath, string $ofPath) : bool
+    {
+    }
+    /**
+     * @return string[]
+     */
+    private static function findCanonicalParts(string $root, string $pathWithoutRoot) : array
+    {
+    }
+    /**
+     * Splits a canonical path into its root directory and the remainder.
+     *
+     * If the path has no root directory, an empty root directory will be
+     * returned.
+     *
+     * If the root directory is a Windows style partition, the resulting root
+     * will always contain a trailing slash.
+     *
+     * list ($root, $path) = Path::split("C:/symfony")
+     * // => ["C:/", "symfony"]
+     *
+     * list ($root, $path) = Path::split("C:")
+     * // => ["C:/", ""]
+     *
+     * @return array{string, string} an array with the root directory and the remaining relative path
+     */
+    private static function split(string $path) : array
+    {
+    }
+    private static function toLower(string $string) : string
+    {
+    }
+    private function __construct()
+    {
+    }
+}
 namespace Symfony\Component\Finder;
 
 /**
