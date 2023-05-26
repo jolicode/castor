@@ -151,14 +151,6 @@ function log(string $message, string $level = 'info', array $context = []) : voi
 function import(string $path) : void
 {
 }
-/*
- * This file is part of the Symfony package.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 namespace Symfony\Component\Console;
 
 /**
@@ -534,14 +526,6 @@ class Application implements \Symfony\Contracts\Service\ResetInterface
     {
     }
 }
-/*
- * This file is part of the Symfony package.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 namespace Symfony\Component\Console\Input;
 
 /**
@@ -627,14 +611,6 @@ class InputArgument
     {
     }
 }
-/*
- * This file is part of the Symfony package.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 namespace Symfony\Component\Console\Input;
 
 /**
@@ -787,14 +763,6 @@ interface InputInterface
     {
     }
 }
-/*
- * This file is part of the Symfony package.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 namespace Symfony\Component\Console\Input;
 
 /**
@@ -924,14 +892,6 @@ class InputOption
     {
     }
 }
-/*
- * This file is part of the Symfony package.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 namespace Symfony\Component\Console\Output;
 
 /**
@@ -1037,14 +997,6 @@ interface OutputInterface
     {
     }
 }
-/*
- * This file is part of the Symfony package.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 namespace Symfony\Component\Console\Style;
 
 /**
@@ -1254,14 +1206,6 @@ class SymfonyStyle extends OutputStyle
     {
     }
 }
-/*
- * This file is part of the Symfony package.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 namespace Symfony\Component\Finder;
 
 /**
@@ -1772,14 +1716,6 @@ class Finder implements \IteratorAggregate, \Countable
     {
     }
 }
-/*
- * This file is part of the Symfony package.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 namespace Symfony\Component\Process;
 
 /**
