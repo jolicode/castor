@@ -6,6 +6,7 @@ use Castor\Console\Command\TaskCommand;
 use Castor\ContextBuilder;
 use Castor\ContextRegistry;
 use Castor\FunctionFinder;
+use Castor\Stub\StubsGenerator;
 use Castor\TaskDescriptor;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Command\Command;
@@ -16,12 +17,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 /** @internal */
 class Application extends SymfonyApplication
 {
+    public const VERSION = 'v0.1.0';
+
     public readonly ContextRegistry $contextRegistry;
 
     public function __construct(
         private readonly string $rootDir,
     ) {
-        parent::__construct('castor', 'v0.1.0');
+        parent::__construct('castor', self::VERSION);
 
         $this->contextRegistry = new ContextRegistry();
     }
@@ -30,6 +33,8 @@ class Application extends SymfonyApplication
     // is registered
     public function doRun(InputInterface $input, OutputInterface $output): int
     {
+        (new StubsGenerator())->generateStubsIfNeeded($this->rootDir . '/.castor.stub.php');
+
         // Find all potential commands / context
         $functions = (new FunctionFinder())->findFunctions($this->rootDir);
 
@@ -81,12 +86,15 @@ class Application extends SymfonyApplication
 
     protected function doRunCommand(Command $command, InputInterface $input, OutputInterface $output): int
     {
-        $context = $this
-            ->contextRegistry
-            ->getContextBuilder($input->getOption('context'))
-            ->build()
-        ;
-        ContextRegistry::setInitialContext($context);
+        // occurs when running `castor -h`
+        if ($input->hasOption('context')) {
+            $context = $this
+                ->contextRegistry
+                ->getContextBuilder($input->getOption('context'))
+                ->build()
+            ;
+            ContextRegistry::setInitialContext($context);
+        }
 
         return parent::doRunCommand($command, $input, $output);
     }

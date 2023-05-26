@@ -1,16 +1,18 @@
 <?php
 
-namespace Castor\Tools;
+namespace Castor\Stub;
 
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
 
+/** @internal */
 class NodeVisitor extends NodeVisitorAbstract
 {
-    private $currentUseStatements = [];
+    /** @var array<string, Node\Name> */
+    private array $currentUseStatements = [];
 
-    public function enterNode(Node $node)
+    public function enterNode(Node $node): ?Node
     {
         if ($node instanceof Node\Stmt\Function_) {
             $node->stmts = [];
@@ -37,9 +39,11 @@ class NodeVisitor extends NodeVisitorAbstract
                 return new Node\Name\FullyQualified($this->currentUseStatements[$name]->parts);
             }
         }
+
+        return null;
     }
 
-    public function leaveNode(Node $node, bool $preserveStack = false)
+    public function leaveNode(Node $node, bool $preserveStack = false): ?int
     {
         $docComment = $node->getDocComment();
 
@@ -56,5 +60,7 @@ class NodeVisitor extends NodeVisitorAbstract
         if ($node instanceof Node\Stmt\Use_) {
             return NodeTraverser::REMOVE_NODE;
         }
+
+        return null;
     }
 }
