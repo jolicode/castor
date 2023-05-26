@@ -22,9 +22,12 @@ function foo(): void
 ```
 
 The `parallel()` function use the [`\Fiber`](https://www.php.net/Fiber) class to
-execute the functions in parallel. The code is not executed in parallel only
-functions using this concept will be executed in parallel, which is the case for
-the `exec()` and `watch()` function.
+execute the functions in parallel.
+
+> **Note**
+> The code is not executed in parallel. Only functions using this concept
+> will be executed in parallel, which is the case for
+> the `exec()` and `watch()` function.
 
 ### Watching in parallel
 
