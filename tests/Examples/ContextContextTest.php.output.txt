@@ -1,2 +1,4 @@
-development
-foo: bar
+context name: my_default
+Production? no
+verbosity: 1
+context: bar

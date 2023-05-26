@@ -120,7 +120,7 @@ function exec(
         };
     }
 
-    log('Running command: ' . $process->getCommandLine(), 'debug');
+    log(sprintf('Running command: "%s".', $process->getCommandLine()), 'debug');
 
     $process->start(function ($type, $bytes) use ($callback, $process) {
         if ($callback) {
@@ -141,9 +141,20 @@ function exec(
         notify(sprintf('The command "%s" has been finished %s.', $process->getCommandLine(), 0 === $exitCode ? 'successfully' : 'with an error'));
     }
 
-    if (0 !== $exitCode && !$context->allowFailure) {
-        throw new ProcessFailedException($process);
+    if (0 !== $exitCode) {
+        log(sprintf('Command finished with and error (exit code=%d).', $process->getExitCode()), 'notice');
+        if (!$context->allowFailure) {
+            if ($context->isVeryVerbose()) {
+                throw new ProcessFailedException($process);
+            }
+
+            throw new \RuntimeException("The command \"{$process->getCommandLine()}\" failed.");
+        }
+
+        return $process;
     }
+
+    log('Command finished successfully.', 'debug');
 
     return $process;
 }
