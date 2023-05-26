@@ -13,6 +13,7 @@ use function Castor\exec;
 function defaultContext(): Context
 {
     return new Context([
+        'name' => 'my_default',
         'production' => false,
         'foo' => 'bar',
     ]);
@@ -23,6 +24,7 @@ function productionContext(): Context
 {
     return defaultContext()
         ->withData([
+            'name' => 'production',
             'production' => true,
         ])
     ;
@@ -35,6 +37,7 @@ function execContext(): Context
     $foo = trim(exec('echo $FOO', quiet: true)->getOutput()) ?: 'no defined';
 
     return new Context([
+        'name' => 'exec',
         'production' => (bool) $production,
         'foo' => $foo,
     ]);
@@ -47,6 +50,7 @@ function interactiveContext(SymfonyStyle $io): Context
     $foo = $io->ask('What is the "foo" value?', null);
 
     return new Context([
+        'name' => 'interactive',
         'production' => (bool) $production,
         'foo' => $foo,
     ]);
@@ -55,7 +59,8 @@ function interactiveContext(SymfonyStyle $io): Context
 #[AsTask(description: 'Displays information about the context')]
 function context(Context $context)
 {
-    echo 'Production? ' . ($context['production'] ? 'yes' : 'no') . "\n";
+    echo 'context name: ' . ($context->offsetExists('name') ? $context['name'] : 'N/A') . "\n";
+    echo 'Production? ' . ($context->offsetExists('production') && $context['production'] ? 'yes' : 'no') . "\n";
     echo "verbosity: {$context->verbosityLevel->value}\n";
-    echo "foo: {$context['foo']}\n";
+    echo 'context: ' . ($context->offsetExists('foo') ? $context['foo'] : 'N/A') . "\n";
 }

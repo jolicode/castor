@@ -189,7 +189,7 @@ class Context implements \ArrayAccess
 
     public function offsetExists(mixed $offset): bool
     {
-        return isset($this->data[$offset]);
+        return \array_key_exists($offset, $this->data);
     }
 
     public function offsetGet(mixed $offset): mixed

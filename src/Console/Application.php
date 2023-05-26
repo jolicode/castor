@@ -3,6 +3,7 @@
 namespace Castor\Console;
 
 use Castor\Console\Command\TaskCommand;
+use Castor\Context;
 use Castor\ContextBuilder;
 use Castor\ContextRegistry;
 use Castor\FunctionFinder;
@@ -61,48 +62,45 @@ class Application extends SymfonyApplication
         // Find all potential commands / context
         $functions = (new FunctionFinder())->findFunctions($this->rootDir);
 
-        $defaultContext = null;
-
         foreach ($functions as $function) {
             if ($function instanceof TaskDescriptor) {
                 $this->add(new TaskCommand($function->taskAttribute, $function->function));
-
-                continue;
-            }
-
-            if ($function instanceof ContextBuilder) {
-                if ($function->isDefault()) {
-                    if (null !== $defaultContext) {
-                        throw new \LogicException('Only one default context is allowed.');
-                    }
-
-                    $defaultContext = $function;
-
-                    continue;
-                }
-
-                $this->contextRegistry->addContextBuilder($function->getName(), $function);
+            } elseif ($function instanceof ContextBuilder) {
+                $this->contextRegistry->addContextBuilder($function);
             }
         }
 
-        $this->contextRegistry->addContextBuilder('default', $defaultContext ?? ContextBuilder::createDefault());
+        $this->contextRegistry->setDefaultContextIfEmpty();
 
-        $contextNames = implode('|', $this->contextRegistry->getContextNames());
-        $this->getDefinition()->addOption(new InputOption(
-            'context',
-            null,
-            InputOption::VALUE_REQUIRED,
-            "The context to use ({$contextNames})",
-            'default',
-            $this->contextRegistry->getContextNames(),
-        ));
+        $contextNames = $this->contextRegistry->getContextNames();
+        if ($contextNames) {
+            $this->getDefinition()->addOption(new InputOption(
+                'context',
+                null,
+                InputOption::VALUE_REQUIRED,
+                sprintf('The context to use (%s)', implode('|', $contextNames)),
+                $this->contextRegistry->getDefaultContextBuilder()->getName(),
+                $contextNames,
+            ));
+        }
     }
 
     private function initializeContext(InputInterface $input, OutputInterface $output): void
     {
-        // occurs when running `castor -h`
+        $context = $this->createContext($input, $output);
+
+        if ($context->verbosityLevel->isNotConfigured()) {
+            $context = $context->withVerbosityLevel(VerbosityLevel::fromSymfonyOutput($output));
+        }
+
+        ContextRegistry::setInitialContext($context);
+    }
+
+    private function createContext(InputInterface $input, OutputInterface $output): Context
+    {
+        // occurs when running `castor -h`, or if no context is defined
         if (!$input->hasOption('context')) {
-            return;
+            return new Context();
         }
 
         $builder = $this
@@ -134,12 +132,6 @@ class Application extends SymfonyApplication
             throw new \LogicException(sprintf('Argument "%s" is not supported in context builder named "%s".', $parameter->getName(), $builder->getName()));
         }
 
-        $context = $builder->build(...$args);
-
-        if ($context->verbosityLevel->isNotConfigured()) {
-            $context = $context->withVerbosityLevel(VerbosityLevel::fromSymfonyOutput($output));
-        }
-
-        ContextRegistry::setInitialContext($context);
+        return $builder->build(...$args);
     }
 }

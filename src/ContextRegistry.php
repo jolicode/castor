@@ -12,10 +12,40 @@ class ContextRegistry
 
     /** @var array<string, ContextBuilder> */
     private array $contextBuilders = [];
+    private ?ContextBuilder $defaultContextBuilder = null;
 
-    public function addContextBuilder(string $name, ContextBuilder $context): void
+    public function addContextBuilder(ContextBuilder $contextBuilder): void
     {
-        $this->contextBuilders[$name] = $context;
+        if (\array_key_exists($contextBuilder->getName(), $this->contextBuilders)) {
+            throw new \RuntimeException(sprintf('Context "%s" already exists.', $contextBuilder->getName()));
+        }
+
+        $this->contextBuilders[$contextBuilder->getName()] = $contextBuilder;
+
+        if ($contextBuilder->isDefault()) {
+            if ($this->defaultContextBuilder) {
+                throw new \RuntimeException(sprintf('Default context already set to "%s".', $this->defaultContextBuilder->getName()));
+            }
+            $this->defaultContextBuilder = $contextBuilder;
+        }
+    }
+
+    public function setDefaultContextIfEmpty(): void
+    {
+        if (!$this->defaultContextBuilder) {
+            if (1 === \count($this->contextBuilders)) {
+                $this->defaultContextBuilder = reset($this->contextBuilders);
+
+                return;
+            }
+
+            throw new \RuntimeException(sprintf('Since there are multiple contexts "%s", you must set a default context.', implode('", "', array_keys($this->contextBuilders))));
+        }
+    }
+
+    public function getDefaultContextBuilder(): ContextBuilder
+    {
+        return $this->defaultContextBuilder ?? throw new \RuntimeException('Default context not set yet.');
     }
 
     public function getContextBuilder(string $name): ContextBuilder

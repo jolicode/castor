@@ -13,14 +13,6 @@ class ContextBuilder
     ) {
     }
 
-    public static function createDefault(): self
-    {
-        return new self(
-            new AsContext('default', true),
-            new \ReflectionFunction(fn () => new Context()),
-        );
-    }
-
     /**
      * @return array<\ReflectionParameter>
      */
