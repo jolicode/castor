@@ -4,6 +4,7 @@ namespace Castor;
 
 use Joli\JoliNotif\Notification;
 use Joli\JoliNotif\NotifierFactory;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
@@ -233,6 +234,20 @@ function watch(string $path, callable $function, Context $context = null): void
 function log(string $message, string $level = 'info', array $context = []): void
 {
     ContextRegistry::getLogger()->log($level, $message, $context);
+}
+
+function fs(): Filesystem
+{
+    static $filesystem;
+
+    $filesystem ??= new Filesystem();
+
+    return $filesystem;
+}
+
+function finder(): Finder
+{
+    return new Finder();
 }
 
 function import(string $path): void

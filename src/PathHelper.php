@@ -2,6 +2,8 @@
 
 namespace Castor;
 
+use Symfony\Component\Filesystem\Path;
+
 class PathHelper
 {
     public static function getRoot(): string
@@ -16,7 +18,7 @@ class PathHelper
                     throw new \RuntimeException('Could not find root ".castor.php" file.');
                 }
 
-                $path = \dirname($path);
+                $path = Path::getDirectory($path);
             }
 
             $root = $path;
