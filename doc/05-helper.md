@@ -76,3 +76,25 @@ function foo()
 You can check
 the [Symfony documentation](https://symfony.com/doc/current/components/filesystem.html)
 for more information about this component and how to use it.
+
+## Finder
+
+The `Symfony\Component\Finder\Finder` class finds files and directories based
+on different criteria (name, file size, modification time, etc.) via an
+intuitive fluent interface.
+
+You can retrieve an instance of this class by using the `finder()` function:
+
+```php
+#[AsTask]
+function foo()
+{
+    $finder = finder();
+
+    echo 'Number of PHP files: ', $finder->name('*.php')->in(__DIR__)->count(), \PHP_EOL;
+}
+```
+
+You can check
+the [Symfony documentation](https://symfony.com/doc/current/components/finder.html)
+for more information about this class and how to use it.

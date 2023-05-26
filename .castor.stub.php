@@ -151,6 +151,9 @@ function log(string $message, string $level = 'info', array $context = []) : voi
 function fs() : \Symfony\Component\Filesystem\Filesystem
 {
 }
+function finder() : \Symfony\Component\Finder\Finder
+{
+}
 function import(string $path) : void
 {
 }

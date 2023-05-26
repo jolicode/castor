@@ -245,6 +245,11 @@ function fs(): Filesystem
     return $filesystem;
 }
 
+function finder(): Finder
+{
+    return new Finder();
+}
+
 function import(string $path): void
 {
     if (!FunctionFinder::isInFindFunctions()) {
