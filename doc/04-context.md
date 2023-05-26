@@ -1,7 +1,7 @@
 ## Context
 
-For every command that castor execute, it uses a context object. This object
-contains the default value for the `exec` or `watch` function (directory,
+For every command that castor execute, it uses a `Context` object. This object
+contains the default values for the `exec` or `watch` function (directory,
 environment variables, pty, tty, etc...).
 
 It also contains custom values that can be set by the user and reused in
@@ -45,7 +45,7 @@ function my_context(): Context
 #[AsTask]
 function foo(): void
 {
-    exec('echo $FOO'); 
+    exec('echo $FOO');
 }
 ```
 
@@ -60,20 +60,21 @@ $ php castor.phar foo --context=my-context
 BAR
 ```
 
-> You can override the context name by setting the `name` argument of
-> the `AsContext` attribute.
+> **Note**
+> You can override the context name by setting the `name` argument of the
+> `AsContext` attribute.
 
 ### Setting a default context
 
 You may want to set a default context for all your commands. You can do that by
-setting the `default` argument to true in the `AsContext` attribute:
+setting the `default` argument to `true` in the `AsContext` attribute:
 
 ```php
 use Castor\Attribute\AsContext;
 use Castor\Context;
 
-#[AsContext(default: true)]
-function __default_context(): Context
+#[AsContext(default: true, name: 'my_context')]
+function create_default_context(): Context
 {
     return new Context(['foo' => 'bar'], currentDirectory: '/tmp');
 }

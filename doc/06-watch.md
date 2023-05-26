@@ -1,13 +1,13 @@
 ## Watch
 
-Castor provides a `watch` function that will watch a file or a directory and
+Castor provides a `watch()` function that will watch a file or a directory and
 call a callback function when the file or directory changes:
 
 ```php
 #[AsTask]
 function watch(): void
 {
-    watch('src/', function ($file, $action) {
+    watch('src/', function (string $file, string $action) {
         echo "File {$file} has been {$action}\n";
     });
 }
@@ -18,7 +18,7 @@ will be the absolute path to the file.
 
 ### Recursive watch
 
-By default the `watch` function will not watch subdirectories. You can change
+By default the `watch()` function will not watch subdirectories. You can change
 that by setting a specific path:
 
 ```php
@@ -26,7 +26,7 @@ that by setting a specific path:
 function watch(): void
 {
     // watch recursively inside the src folder
-    watch('src/...', function ($file, $action) {
+    watch('src/...', function (string $file, string $action) {
         echo "File {$file} has been {$action}\n";
     });
 }
@@ -34,7 +34,7 @@ function watch(): void
 
 ### Stopping the watch
 
-The `watch` function will look at the return value of the callback function. If
+The `watch()` function will look at the return value of the callback function. If
 the callback function returns `false` the watch will stop:
 
 ```php
@@ -42,7 +42,7 @@ the callback function returns `false` the watch will stop:
 function watch(): void
 {
     // watch recursively inside the src folder
-    watch('src/...', function ($file, $action) {
+    watch('src/...', function (string $file, string $action) {
         echo "File {$file} has been {$action}\n";
         return false;
     });

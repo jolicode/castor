@@ -40,19 +40,19 @@ namespace then the command will have no namespace.
 
 #### Using a directory
 
-Castor will also look for `.castor` directory in the directory of
+Castor will also look for `.castor` directory in the same directory of
 the `.castor.php` file and load all the PHP files from it.
 
 You could then have an empty `.castor.php` file and split your commands in
 multiple files, like `.castor/hello.php` and
 `.castor/foo.php`.
 
-#### Using the `import` function
+#### Using the `import()` function
 
 You can also use the `import()` function to import commands from another file.
 This function takes a file path, or a directory as an argument.
 
-When using a directory as an argument, Castor will load all the PHP files in it.
+When using a directory as an argument, Castor will load all the PHP files in it:
 
 ```php
 
@@ -63,13 +63,14 @@ import(__DIR__ . '/my-app/.castor');
 
 ```
 
-> :warning: You cannot dynamically import commands. The `import` function must
-> be called at the top level of the file.
+> **Warning**
+> You cannot dynamically import commands. The `import()` function must be called
+> at the top level of the file.
 
 ### Overriding command name, namespace or description
 
 The `Castor\Attribute\AsTask` attribute takes three optional
-arguments: `name`, `namespace` and `description` to override the default values.
+arguments: `name`, `namespace` and `description` to override the default values:
 
 ```php
 use Castor\Attribute\AsTask;
