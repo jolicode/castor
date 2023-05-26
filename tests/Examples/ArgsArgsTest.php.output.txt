@@ -1,0 +1,15 @@
+array(4) {
+  [0]=>
+  string(11) "FIXME(word)"
+  [1]=>
+  string(1) "1"
+  [2]=>
+  array(2) {
+    [0]=>
+    string(5) "world"
+    [1]=>
+    string(13) "PHP community"
+  }
+  [3]=>
+  string(13) "default value"
+}

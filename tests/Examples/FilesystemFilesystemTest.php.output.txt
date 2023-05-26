@@ -1,0 +1,4 @@
+/tmp/foo directory exist: no
+/tmp/foo is an absolute path: yes
+../ is an absolute path: no
+Absolute path: /tmp

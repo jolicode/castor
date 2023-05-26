@@ -11,6 +11,6 @@ use function Castor\exec;
 function directory(Context $context)
 {
     exec(['pwd'], context: $context);
-    exec(['pwd'], context: $context->withCd('..'));
+    exec(['pwd'], context: $context->withPath('src/Attribute'));
     exec(['pwd'], context: $context);
 }

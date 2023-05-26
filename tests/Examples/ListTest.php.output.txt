@@ -1,0 +1,36 @@
+completion                    Dump the shell completion script
+hello                         hello
+help                          Display help for a command
+list                          List commands
+no-namespace                  Task without a namespace
+args:another-args             Dumps all arguments and options, without configuration
+args:args                     Dumps all arguments and options, with custom configuration
+bar:bar                       Prints bar, but also executes foo
+cd:directory                  Changes directory
+context:context               Displays information about the context
+env:env                       Display environment variables
+failure:allow-failure         A failing task authorized to fail
+failure:failure               A failing task not authorized to fail
+filesystem:filesystem         Performs some operations on the filesystem
+filesystem:find               Search files and directories on the filesystem
+foo:foo                       Prints foo
+log:all-level                 Logs some messages with different levels
+log:error                     Logs an "error" message
+log:info                      Logs an "info" message
+log:with-context              Logs an "error" message
+not-rename:renamed            Task that was renamed
+notify:notify-on-finish       Sends a notification when the task finishes
+notify:send-notify            Sends a notification
+output:output                 Plays with Symfony Style
+parallel:sleep                Sleeps for 5, 7, and 10 seconds in parallel
+quiet:quiet                   Executes something but does not output anything
+run:run                       Run a sub-process and display information about it
+run:run-with-process-helper   Run a sub-process and display information about it, with ProcessHelper
+shell:bash                    Runs a bash
+shell:sh                      Runs a sh
+watch:fs-change               Watches on filesystem changes
+watch:parallel-change         Watches on filesystem changes with 2 watchers in parallel
+watch:stop                    Watches on filesystem changes and stop after first change
+watcher:build                 Build watcher for all systems
+watcher:unix                  Build watcher for Unix system
+watcher:windows               Build watcher for Windows system
