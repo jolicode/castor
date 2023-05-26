@@ -1,12 +1,12 @@
 ## Helpers
 
-Some helpers are built-in with Castor. You can retrieve them by type hinting
-them in your function.
+Some helpers are built-in with Castor.
 
 ### SymfonyStyle
 
 The `Symfony\Component\Console\Style\SymfonyStyle` class provides methods to
-interact with the user and to display information:
+interact with the user and to display information. You can retrieve this class
+by type hinting it in your function:
 
 ```php
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -46,15 +46,17 @@ for more information about this class and how to use it.
 
 The `Symfony\Component\Filesystem\Filesystem` class provides OS-independent
 utilities for filesystem operations and for file/directory paths manipulation.
+
+You can retrieve an instance of this class by using the `fs()` function.
 You can also use static methods of the class
 `Symfony\Component\Filesystem\Path`.
 
 ```php
-use Symfony\Component\Filesystem\Filesystem;
-
 #[AsTask]
-function foo(Filesystem $fs)
+function foo()
 {
+    $fs = fs();
+
     $dir = '/tmp/foo';
 
     echo $dir, ' directory exist: ', $fs->exists($dir) ? 'yes' : 'no', \PHP_EOL;
@@ -73,4 +75,4 @@ function foo(Filesystem $fs)
 
 You can check
 the [Symfony documentation](https://symfony.com/doc/current/components/filesystem.html)
-for more information about this class and how to use it.
+for more information about this component and how to use it.

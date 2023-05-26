@@ -148,6 +148,9 @@ function watch(string $path, callable $function, Context $context = null) : void
 function log(string $message, string $level = 'info', array $context = []) : void
 {
 }
+function fs() : \Symfony\Component\Filesystem\Filesystem
+{
+}
 function import(string $path) : void
 {
 }

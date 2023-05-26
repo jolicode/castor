@@ -3,12 +3,15 @@
 namespace filesystem;
 
 use Castor\Attribute\AsTask;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 
+use function Castor\fs;
+
 #[AsTask(description: 'Performs some operations on the filesystem')]
-function filesystem(Filesystem $fs)
+function filesystem()
 {
+    $fs = fs();
+
     $dir = '/tmp/foo';
 
     echo $dir, ' directory exist: ', $fs->exists($dir) ? 'yes' : 'no', \PHP_EOL;

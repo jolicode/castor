@@ -17,7 +17,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Filesystem\Filesystem;
 
 /** @internal */
 class TaskCommand extends Command
@@ -28,7 +27,6 @@ class TaskCommand extends Command
         Application::class,
         InputInterface::class,
         OutputInterface::class,
-        Filesystem::class,
     ];
 
     /**
@@ -116,7 +114,6 @@ class TaskCommand extends Command
                     Application::class => $this->getApplication(),
                     InputInterface::class => $input,
                     OutputInterface::class => $output,
-                    Filesystem::class => new Filesystem(),
                 };
 
                 continue;
