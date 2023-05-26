@@ -4,19 +4,8 @@ description: 'Build the PHAR for the current commit'
 runs:
   using: "composite"
   steps:
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.1'
-
-    - name: Install dependencies (project)
-      run: composer install --prefer-dist --no-progress --no-dev --optimize-autoloader --classmap-authoritative
-      shell: bash
-
-    - name: Install dependencies (PHAR builder)
-      run: composer install --prefer-dist --no-progress --optimize-autoloader --classmap-authoritative
-      shell: bash
-      working-directory: tools/phar
+    - name: Install tools
+      uses: ./.github/actions/tools
 
     - name: Compile PHAR Linux
       run: vendor/bin/box compile -c box.linux-amd64.json

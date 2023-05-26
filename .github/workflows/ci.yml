@@ -33,3 +33,18 @@ jobs:
         uses: docker://oskarstark/phpstan-ga
         env:
           REQUIRE_DEV: true
+
+  stub:
+      name: Check there is no change to the stub
+      runs-on: ubuntu-latest
+
+      steps:
+          - name: Checkout
+            uses: actions/checkout@v3
+
+          - name: Install tools
+            uses: ./.github/actions/tools
+
+          - name: Check if there is no change
+            run: git diff --exit-code
+            shell: bash

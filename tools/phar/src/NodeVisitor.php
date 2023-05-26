@@ -22,6 +22,7 @@ class NodeVisitor extends NodeVisitorAbstract
 
         if ($node instanceof Node\Stmt\Namespace_) {
             $this->currentUseStatements = [];
+            $node->setAttribute('comments', null);
         }
 
         if ($node instanceof Node\Stmt\UseUse) {

@@ -41,6 +41,7 @@ class StubGeneratorCommand extends SingleCommandApplication
                 "{$path}/vendor/symfony/finder/Finder.php",
             ])
             ->name('*.php')
+            ->sortByName()
         ;
 
         $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
