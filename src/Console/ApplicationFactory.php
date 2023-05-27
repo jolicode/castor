@@ -3,7 +3,7 @@
 namespace Castor\Console;
 
 use Castor\Console\Command\CastorFileNotFoundCommand;
-use Castor\ContextRegistry;
+use Castor\GlobalHelper;
 use Castor\PathHelper;
 use Monolog\Logger;
 use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
@@ -25,7 +25,7 @@ class ApplicationFactory
             new ConsoleHandler($output),
         ]);
 
-        ContextRegistry::setLogger($logger);
+        GlobalHelper::setLogger($logger);
 
         $application->run($input, $output);
     }

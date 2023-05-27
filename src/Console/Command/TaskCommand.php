@@ -7,7 +7,7 @@ use Castor\Attribute\AsCommandArgument;
 use Castor\Attribute\AsOption;
 use Castor\Attribute\AsTask;
 use Castor\Context;
-use Castor\ContextRegistry;
+use Castor\GlobalHelper;
 use Castor\SluggerHelper;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
@@ -109,7 +109,7 @@ class TaskCommand extends Command
         foreach ($this->function->getParameters() as $parameter) {
             if (($type = $parameter->getType()) instanceof \ReflectionNamedType && \in_array($type->getName(), self::SUPPORTED_PARAMETER_TYPES, true)) {
                 $args[] = match ($type->getName()) {
-                    Context::class => ContextRegistry::getInitialContext(),
+                    Context::class => GlobalHelper::getInitialContext(),
                     SymfonyStyle::class => new SymfonyStyle($input, $output),
                     Application::class => $this->getApplication(),
                     InputInterface::class => $input,

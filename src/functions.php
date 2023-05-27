@@ -62,7 +62,7 @@ function exec(
     callable $callback = null,
     Context $context = null,
 ): Process {
-    $context ??= ContextRegistry::getInitialContext();
+    $context ??= GlobalHelper::getInitialContext();
 
     if (null !== $environment) {
         $context = $context->withEnvironment($environment);
@@ -177,7 +177,7 @@ function notify(string $message): void
 /** @param (callable(string, string) : (false|null)) $function */
 function watch(string $path, callable $function, Context $context = null): void
 {
-    $context ??= ContextRegistry::getInitialContext();
+    $context ??= GlobalHelper::getInitialContext();
     $binary = 'watcher';
 
     if ('\\' === \DIRECTORY_SEPARATOR) {
@@ -244,7 +244,7 @@ function watch(string $path, callable $function, Context $context = null): void
  */
 function log(string $message, string $level = 'info', array $context = []): void
 {
-    ContextRegistry::getLogger()->log($level, $message, $context);
+    GlobalHelper::getLogger()->log($level, $message, $context);
 }
 
 function fs(): Filesystem

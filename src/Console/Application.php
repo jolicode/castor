@@ -7,6 +7,7 @@ use Castor\Context;
 use Castor\ContextDescriptor;
 use Castor\ContextRegistry;
 use Castor\FunctionFinder;
+use Castor\GlobalHelper;
 use Castor\Stub\StubsGenerator;
 use Castor\TaskDescriptor;
 use Castor\VerbosityLevel;
@@ -93,7 +94,7 @@ class Application extends SymfonyApplication
             $context = $context->withVerbosityLevel(VerbosityLevel::fromSymfonyOutput($output));
         }
 
-        ContextRegistry::setInitialContext($context);
+        GlobalHelper::setInitialContext($context);
     }
 
     private function createContext(InputInterface $input, OutputInterface $output): Context
