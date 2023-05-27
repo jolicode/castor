@@ -23,21 +23,20 @@ class Application extends SymfonyApplication
 {
     public const VERSION = 'v0.1.0';
 
-    public readonly ContextRegistry $contextRegistry;
-
     public function __construct(
         private readonly string $rootDir,
+        private readonly ContextRegistry $contextRegistry = new ContextRegistry(),
+        private readonly StubsGenerator $stubsGenerator = new StubsGenerator(),
+        private readonly FunctionFinder $functionFinder = new FunctionFinder(),
     ) {
         parent::__construct('castor', self::VERSION);
-
-        $this->contextRegistry = new ContextRegistry();
     }
 
     // We do all the logic as late as possible to ensure the exception handler
     // is registered
     public function doRun(InputInterface $input, OutputInterface $output): int
     {
-        (new StubsGenerator())->generateStubsIfNeeded($this->rootDir . '/.castor.stub.php');
+        $this->stubsGenerator->generateStubsIfNeeded($this->rootDir . '/.castor.stub.php');
 
         $this->initializeApplication();
 
@@ -61,7 +60,7 @@ class Application extends SymfonyApplication
     private function initializeApplication(): void
     {
         // Find all potential commands / context
-        $functions = (new FunctionFinder())->findFunctions($this->rootDir);
+        $functions = $this->functionFinder->findFunctions($this->rootDir);
 
         foreach ($functions as $function) {
             if ($function instanceof TaskDescriptor) {
