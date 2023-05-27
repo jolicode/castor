@@ -219,7 +219,7 @@ function watch(string $path, callable $function, Context $context = null): void
 
                 try {
                     $eventLine = json_decode($line, true, 512, \JSON_THROW_ON_ERROR);
-                } catch (\JsonException $e) {
+                } catch (\JsonException) {
                     $buffer = implode("\n", $lines);
 
                     break;

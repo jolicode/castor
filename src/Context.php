@@ -47,7 +47,7 @@ class Context implements \ArrayAccess
     {
         return new self(
             $this->data,
-            $keepExisting ? array_merge($this->environment, $environment) : $environment,
+            $keepExisting ? [...$this->environment, ...$environment] : $environment,
             $this->currentDirectory,
             $this->tty,
             $this->pty,

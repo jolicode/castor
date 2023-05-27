@@ -132,14 +132,14 @@ class TaskCommand extends Command
         $result = $this->function->invoke(...$args);
 
         if (null === $result) {
-            return 0;
+            return Command::SUCCESS;
         }
 
         if (\is_int($result)) {
             return $result;
         }
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     private function setParameterName(\ReflectionParameter $parameter, ?string $name): string
