@@ -20,6 +20,11 @@
         },
         "files": ["src/functions.php"]
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Castor\\Tests\\": "tests/"
+        }
+    },
     "require": {
         "jolicode/jolinotif": "^2.5",
         "monolog/monolog": "^3.3",
@@ -40,5 +45,8 @@
         "platform": {
             "php": "8.1"
         }
+    },
+    "require-dev": {
+        "symfony/phpunit-bridge": "^6.2"
     }
 }

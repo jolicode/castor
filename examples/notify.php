@@ -10,7 +10,7 @@ use function Castor\notify;
 #[AsTask(description: 'Sends a notification when the task finishes')]
 function notify_on_finish()
 {
-    exec(['sleep', '2'], notify: true);
+    exec(['sleep', '1'], notify: true);
 }
 
 #[AsTask(description: 'Sends a notification')]

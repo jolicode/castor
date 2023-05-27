@@ -33,3 +33,24 @@ jobs:
         uses: docker://oskarstark/phpstan-ga
         env:
           REQUIRE_DEV: true
+
+  phpunit:
+    name: PHPUnit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+
+      - name: Install dependencies (project)
+        run: composer install --no-progress
+
+      - name: Install PHPUnit
+        run: vendor/bin/simple-phpunit install
+
+      - name: Run tests
+        run: vendor/bin/simple-phpunit

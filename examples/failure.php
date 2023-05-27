@@ -9,7 +9,7 @@ use function Castor\exec;
 #[AsTask(description: 'A failing task not authorized to fail')]
 function failure()
 {
-    exec('i_do_not_exist');
+    exec('i_do_not_exist', path: '/tmp');
 }
 
 #[AsTask(description: 'A failing task authorized to fail')]

@@ -1,0 +1,21 @@
+sh: 1: i_do_not_exist: not found
+
+In functions.php line 145:
+                                        
+  The command "i_do_not_exist" failed.  
+                                        
+  Exit Code: 127(Command not found)     
+                                        
+  Working directory: /tmp               
+                                        
+  Output:                               
+  ================                      
+  sh: 1: i_do_not_exist: not found      
+                                        
+                                        
+  Error Output:                         
+  ================                      
+                                        
+
+failure:failure
+
