@@ -12,7 +12,7 @@ class FunctionFinder
 {
     private static bool $inFindFunctions = false;
 
-    /** @return iterable<TaskDescriptor|ContextBuilder> */
+    /** @return iterable<TaskDescriptor|ContextDescriptor> */
     public static function findFunctions(string $path): iterable
     {
         self::$inFindFunctions = true;
@@ -42,7 +42,7 @@ class FunctionFinder
     /**
      * @param iterable<SplFileInfo> $files
      *
-     * @return iterable<TaskDescriptor|ContextBuilder>
+     * @return iterable<TaskDescriptor|ContextDescriptor>
      *
      * @throws \ReflectionException
      */
@@ -60,8 +60,8 @@ class FunctionFinder
 
             foreach ($newFunctions as $functionName) {
                 $reflectionFunction = new \ReflectionFunction($functionName);
-                $attributes = $reflectionFunction->getAttributes(AsTask::class);
 
+                $attributes = $reflectionFunction->getAttributes(AsTask::class);
                 if (\count($attributes) > 0) {
                     $taskAttribute = $attributes[0]->newInstance();
 
@@ -81,19 +81,18 @@ class FunctionFinder
                 }
 
                 $attributes = $reflectionFunction->getAttributes(AsContext::class);
-
                 if (\count($attributes) > 0) {
                     $contextAttribute = $attributes[0]->newInstance();
 
                     if ('' === $contextAttribute->name) {
-                        $contextAttribute->name = SluggerHelper::slug($reflectionFunction->getShortName());
+                        if ($contextAttribute->default) {
+                            $contextAttribute->name = 'default';
+                        } else {
+                            $contextAttribute->name = SluggerHelper::slug($reflectionFunction->getShortName());
+                        }
                     }
 
-                    if ($contextAttribute->default) {
-                        $contextAttribute->name = 'default';
-                    }
-
-                    yield new ContextBuilder($contextAttribute, $reflectionFunction);
+                    yield new ContextDescriptor($contextAttribute, $reflectionFunction);
                 }
             }
         }

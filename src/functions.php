@@ -62,7 +62,7 @@ function exec(
     callable $callback = null,
     Context $context = null,
 ): Process {
-    $context ??= ContextRegistry::getInitialContext();
+    $context ??= GlobalHelper::getInitialContext();
 
     if (null !== $environment) {
         $context = $context->withEnvironment($environment);
@@ -120,7 +120,7 @@ function exec(
         };
     }
 
-    log('Running command: ' . $process->getCommandLine(), 'debug');
+    log(sprintf('Running command: "%s".', $process->getCommandLine()), 'debug');
 
     $process->start(function ($type, $bytes) use ($callback, $process) {
         if ($callback) {
@@ -141,9 +141,20 @@ function exec(
         notify(sprintf('The command "%s" has been finished %s.', $process->getCommandLine(), 0 === $exitCode ? 'successfully' : 'with an error'));
     }
 
-    if (0 !== $exitCode && !$context->allowFailure) {
-        throw new ProcessFailedException($process);
+    if (0 !== $exitCode) {
+        log(sprintf('Command finished with and error (exit code=%d).', $process->getExitCode()), 'notice');
+        if (!$context->allowFailure) {
+            if ($context->verbosityLevel->isVeryVerbose()) {
+                throw new ProcessFailedException($process);
+            }
+
+            throw new \RuntimeException("The command \"{$process->getCommandLine()}\" failed.");
+        }
+
+        return $process;
     }
+
+    log('Command finished successfully.', 'debug');
 
     return $process;
 }
@@ -166,7 +177,7 @@ function notify(string $message): void
 /** @param (callable(string, string) : (false|null)) $function */
 function watch(string $path, callable $function, Context $context = null): void
 {
-    $context ??= ContextRegistry::getInitialContext();
+    $context ??= GlobalHelper::getInitialContext();
     $binary = 'watcher';
 
     if ('\\' === \DIRECTORY_SEPARATOR) {
@@ -208,7 +219,7 @@ function watch(string $path, callable $function, Context $context = null): void
 
                 try {
                     $eventLine = json_decode($line, true, 512, \JSON_THROW_ON_ERROR);
-                } catch (\JsonException $e) {
+                } catch (\JsonException) {
                     $buffer = implode("\n", $lines);
 
                     break;
@@ -233,7 +244,7 @@ function watch(string $path, callable $function, Context $context = null): void
  */
 function log(string $message, string $level = 'info', array $context = []): void
 {
-    ContextRegistry::getLogger()->log($level, $message, $context);
+    GlobalHelper::getLogger()->log($level, $message, $context);
 }
 
 function fs(): Filesystem

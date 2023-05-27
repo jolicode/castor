@@ -20,6 +20,7 @@ class Context implements \ArrayAccess
         public readonly bool $quiet = false,
         public readonly bool $allowFailure = false,
         public readonly bool $notify = false,
+        public readonly VerbosityLevel $verbosityLevel = VerbosityLevel::NOT_CONFIGURED,
     ) {
         $this->currentDirectory = $currentDirectory ?? PathHelper::getRoot();
     }
@@ -37,6 +38,7 @@ class Context implements \ArrayAccess
             $this->quiet,
             $this->allowFailure,
             $this->notify,
+            $this->verbosityLevel,
         );
     }
 
@@ -45,7 +47,7 @@ class Context implements \ArrayAccess
     {
         return new self(
             $this->data,
-            $keepExisting ? array_merge($this->environment, $environment) : $environment,
+            $keepExisting ? [...$this->environment, ...$environment] : $environment,
             $this->currentDirectory,
             $this->tty,
             $this->pty,
@@ -53,6 +55,7 @@ class Context implements \ArrayAccess
             $this->quiet,
             $this->allowFailure,
             $this->notify,
+            $this->verbosityLevel,
         );
     }
 
@@ -68,6 +71,7 @@ class Context implements \ArrayAccess
             $this->quiet,
             $this->allowFailure,
             $this->notify,
+            $this->verbosityLevel,
         );
     }
 
@@ -83,6 +87,7 @@ class Context implements \ArrayAccess
             $this->quiet,
             $this->allowFailure,
             $this->notify,
+            $this->verbosityLevel,
         );
     }
 
@@ -98,6 +103,7 @@ class Context implements \ArrayAccess
             $this->quiet,
             $this->allowFailure,
             $this->notify,
+            $this->verbosityLevel,
         );
     }
 
@@ -113,6 +119,7 @@ class Context implements \ArrayAccess
             $this->quiet,
             $this->allowFailure,
             $this->notify,
+            $this->verbosityLevel,
         );
     }
 
@@ -128,6 +135,7 @@ class Context implements \ArrayAccess
             $quiet,
             $this->allowFailure,
             $this->notify,
+            $this->verbosityLevel,
         );
     }
 
@@ -143,6 +151,7 @@ class Context implements \ArrayAccess
             $this->quiet,
             $allowFailure,
             $this->notify,
+            $this->verbosityLevel,
         );
     }
 
@@ -158,17 +167,38 @@ class Context implements \ArrayAccess
             $this->quiet,
             $this->allowFailure,
             $notify,
+            $this->verbosityLevel,
+        );
+    }
+
+    public function withVerbosityLevel(VerbosityLevel $verbosityLevel): self
+    {
+        return new self(
+            $this->data,
+            $this->environment,
+            $this->currentDirectory,
+            $this->tty,
+            $this->pty,
+            $this->timeout,
+            $this->quiet,
+            $this->allowFailure,
+            $this->notify,
+            $verbosityLevel,
         );
     }
 
     public function offsetExists(mixed $offset): bool
     {
-        return isset($this->data[$offset]);
+        return \array_key_exists($offset, $this->data);
     }
 
     public function offsetGet(mixed $offset): mixed
     {
-        return $this->data[$offset] ?? throw new \RuntimeException(sprintf('The property "%s" does not exist in the current context.', $offset));
+        if (!\array_key_exists($offset, $this->data)) {
+            throw new \RuntimeException(sprintf('The property "%s" does not exist in the current context.', $offset));
+        }
+
+        return $this->data[$offset];
     }
 
     public function offsetSet(mixed $offset, mixed $value): void

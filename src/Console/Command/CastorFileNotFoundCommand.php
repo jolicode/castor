@@ -2,6 +2,7 @@
 
 namespace Castor\Console\Command;
 
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\SingleCommandApplication;
@@ -23,7 +24,7 @@ class CastorFileNotFoundCommand extends SingleCommandApplication
         $io->warning($this->e->getMessage());
 
         if (!$io->confirm('Do you want to create a new project?', false)) {
-            return 0;
+            return Command::SUCCESS;
         }
 
         file_put_contents(
@@ -44,6 +45,6 @@ class CastorFileNotFoundCommand extends SingleCommandApplication
         $io->success('Project created. You can edit ".castor.php" and write your own tasks.');
         $io->note('Run "castor" to see the available tasks.');
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

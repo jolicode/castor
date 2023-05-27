@@ -1,0 +1,4 @@
+context name: production
+Production? yes
+verbosity: 1
+context: bar
