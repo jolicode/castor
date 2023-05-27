@@ -77,6 +77,10 @@ foreach ($applicationDescription['commands'] as $command) {
     add_test($args, $class, $task, $methodName);
 }
 
+add_test(['context:context', '--context', 'exec'], 'ContextContextExec', 'context:context');
+add_test(['context:context', '--context', 'my_default', '-vvv'], 'ContextContextMyDefault', 'context:context');
+add_test(['context:context', '--context', 'no_no_exist'], 'ContextContextDoNotExist', 'context:context');
+add_test(['context:context', '--context', 'production'], 'ContextContextProduction', 'context:context');
 add_test(['parallel:sleep', '--sleep5', '0', '--sleep7', '0', '--sleep10', '0'], 'ParallelSleepTest');
 
 function add_test(array $args, string $class)
