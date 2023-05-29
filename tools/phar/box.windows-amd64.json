@@ -2,7 +2,6 @@
   "base-path": "../../",
   "files-bin": [
     "watcher/bin/watcher.exe",
-    ".castor.stub.php"
   ],
   "finder-bin": [
     {

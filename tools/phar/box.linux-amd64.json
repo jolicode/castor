@@ -2,7 +2,6 @@
   "base-path": "../../",
   "files-bin": [
     "watcher/bin/watcher",
-    ".castor.stub.php"
   ],
   "blacklist": [
     ".castor",
