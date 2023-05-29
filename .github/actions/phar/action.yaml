@@ -7,10 +7,6 @@ runs:
     - name: Install tools
       uses: ./.github/actions/tools
 
-    - name: Launch Castor to generate stubs
-      run: bin/castor
-      shell: bash
-
     - name: Compile PHAR Linux
       run: vendor/bin/box compile -c box.linux-amd64.json
       shell: bash
