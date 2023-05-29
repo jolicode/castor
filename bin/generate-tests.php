@@ -3,15 +3,16 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use Castor\Console\Application;
+use Castor\Console\ApplicationFactory;
 use Castor\Tests\OutputCleaner;
+use Psr\Log\NullLogger;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Process\Process;
 
 use function Symfony\Component\String\u;
 
-$application = new Application(dirname(__DIR__));
+$application = ApplicationFactory::create(new NullLogger());
 $application->setAutoExit(false);
 $application
     ->run(new ArrayInput(['command' => 'list', '--format' => 'json']), $o = new BufferedOutput())

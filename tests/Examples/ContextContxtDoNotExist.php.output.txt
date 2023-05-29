@@ -1,8 +1,0 @@
-
-In ContextRegistry.php line 58:
-                                       
-  Descriptor "no_no_exist" not found.  
-                                       
-
-context:context
-
