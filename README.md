@@ -15,7 +15,7 @@ It comes with many helpers to make your life easier:
 
 ## Usage
 
-As an example, you could create a command that print "Hello castor" by creating
+As an example, you could create a command that prints "Hello castor" by creating
 a file `.castor.php` with the following content:
 
 ```php
@@ -72,9 +72,7 @@ function destroy(
 }
 ```
 
-enhance
-
-If you want to read more usage, you can read the [basic
+If you want to read more about usage, you can read the [basic
 usage](doc/01-basic-usage.md) documentation, or browse the [examples](examples)
 directory.
 
@@ -89,7 +87,8 @@ castor completion | sudo tee /etc/bash_completion.d/castor
 
 Then reload your shell.
 
-Others shells are also supported. To get the list of supported shells, run:
+Others shells are also supported (zsh, fish, etc). To get the list of supported
+shells and their dedicated instructions, run:
 
 ```
 castor completion --help
@@ -99,12 +98,34 @@ castor completion --help
 
 ### As a PHAR
 
-You can download the latest version of Castor as a PHAR file from the [releases
-page](https://github.com/jolicode/castor/releases)
+You can download the latest release of Castor as a PHAR file from the [releases
+page](https://github.com/jolicode/castor/releases).
 
 You can also download the latest version by browsing [the build
 page](https://github.com/jolicode/castor/actions/workflows/build-phar.yml) and
 selecting the last build.
+
+We provide different PHAR for Unix/Windows architectures to offer lighter PHAR
+files. Download the correct one and make it available in your shell:
+
+Example for Linux:
+```bash
+mv castor.linux-amd64.phar $HOME/.local/bin/castor
+```
+
+### Globally with Composer
+
+You can install Castor globally with Composer:
+
+```bash
+composer global require jolicode/castor
+```
+
+Then make sure that the Composer global bin directory is in your `PATH`:
+
+```bash
+export PATH="$HOME/.composer/vendor/bin:$PATH"
+```
 
 ### Manually
 
@@ -121,14 +142,14 @@ ln -s $PWD/bin/castor $HOME/.local/bin/castor
 
 ## Further documentation
 
-Discover more by reading the docs
+Discover more by reading the docs:
 
- * [Basic usage](doc/01-basic-usage.md)
- * [The exec function](doc/02-exec.md)
- * [Command arguments](doc/03-arguments.md)
- * [Using the context](doc/04-context.md)
- * [Asking something, progress bar and more](doc/05-helper.md)
- * [Watching files](doc/06-watch.md)
- * [Parallel processing](doc/07-parallel.md)
- * [Notification](doc/08-notify.md)
- * [Log](doc/09-log.md)
+* [Basic usage](doc/01-basic-usage.md)
+* [The exec function](doc/02-exec.md)
+* [Command arguments](doc/03-arguments.md)
+* [Using the context](doc/04-context.md)
+* [Asking something, progress bar and more](doc/05-helper.md)
+* [Watching files](doc/06-watch.md)
+* [Parallel processing](doc/07-parallel.md)
+* [Notification](doc/08-notify.md)
+* [Log](doc/09-log.md)
