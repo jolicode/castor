@@ -52,14 +52,14 @@ function foo(): void
 ### Working directory
 
 By default, Castor will execute the command in the same directory as
-the `.castor.php` file. You can change that by setting the `path` argument. It
+the `castor.php` file. You can change that by setting the `path` argument. It
 can be either a relative or an absolute path:
 
 ```php
 #[AsTask]
 function foo(): void
 {
-    exec('pwd', path: '../'); // execute the command in the parent directory of the .castor.php file
+    exec('pwd', path: '../'); // execute the command in the parent directory of the castor.php file
     exec('pwd', path: '/tmp'); // execute the command in the /tmp directory
 }
 ```

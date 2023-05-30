@@ -28,7 +28,7 @@ class CastorFileNotFoundCommand extends SingleCommandApplication
         }
 
         file_put_contents(
-            '.castor.php',
+            'castor.php',
             <<<'PHP'
                     <?php
 
@@ -42,7 +42,7 @@ class CastorFileNotFoundCommand extends SingleCommandApplication
                 PHP
         );
 
-        $io->success('Project created. You can edit ".castor.php" and write your own tasks.');
+        $io->success('Project created. You can edit "castor.php" and write your own tasks.');
         $io->note('Run "castor" to see the available tasks.');
 
         return Command::SUCCESS;

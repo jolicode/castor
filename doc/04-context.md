@@ -21,7 +21,7 @@ use Castor\Context;
 #[AsTask]
 function foo(Context $context): void
 {
-    echo $context->currentDirectory; // will print the directory of the .castor.php file
+    echo $context->currentDirectory; // will print the directory of the castor.php file
     $context = $context->withPath('/tmp'); // will create a new context with the current directory set to /tmp
     exec('pwd', context: $context); // will print /tmp
 }
