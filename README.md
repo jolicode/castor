@@ -143,7 +143,7 @@ ln -s $PWD/bin/castor $HOME/.local/bin/castor
 ### With docker
 
 If PHP is installed on your system, you can use the `castor` PHAR directly.
-**This is the recommended way** because some features does't work correctly,
+**This is the recommended way** because some features require to be executed on the host to work correctly,
 like notification. However, if you don't have PHP installed, you can use docker.
 
 We ship a `Dockerfile` that you can use to build a docker image with castor:
@@ -158,7 +158,7 @@ Then you can run castor with:
 docker run -it --rm -v `pwd`:/project castor
 ```
 
-If you want to use docker commands in your tasks, you must enabled docker
+If you want to use docker commands in your tasks, you must enable docker
 support when building the image:
 
 ```
@@ -171,7 +171,7 @@ Then you can run castor with:
 docker run -it --rm -v `pwd`:/project -v "/var/run/docker.sock:/var/run/docker.sock:rw" castor
 ```
 
-We suggest you to created an alias for it:
+We suggest you to create an alias for it:
 
 ```
 alias castor='docker run -it --rm -v `pwd`:/project -v "/var/run/docker.sock:/var/run/docker.sock:rw" castor'
