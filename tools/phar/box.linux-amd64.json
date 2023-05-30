@@ -4,7 +4,7 @@
     "watcher/bin/watcher"
   ],
   "blacklist": [
-    ".castor",
+    "castor",
     "LICENSE",
     "Test",
     "tools",

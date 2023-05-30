@@ -10,7 +10,7 @@
     }
   ],
   "blacklist": [
-    ".castor",
+    "castor",
     "LICENSE",
     "Test",
     "tools",

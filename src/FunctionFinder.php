@@ -17,9 +17,9 @@ class FunctionFinder
     {
         self::$inFindFunctions = true;
 
-        yield from self::doFindFunctions([new SplFileInfo($path . '/.castor.php', '.castor.php', '.castor')]);
+        yield from self::doFindFunctions([new SplFileInfo($path . '/castor.php', 'castor.php', 'castor')]);
 
-        $castorDirectory = $path . '/.castor';
+        $castorDirectory = $path . '/castor';
 
         if (is_dir($castorDirectory)) {
             $files = Finder::create()

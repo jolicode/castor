@@ -1,7 +1,7 @@
 ## Basic usage
 
 Castor use a convention to find commands. It will look for the
-first `.castor.php` file in the current directory or in parents directory.
+first `castor.php` file in the current directory or in parents directory.
 
 In this file, all functions with the `Castor\Attribute\AsTask` attribute will be
 transformed as commands. The name of the function will be the name of the
@@ -40,12 +40,11 @@ namespace then the command will have no namespace.
 
 #### Using a directory
 
-Castor will also look for `.castor` directory in the same directory of
-the `.castor.php` file and load all the PHP files from it.
+Castor will also look for `castor` directory in the same directory of
+the `castor.php` file and load all the PHP files from it.
 
-You could then have an empty `.castor.php` file and split your commands in
-multiple files, like `.castor/hello.php` and
-`.castor/foo.php`.
+You could then have an empty `castor.php` file and split your commands in
+multiple files, like `castor/hello.php` and `castor/foo.php`.
 
 #### Using the `import()` function
 
@@ -59,7 +58,7 @@ When using a directory as an argument, Castor will load all the PHP files in it:
 use function Castor\import;
 
 import(__DIR__ . '/custom-commands.php');
-import(__DIR__ . '/my-app/.castor');
+import(__DIR__ . '/my-app/castor');
 
 ```
 
