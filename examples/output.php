@@ -11,7 +11,7 @@ function output(SymfonyStyle $io, Command $command)
 {
     $io->title('This is a title');
 
-    $io->text(sprintf('This is is the command "%s"', $command->getName()));
+    $io->text(sprintf('This is the command "%s"', $command->getName()));
 
     $io->comment('With IO, you can ask questions ...');
     $value = $io->ask('Tell me something');
