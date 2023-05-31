@@ -7,13 +7,13 @@ use Symfony\Component\Process\Process;
 
 abstract class TaskTestCase extends TestCase
 {
-    public function runTask(array $args, string $cwd = __DIR__ . '/..'): Process
+    public function runTask(array $args, string $cwd = null): Process
     {
         $bin = __DIR__ . '/../bin/castor';
 
         $process = new Process(
             [\PHP_BINARY, $bin, ...$args],
-            cwd: $cwd,
+            cwd: $cwd ?? __DIR__ . '/..',
             env: [
                 'COLUMNS' => 120,
             ],

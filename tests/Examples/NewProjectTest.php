@@ -6,7 +6,7 @@ use Castor\Tests\TaskTestCase;
 
 class NewProjectTest extends TaskTestCase
 {
-    // unknown:command
+    // no task
     public function test(): void
     {
         $process = $this->runTask([], '/tmp');

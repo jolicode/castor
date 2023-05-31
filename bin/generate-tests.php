@@ -73,27 +73,29 @@ foreach ($applicationDescription['commands'] as $command) {
     }
 
     $class = u($command['name'])->camel()->title()->append('Test')->toString();
-    $task = $command['name'];
-    $methodName = u($command['name'])->replace(':', '_')->replace('-', '_')->camel()->title()->toString();
 
-    add_test($args, $class, $task, $methodName);
+    add_test($args, $class);
 }
 
-add_test(['context:context', '--context', 'run'], 'ContextContextRun', 'context:context');
-add_test(['context:context', '--context', 'my_default', '-vvv'], 'ContextContextMyDefault', 'context:context');
-add_test(['context:context', '--context', 'no_no_exist'], 'ContextContextDoNotExist', 'context:context');
-add_test(['context:context', '--context', 'production'], 'ContextContextProduction', 'context:context');
+add_test(['context:context', '--context', 'run'], 'ContextContextRun');
+add_test(['context:context', '--context', 'my_default', '-vvv'], 'ContextContextMyDefault');
+add_test(['context:context', '--context', 'no_no_exist'], 'ContextContextDoNotExist');
+add_test(['context:context', '--context', 'production'], 'ContextContextProduction');
 add_test(['parallel:sleep', '--sleep5', '0', '--sleep7', '0', '--sleep10', '0'], 'ParallelSleepTest');
+add_test([], 'NewProjectTest', '/tmp');
+add_test(['unknown:command', 'toto', '--foo', 1], 'NoConfigTest', '/tmp');
 
-function add_test(array $args, string $class)
+function add_test(array $args, string $class, string $cwd = null)
 {
     $fp = fopen(__FILE__, 'r');
     fseek($fp, __COMPILER_HALT_OFFSET__ + 1);
     $template = stream_get_contents($fp);
 
+    $bin = __DIR__ . '/castor';
+
     $process = new Process(
-        [\PHP_BINARY, 'bin/castor', ...$args],
-        cwd: __DIR__ . '/../',
+        [\PHP_BINARY, $bin, ...$args],
+        cwd: $cwd ?: __DIR__ . '/../',
         env: [
             'COLUMNS' => 120,
         ],
@@ -102,9 +104,10 @@ function add_test(array $args, string $class)
 
     $code = strtr($template, [
         '{{ class_name }}' => $class,
-        '{{ task }}' => $args[0],
+        '{{ task }}' => $args[0] ?? 'no task',
         '{{ args }}' => implode(', ', array_map(fn ($arg) => var_export($arg, true), $args)),
         '{{ exitCode }}' => $process->getExitCode(),
+        '{{ cwd }}' => $cwd ? ', ' . var_export($cwd, true) : '',
     ]);
 
     file_put_contents(__DIR__ . '/../tests/Examples/' . $class . '.php', $code);
@@ -127,7 +130,7 @@ class {{ class_name }} extends TaskTestCase
     // {{ task }}
     public function test(): void
     {
-        $process = $this->runTask([{{ args }}]);
+        $process = $this->runTask([{{ args }}]{{ cwd }});
 
         $this->assertSame({{ exitCode }}, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());
