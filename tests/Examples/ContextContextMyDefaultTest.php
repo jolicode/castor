@@ -4,7 +4,7 @@ namespace Castor\Tests\Examples;
 
 use Castor\Tests\TaskTestCase;
 
-class ContextContextMyDefault extends TaskTestCase
+class ContextContextMyDefaultTest extends TaskTestCase
 {
     // context:context
     public function test(): void
