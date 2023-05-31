@@ -1,8 +1,0 @@
-sleep 0
-sleep 0
-re sleep 0
-sleep 0
-Foo: foo
-Bar: bar
-Sleep 10: sleep 0
-Duration: 0
