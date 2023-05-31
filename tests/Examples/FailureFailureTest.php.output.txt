@@ -1,6 +1,6 @@
 sh: 1: i_do_not_exist: not found
 
-In functions.php line 151:
+In functions.php line 152:
                                         
   The command "i_do_not_exist" failed.  
                                         

@@ -4,6 +4,7 @@ namespace Castor;
 
 use Joli\JoliNotif\Notification;
 use Joli\JoliNotif\NotifierFactory;
+use Joli\JoliNotif\Util\OsHelper;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -178,10 +179,16 @@ function notify(string $message): void
 function watch(string $path, callable $function, Context $context = null): void
 {
     $context ??= GlobalHelper::getInitialContext();
-    $binary = 'watcher';
+    $binary = null;
 
-    if ('\\' === \DIRECTORY_SEPARATOR) {
-        $binary = 'watcher.exe';
+    match (true) {
+        OSHelper::isMacOS() => $binary = 'watcher-darwin',
+        OSHelper::isWindows() => $binary = 'watcher-windows.exe',
+        default => $binary = 'watcher-linux',
+    };
+
+    if (!$binary) {
+        throw new \RuntimeException('Unsupported OS.');
     }
 
     $binaryPath = __DIR__ . '/../watcher/bin/' . $binary;

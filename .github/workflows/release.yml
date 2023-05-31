@@ -34,6 +34,16 @@ jobs:
           asset_name: castor.linux-amd64.phar
           asset_content_type: application/octet-stream
 
+      - name: Upload macos release binary
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: ./tools/phar/build/castor.macos-amd64.phar
+          asset_name: castor.macos-amd64.phar
+          asset_content_type: application/octet-stream
+
       - name: Upload windows release binary
         uses: actions/upload-release-asset@v1.0.2
         env:
