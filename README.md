@@ -96,7 +96,10 @@ castor completion --help
 
 ## Installation
 
-### As a PHAR
+> **Note**
+> Please note that castor needs PHP >= 8.1 to run.
+
+### As a PHAR - recommended way
 
 You can download the latest release of Castor as a PHAR file from the [releases
 page](https://github.com/jolicode/castor/releases).
@@ -140,13 +143,12 @@ composer install
 ln -s $PWD/bin/castor $HOME/.local/bin/castor
 ```
 
-### With docker
+### With Docker
 
-If PHP is installed on your system, you can use the `castor` PHAR directly.
-**This is the recommended way** because some features require to be executed on the host to work correctly,
-like notification. However, if you don't have PHP installed, you can use docker.
+If you don't have PHP >= 8.1 installed on your host, you can use Docker to run castor. 
+However, some features like notifications will not work.
 
-We ship a `Dockerfile` that you can use to build a docker image with castor:
+We ship a `Dockerfile` that you can use to build a Docker image with castor:
 
 ```
 docker build -t castor .
@@ -158,7 +160,7 @@ Then you can run castor with:
 docker run -it --rm -v `pwd`:/project castor
 ```
 
-If you want to use docker commands in your tasks, you must enable docker
+If you want to use Docker commands in your tasks, you must enable Docker
 support when building the image:
 
 ```
