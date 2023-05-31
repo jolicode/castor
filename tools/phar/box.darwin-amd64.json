@@ -1,7 +1,7 @@
 {
   "base-path": "../../",
   "files-bin": [
-    "watcher/bin/watcher-darwin"
+    "tools/watcher/bin/watcher-darwin"
   ],
   "blacklist": [
     "castor",
