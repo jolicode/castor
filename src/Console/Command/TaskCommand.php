@@ -132,8 +132,12 @@ class TaskCommand extends Command
         try {
             $result = $this->function->invoke(...$args);
         } catch (\Error $e) {
-            if ('Call to undefined function run()' === $e->getMessage()) {
-                throw new \LogicException(sprintf('Call to undefined function run(). Did you forget to import it? Try to add "use function Castor\run;" in top of "%s" file.', $this->function->getFileName()));
+            $castorFunctions = array_filter(get_defined_functions()['user'], fn (string $functionName) => str_starts_with($functionName, 'castor\\'));
+            $castorFunctionsWithoutNamespace = array_map(fn (string $functionName) => substr($functionName, \strlen('castor\\')), $castorFunctions);
+            foreach ($castorFunctionsWithoutNamespace as $function) {
+                if ("Call to undefined function {$function}()" === $e->getMessage()) {
+                    throw new \LogicException(sprintf('Call to undefined function %s(). Did you forget to import it? Try to add "use function Castor\%s;" in top of "%s" file.', $function, $function, $this->function->getFileName()));
+                }
             }
 
             throw $e;
