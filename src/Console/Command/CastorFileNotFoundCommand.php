@@ -47,16 +47,16 @@ class CastorFileNotFoundCommand extends SingleCommandApplication
         file_put_contents(
             'castor.php',
             <<<'PHP'
-                    <?php
+            <?php
 
-                    use Castor\Attribute\AsTask;
+            use Castor\Attribute\AsTask;
 
-                    #[AsTask()]
-                    function hello(): void
-                    {
-                        echo "Hello world!\n";
-                    }
-                PHP
+            #[AsTask()]
+            function hello(): void
+            {
+                echo "Hello world!\n";
+            }
+            PHP
         );
 
         $io->success('Project created. You can edit "castor.php" and write your own tasks.');
