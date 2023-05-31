@@ -25,11 +25,11 @@ jobs:
           path: tools/phar/build/castor.linux-amd64.phar
           if-no-files-found: error
 
-      - name: Upload the MacOS PHAR
+      - name: Upload the Darwin PHAR
         uses: actions/upload-artifact@v3
         with:
-          name: 'castor.macos-amd64.phar'
-          path: tools/phar/build/castor.macos-amd64.phar
+          name: 'castor.darwin-amd64.phar'
+          path: tools/phar/build/castor.darwin-amd64.phar
           if-no-files-found: error
 
       - name: Upload the Windows PHAR

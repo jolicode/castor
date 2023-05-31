@@ -12,8 +12,8 @@ runs:
       shell: bash
       working-directory: tools/phar
 
-    - name: Compile PHAR MacOS
-      run: vendor/bin/box compile -c box.macos-amd64.json
+    - name: Compile PHAR Darwin
+      run: vendor/bin/box compile -c box.darwin-amd64.json
       shell: bash
       working-directory: tools/phar
 

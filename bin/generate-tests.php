@@ -30,7 +30,7 @@ $commandFilterList = [
     // Not examples
     'watcher:build',
     'watcher:linux',
-    'watcher:macos',
+    'watcher:darwin',
     'watcher:windows',
     // Customized tests
     'cd:directory',

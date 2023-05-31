@@ -22,5 +22,5 @@
   "check-requirements": false,
   "git-version": "package_version",
   "main": "bin/castor",
-  "output": "tools/phar/build/castor.macos-amd64.phar"
+  "output": "tools/phar/build/castor.darwin-amd64.phar"
 }

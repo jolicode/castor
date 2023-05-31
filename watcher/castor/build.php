@@ -15,10 +15,10 @@ function linux(Context $c)
 }
 
 #[AsTask(description: 'Build watcher for MacOS system', namespace: 'watcher')]
-function macos(Context $c)
+function darwin(Context $c)
 {
     $c = $c->withPath(__DIR__ . '/..');
-    exec('go build -o bin/watcher-macos -ldflags="-s -w" main.go', environment: ['GOOS' => 'darwin', 'CGO_ENABLED' => '0'], context: $c);
+    exec('go build -o bin/watcher-darwin -ldflags="-s -w" main.go', environment: ['GOOS' => 'darwin', 'CGO_ENABLED' => '0'], context: $c);
 }
 
 #[AsTask(description: 'Build watcher for Windows system', namespace: 'watcher')]
@@ -31,5 +31,5 @@ function windows(Context $c)
 #[AsTask(description: 'Build watcher for all systems', namespace: 'watcher')]
 function build(Context $c)
 {
-    parallel(fn () => linux($c), fn () => macos($c), fn () => windows($c));
+    parallel(fn () => linux($c), fn () => darwin($c), fn () => windows($c));
 }
