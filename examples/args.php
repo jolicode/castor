@@ -7,7 +7,7 @@ use Castor\Attribute\AsOption;
 use Castor\Attribute\AsTask;
 use Symfony\Component\Console\Input\InputOption;
 
-use function Castor\exec;
+use function Castor\run;
 
 #[AsTask(description: 'Dumps all arguments and options, with custom configuration')]
 function args(
@@ -28,5 +28,5 @@ function another_args(
     string $required,
     int $test2 = 1
 ) {
-    exec(['echo', $required, $test2]);
+    run(['echo', $required, $test2]);
 }

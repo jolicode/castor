@@ -40,7 +40,7 @@ $commandFilterList = [
     'log:with-context',
     'parallel:sleep',
     'run:run-parallel',
-    'run:run',
+    'run:run-ls',
 ];
 $optionFilterList = array_flip(['help', 'quiet', 'verbose', 'version', 'ansi', 'no-ansi', 'no-interaction', 'context']);
 foreach ($applicationDescription['commands'] as $command) {
@@ -79,7 +79,7 @@ foreach ($applicationDescription['commands'] as $command) {
     add_test($args, $class, $task, $methodName);
 }
 
-add_test(['context:context', '--context', 'exec'], 'ContextContextExec', 'context:context');
+add_test(['context:context', '--context', 'run'], 'ContextContextRun', 'context:context');
 add_test(['context:context', '--context', 'my_default', '-vvv'], 'ContextContextMyDefault', 'context:context');
 add_test(['context:context', '--context', 'no_no_exist'], 'ContextContextDoNotExist', 'context:context');
 add_test(['context:context', '--context', 'production'], 'ContextContextProduction', 'context:context');

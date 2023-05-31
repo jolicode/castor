@@ -1,6 +1,6 @@
 ## Parallel execution
 
-The `parallel()` function provides a way to execute functions in parallel,
+The `parallel()` function provides a way to run functions in parallel,
 so you do not have to wait for a function to finish before starting another one:
 
 ```php
@@ -9,10 +9,10 @@ function foo(): void
 {
     [$foo, $bar] = parallel(
         function () {
-            return exec('sleep 2 && echo foo', quiet: true);
+            return run('sleep 2 && echo foo', quiet: true);
         },
         function () {
-            return exec('sleep 2 && echo bar', quiet: true);
+            return run('sleep 2 && echo bar', quiet: true);
         }
     );
 
@@ -22,12 +22,12 @@ function foo(): void
 ```
 
 The `parallel()` function use the [`\Fiber`](https://www.php.net/Fiber) class to
-execute the functions in parallel.
+run the functions in parallel.
 
 > **Note**
 > The code is not executed in parallel. Only functions using this concept
 > will be executed in parallel, which is the case for
-> the `exec()` and `watch()` function.
+> the `run()` and `watch()` function.
 
 ### Watching in parallel
 

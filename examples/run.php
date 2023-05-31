@@ -6,12 +6,12 @@ use Castor\Attribute\AsTask;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use function Castor\exec;
+use function Castor\run;
 
 #[AsTask(description: 'Run a sub-process and display information about it')]
-function run()
+function run_ls()
 {
-    $process = exec('ls -alh', quiet: true);
+    $process = run('ls -alh', quiet: true);
 
     echo "Output: \n" . $process->getOutput();
     echo "\nError output: \n" . $process->getErrorOutput();

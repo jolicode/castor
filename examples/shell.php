@@ -4,16 +4,16 @@ namespace shell;
 
 use Castor\Attribute\AsTask;
 
-use function Castor\exec;
+use function Castor\run;
 
 #[AsTask(description: 'Runs a bash')]
 function bash()
 {
-    exec('bash', tty: true);
+    run('bash', tty: true);
 }
 
 #[AsTask(description: 'Runs a sh')]
 function sh()
 {
-    exec('sh', tty: true);
+    run('sh', tty: true);
 }

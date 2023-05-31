@@ -12,16 +12,16 @@ function notify()
 }
 ```
 
-### Notify on exec
+### Notify on run
 
-You can use the `notify()` argument of the `exec()` function to display a
+You can use the `notify` argument of the `run()` function to display a
 notification when a command has been executed:
 
 ```php
 #[AsTask]
 function notify()
 {
-    exec(['echo', 'notify'], notify: true); // will display a success notification
-    exec('command_that_does_not_exist', notify: true); // will display a failure notification
+    run(['echo', 'notify'], notify: true); // will display a success notification
+    run('command_that_does_not_exist', notify: true); // will display a failure notification
 }
 ```

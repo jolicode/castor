@@ -6,7 +6,7 @@ It comes with many helpers to make your life easier:
 
 * arguments and options parsing
 * autocomplete
-* process execution
+* process executing
 * parallel processing
 * file watching
 * notification
@@ -24,12 +24,12 @@ a file `castor.php` with the following content:
 namespace hello;
 
 use Castor\Attribute\AsTask;
-use function Castor\exec;
+use function Castor\run;
 
 #[AsTask]
 function castor(): void
 {
-    exec('echo "Hello castor"');
+    run('echo "Hello castor"');
 }
 ```
 
@@ -66,7 +66,7 @@ function destroy(
 
     log('Destroying the infrastructure...')
 
-    exec('docker-compose down -v --remove-orphans --volumes --rmi=local');
+    run('docker-compose down -v --remove-orphans --volumes --rmi=local');
 
     notify('The infrastructure has been destroyed.')
 }
@@ -182,7 +182,7 @@ alias castor='docker run -it --rm -v `pwd`:/project -v "/var/run/docker.sock:/va
 Discover more by reading the docs:
 
 * [Basic usage](doc/01-basic-usage.md)
-* [The exec function](doc/02-exec.md)
+* [The `run()` function](doc/02-run.md)
 * [Command arguments](doc/03-arguments.md)
 * [Using the context](doc/04-context.md)
 * [Asking something, progress bar and more](doc/05-helper.md)

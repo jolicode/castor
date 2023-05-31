@@ -16,7 +16,7 @@ class GlobalHelper
 
     public static function getInitialContext(): Context
     {
-        // We always need a default context, for example when using exec() in a context builder
+        // We always need a default context, for example when using run() in a context builder
         return self::$initialContext ?? new Context();
     }
 

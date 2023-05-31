@@ -24,7 +24,7 @@ notify:send-notify            Sends a notification
 output:output                 Plays with Symfony Style
 parallel:sleep                Sleeps for 5, 7, and 10 seconds in parallel
 quiet:quiet                   Executes something but does not output anything
-run:run                       Run a sub-process and display information about it
+run:run-ls                    Run a sub-process and display information about it
 run:run-with-process-helper   Run a sub-process and display information about it, with ProcessHelper
 shell:bash                    Runs a bash
 shell:sh                      Runs a sh

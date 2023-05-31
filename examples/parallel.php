@@ -4,16 +4,16 @@ namespace parallel;
 
 use Castor\Attribute\AsTask;
 
-use function Castor\exec;
 use function Castor\parallel;
+use function Castor\run;
 
 function sleep_5(int $sleep = 5)
 {
     echo "sleep {$sleep}\n";
-    exec(['sleep', $sleep]);
+    run(['sleep', $sleep]);
 
     echo "re sleep {$sleep}\n";
-    exec(['sleep', $sleep]);
+    run(['sleep', $sleep]);
 
     return 'foo';
 }
@@ -21,7 +21,7 @@ function sleep_5(int $sleep = 5)
 function sleep_7(int $sleep = 7)
 {
     echo "sleep {$sleep}\n";
-    exec(['sleep', $sleep]);
+    run(['sleep', $sleep]);
 
     return 'bar';
 }
@@ -29,7 +29,7 @@ function sleep_7(int $sleep = 7)
 function sleep_10(int $sleep = 10)
 {
     echo "sleep {$sleep}\n";
-    exec(['sleep', $sleep]);
+    run(['sleep', $sleep]);
 
     return "sleep {$sleep}";
 }
