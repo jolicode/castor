@@ -7,7 +7,7 @@ use Castor\Attribute\AsTask;
 use Castor\Context;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-use function Castor\exec;
+use function Castor\run;
 
 #[AsContext(default: true, name: 'my_default')]
 function defaultContext(): Context
@@ -30,14 +30,14 @@ function productionContext(): Context
     ;
 }
 
-#[AsContext(name: 'exec')]
-function execContext(): Context
+#[AsContext(name: 'run')]
+function runContext(): Context
 {
-    $production = (bool) trim(exec('echo $PRODUCTION', quiet: true)->getOutput());
-    $foo = trim(exec('echo $FOO', quiet: true)->getOutput()) ?: 'no defined';
+    $production = (bool) trim(run('echo $PRODUCTION', quiet: true)->getOutput());
+    $foo = trim(run('echo $FOO', quiet: true)->getOutput()) ?: 'no defined';
 
     return new Context([
-        'name' => 'exec',
+        'name' => 'run',
         'production' => (bool) $production,
         'foo' => $foo,
     ]);

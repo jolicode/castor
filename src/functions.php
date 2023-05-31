@@ -50,7 +50,7 @@ function parallel(callable ...$callbacks): array
  * @param (callable(string, string, Process) :void)|null $callback
  * @param array<string, string>|null                     $environment
  */
-function exec(
+function run(
     string|array $command,
     array|null $environment = null,
     string|null $path = null,
@@ -210,7 +210,7 @@ function watch(string $path, callable $function, Context $context = null): void
     $command = [$binaryPath, $path];
     $buffer = '';
 
-    exec($command, callback: static function ($type, $bytes, $process) use ($function, &$buffer) {
+    run($command, callback: static function ($type, $bytes, $process) use ($function, &$buffer) {
         if (Process::OUT === $type) {
             $data = $buffer . $bytes;
             $lines = explode("\n", $data);

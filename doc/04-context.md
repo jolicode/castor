@@ -1,7 +1,7 @@
 ## Context
 
-For every command that castor execute, it uses a `Context` object. This object
-contains the default values for the `exec` or `watch` function (directory,
+For every command that castor run, it uses a `Context` object. This object
+contains the default values for the `run` or `watch` function (directory,
 environment variables, pty, tty, etc...).
 
 It also contains custom values that can be set by the user and reused in
@@ -23,7 +23,7 @@ function foo(Context $context): void
 {
     echo $context->currentDirectory; // will print the directory of the castor.php file
     $context = $context->withPath('/tmp'); // will create a new context with the current directory set to /tmp
-    exec('pwd', context: $context); // will print /tmp
+    run('pwd', context: $context); // will print /tmp
 }
 ```
 
@@ -45,7 +45,7 @@ function my_context(): Context
 #[AsTask]
 function foo(): void
 {
-    exec('echo $FOO');
+    run('echo $FOO');
 }
 ```
 
@@ -82,7 +82,7 @@ function create_default_context(): Context
 #[AsTask]
 function foo(Context $context): void
 {
-    exec(['echo', $context['foo']]); // will print bar even if you do not use the --context option
-    exec('pwd'); // will print /tmp
+    run(['echo', $context['foo']]); // will print bar even if you do not use the --context option
+    run('pwd'); // will print /tmp
 }
 ```

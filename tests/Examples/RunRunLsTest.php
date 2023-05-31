@@ -4,12 +4,12 @@ namespace Castor\Tests\Examples;
 
 use Castor\Tests\TaskTestCase;
 
-class RunRunTest extends TaskTestCase
+class RunRunLsTest extends TaskTestCase
 {
-    // run:run
+    // run:run-ls
     public function testRunRun(): void
     {
-        $process = $this->runTask(['run:run']);
+        $process = $this->runTask(['run:run-ls']);
         $this->assertSame(0, $process->getExitCode());
         $this->assertStringContainsString('Output:', $process->getOutput());
         $this->assertStringContainsString('Error output:', $process->getOutput());

@@ -9,7 +9,7 @@ function command(
     string $firstArg,
     string $secondArg
 ) {
-    exec(['echo', $firstArg, $secondArg]);
+    run(['echo', $firstArg, $secondArg]);
 }
 ```
 
@@ -30,7 +30,7 @@ function command(
     string $firstArg,
     string $default = 'default'
 ) {
-    exec(['echo', $firstArg, $secondArg]);
+    run(['echo', $firstArg, $secondArg]);
 }
 ```
 
@@ -52,7 +52,7 @@ function command(
     #[AsArgument(name: 'foo', description: 'This is the foo argument')]
     string $arg = 'bar',
 ) {
-    exec(['echo', $arg]);
+    run(['echo', $arg]);
 }
 ```
 
@@ -72,7 +72,7 @@ function command(
     #[AsOption(name: 'foo', description: 'This is the foo option')]
     string $arg = 'bar',
 ) {
-    exec(['echo', $arg]);
+    run(['echo', $arg]);
 }
 ```
 

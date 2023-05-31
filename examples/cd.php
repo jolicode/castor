@@ -5,12 +5,12 @@ namespace cd;
 use Castor\Attribute\AsTask;
 use Castor\Context;
 
-use function Castor\exec;
+use function Castor\run;
 
 #[AsTask(description: 'Changes directory')]
 function directory(Context $context)
 {
-    exec(['pwd'], context: $context);
-    exec(['pwd'], context: $context->withPath('src/Attribute'));
-    exec(['pwd'], context: $context);
+    run(['pwd'], context: $context);
+    run(['pwd'], context: $context->withPath('src/Attribute'));
+    run(['pwd'], context: $context);
 }
