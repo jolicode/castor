@@ -25,6 +25,7 @@ class TaskCommand extends Command
         Context::class,
         SymfonyStyle::class,
         Application::class,
+        Command::class,
         InputInterface::class,
         OutputInterface::class,
     ];
@@ -54,6 +55,10 @@ class TaskCommand extends Command
         foreach ($this->function->getParameters() as $parameter) {
             if (($type = $parameter->getType()) instanceof \ReflectionNamedType && \in_array($type->getName(), self::SUPPORTED_PARAMETER_TYPES, true)) {
                 continue;
+            }
+
+            if ('command' === $parameter->getName()) {
+                throw new \LogicException(sprintf('The argument "%s" for command "%s" cannot be named like this because this is a reserved name.', $parameter->getName(), $this->getName()));
             }
 
             $commandArgumentAttribute = $parameter->getAttributes(AsCommandArgument::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null;
@@ -125,6 +130,7 @@ class TaskCommand extends Command
                     Context::class => GlobalHelper::getInitialContext(),
                     SymfonyStyle::class => new SymfonyStyle($input, $output),
                     Application::class => $this->getApplication(),
+                    Command::class => $this,
                     InputInterface::class => $input,
                     OutputInterface::class => $output,
                 };
