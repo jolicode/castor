@@ -87,12 +87,25 @@ class TaskCommand extends Command
                         $commandArgumentAttribute->suggestedValues,
                     );
                 } elseif ($commandArgumentAttribute instanceof AsOption) {
+                    $mode = $commandArgumentAttribute->mode;
+                    $defaultValue = $parameter->isOptional() ? $parameter->getDefaultValue() : null;
+
+                    if (!$mode) {
+                        if (($type = $parameter->getType()) instanceof \ReflectionNamedType && 'bool' === $type->getName()) {
+                            $mode |= InputOption::VALUE_NONE;
+                            // Fix Symfony limitation: "Cannot set a default value when using InputOption::VALUE_NONE mode.
+                            $defaultValue = null;
+                        } else {
+                            $mode = InputOption::VALUE_OPTIONAL;
+                        }
+                    }
+
                     $this->addOption(
                         $name,
                         $commandArgumentAttribute->shortcut,
-                        $mode = $commandArgumentAttribute->mode ?? InputOption::VALUE_OPTIONAL,
+                        $mode,
                         $commandArgumentAttribute->description,
-                        $parameter->isOptional() ? $parameter->getDefaultValue() : null,
+                        $defaultValue,
                         $commandArgumentAttribute->suggestedValues,
                     );
                 }
