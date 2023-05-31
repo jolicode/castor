@@ -17,6 +17,7 @@ return (new PhpCsFixer\Config())
         '@PhpCsFixer' => true,
         '@Symfony' => true,
         '@Symfony:risky' => true,
+        'heredoc_indentation' => false,
         'php_unit_internal_class' => false, // From @PhpCsFixer but we don't want it
         'php_unit_test_class_requires_covers' => false, // From @PhpCsFixer but we don't want it
         'phpdoc_add_missing_param_annotation' => false, // From @PhpCsFixer but we don't want it
