@@ -20,7 +20,7 @@ class CastorFileNotFoundCommand extends SingleCommandApplication
 
     protected function configure(): void
     {
-        $this->addArgument('options', InputArgument::IS_ARRAY);
+        $this->addArgument('options', InputArgument::IS_ARRAY | InputArgument::OPTIONAL);
         $this->ignoreValidationErrors();
     }
 
