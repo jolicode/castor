@@ -4,12 +4,12 @@ namespace Castor\Tests\Examples;
 
 use Castor\Tests\TaskTestCase;
 
-class ContextContextDoNotExist extends TaskTestCase
+class NoConfigTest extends TaskTestCase
 {
-    // context:context
+    // unknown:command
     public function test(): void
     {
-        $process = $this->runTask(['context:context', '--context', 'no_no_exist']);
+        $process = $this->runTask(['unknown:command', 'toto', '--foo', 1], '/tmp');
 
         $this->assertSame(1, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());
