@@ -91,10 +91,8 @@ function add_test(array $args, string $class, string $cwd = null)
     fseek($fp, __COMPILER_HALT_OFFSET__ + 1);
     $template = stream_get_contents($fp);
 
-    $bin = __DIR__ . '/castor';
-
     $process = new Process(
-        [\PHP_BINARY, $bin, ...$args],
+        [\PHP_BINARY,  __DIR__ . '/castor', ...$args],
         cwd: $cwd ?: __DIR__ . '/../',
         env: [
             'COLUMNS' => 120,
