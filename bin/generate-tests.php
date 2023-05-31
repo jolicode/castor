@@ -29,7 +29,8 @@ $commandFilterList = [
     'watch:stop',
     // Not examples
     'watcher:build',
-    'watcher:unix',
+    'watcher:linux',
+    'watcher:darwin',
     'watcher:windows',
     // Customized tests
     'cd:directory',

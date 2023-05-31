@@ -32,5 +32,6 @@ watch:fs-change               Watches on filesystem changes
 watch:parallel-change         Watches on filesystem changes with 2 watchers in parallel
 watch:stop                    Watches on filesystem changes and stop after first change
 watcher:build                 Build watcher for all systems
-watcher:unix                  Build watcher for Unix system
+watcher:darwin                Build watcher for MacOS system
+watcher:linux                 Build watcher for Linux system
 watcher:windows               Build watcher for Windows system
