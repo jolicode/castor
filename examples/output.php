@@ -3,12 +3,15 @@
 namespace output;
 
 use Castor\Attribute\AsTask;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsTask(description: 'Plays with Symfony Style')]
-function output(SymfonyStyle $io)
+function output(SymfonyStyle $io, Command $command)
 {
     $io->title('This is a title');
+
+    $io->text(sprintf('This is the command "%s"', $command->getName()));
 
     $io->comment('With IO, you can ask questions ...');
     $value = $io->ask('Tell me something');
@@ -18,7 +21,7 @@ function output(SymfonyStyle $io)
     $io->progressStart(100);
     for ($i = 0; $i < 100; ++$i) {
         $io->progressAdvance();
-        usleep(1000);
+        usleep(20_000);
     }
     $io->progressFinish();
 
