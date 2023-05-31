@@ -29,12 +29,12 @@
         "jolicode/jolinotif": "^2.5",
         "monolog/monolog": "^3.3",
         "nikic/php-parser": "^4.15",
-        "symfony/console": "^6.2",
-        "symfony/filesystem": "^6.2",
-        "symfony/finder": "^6.2",
-        "symfony/monolog-bridge": "^6.2",
-        "symfony/process": "^6.2",
-        "symfony/string": "^6.2",
+        "symfony/console": "^6.3",
+        "symfony/filesystem": "^6.3",
+        "symfony/finder": "^6.3",
+        "symfony/monolog-bridge": "^6.3",
+        "symfony/process": "^6.3",
+        "symfony/string": "^6.3",
         "symfony/translation-contracts": "^3.2"
     },
     "bin": [
@@ -47,6 +47,6 @@
         }
     },
     "require-dev": {
-        "symfony/phpunit-bridge": "^6.2"
+        "symfony/phpunit-bridge": "^6.3"
     }
 }
