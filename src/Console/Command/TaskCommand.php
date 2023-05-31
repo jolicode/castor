@@ -129,7 +129,15 @@ class TaskCommand extends Command
             $args[] = $input->getOption($name);
         }
 
-        $result = $this->function->invoke(...$args);
+        try {
+            $result = $this->function->invoke(...$args);
+        } catch (\Error $e) {
+            if ('Call to undefined function run()' === $e->getMessage()) {
+                throw new \LogicException(sprintf('Call to undefined function run(). Did you forget to import it? Try to add "use function Castor\run;" in top of "%s" file.', $this->function->getFileName()));
+            }
+
+            throw $e;
+        }
 
         if (null === $result) {
             return Command::SUCCESS;
