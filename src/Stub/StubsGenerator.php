@@ -29,19 +29,6 @@ final class StubsGenerator
         $finder
             ->files()
             ->in("{$basePath}/src")
-            ->append([
-                // Add some very frequently used classes
-                "{$basePath}/vendor/symfony/console/Application.php",
-                "{$basePath}/vendor/symfony/console/Input/InputArgument.php",
-                "{$basePath}/vendor/symfony/console/Input/InputInterface.php",
-                "{$basePath}/vendor/symfony/console/Input/InputOption.php",
-                "{$basePath}/vendor/symfony/console/Output/OutputInterface.php",
-                "{$basePath}/vendor/symfony/console/Style/SymfonyStyle.php",
-                "{$basePath}/vendor/symfony/filesystem/Filesystem.php",
-                "{$basePath}/vendor/symfony/filesystem/Path.php",
-                "{$basePath}/vendor/symfony/finder/Finder.php",
-                "{$basePath}/vendor/symfony/process/Process.php",
-            ])
             ->name('*.php')
             ->sortByName()
         ;
@@ -54,6 +41,30 @@ final class StubsGenerator
 
         foreach ($finder as $file) {
             $fileStmts = $parser->parse((string) file_get_contents($file->getPathname()));
+            // @phpstan-ignore-next-line
+            $stmts = array_merge($stmts, $traverser->traverse($fileStmts));
+        }
+
+        // Add some very frequently used classes
+        $frequentlyUsedClasses = [
+            \Symfony\Component\Console\Application::class,
+            \Symfony\Component\Console\Input\InputArgument::class,
+            \Symfony\Component\Console\Input\InputInterface::class,
+            \Symfony\Component\Console\Input\InputOption::class,
+            \Symfony\Component\Console\Output\OutputInterface::class,
+            \Symfony\Component\Console\Style\SymfonyStyle::class,
+            \Symfony\Component\Filesystem\Filesystem::class,
+            \Symfony\Component\Filesystem\Path::class,
+            \Symfony\Component\Finder\Finder::class,
+            \Symfony\Component\Process\Process::class,
+        ];
+
+        foreach ($frequentlyUsedClasses as $class) {
+            $file = (new \ReflectionClass($class))->getFileName();
+            if (!$file) {
+                continue;
+            }
+            $fileStmts = $parser->parse((string) file_get_contents($file));
             // @phpstan-ignore-next-line
             $stmts = array_merge($stmts, $traverser->traverse($fileStmts));
         }
