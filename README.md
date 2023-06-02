@@ -102,7 +102,7 @@ mv castor.linux-amd64.phar $HOME/.local/bin/castor
 ```
 
 There are other ways to install Castor, please refer to the
-[documentation](doc/01-installation.md)
+[documentation](doc/01-installation.md).
 
 ## Further documentation
 

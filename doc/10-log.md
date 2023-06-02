@@ -41,6 +41,8 @@ function log()
 }
 ```
 
+## Log something - the right way
+
 You may wonder when to use the `log()` fonction, when to use `echo`, or when to
 use the `OutputInterface`. Here is a small guide:
 

@@ -14,15 +14,13 @@ You can also download the latest version by browsing [the build
 page](https://github.com/jolicode/castor/actions/workflows/build-phar.yml) and
 selecting the last build.
 
-We provide different phar for Unix/Windows architectures to offer lighter phar
+We provide different phar for Linux / MacOS / Windows architectures to offer lighter phar
 files. Download the correct one and make it available in your shell:
 
 Example for Linux:
 ```bash
 mv castor.linux-amd64.phar $HOME/.local/bin/castor
 ```
-
-There are other ways to install Castor, please refer to the documentation
 
 ### Globally with Composer
 
