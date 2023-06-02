@@ -6,6 +6,14 @@ no-namespace                  Task without a namespace
 args:another-args             Dumps all arguments and options, without configuration
 args:args                     Dumps all arguments and options, with custom configuration
 bar:bar                       Prints bar, but also executes foo
+castor:phar:build             Build phar for all systems
+castor:phar:darwin            Build phar for MacOS system
+castor:phar:linux             Build phar for Linux system
+castor:phar:windows           Build phar for Windows system
+castor:watcher:build          Build watcher for all systems
+castor:watcher:darwin         Build watcher for MacOS system
+castor:watcher:linux          Build watcher for Linux system
+castor:watcher:windows        Build watcher for Windows system
 cd:directory                  Changes directory
 context:context               Displays information about the context
 env:env                       Display environment variables
@@ -31,7 +39,3 @@ shell:sh                      Runs a sh
 watch:fs-change               Watches on filesystem changes
 watch:parallel-change         Watches on filesystem changes with 2 watchers in parallel
 watch:stop                    Watches on filesystem changes and stop after first change
-watcher:build                 Build watcher for all systems
-watcher:darwin                Build watcher for MacOS system
-watcher:linux                 Build watcher for Linux system
-watcher:windows               Build watcher for Windows system

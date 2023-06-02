@@ -28,10 +28,14 @@ $commandFilterList = [
     'watch:parallel-change',
     'watch:stop',
     // Not examples
-    'watcher:build',
-    'watcher:linux',
-    'watcher:darwin',
-    'watcher:windows',
+    'castor:phar:build',
+    'castor:phar:darwin',
+    'castor:phar:linux',
+    'castor:phar:windows',
+    'castor:watcher:build',
+    'castor:watcher:darwin',
+    'castor:watcher:linux',
+    'castor:watcher:windows',
     // Customized tests
     'cd:directory',
     'log:all-level',
