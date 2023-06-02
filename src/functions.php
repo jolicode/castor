@@ -191,7 +191,7 @@ function watch(string $path, callable $function, Context $context = null): void
         throw new \RuntimeException('Unsupported OS.');
     }
 
-    $binaryPath = __DIR__ . '/../watcher/bin/' . $binary;
+    $binaryPath = __DIR__ . '/../tools/watcher/bin/' . $binary;
 
     if (str_starts_with(__FILE__, 'phar:')) {
         static $tmpPath;
