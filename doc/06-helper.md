@@ -1,8 +1,8 @@
-## Helpers
+# Helpers
 
 Some helpers are built-in with Castor.
 
-### SymfonyStyle
+## SymfonyStyle
 
 The `Symfony\Component\Console\Style\SymfonyStyle` class provides methods to
 interact with the user and to display information. You can retrieve this class
@@ -42,7 +42,7 @@ You can check
 the [Symfony documentation](https://symfony.com/doc/current/console/style.html)
 for more information about this class and how to use it.
 
-## Filesystem
+# Filesystem
 
 The `Symfony\Component\Filesystem\Filesystem` class provides OS-independent
 utilities for filesystem operations and for file/directory paths manipulation.
@@ -77,7 +77,7 @@ You can check
 the [Symfony documentation](https://symfony.com/doc/current/components/filesystem.html)
 for more information about this component and how to use it.
 
-## Finder
+# Finder
 
 The `Symfony\Component\Finder\Finder` class finds files and directories based
 on different criteria (name, file size, modification time, etc.) via an

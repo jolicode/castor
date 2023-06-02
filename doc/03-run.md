@@ -1,4 +1,4 @@
-## The `run()` function
+# The `run()` function
 
 Castor provides a `Castor\run()` function to run commands. It allows to run a
 process:
@@ -20,7 +20,7 @@ function foo(): void
 You can pass a string or an array of string for this command. When passing a
 string, arguments will not be escaped - use it carefully.
 
-### Process object
+## Process object
 
 Under the hood, Castor uses the
 [`Symfony\Component\Process\Process`](https://github.com/symfony/symfony/blob/6.3/src/Symfony/Component/Process/Process.php)
@@ -36,7 +36,7 @@ function foo(): void
 }
 ```
 
-### Failure
+## Failure
 
 By default, Castor will throw an exception if the command fails. You can disable
 that by setting the `allowFailure` option to `true`:
@@ -49,7 +49,7 @@ function foo(): void
 }
 ```
 
-### Working directory
+## Working directory
 
 By default, Castor will run the command in the same directory as
 the `castor.php` file. You can change that by setting the `path` argument. It
@@ -64,7 +64,7 @@ function foo(): void
 }
 ```
 
-### Environment variables
+## Environment variables
 
 By default, Castor will use the same environment variables as the current
 process. You can add or override environment variables by setting
@@ -78,7 +78,7 @@ function foo(): void
 }
 ```
 
-### Processing the output
+## Processing the output
 
 By default, Castor will forward the stdout and stderr to the current terminal.
 If you do not want to print the output of the command you can set the `quiet`
@@ -104,7 +104,7 @@ function foo(): void
 }
 ```
 
-### PTY & TTY
+## PTY & TTY
 
 By default, Castor will use a pseudo terminal (PTY) to run the command,
 which allows to have nice output in most cases.
