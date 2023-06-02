@@ -24,23 +24,23 @@ a file `castor.php` with the following content:
 ```php
 <?php
 
-namespace hello;
+namespace greetings;
 
 use Castor\Attribute\AsTask;
 use function Castor\run;
 
 #[AsTask]
-function castor(): void
+function hello(): void
 {
-    run('echo "Hello castor"');
+    run('echo "Hello from castor"');
 }
 ```
 
-Then you can run the command with `castor hello:castor`:
+Then you can run the command with `castor greetings:hello`:
 
 ```bash
-$ castor hello:castor
-Hello castor
+$ castor greetings:hello
+Hello from castor
 ```
 
 Then, you can go wild and create more complex commands:
