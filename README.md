@@ -47,18 +47,11 @@ Then, you can go wild and create more complex commands:
 
 ```php
 #[AsTask(description: 'Clean the infrastructure (remove container, volume, networks)')]
-function destroy(
-    SymfonyStyle $io,
-    #[AsOption(
-        description: 'Force the destruction without confirmation',
-        shortcut: 'f',
-        mode: InputOption::VALUE_NONE,
-    )]
-    bool $force,
-) {
+function destroy(SymfonyStyle $io, bool $force = false)
+{
     if (!$force) {
         $io->warning('This will permanently remove all containers, volumes, networks... created for this project.');
-        $io->note('You can use the --force option to avoid this confirmation.');
+        $io->comment('You can use the --force option to avoid this confirmation.');
 
         if (!$io->confirm('Are you sure?', false)) {
             $io->comment('Aborted.');
@@ -66,8 +59,6 @@ function destroy(
             return;
         }
     }
-
-    log('Destroying the infrastructure...')
 
     run('docker-compose down -v --remove-orphans --volumes --rmi=local');
 
