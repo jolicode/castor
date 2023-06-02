@@ -1,6 +1,8 @@
 # CHANGELOG
 
-## 0.1.1 (not released yet)
+## 0.3.0 (not released yet)
+
+## 0.2.0 (2023-06-02)
 
 * Add a way to get the command instance in a task
 * Add support for better handling of option without value
