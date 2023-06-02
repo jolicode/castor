@@ -1,4 +1,4 @@
-## Command arguments
+# Command arguments
 
 When creating a function that will be used as a command, all the parameters of
 the function will be used as arguments or options of the command:
@@ -20,7 +20,7 @@ $ php castor.phar command foo bar
 foo bar
 ```
 
-### Optional arguments
+## Optional arguments
 
 You can make an argument optional by giving it a default value:
 
@@ -41,7 +41,7 @@ $ php castor.phar command --default=bar foo
 foo bar
 ```
 
-### Overriding the argument name and description
+## Overriding the argument name and description
 
 You can override the name and description of an argument by using
 the `Castor\Attribute\AsArgument` attribute:
@@ -61,7 +61,7 @@ $ php castor.phar command foo
 foo
 ```
 
-### Overriding the option name and description
+## Overriding the option name and description
 
 If you prefer, you can force an argument to be an option by using the
 `Castor\Attribute\AsOption` attribute:

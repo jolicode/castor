@@ -1,4 +1,4 @@
-## Log
+# Log and Debug
 
 Castor has logging capabilities. It relies on
 [Monolog](https://github.com/seldaek/monolog) and is also configured with
@@ -17,7 +17,7 @@ castor -vvv # display level "debug" and above
 When an error occurs, the error message is displayed and the program exits. If
 you need more information, you can re-run the command with the `-v` option.
 
-### The `log()` function
+## The `log()` function
 
 You can use the `log()` function to log a message:
 
@@ -40,3 +40,10 @@ function log()
     ]);
 }
 ```
+
+You may wonder when to use the `log()` fonction, when to use `echo`, or when to
+use the `OutputInterface`. Here is a small guide:
+
+* Don't use `echo`, it's not a good practice;
+* Use the `OutputInterface` when you want to display something to the user;
+* Use the `log()` function when you want to add some **debug** information.

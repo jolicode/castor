@@ -1,4 +1,4 @@
-## Parallel execution
+# Parallel execution
 
 The `parallel()` function provides a way to run functions in parallel,
 so you do not have to wait for a function to finish before starting another one:
@@ -29,7 +29,7 @@ run the functions in parallel.
 > will be executed in parallel, which is the case for
 > the `run()` and `watch()` function.
 
-### Watching in parallel
+## Watching in parallel
 
 You can also watch in parallel multiple directories:
 

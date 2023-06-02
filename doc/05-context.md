@@ -1,4 +1,4 @@
-## Context
+# Context
 
 For every command that castor run, it uses a `Context` object. This object
 contains the default values for the `run` or `watch` function (directory,
@@ -10,7 +10,7 @@ commands.
 The context is immutable, which means that every time you change a value, a new
 context is created.
 
-### Using the context
+## Using the context
 
 The context is passed to the function if it has an argument type-hinted
 with `Castor\Context`:
@@ -27,7 +27,7 @@ function foo(Context $context): void
 }
 ```
 
-### Creating a new context
+## Creating a new context
 
 You can create a new context by declaring a function with
 the `Castor\Attribute\AsContext` attribute:
@@ -64,7 +64,7 @@ BAR
 > You can override the context name by setting the `name` argument of the
 > `AsContext` attribute.
 
-### Setting a default context
+## Setting a default context
 
 You may want to set a default context for all your commands. You can do that by
 setting the `default` argument to `true` in the `AsContext` attribute:

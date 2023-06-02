@@ -1,4 +1,4 @@
-## Watch
+# Watch
 
 Castor provides a `watch()` function that will watch a file or a directory and
 call a callback function when the file or directory changes:
@@ -16,7 +16,7 @@ function watch(): void
 `$action` can be either `create`, `write`, `rename` or `remove` and the file
 will be the absolute path to the file.
 
-### Recursive watch
+## Recursive watch
 
 By default the `watch()` function will not watch subdirectories. You can change
 that by setting a specific path:
@@ -32,7 +32,7 @@ function watch(): void
 }
 ```
 
-### Stopping the watch
+## Stopping the watch
 
 The `watch()` function will look at the return value of the callback function. If
 the callback function returns `false` the watch will stop:

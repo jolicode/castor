@@ -1,17 +1,20 @@
 # Castor
 
-Castor is a DX oriented task runner and command launcher built with PHP.
+Castor is a **<abbr title="Developer eXperience">DX</abbr> oriented task
+runner** and **command launcher** built with PHP.
 
 It comes with many helpers to make your life easier:
 
-* arguments and options parsing
-* autocomplete
-* process executing
-* parallel processing
-* file watching
-* notification
-* logging
-* great DX
+* Seamless parsing of **arguments and options**, simplifying input handling
+* **Autocomplete** support for faster and error-free command entry
+* Effortless **process execution**, enabling seamless integration with external
+  tools
+* **Parallel processing** capabilities to maximize resource utilization
+* Intelligent **file watching** that automatically triggers actions on file
+  modifications
+* Customizable **notifications** to keep you informed and in control
+* Robust **logging** for capturing and analyzing essential information
+* A strong emphasis on exceptional **Developer Experience** (DX)
 
 ## Usage
 
@@ -33,7 +36,7 @@ function castor(): void
 }
 ```
 
-Then you can run the command with `castor hello:castor`.
+Then you can run the command with `castor hello:castor`:
 
 ```bash
 $ castor hello:castor
@@ -76,24 +79,6 @@ If you want to read more about usage, you can read the [basic
 usage](doc/01-basic-usage.md) documentation, or browse the [examples](examples)
 directory.
 
-## Autocomplete
-
-If you use bash, you can enable autocomplete for castor by executing the
-following command:
-
-```
-castor completion | sudo tee /etc/bash_completion.d/castor
-```
-
-Then reload your shell.
-
-Others shells are also supported (zsh, fish, etc). To get the list of supported
-shells and their dedicated instructions, run:
-
-```
-castor completion --help
-```
-
 ## Installation
 
 > **Note**
@@ -116,79 +101,20 @@ Example for Linux:
 mv castor.linux-amd64.phar $HOME/.local/bin/castor
 ```
 
-### Globally with Composer
-
-You can install Castor globally with Composer:
-
-```bash
-composer global require jolicode/castor
-```
-
-Then make sure that the Composer global bin directory is in your `PATH`:
-
-```bash
-export PATH="$HOME/.composer/vendor/bin:$PATH"
-```
-
-### Manually
-
-You'll need to clone the repository and run `composer install` to
-install the project. Then create a symlink to the `castor` file in your `PATH`.
-
-```bash
-cd $HOME/somewhere
-git clone git@github.com:jolicode/castor.git
-cd castor
-composer install
-ln -s $PWD/bin/castor $HOME/.local/bin/castor
-```
-
-### With Docker
-
-If you don't have PHP >= 8.1 installed on your host, you can use Docker to run castor.
-However, some features like notifications will not work.
-
-We ship a `Dockerfile` that you can use to build a Docker image with castor:
-
-```
-docker build -t castor .
-```
-
-Then you can run castor with:
-
-```
-docker run -it --rm -v `pwd`:/project castor
-```
-
-If you want to use Docker commands in your tasks, you must enable Docker
-support when building the image:
-
-```
-docker build -t castor --build-arg WITH_DOCKER=1  .
-```
-
-Then you can run castor with:
-
-```
-docker run -it --rm -v `pwd`:/project -v "/var/run/docker.sock:/var/run/docker.sock:rw" castor
-```
-
-We suggest you to create an alias for it:
-
-```
-alias castor='docker run -it --rm -v `pwd`:/project -v "/var/run/docker.sock:/var/run/docker.sock:rw" castor'
-```
+There are other ways to install Castor, please refer to the
+[documentation](doc/01-installation.md)
 
 ## Further documentation
 
 Discover more by reading the docs:
 
-* [Basic usage](doc/01-basic-usage.md)
-* [The `run()` function](doc/02-run.md)
-* [Command arguments](doc/03-arguments.md)
-* [Using the context](doc/04-context.md)
-* [Asking something, progress bar and more](doc/05-helper.md)
-* [Watching files](doc/06-watch.md)
-* [Parallel processing](doc/07-parallel.md)
-* [Notification](doc/08-notify.md)
-* [Log](doc/09-log.md)
+* [Installation and Autocomplete](doc/01-installation.md)
+* [Basic Usage](doc/02-basic-usage.md)
+* [The `run()` Function](doc/03-run.md)
+* [Command Arguments](doc/04-arguments.md)
+* [Using the Context](doc/05-context.md)
+* [Asking Something, Progress Bar and more](doc/06-helper.md)
+* [Watching Files](doc/07-watch.md)
+* [Parallel Processing](doc/08-parallel.md)
+* [Notification](doc/09-notify.md)
+* [Log and Debug](doc/10-log.md)

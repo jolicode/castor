@@ -1,4 +1,4 @@
-## Notification
+# Notification
 
 Castor uses the [JoliNotif](https://github.com/jolicode/jolinotif) library to
 display notifications.
@@ -12,7 +12,7 @@ function notify()
 }
 ```
 
-### Notify on run
+## Notify on run
 
 You can use the `notify` argument of the `run()` function to display a
 notification when a command has been executed:
