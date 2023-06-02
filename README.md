@@ -99,16 +99,16 @@ castor completion --help
 > **Note**
 > Please note that castor needs PHP >= 8.1 to run.
 
-### As a PHAR - recommended way
+### As a phar - recommended way
 
-You can download the latest release of Castor as a PHAR file from the [releases
+You can download the latest release of Castor as a phar file from the [releases
 page](https://github.com/jolicode/castor/releases).
 
 You can also download the latest version by browsing [the build
 page](https://github.com/jolicode/castor/actions/workflows/build-phar.yml) and
 selecting the last build.
 
-We provide different PHAR for Unix/Windows architectures to offer lighter PHAR
+We provide different phar for Unix/Windows architectures to offer lighter phar
 files. Download the correct one and make it available in your shell:
 
 Example for Linux:
@@ -145,7 +145,7 @@ ln -s $PWD/bin/castor $HOME/.local/bin/castor
 
 ### With Docker
 
-If you don't have PHP >= 8.1 installed on your host, you can use Docker to run castor. 
+If you don't have PHP >= 8.1 installed on your host, you can use Docker to run castor.
 However, some features like notifications will not work.
 
 We ship a `Dockerfile` that you can use to build a Docker image with castor:

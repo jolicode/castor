@@ -1,6 +1,6 @@
 {
   "name": "jolicode/castor-phar",
-  "description": "Tooling for building Castor PHAR",
+  "description": "Tooling for building Castor phar",
   "type": "project",
   "license": "MIT",
   "authors": [
