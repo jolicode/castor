@@ -1,4 +1,4 @@
-name: Attach PHAR to the release
+name: Attach phars to the release
 
 on:
   release:
@@ -9,13 +9,13 @@ permissions:
 
 jobs:
   phar_release:
-    name: Create a PHAR and upload it
+    name: Create phars and upload them
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Build the PHAR
+      - name: Build all the phars
         uses: ./.github/actions/phar
 
       - name: Get release

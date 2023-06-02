@@ -1,5 +1,5 @@
-name: 'Build the PHAR'
-description: 'Build the PHAR for the current commit'
+name: 'Build phars for all systems'
+description: 'Build phars for the current commit'
 
 runs:
   using: "composite"
@@ -7,20 +7,17 @@ runs:
     - name: Install tools
       uses: ./.github/actions/tools
 
-    - name: Compile PHAR Linux
-      run: vendor/bin/box compile -c box.linux-amd64.json
+    - name: Compile phar Linux
+      run: bin/castor castor:phar:linux
       shell: bash
-      working-directory: tools/phar
 
-    - name: Compile PHAR Darwin
-      run: vendor/bin/box compile -c box.darwin-amd64.json
+    - name: Compile phar Darwin
+      run: bin/castor castor:phar:darwin
       shell: bash
-      working-directory: tools/phar
 
-    - name: Compile PHAR Windows
-      run: vendor/bin/box compile -c box.windows-amd64.json
+    - name: Compile phar Windows
+      run: bin/castor castor:phar:windows
       shell: bash
-      working-directory: tools/phar
 
     - name: Ensure PHAR is OK
       run: build/castor.linux-amd64.phar --version

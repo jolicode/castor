@@ -1,4 +1,4 @@
-name: Build the PHAR
+name: Build all the phars
 
 on:
   push:
@@ -9,30 +9,30 @@ permissions:
 
 jobs:
   phar:
-    name: Create a PHAR and upload it as an artifact
+    name: Create phars and upload them as an artifact
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Build the PHAR
+      - name: Build all the phars
         uses: ./.github/actions/phar
 
-      - name: Upload the Linux PHAR
+      - name: Upload the Linux phar
         uses: actions/upload-artifact@v3
         with:
           name: 'castor.linux-amd64.phar'
           path: tools/phar/build/castor.linux-amd64.phar
           if-no-files-found: error
 
-      - name: Upload the Darwin PHAR
+      - name: Upload the Darwin phar
         uses: actions/upload-artifact@v3
         with:
           name: 'castor.darwin-amd64.phar'
           path: tools/phar/build/castor.darwin-amd64.phar
           if-no-files-found: error
 
-      - name: Upload the Windows PHAR
+      - name: Upload the Windows phar
         uses: actions/upload-artifact@v3
         with:
           name: 'castor-windows-amd64.phar'
