@@ -18,7 +18,7 @@ It comes with many helpers to make your life easier:
 
 ## Usage
 
-As an example, you could create a command that prints "Hello castor" by creating
+As an example, you could create a command that prints "Hello from castor" by creating
 a file `castor.php` with the following content:
 
 ```php
