@@ -1,5 +1,5 @@
-name: 'Install PHAR tooling'
-description: 'Install PHAR tools to build the PHAR'
+name: 'Install phar tooling'
+description: 'Install phar tools to build the phar'
 
 runs:
   using: "composite"
@@ -13,7 +13,7 @@ runs:
       run: composer install --prefer-dist --no-progress --no-dev --optimize-autoloader --classmap-authoritative
       shell: bash
 
-    - name: Install dependencies (PHAR builder)
+    - name: Install dependencies (phar builder)
       run: composer install --prefer-dist --no-progress --optimize-autoloader --classmap-authoritative
       shell: bash
       working-directory: tools/phar
