@@ -10,6 +10,7 @@ use Monolog\Level;
 use Monolog\Logger;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LogLevel;
+use Spatie\Ssh\Ssh;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -105,6 +106,28 @@ function run(
 
     if (null !== $notify) {
         $context = $context->withNotify($notify);
+    }
+
+    if (!\in_array($context->host, ['local', 'localhost', '127.0.0.1']) && $context->user) {
+        $ssh = Ssh::create($context->user, $context->host, $context->sshOptions['port'] ?? null);
+
+        if ($context->sshOptions['path_private_key'] ?? false) {
+            $ssh->usePrivateKey($context->sshOptions['path_private_key']);
+        }
+        if ($context->sshOptions['jump_host'] ?? false) {
+            $ssh->useJumpHost($context->sshOptions['jump_host']);
+        }
+        if ($context->sshOptions['multiplexing_control_path'] ?? false) {
+            $ssh->useMultiplexing($context->sshOptions['multiplexing_control_path'], $context->sshOptions['multiplexing_control_persist'] ?? '10m');
+        }
+        if ($context->sshOptions['enable_strict_check'] ?? false) {
+            $context->sshOptions['enable_strict_check'] ? $ssh->enableStrictHostKeyChecking() : $ssh->disableStrictHostKeyChecking();
+        }
+        if ($context->sshOptions['password_authentication'] ?? false) {
+            $context->sshOptions['password_authentication'] ? $ssh->enablePasswordAuthentication() : $ssh->disableStrictHostKeyChecking();
+        }
+
+        $command = $ssh->getExecuteCommand($command);
     }
 
     if (\is_array($command)) {

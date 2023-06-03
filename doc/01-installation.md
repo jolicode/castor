@@ -3,7 +3,7 @@
 ## Installation
 
 > **Note**
-> Please note that castor needs PHP >= 8.1 to run.
+> Castor needs PHP >= 8.1 to run.
 
 ### As a phar - recommended way
 

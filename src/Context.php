@@ -9,6 +9,15 @@ class Context implements \ArrayAccess
     /**
      * @param array<(int|string), mixed> $data        The input parameter accepts an array or an Object
      * @param array<string, string>      $environment A list of environment variables to add to the command
+     * @param array{
+     *     'port'?: int,
+     *     'path_private_key'?: string,
+     *     'jump_host'?: string,
+     *     'multiplexing_control_path'?: string,
+     *     'multiplexing_control_persist'?: string,
+     *     'enable_strict_check'?: bool,
+     *     'password_authentication'?: bool,
+     * }                                 $sshOptions  Options for SSH connection
      */
     public function __construct(
         public readonly array $data = [],
@@ -21,6 +30,9 @@ class Context implements \ArrayAccess
         public readonly bool $allowFailure = false,
         public readonly bool $notify = false,
         public readonly VerbosityLevel $verbosityLevel = VerbosityLevel::NOT_CONFIGURED,
+        public readonly string $host = 'localhost',
+        public readonly ?string $user = null,
+        public readonly array $sshOptions = [],
     ) {
         $this->currentDirectory = $currentDirectory ?? PathHelper::getRoot();
     }
@@ -39,6 +51,9 @@ class Context implements \ArrayAccess
             $this->allowFailure,
             $this->notify,
             $this->verbosityLevel,
+            $this->host,
+            $this->user,
+            $this->sshOptions,
         );
     }
 
@@ -56,6 +71,9 @@ class Context implements \ArrayAccess
             $this->allowFailure,
             $this->notify,
             $this->verbosityLevel,
+            $this->host,
+            $this->user,
+            $this->sshOptions,
         );
     }
 
@@ -72,6 +90,9 @@ class Context implements \ArrayAccess
             $this->allowFailure,
             $this->notify,
             $this->verbosityLevel,
+            $this->host,
+            $this->user,
+            $this->sshOptions,
         );
     }
 
@@ -88,6 +109,9 @@ class Context implements \ArrayAccess
             $this->allowFailure,
             $this->notify,
             $this->verbosityLevel,
+            $this->host,
+            $this->user,
+            $this->sshOptions,
         );
     }
 
@@ -104,6 +128,9 @@ class Context implements \ArrayAccess
             $this->allowFailure,
             $this->notify,
             $this->verbosityLevel,
+            $this->host,
+            $this->user,
+            $this->sshOptions,
         );
     }
 
@@ -120,6 +147,9 @@ class Context implements \ArrayAccess
             $this->allowFailure,
             $this->notify,
             $this->verbosityLevel,
+            $this->host,
+            $this->user,
+            $this->sshOptions,
         );
     }
 
@@ -136,6 +166,9 @@ class Context implements \ArrayAccess
             $this->allowFailure,
             $this->notify,
             $this->verbosityLevel,
+            $this->host,
+            $this->user,
+            $this->sshOptions,
         );
     }
 
@@ -152,6 +185,9 @@ class Context implements \ArrayAccess
             $allowFailure,
             $this->notify,
             $this->verbosityLevel,
+            $this->host,
+            $this->user,
+            $this->sshOptions,
         );
     }
 
@@ -168,6 +204,9 @@ class Context implements \ArrayAccess
             $this->allowFailure,
             $notify,
             $this->verbosityLevel,
+            $this->host,
+            $this->user,
+            $this->sshOptions,
         );
     }
 
@@ -184,6 +223,58 @@ class Context implements \ArrayAccess
             $this->allowFailure,
             $this->notify,
             $verbosityLevel,
+            $this->host,
+            $this->user,
+            $this->sshOptions,
+        );
+    }
+
+    public function withoutSsh(): self
+    {
+        return new self(
+            $this->data,
+            $this->environment,
+            $this->currentDirectory,
+            $this->tty,
+            $this->pty,
+            $this->timeout,
+            $this->quiet,
+            $this->allowFailure,
+            $this->notify,
+            $this->verbosityLevel,
+            'localhost',
+            null,
+            [],
+        );
+    }
+
+    /**
+     * @param array{
+     *     'port'?: int,
+     *     'path_private_key'?: string,
+     *     'jump_host'?: string,
+     *     'multiplexing_control_path'?: string,
+     *     'multiplexing_control_persist'?: string,
+     *     'enable_strict_check'?: bool,
+     *     'password_authentication'?: bool,
+     * } $sshOptions Options for SSH connection
+     */
+    public function withSsh(string $host, string $user, array $sshOptions = []): self
+    {
+        return new self(
+            $this->data,
+            $this->environment,
+            $this->currentDirectory,
+            $this->tty,
+            $this->pty,
+            $this->timeout,
+            $this->quiet,
+            $this->allowFailure,
+            $this->notify,
+            $this->verbosityLevel,
+            $host,
+            $user,
+            $sshOptions,
         );
     }
 
