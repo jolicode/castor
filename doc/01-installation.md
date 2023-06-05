@@ -102,3 +102,17 @@ shells and their dedicated instructions, run:
 ```
 castor completion --help
 ```
+
+## Stubs
+
+The first time you run castor, it will create a `.castor.stub.php` at the root
+directory of your project (where your `castor.php` is). This file contains some
+definition of classes and methods from Castor and some of its dependencies.
+
+This is useful when you install Castor from a PHAR, from a global composer
+install, etc. Without it, your IDE would complain that it does not understand some
+classes and would not provide any autocompletion in your castor files. 
+
+We suggest you to add this file to your `.gitignore` to not version it in git.
+Castor will automatically update this file the first time you run Castor after
+you install or update it.
