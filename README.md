@@ -3,6 +3,8 @@
 Castor is a **<abbr title="Developer eXperience">DX</abbr> oriented task
 runner** and **command launcher** built with PHP.
 
+It can be seen as a replacement of Makefile, Fabric, Invoke, Shell scripts...
+
 It comes with many helpers to make your life easier:
 
 * Seamless parsing of **arguments and options**, simplifying input handling
@@ -114,3 +116,16 @@ Discover more by reading the docs:
 * [Parallel Processing](doc/08-parallel.md)
 * [Notification](doc/09-notify.md)
 * [Log and Debug](doc/10-log.md)
+
+## Questions and answers
+
+### How is Castor different from raw Symfony Console usage?
+
+Castor is a task runner, so it's primary goal is to run simple tasks to simplify
+the project development. Usually, it is used to run Docker commands, database
+migrations, cache clearing, etc.
+
+Usually, tasks are very small, like 1 or 2 lines of code. So you probably don't
+want to waste your project with ops command that are not strictly related to the
+business.
+
