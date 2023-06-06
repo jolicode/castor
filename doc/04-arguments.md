@@ -16,7 +16,7 @@ function command(
 Which can be called like that:
 
 ```bash
-$ php castor.phar command foo bar
+$ castor command foo bar
 foo bar
 ```
 
@@ -35,9 +35,9 @@ function command(
 ```
 
 ```bash
-$ php castor.phar command foo
+$ castor command foo
 foo default
-$ php castor.phar command --default=bar foo
+$ castor command --default=bar foo
 foo bar
 ```
 
@@ -57,7 +57,7 @@ function command(
 ```
 
 ```bash
-$ php castor.phar command foo
+$ castor command foo
 foo
 ```
 
@@ -77,7 +77,7 @@ function command(
 ```
 
 ```bash
-$ php castor.phar command --foo=foo
+$ castor command --foo=foo
 foo
 ```
 
@@ -97,7 +97,7 @@ function command(
 ```
 
 ```bash
-$ php castor.phar command --force
+$ castor command --force
 command has been forced
 ```
 
