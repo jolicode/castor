@@ -72,7 +72,7 @@ function destroy(SymfonyStyle $io, bool $force = false)
 ```
 
 If you want to read more about usage, you can read the [basic
-usage](doc/01-basic-usage.md) documentation, or browse the [examples](examples)
+usage](doc/02-basic-usage.md) documentation, or browse the [examples](examples)
 directory.
 
 ## Installation
