@@ -33,6 +33,7 @@
         "symfony/cache": "^6.3",
         "spatie/ssh": "^1.9",
         "symfony/console": "^6.3",
+        "symfony/dotenv": "^6.3",
         "symfony/filesystem": "^6.3",
         "symfony/finder": "^6.3",
         "symfony/monolog-bridge": "^6.3",

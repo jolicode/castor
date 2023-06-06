@@ -199,6 +199,27 @@ There are some low level helpers to access internal stuff:
 * `get_output()` returns the current
   [`Output`](https://github.com/symfony/symfony/blob/6.3/src/Symfony/Component/Console/Input/InputInterface.php)
 
+## Load a context from dotenv file
+
+You can also load your context from a dotenv file with the `load_dot_env()` function:
+
+```php
+use Castor\Attribute\AsContext;
+use Castor\Context;
+
+#[AsContext]
+function my_context(): Context
+{
+    return new Context(load_dot_env());
+}
+```
+
+By default, it loads the `.env` file on your project root (where castor file or
+folder was found), but you can overload this by passing your dotenv file
+path as an argument.
+You can find more about how dotenv file loading and overloading works on
+[related Symfony documentation](https://symfony.com/doc/current/configuration.html#configuring-environment-variables-in-env-files).
+
 ## Other helpers
 
 * `get_context()` returns the initial `Context`. See the [context
