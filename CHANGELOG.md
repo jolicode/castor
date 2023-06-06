@@ -1,6 +1,11 @@
 # CHANGELOG
 
-## 0.3.0 (not released yet)
+## 0.4.0 (not released yet)
+
+## 0.3.0 (2023-06-06)
+
+* enhance the documentation
+* enhance the first run experience
 
 ## 0.2.0 (2023-06-02)
 
