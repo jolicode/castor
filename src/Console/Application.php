@@ -21,7 +21,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 /** @internal */
 class Application extends SymfonyApplication
 {
-    final public const VERSION = 'v0.2.0';
+    final public const VERSION = 'v0.3.0';
 
     public function __construct(
         private readonly string $rootDir,
