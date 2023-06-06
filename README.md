@@ -16,6 +16,11 @@ It comes with many helpers to make your life easier:
 * Robust **logging** for capturing and analyzing essential information
 * A strong emphasis on exceptional **Developer Experience** (DX)
 
+> **Note**
+> Castor is still in early development, and the API is not stable yet. Even if
+> it not likely to change, it is still possible that it will change in the
+> future.
+
 ## Usage
 
 As an example, you could create a command that prints "Hello from castor" by creating
@@ -67,7 +72,7 @@ function destroy(SymfonyStyle $io, bool $force = false)
 ```
 
 If you want to read more about usage, you can read the [basic
-usage](doc/01-basic-usage.md) documentation, or browse the [examples](examples)
+usage](doc/02-basic-usage.md) documentation, or browse the [examples](examples)
 directory.
 
 ## Installation
