@@ -19,7 +19,7 @@ will be the absolute path to the file.
 ## Recursive watch
 
 By default the `watch()` function will not watch subdirectories. You can change
-that by setting a specific path:
+that by passing a path suffixed by `/...`:
 
 ```php
 #[AsTask]
