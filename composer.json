@@ -26,6 +26,7 @@
         }
     },
     "require": {
+        "php": ">=8.1",
         "jolicode/jolinotif": "^2.5",
         "monolog/monolog": "^3.3",
         "nikic/php-parser": "^4.15",
@@ -43,7 +44,7 @@
     "config": {
         "sort-packages": true,
         "platform": {
-            "php": "8.1"
+            "php": "8.1.19"
         }
     },
     "require-dev": {
