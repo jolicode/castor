@@ -2,7 +2,7 @@
 
 ## 0.4.0 (not released yet)
 
-## 0.3.0 (2023-06-06)
+## 0.3.0 (2023-06-07)
 
 * enhance the documentation
 * enhance the first run experience
