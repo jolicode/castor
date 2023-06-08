@@ -41,10 +41,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.1'
+      - name: Install tools
+        uses: ./.github/actions/tools
+
+      - name: Link box
+        run: sudo ln -s $GITHUB_WORKSPACE/tools/phar/vendor/bin/box /usr/local/bin/box
 
       - name: Install dependencies (project)
         run: composer install --no-progress

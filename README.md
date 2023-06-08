@@ -123,6 +123,7 @@ Discover more by reading the docs:
 * [Log and Debug](doc/10-log.md)
 * [SSH and remote servers](doc/11-ssh.md)
 * [Handling signals](doc/12-signals.md)
+* [Repacking your application in a new phar](doc/13-repack.md)
 
 ## Questions and answers
 

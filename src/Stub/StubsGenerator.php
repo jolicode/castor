@@ -23,6 +23,12 @@ final class StubsGenerator
 
     public function generateStubs(string $dest): void
     {
+        if (!is_writable(\dirname($dest))) {
+            log("Could not generate stubs as the destination \"{$dest}\" is not writeable.", 'warning');
+
+            return;
+        }
+
         $basePath = \dirname(__DIR__, 2);
         $finder = new Finder();
 

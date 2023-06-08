@@ -5,19 +5,17 @@ namespace Castor;
 use Castor\Attribute\AsContext;
 use Castor\Attribute\AsTask;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Finder\SplFileInfo;
 
 /** @internal */
 class FunctionFinder
 {
-    private static bool $inFindFunctions = false;
+    /** @var array<string> */
+    public static array $files = [];
 
     /** @return iterable<TaskDescriptor|ContextDescriptor> */
-    public static function findFunctions(string $path): iterable
+    public function findFunctions(string $path): iterable
     {
-        self::$inFindFunctions = true;
-
-        yield from self::doFindFunctions([new SplFileInfo($path . '/castor.php', 'castor.php', 'castor')]);
+        yield from self::doFindFunctions([new \SplFileInfo($path . '/castor.php')]);
 
         $castorDirectory = $path . '/castor';
 
@@ -30,28 +28,21 @@ class FunctionFinder
 
             yield from self::doFindFunctions($files);
         }
-
-        self::$inFindFunctions = false;
-    }
-
-    public static function isInFindFunctions(): bool
-    {
-        return self::$inFindFunctions;
     }
 
     /**
-     * @param iterable<SplFileInfo> $files
+     * @param iterable<\SplFileInfo> $files
      *
      * @return iterable<TaskDescriptor|ContextDescriptor>
      *
      * @throws \ReflectionException
      */
-    private static function doFindFunctions(iterable $files): iterable
+    private function doFindFunctions(iterable $files): iterable
     {
         $existingFunctions = get_defined_functions()['user'];
 
         foreach ($files as $file) {
-            castor_require($file->getRealPath());
+            castor_require($file->getPathname());
 
             $newExistingFunctions = get_defined_functions()['user'];
 
@@ -109,5 +100,11 @@ class FunctionFinder
 /** @internal */
 function castor_require(string $file): void
 {
+    if (!is_file($file)) {
+        throw new \RuntimeException(sprintf('Could not find file "%s".', $file));
+    }
+
+    FunctionFinder::$files[] = $file;
+
     require_once $file;
 }
