@@ -2,6 +2,7 @@
 
 namespace Castor\Console;
 
+use Castor\Console\Command\SelfUpdateCommand;
 use Castor\Console\Command\TaskCommand;
 use Castor\Context;
 use Castor\ContextDescriptor;
@@ -29,6 +30,8 @@ class Application extends SymfonyApplication
         private readonly StubsGenerator $stubsGenerator = new StubsGenerator(),
         private readonly FunctionFinder $functionFinder = new FunctionFinder(),
     ) {
+        $this->add(new SelfUpdateCommand());
+
         parent::__construct('castor', self::VERSION);
     }
 
