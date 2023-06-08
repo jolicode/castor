@@ -37,6 +37,8 @@
 * Better error reporting when a call to `run()` fails or when `import()` is not possible
 * Fix stubs generation
 
+* Add support for re-packing a castor application into a new phar file
+
 ## 0.3.0 (2023-06-07)
 
 * Enhance the documentation

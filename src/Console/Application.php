@@ -2,6 +2,7 @@
 
 namespace Castor\Console;
 
+use Castor\Console\Command\RepackCommand;
 use Castor\Console\Command\TaskCommand;
 use Castor\Context;
 use Castor\ContextDescriptor;
@@ -30,7 +31,8 @@ use function Castor\run;
 /** @internal */
 class Application extends SymfonyApplication
 {
-    final public const VERSION = 'v0.5.2';
+    public const NAME = 'castor';
+    public const VERSION = 'v0.6.0';
 
     public function __construct(
         private readonly string $rootDir,
@@ -38,7 +40,9 @@ class Application extends SymfonyApplication
         private readonly StubsGenerator $stubsGenerator = new StubsGenerator(),
         private readonly FunctionFinder $functionFinder = new FunctionFinder(),
     ) {
-        parent::__construct('castor', self::VERSION);
+        $this->add(new RepackCommand());
+
+        parent::__construct(static::NAME, static::VERSION);
     }
 
     public function run(InputInterface $input = null, OutputInterface $output = null): int
@@ -97,7 +101,12 @@ class Application extends SymfonyApplication
     private function initializeApplication(): void
     {
         // Find all potential commands / context
-        $functions = $this->functionFinder->findFunctions($this->rootDir);
+        if (class_exists(\RepackedApplication::class)) {
+            $it = array_map(fn ($file) => new \SplFileInfo($file), \RepackedApplication::$files);
+            $functions = $this->functionFinder->doFindFunctions($it);
+        } else {
+            $functions = $this->functionFinder->findFunctions($this->rootDir);
+        }
 
         foreach ($functions as $function) {
             if ($function instanceof TaskDescriptor) {

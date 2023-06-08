@@ -443,10 +443,6 @@ function get_cache(): CacheItemPoolInterface&CacheInterface
 
 function import(string $path): void
 {
-    if (!FunctionFinder::isInFindFunctions()) {
-        throw fix_exception(new \LogicException('The import function cannot be dynamically invoked, use it a the root of the PHP file.'));
-    }
-
     if (!file_exists($path)) {
         throw fix_exception(new \InvalidArgumentException(sprintf('The file "%s" does not exist.', $path)));
     }

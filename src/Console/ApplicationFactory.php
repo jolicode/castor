@@ -17,6 +17,11 @@ class ApplicationFactory
             return new CastorFileNotFoundCommand($e);
         }
 
+        if (class_exists(\RepackedApplication::class)) {
+            // @phpstan-ignore-next-line
+            return new \RepackedApplication($rootDir);
+        }
+
         return new Application($rootDir);
     }
 }

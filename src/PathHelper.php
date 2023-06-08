@@ -15,7 +15,13 @@ class PathHelper
 
             while (!file_exists($path . '/castor.php')) {
                 if ('/' === $path) {
-                    throw new \RuntimeException('Could not find root "castor.php" file.');
+                    if (!class_exists(\RepackedApplication::class)) {
+                        throw new \RuntimeException('Could not find root "castor.php" file.');
+                    }
+
+                    $path = (getcwd() ?: '.');
+
+                    break;
                 }
 
                 $path = Path::getDirectory($path);
