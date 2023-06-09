@@ -19,7 +19,7 @@ files. Download the correct one and make it available in your shell:
 
 Example for Linux:
 ```bash
-mv castor.linux-amd64.phar $HOME/.local/bin/castor
+curl "https://github.com/jolicode/castor/releases/latest/download/castor.linux-amd64.phar" --output $HOME/.local/bin/castor && chmod u+x $HOME/.local/bin/castor
 ```
 
 ### Globally with Composer
