@@ -3,6 +3,7 @@
 ## 0.4.0 (not released yet)
 
 * Display warning and update instructions when a new version is available
+* Better error reporting when a call to run() fail or when import() is not possible
 
 ## 0.3.0 (2023-06-07)
 

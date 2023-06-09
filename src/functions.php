@@ -149,7 +149,7 @@ function run(
                 throw new ProcessFailedException($process);
             }
 
-            throw new \RuntimeException("The command \"{$process->getCommandLine()}\" failed.");
+            throw fix_exception(new \Exception("The command \"{$process->getCommandLine()}\" failed."));
         }
 
         return $process;
@@ -179,17 +179,12 @@ function notify(string $message): void
 function watch(string $path, callable $function, Context $context = null): void
 {
     $context ??= GlobalHelper::getInitialContext();
-    $binary = null;
 
-    match (true) {
-        OSHelper::isMacOS() => $binary = 'watcher-darwin',
-        OSHelper::isWindows() => $binary = 'watcher-windows.exe',
-        default => $binary = 'watcher-linux',
+    $binary = match (true) {
+        OSHelper::isMacOS() => 'watcher-darwin',
+        OSHelper::isWindows() => 'watcher-windows.exe',
+        default => 'watcher-linux',
     };
-
-    if (!$binary) {
-        throw new \RuntimeException('Unsupported OS.');
-    }
 
     $binaryPath = __DIR__ . '/../tools/watcher/bin/' . $binary;
 
@@ -271,11 +266,11 @@ function finder(): Finder
 function import(string $path): void
 {
     if (!FunctionFinder::isInFindFunctions()) {
-        throw new \LogicException('The import function cannot be dynamically invoked, use it a the root of the PHP file.');
+        throw fix_exception(new \LogicException('The import function cannot be dynamically invoked, use it a the root of the PHP file.'));
     }
 
     if (!file_exists($path)) {
-        throw new \InvalidArgumentException(sprintf('The file "%s" does not exist.', $path));
+        throw fix_exception(new \InvalidArgumentException(sprintf('The file "%s" does not exist.', $path)));
     }
 
     if (is_file($path)) {
@@ -293,4 +288,20 @@ function import(string $path): void
             castor_require($file->getRealPath());
         }
     }
+}
+
+// Remove the last frame (the call to run() to display a nice message to the end user
+function fix_exception(\Exception $exception): \Exception
+{
+    $lastFrame = $exception->getTrace()[0];
+    foreach (['file', 'line'] as $key) {
+        if (!\array_key_exists($key, $lastFrame)) {
+            continue;
+        }
+        $r = new \ReflectionProperty(\Exception::class, $key);
+        $r->setAccessible(true);
+        $r->setValue($exception, $lastFrame[$key]);
+    }
+
+    return $exception;
 }
