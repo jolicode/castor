@@ -1,6 +1,7 @@
 {
   "base-path": "../../",
   "files-bin": [
+    "tools/watcher/bin/watcher-linux",
     "tools/watcher/bin/watcher-windows.exe"
   ],
   "finder-bin": [
