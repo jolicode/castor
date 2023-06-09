@@ -1,29 +1,29 @@
 # SSH and remote servers
 
-Castor support running commands on remote servers through SSH. You can configure
-the host on which you want to run commands via the `Context` object:
+Castor supports running commands on remote servers through SSH with the `ssh()`
+function:
 
 ```php
-use Castor\Context;
+use Castor\Attribute\AsTask;
+use function Castor\ssh;
 
 #[AsTask]
-function ssh(Context $context): void
+function ls(): void
 {
-    $context = $context->withSsh('server-1.example.com', 'debian', [
+    // List content of /var/www directory on the remote server
+    ssh('ls -alh', host: 'server-1.example.com', user: 'debian', sshOptions: [
         'port' => 2222,
-    ]);
-    
-    run('ls -alh', context: $context); // will list content of the home directory on the remote server
+    ], path: '/var/www');
 }
 ```
 
 > **Note**
-> Only the `run()` function is able to interact with remote servers.
+> This feature is marked as experimental and may change in the future.
 
 ## Available options
 
-You can pass additional options to the `withSsh` method.
-The following options are currently available:
+You can pass additional options in the `ssh_options` argument of the `ssh()`
+function. The following options are currently available:
 
 - `port`: port to use to connect to the remote server (default: 22)
 - `path_private_key`: path to the private key to use to connect to the remote

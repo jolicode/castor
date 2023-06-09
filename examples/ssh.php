@@ -3,18 +3,14 @@
 namespace ssh;
 
 use Castor\Attribute\AsTask;
-use Castor\Context;
 
-use function Castor\run;
+use function Castor\ssh;
 
 #[AsTask(description: 'Runs a command on a remote server')]
-function ls(Context $context): void
+function ls(): void
 {
-    $context = $context->withSsh('holonet.loickpiera.com', 'anakin', [
+    // List content of /var/www directory on the remote server
+    ssh('ls -alh', host: 'server-1.example.com', user: 'debian', sshOptions: [
         'port' => 2222,
-    ])->withEnvironment([
-        'TOTO' => 'foo',
-    ]);
-
-    run('ls -alh', context: $context);
+    ], path: '/var/www');
 }

@@ -22,10 +22,11 @@ $commandFilterList = [
     '_complete',
     'completion',
     'help',
-    // Never complete
+    // Never complete or impossible to run
     'watch:fs-change',
     'watch:parallel-change',
     'watch:stop',
+    'ssh:ls',
     // Not examples
     'castor:phar:build',
     'castor:phar:darwin',
@@ -44,7 +45,6 @@ $commandFilterList = [
     'parallel:sleep',
     'run:run-parallel',
     'run:ls',
-    'ssh:ls',
 ];
 $optionFilterList = array_flip(['help', 'quiet', 'verbose', 'version', 'ansi', 'no-ansi', 'no-interaction', 'context']);
 foreach ($applicationDescription['commands'] as $command) {

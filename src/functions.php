@@ -108,28 +108,6 @@ function run(
         $context = $context->withNotify($notify);
     }
 
-    if (!\in_array($context->host, ['local', 'localhost', '127.0.0.1']) && $context->user) {
-        $ssh = Ssh::create($context->user, $context->host, $context->sshOptions['port'] ?? null);
-
-        if ($context->sshOptions['path_private_key'] ?? false) {
-            $ssh->usePrivateKey($context->sshOptions['path_private_key']);
-        }
-        if ($context->sshOptions['jump_host'] ?? false) {
-            $ssh->useJumpHost($context->sshOptions['jump_host']);
-        }
-        if ($context->sshOptions['multiplexing_control_path'] ?? false) {
-            $ssh->useMultiplexing($context->sshOptions['multiplexing_control_path'], $context->sshOptions['multiplexing_control_persist'] ?? '10m');
-        }
-        if ($context->sshOptions['enable_strict_check'] ?? false) {
-            $context->sshOptions['enable_strict_check'] ? $ssh->enableStrictHostKeyChecking() : $ssh->disableStrictHostKeyChecking();
-        }
-        if ($context->sshOptions['password_authentication'] ?? false) {
-            $context->sshOptions['password_authentication'] ? $ssh->enablePasswordAuthentication() : $ssh->disableStrictHostKeyChecking();
-        }
-
-        $command = $ssh->getExecuteCommand($command);
-    }
-
     if (\is_array($command)) {
         $process = new Process($command, $context->currentDirectory, $context->environment, null, $context->timeout);
     } else {
@@ -214,6 +192,63 @@ function capture(
         context: $context,
         quiet: true,
     )->getOutput());
+}
+
+/**
+ * This function is considered experimental and may change in the future.
+ *
+ * @param array{
+ *     'port'?: int,
+ *     'path_private_key'?: string,
+ *     'jump_host'?: string,
+ *     'multiplexing_control_path'?: string,
+ *     'multiplexing_control_persist'?: string,
+ *     'enable_strict_check'?: bool,
+ *     'password_authentication'?: bool,
+ * } $sshOptions
+ */
+function ssh(
+    string $command,
+    string $host,
+    string $user,
+    array $sshOptions = [],
+    string|null $path = null,
+    bool|null $quiet = null,
+    bool|null $allowFailure = null,
+    bool|null $notify = null,
+    float|null $timeout = null,
+): Process {
+    $ssh = Ssh::create($user, $host, $sshOptions['port'] ?? null);
+
+    if ($sshOptions['path_private_key'] ?? false) {
+        $ssh->usePrivateKey($sshOptions['path_private_key']);
+    }
+    if ($sshOptions['jump_host'] ?? false) {
+        $ssh->useJumpHost($sshOptions['jump_host']);
+    }
+    if ($sshOptions['multiplexing_control_path'] ?? false) {
+        $ssh->useMultiplexing($sshOptions['multiplexing_control_path'], $sshOptions['multiplexing_control_persist'] ?? '10m');
+    }
+    if ($sshOptions['enable_strict_check'] ?? false) {
+        $sshOptions['enable_strict_check'] ? $ssh->enableStrictHostKeyChecking() : $ssh->disableStrictHostKeyChecking();
+    }
+    if ($sshOptions['password_authentication'] ?? false) {
+        $sshOptions['password_authentication'] ? $ssh->enablePasswordAuthentication() : $ssh->disableStrictHostKeyChecking();
+    }
+    if ($path) {
+        $command = sprintf('cd %s && %s', $path, $command);
+    }
+
+    return run(
+        $ssh->getExecuteCommand($command),
+        environment: [],
+        tty: false,
+        pty: false,
+        timeout: $timeout,
+        quiet: $quiet,
+        allowFailure: $allowFailure,
+        notify: $notify
+    );
 }
 
 function notify(string $message): void

@@ -8,7 +8,7 @@
 * Display warning and update instructions when a new version is available
 * Better error reporting when a call to `run()` fails or when `import()` is not possible
 * Fix stubs generation
-* Add support for running commands on remote server via SSH
+* Add `ssh()` function to run commands on remote server via SSH
 
 ## 0.3.0 (2023-06-07)
 
