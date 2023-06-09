@@ -30,6 +30,7 @@
         "jolicode/jolinotif": "^2.5",
         "monolog/monolog": "^3.3",
         "nikic/php-parser": "^4.15",
+        "symfony/cache": "^6.3",
         "symfony/console": "^6.3",
         "symfony/filesystem": "^6.3",
         "symfony/finder": "^6.3",
