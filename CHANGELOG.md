@@ -2,6 +2,8 @@
 
 ## 0.4.0 (not released yet)
 
+* Display warning and update instructions when a new version is available
+
 ## 0.3.0 (2023-06-07)
 
 * enhance the documentation
