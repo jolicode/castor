@@ -4,12 +4,12 @@ namespace Castor\Tests\Examples;
 
 use Castor\Tests\TaskTestCase;
 
-class RunRunWithProcessHelperTest extends TaskTestCase
+class RunWithProcessHelperTest extends TaskTestCase
 {
-    // run:run-with-process-helper
+    // run:with-process-helper
     public function test(): void
     {
-        $process = $this->runTask(['run:run-with-process-helper']);
+        $process = $this->runTask(['run:with-process-helper']);
 
         $this->assertSame(0, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());

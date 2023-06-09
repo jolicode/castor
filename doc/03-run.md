@@ -104,6 +104,19 @@ function foo(): void
 }
 ```
 
+Castor also provides a `capture()` function that will run the command quietly,
+trims the output, then returns it:
+
+```php
+#[AsTask()]
+function whoami()
+{
+    $whoami = capture('whoami');
+
+    echo "Hello: $whoami\n";
+}
+```
+
 ## PTY & TTY
 
 By default, Castor will use a pseudo terminal (PTY) to run the command,
