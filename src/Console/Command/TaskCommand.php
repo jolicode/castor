@@ -149,7 +149,11 @@ class TaskCommand extends Command
         }
 
         try {
-            $result = $this->function->invoke(...$args);
+            $function = $this->function->getName();
+            if (!\is_callable($function)) {
+                throw new \LogicException('The function is not a callable.');
+            }
+            $result = $function(...$args);
         } catch (\Error $e) {
             $castorFunctions = array_filter(get_defined_functions()['user'], fn (string $functionName) => str_starts_with($functionName, 'castor\\'));
             $castorFunctionsWithoutNamespace = array_map(fn (string $functionName) => substr($functionName, \strlen('castor\\')), $castorFunctions);
