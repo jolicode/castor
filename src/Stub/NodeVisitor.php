@@ -11,15 +11,24 @@ class NodeVisitor extends NodeVisitorAbstract
 {
     /** @var array<string, Node\Name> */
     private array $currentUseStatements = [];
+    private bool $inInterface = false;
 
     public function enterNode(Node $node): ?Node
     {
+        if ($node instanceof Node\Stmt\Interface_) {
+            $this->inInterface = true;
+        }
+
         if ($node instanceof Node\Stmt\Function_) {
             $node->stmts = [];
         }
 
         if ($node instanceof Node\Stmt\ClassMethod) {
-            $node->stmts = [];
+            if ($this->inInterface) {
+                $node->stmts = null;
+            } else {
+                $node->stmts = [];
+            }
         }
 
         if ($node instanceof Node\Stmt\Namespace_) {
@@ -45,6 +54,10 @@ class NodeVisitor extends NodeVisitorAbstract
 
     public function leaveNode(Node $node, bool $preserveStack = false): ?int
     {
+        if ($node instanceof Node\Stmt\Interface_) {
+            $this->inInterface = false;
+        }
+
         $docComment = $node->getDocComment();
 
         if (null !== $docComment && str_contains($docComment->getText(), '@internal')) {
