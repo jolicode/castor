@@ -4,6 +4,10 @@ The `parallel()` function provides a way to run functions in parallel,
 so you do not have to wait for a function to finish before starting another one:
 
 ```php
+use Castor\Attribute\AsTask;
+
+use function Castor\parallel;
+
 #[AsTask]
 function foo(): void
 {
@@ -34,6 +38,10 @@ run the functions in parallel.
 You can also watch in parallel multiple directories:
 
 ```php
+use Castor\Attribute\AsTask;
+
+use function Castor\parallel;
+
 #[AsTask]
 function parallel_change()
 {

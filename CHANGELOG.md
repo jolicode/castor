@@ -2,9 +2,10 @@
 
 ## 0.4.0 (not released yet)
 
+* [BC Break] replace specials helpers arguments by dedicated functions
 * Add `capture()` function to easily run a process and returns the output
 * Display warning and update instructions when a new version is available
-* Better error reporting when a call to run() fail or when import() is not possible
+* Better error reporting when a call to `run()` fails or when `import()` is not possible
 * Fix stubs generation
 
 ## 0.3.0 (2023-06-07)
@@ -14,11 +15,11 @@
 
 ## 0.2.0 (2023-06-02)
 
-* Add a way to get the command instance in a task
+* Add a way to get the `Command` instance in a task
 * Add support for better handling of option without value
 * Fix the stubs generation when castor is installed via composer
-* Fix the initial castor.php file generated for new projects
-* Fix watch() function
+* Fix the initial `castor.php` file generated for new projects
+* Fix `watch()` function
 
 ## 0.1.0 (2023-05-21)
 

@@ -4,9 +4,8 @@ Castor provides a `Castor\run()` function to run commands. It allows to run a
 process:
 
 ```php
-<?php
-
 use Castor\Attribute\AsTask;
+
 use function Castor\run;
 
 #[AsTask]
@@ -28,6 +27,10 @@ object to run the command. The `run()` function will return this object. So
 you can use the API of this class to interact with the process:
 
 ```php
+use Castor\Attribute\AsTask;
+
+use function Castor\run;
+
 #[AsTask]
 function foo(): void
 {
@@ -42,6 +45,10 @@ By default, Castor will throw an exception if the command fails. You can disable
 that by setting the `allowFailure` option to `true`:
 
 ```php
+use Castor\Attribute\AsTask;
+
+use function Castor\run;
+
 #[AsTask]
 function foo(): void
 {
@@ -56,6 +63,10 @@ the `castor.php` file. You can change that by setting the `path` argument. It
 can be either a relative or an absolute path:
 
 ```php
+use Castor\Attribute\AsTask;
+
+use function Castor\run;
+
 #[AsTask]
 function foo(): void
 {
@@ -71,6 +82,10 @@ process. You can add or override environment variables by setting
 the `environment` argument:
 
 ```php
+use Castor\Attribute\AsTask;
+
+use function Castor\run;
+
 #[AsTask]
 function foo(): void
 {
@@ -85,6 +100,10 @@ If you do not want to print the output of the command you can set the `quiet`
 option to `true`:
 
 ```php
+use Castor\Attribute\AsTask;
+
+use function Castor\run;
+
 #[AsTask]
 function foo(): void
 {
@@ -96,6 +115,10 @@ You can also fetch the output of the command by using the API of
 the `Symfony\Component\Process\Process` object:
 
 ```php
+use Castor\Attribute\AsTask;
+
+use function Castor\run;
+
 #[AsTask]
 function foo(): void
 {
@@ -108,6 +131,10 @@ Castor also provides a `capture()` function that will run the command quietly,
 trims the output, then returns it:
 
 ```php
+use Castor\Attribute\AsTask;
+
+use function Castor\capture;
+
 #[AsTask()]
 function whoami()
 {
@@ -125,6 +152,10 @@ For some commands you may want to disable the PTY and use a TTY instead. You can
 do that by setting the `tty` option to `true`:
 
 ```php
+use Castor\Attribute\AsTask;
+
+use function Castor\run;
+
 #[AsTask]
 function foo(): void
 {
@@ -141,6 +172,9 @@ and `tty` are both set to `false`, the standard input will not be forwarded to
 the command:
 
 ```php
+use Castor\Attribute\AsTask;
+
+use function Castor\run;
 
 #[AsTask]
 function foo(): void

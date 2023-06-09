@@ -4,6 +4,10 @@ When creating a function that will be used as a command, all the parameters of
 the function will be used as arguments or options of the command:
 
 ```php
+use Castor\Attribute\AsTask;
+
+use function Castor\run;
+
 #[AsTask]
 function command(
     string $firstArg,
@@ -25,6 +29,10 @@ foo bar
 You can make an argument optional by giving it a default value:
 
 ```php
+use Castor\Attribute\AsTask;
+
+use function Castor\run;
+
 #[AsTask]
 function command(
     string $firstArg,
@@ -47,6 +55,11 @@ You can override the name and description of an argument by using
 the `Castor\Attribute\AsArgument` attribute:
 
 ```php
+use Castor\Attribute\AsArgument;
+use Castor\Attribute\AsTask;
+
+use function Castor\run;
+
 #[AsTask]
 function command(
     #[AsArgument(name: 'foo', description: 'This is the foo argument')]
@@ -67,6 +80,11 @@ If you prefer, you can force an argument to be an option by using the
 `Castor\Attribute\AsOption` attribute:
 
 ```php
+use Castor\Attribute\AsOption;
+use Castor\Attribute\AsTask;
+
+use function Castor\run;
+
 #[AsTask]
 function command(
     #[AsOption(name: 'foo', description: 'This is the foo option')]
@@ -85,6 +103,11 @@ You can also configure the `mode` of the option. The `mode` determines how the
 option must be configured:
 
 ```php
+use Castor\Attribute\AsOption;
+use Castor\Attribute\AsTask;
+
+use function Castor\run;
+
 #[AsTask]
 function command(
     #[AsOption(description: 'This is the foo option', mode: InputOption::VALUE_NONE)]

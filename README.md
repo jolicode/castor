@@ -54,14 +54,14 @@ Then, you can go wild and create more complex commands:
 
 ```php
 #[AsTask(description: 'Clean the infrastructure (remove container, volume, networks)')]
-function destroy(SymfonyStyle $io, bool $force = false)
+function destroy(bool $force = false)
 {
     if (!$force) {
-        $io->warning('This will permanently remove all containers, volumes, networks... created for this project.');
-        $io->comment('You can use the --force option to avoid this confirmation.');
+        io()->warning('This will permanently remove all containers, volumes, networks... created for this project.');
+        io()->comment('You can use the --force option to avoid this confirmation.');
 
-        if (!$io->confirm('Are you sure?', false)) {
-            $io->comment('Aborted.');
+        if (!io()->confirm('Are you sure?', false)) {
+            io()->comment('Aborted.');
 
             return;
         }
