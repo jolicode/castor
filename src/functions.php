@@ -160,6 +160,29 @@ function run(
     return $process;
 }
 
+/**
+ * @param string|array<string>       $command
+ * @param array<string, string>|null $environment
+ */
+function capture(
+    string|array $command,
+    array|null $environment = null,
+    string|null $path = null,
+    float|null $timeout = null,
+    bool|null $allowFailure = null,
+    Context $context = null,
+): string {
+    return trim(run(
+        command: $command,
+        environment: $environment,
+        path: $path,
+        timeout: $timeout,
+        allowFailure: $allowFailure,
+        context: $context,
+        quiet: true,
+    )->getOutput());
+}
+
 function notify(string $message): void
 {
     static $notifier;

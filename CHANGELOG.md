@@ -2,6 +2,7 @@
 
 ## 0.4.0 (not released yet)
 
+* Add `capture()` function to easily run a process and returns the output
 * Display warning and update instructions when a new version is available
 * Better error reporting when a call to run() fail or when import() is not possible
 
