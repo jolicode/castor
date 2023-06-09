@@ -5,11 +5,12 @@
 * Add `capture()` function to easily run a process and returns the output
 * Display warning and update instructions when a new version is available
 * Better error reporting when a call to run() fail or when import() is not possible
+* Fix stubs generation
 
 ## 0.3.0 (2023-06-07)
 
-* enhance the documentation
-* enhance the first run experience
+* Enhance the documentation
+* Enhance the first run experience
 
 ## 0.2.0 (2023-06-02)
 

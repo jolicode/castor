@@ -82,6 +82,11 @@ final class StubsGenerator
 
     private function shouldGenerate(string $dest): bool
     {
+        // Do not generate stubs when working on castor
+        if (($cwd = getcwd()) && str_starts_with(\dirname(__DIR__, 2), $cwd)) {
+            return false;
+        }
+
         if (!file_exists($dest)) {
             return true;
         }
