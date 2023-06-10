@@ -6,6 +6,8 @@ no-namespace              Task without a namespace
 args:another-args         Dumps all arguments and options, without configuration
 args:args                 Dumps all arguments and options, with custom configuration
 bar:bar                   Prints bar, but also executes foo
+cache:complex             Cache with usage of CacheItemInterface
+cache:simple              Cache a simple call
 castor:phar:build         Build phar for all systems
 castor:phar:darwin        Build phar for MacOS system
 castor:phar:linux         Build phar for Linux system

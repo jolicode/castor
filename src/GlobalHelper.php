@@ -4,11 +4,14 @@ namespace Castor;
 
 use Castor\Console\Application;
 use Monolog\Logger;
+use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Contracts\Cache\CacheInterface;
 
 class GlobalHelper
 {
@@ -20,6 +23,7 @@ class GlobalHelper
     private static Command $command;
     private static Context $initialContext;
     private static Filesystem $fs;
+    private static CacheItemPoolInterface&CacheInterface $cache;
 
     public static function setApplication(Application $application): void
     {
@@ -101,5 +105,22 @@ class GlobalHelper
     public static function getFilesystem(): Filesystem
     {
         return self::$fs ??= new Filesystem();
+    }
+
+    public static function setCache(CacheItemPoolInterface&CacheInterface $cache): void
+    {
+        self::$cache = $cache;
+    }
+
+    public static function getCache(): CacheItemPoolInterface&CacheInterface
+    {
+        return self::$cache ?? throw new \LogicException('Cache not set yet.');
+    }
+
+    public static function setupCacheIfNeeded(): void
+    {
+        if (!isset(self::$cache)) {
+            self::setCache(new FilesystemAdapter(directory: sys_get_temp_dir() . '/castor'));
+        }
     }
 }

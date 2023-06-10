@@ -8,6 +8,7 @@ use Joli\JoliNotif\NotifierFactory;
 use Joli\JoliNotif\Util\OsHelper;
 use Monolog\Level;
 use Monolog\Logger;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LogLevel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,6 +18,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Symfony\Contracts\Cache\CacheInterface;
 
 /**
  * @return array<mixed>
@@ -330,6 +332,22 @@ function fs(): Filesystem
 function finder(): Finder
 {
     return new Finder();
+}
+
+function cache(string $key, callable $callback): mixed
+{
+    $key = sprintf(
+        '%s-%s',
+        hash('xxh128', PathHelper::getRoot()),
+        $key,
+    );
+
+    return GlobalHelper::getCache()->get($key, $callback);
+}
+
+function get_cache(): CacheItemPoolInterface&CacheInterface
+{
+    return GlobalHelper::getCache();
 }
 
 function import(string $path): void

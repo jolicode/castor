@@ -14,7 +14,6 @@ use Castor\VerbosityLevel;
 use Joli\JoliNotif\Util\OsHelper;
 use Monolog\Logger;
 use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArgvInput;
@@ -23,7 +22,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
 use function Castor\log;
@@ -34,8 +32,6 @@ class Application extends SymfonyApplication
 {
     final public const VERSION = 'v0.3.0';
 
-    private readonly CacheInterface $cache;
-
     public function __construct(
         private readonly string $rootDir,
         private readonly ContextRegistry $contextRegistry = new ContextRegistry(),
@@ -43,8 +39,6 @@ class Application extends SymfonyApplication
         private readonly FunctionFinder $functionFinder = new FunctionFinder(),
     ) {
         parent::__construct('castor', self::VERSION);
-
-        $this->cache = new FilesystemAdapter('castor', 0, sys_get_temp_dir() . '/castor');
     }
 
     public function run(InputInterface $input = null, OutputInterface $output = null): int
@@ -83,15 +77,18 @@ class Application extends SymfonyApplication
 
     protected function doRunCommand(Command $command, InputInterface $input, OutputInterface $output): int
     {
-        if ('_complete' !== $command->getName()) {
-            $this->stubsGenerator->generateStubsIfNeeded($this->rootDir . '/.castor.stub.php');
-            $this->displayUpdateWarningIfNeeded(new SymfonyStyle($input, $output));
-        }
-
         GlobalHelper::setCommand($command);
 
         $context = $this->createContext($input, $output);
         GlobalHelper::setInitialContext($context);
+
+        // need to be after the context creation
+        GlobalHelper::setupCacheIfNeeded();
+
+        if ('_complete' !== $command->getName()) {
+            $this->stubsGenerator->generateStubsIfNeeded($this->rootDir . '/.castor.stub.php');
+            $this->displayUpdateWarningIfNeeded(new SymfonyStyle($input, $output));
+        }
 
         return parent::doRunCommand($command, $input, $output);
     }
@@ -146,7 +143,7 @@ class Application extends SymfonyApplication
 
     private function displayUpdateWarningIfNeeded(SymfonyStyle $symfonyStyle): void
     {
-        $latestVersion = $this->cache->get('latest-version', function (ItemInterface $item): array {
+        $latestVersion = GlobalHelper::getCache()->get('latest-version', function (ItemInterface $item): array {
             $item->expiresAfter(3600 * 60 * 24);
             $opts = [
                 'http' => [
