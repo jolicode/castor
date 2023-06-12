@@ -50,6 +50,7 @@
         }
     },
     "require-dev": {
+        "phpunit/php-code-coverage": "^9",
         "symfony/phpunit-bridge": "^6.3"
     }
 }
