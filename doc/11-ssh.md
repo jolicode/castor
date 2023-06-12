@@ -5,6 +5,7 @@ function:
 
 ```php
 use Castor\Attribute\AsTask;
+
 use function Castor\ssh;
 
 #[AsTask]

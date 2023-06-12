@@ -39,7 +39,7 @@ run:whoami                Run a sub-process and display information about it, wi
 run:with-process-helper   Run a sub-process and display information about it, with ProcessHelper
 shell:bash                Runs a bash
 shell:sh                  Runs a sh
-ssh:ls                    Runs a command on a remote server
+ssh:ls                    Lists content of /var/www directory on the remote server
 watch:fs-change           Watches on filesystem changes
 watch:parallel-change     Watches on filesystem changes with 2 watchers in parallel
 watch:stop                Watches on filesystem changes and stop after first change

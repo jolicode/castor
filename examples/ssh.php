@@ -6,7 +6,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\ssh;
 
-#[AsTask(description: 'Runs a command on a remote server')]
+#[AsTask(description: 'Lists content of /var/www directory on the remote server')]
 function ls(): void
 {
     // List content of /var/www directory on the remote server
