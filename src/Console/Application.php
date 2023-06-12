@@ -30,7 +30,7 @@ use function Castor\run;
 /** @internal */
 class Application extends SymfonyApplication
 {
-    final public const VERSION = 'v0.4.0';
+    final public const VERSION = 'v0.4.1';
 
     public function __construct(
         private readonly string $rootDir,
@@ -79,11 +79,10 @@ class Application extends SymfonyApplication
     {
         GlobalHelper::setCommand($command);
 
+        GlobalHelper::setupDefaultCache();
+
         $context = $this->createContext($input, $output);
         GlobalHelper::setInitialContext($context);
-
-        // need to be after the context creation
-        GlobalHelper::setupCacheIfNeeded();
 
         if ('_complete' !== $command->getName()) {
             $this->stubsGenerator->generateStubsIfNeeded($this->rootDir . '/.castor.stub.php');
