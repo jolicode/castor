@@ -1,6 +1,8 @@
 # CHANGELOG
 
-## 0.4.0 (not released yet)
+## 0.5.0 (not released yet)
+
+## 0.4.0 (2023-06-12)
 
 * [BC Break] replace specials helpers arguments by dedicated functions
 * Add `capture()` function to easily run a process and returns the output
