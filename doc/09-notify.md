@@ -5,6 +5,10 @@ display notifications.
 You can use the `notify()` function to display a desktop notification:
 
 ```php
+use Castor\Attribute\AsTask;
+
+use function Castor\notify;
+
 #[AsTask]
 function notify()
 {
@@ -12,12 +16,16 @@ function notify()
 }
 ```
 
-## Notify on run
+## Notify with `run()`
 
 You can use the `notify` argument of the `run()` function to display a
 notification when a command has been executed:
 
 ```php
+use Castor\Attribute\AsTask;
+
+use function Castor\run;
+
 #[AsTask]
 function notify()
 {

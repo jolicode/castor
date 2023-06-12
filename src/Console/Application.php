@@ -12,11 +12,15 @@ use Castor\Stub\StubsGenerator;
 use Castor\TaskDescriptor;
 use Castor\VerbosityLevel;
 use Joli\JoliNotif\Util\OsHelper;
+use Monolog\Logger;
+use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -43,6 +47,24 @@ class Application extends SymfonyApplication
         $this->cache = new FilesystemAdapter('castor', 0, sys_get_temp_dir() . '/castor');
     }
 
+    public function run(InputInterface $input = null, OutputInterface $output = null): int
+    {
+        GlobalHelper::setApplication($this);
+
+        $input ??= new ArgvInput();
+        GlobalHelper::setInput($input);
+
+        $output ??= new ConsoleOutput();
+        GlobalHelper::setOutput($output);
+
+        $logger = new Logger('castor', [
+            new ConsoleHandler($output),
+        ]);
+        GlobalHelper::setLogger($logger);
+
+        return parent::run($input, $output);
+    }
+
     // We do all the logic as late as possible to ensure the exception handler
     // is registered
     public function doRun(InputInterface $input, OutputInterface $output): int
@@ -66,7 +88,10 @@ class Application extends SymfonyApplication
             $this->displayUpdateWarningIfNeeded(new SymfonyStyle($input, $output));
         }
 
-        $this->initializeContext($input, $output);
+        GlobalHelper::setCommand($command);
+
+        $context = $this->createContext($input, $output);
+        GlobalHelper::setInitialContext($context);
 
         return parent::doRunCommand($command, $input, $output);
     }
@@ -99,17 +124,6 @@ class Application extends SymfonyApplication
         }
     }
 
-    private function initializeContext(InputInterface $input, OutputInterface $output): void
-    {
-        $context = $this->createContext($input, $output);
-
-        if ($context->verbosityLevel->isNotConfigured()) {
-            $context = $context->withVerbosityLevel(VerbosityLevel::fromSymfonyOutput($output));
-        }
-
-        GlobalHelper::setInitialContext($context);
-    }
-
     private function createContext(InputInterface $input, OutputInterface $output): Context
     {
         // occurs when running `castor -h`, or if no context is defined
@@ -117,32 +131,17 @@ class Application extends SymfonyApplication
             return new Context();
         }
 
-        static $supportedParameterTypes = [
-            SymfonyStyle::class,
-            self::class,
-            InputInterface::class,
-            OutputInterface::class,
-        ];
-        $descriptor = $this->contextRegistry->get($input->getOption('context'));
+        $context = $this
+            ->contextRegistry
+            ->get($input->getOption('context'))
+            ->function->invoke()
+        ;
 
-        $args = [];
-        foreach ($descriptor->function->getParameters() as $parameter) {
-            if (($type = $parameter->getType()) instanceof \ReflectionNamedType && \in_array($type->getName(), $supportedParameterTypes, true)) {
-                $args[] = match ($type->getName()) {
-                    SymfonyStyle::class => new SymfonyStyle($input, $output),
-                    self::class => $this,
-                    InputInterface::class => $input,
-                    OutputInterface::class => $output,
-                    default => throw new \LogicException(sprintf('Argument "%s" is not supported in context builder named "%s".', $parameter->getName(), $descriptor->function->getName())),
-                };
-
-                continue;
-            }
-
-            throw new \LogicException(sprintf('Argument "%s" is not supported in context builder named "%s".', $parameter->getName(), $descriptor->function->getName()));
+        if ($context->verbosityLevel->isNotConfigured()) {
+            $context = $context->withVerbosityLevel(VerbosityLevel::fromSymfonyOutput($output));
         }
 
-        return $descriptor->function->invoke(...$args);
+        return $context;
     }
 
     private function displayUpdateWarningIfNeeded(SymfonyStyle $symfonyStyle): void

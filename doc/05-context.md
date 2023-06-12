@@ -12,18 +12,46 @@ context is created.
 
 ## Using the context
 
-The context is passed to the function if it has an argument type-hinted
-with `Castor\Context`:
+You can get the initial context thanks to the `get_context()` function:
 
 ```php
-use Castor\Context;
+use Castor\Attribute\AsTask;
+
+use function Castor\get_context;
+use function Castor\run;
 
 #[AsTask]
-function foo(Context $context): void
+function foo(): void
 {
+    $context = get_context();
+
     echo $context->currentDirectory; // will print the directory of the castor.php file
-    $context = $context->withPath('/tmp'); // will create a new context with the current directory set to /tmp
-    run('pwd', context: $context); // will print /tmp
+
+    $context = $context->withPath('/tmp'); // will create a new context where the current directory is /tmp
+    run('pwd', context: $context); // will print "/tmp"
+}
+```
+
+There is a `variable()` function to get a value stored in the `Context`:
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\get_context;
+use function Castor\variable;
+
+#[AsTask]
+function foo(): void
+{
+    $foobar = variable('foobar', 'default value');
+
+    // Same as:
+    $context = get_context();
+    try {
+        $foobar = $context['foobar'];
+    } catch (\OutOfBoundsException) {
+        $foobar = 'default value;
+    }
 }
 ```
 
@@ -35,6 +63,8 @@ the `Castor\Attribute\AsContext` attribute:
 ```php
 use Castor\Attribute\AsContext;
 use Castor\Context;
+
+use function Castor\run;
 
 #[AsContext]
 function my_context(): Context
@@ -72,6 +102,8 @@ setting the `default` argument to `true` in the `AsContext` attribute:
 ```php
 use Castor\Attribute\AsContext;
 use Castor\Context;
+
+use function Castor\run;
 
 #[AsContext(default: true, name: 'my_context')]
 function create_default_context(): Context

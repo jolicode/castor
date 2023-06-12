@@ -6,30 +6,17 @@ use Castor\Attribute\AsArgument;
 use Castor\Attribute\AsCommandArgument;
 use Castor\Attribute\AsOption;
 use Castor\Attribute\AsTask;
-use Castor\Context;
-use Castor\GlobalHelper;
 use Castor\SluggerHelper;
-use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 /** @internal */
 class TaskCommand extends Command
 {
-    private const SUPPORTED_PARAMETER_TYPES = [
-        Context::class,
-        SymfonyStyle::class,
-        Application::class,
-        Command::class,
-        InputInterface::class,
-        OutputInterface::class,
-    ];
-
     /**
      * @var array<string, string>
      */
@@ -53,14 +40,6 @@ class TaskCommand extends Command
     protected function configure(): void
     {
         foreach ($this->function->getParameters() as $parameter) {
-            if (($type = $parameter->getType()) instanceof \ReflectionNamedType && \in_array($type->getName(), self::SUPPORTED_PARAMETER_TYPES, true)) {
-                continue;
-            }
-
-            if ('command' === $parameter->getName()) {
-                throw new \LogicException(sprintf('The argument "%s" for command "%s" cannot be named like this because this is a reserved name.', $parameter->getName(), $this->getName()));
-            }
-
             $commandArgumentAttribute = $parameter->getAttributes(AsCommandArgument::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null;
 
             if ($commandArgumentAttribute) {
@@ -125,19 +104,6 @@ class TaskCommand extends Command
         $args = [];
 
         foreach ($this->function->getParameters() as $parameter) {
-            if (($type = $parameter->getType()) instanceof \ReflectionNamedType && \in_array($type->getName(), self::SUPPORTED_PARAMETER_TYPES, true)) {
-                $args[] = match ($type->getName()) {
-                    Context::class => GlobalHelper::getInitialContext(),
-                    SymfonyStyle::class => new SymfonyStyle($input, $output),
-                    Application::class => $this->getApplication(),
-                    Command::class => $this,
-                    InputInterface::class => $input,
-                    OutputInterface::class => $output,
-                };
-
-                continue;
-            }
-
             $name = $this->getParameterName($parameter);
             if ($input->hasArgument($name)) {
                 $args[] = $input->getArgument($name);

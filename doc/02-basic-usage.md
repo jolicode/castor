@@ -36,6 +36,8 @@ function bar(): void
 You will have two commands: `hello:castor` and `foo:bar`. If there is no
 namespace then the command will have no namespace.
 
+From now on, we will omit the leading `<?php` in all doc examples.
+
 ## Splitting commands in multiple files
 
 ### Using a directory
@@ -54,7 +56,6 @@ This function takes a file path, or a directory as an argument.
 When using a directory as an argument, Castor will load all the PHP files in it:
 
 ```php
-
 use function Castor\import;
 
 import(__DIR__ . '/custom-commands.php');

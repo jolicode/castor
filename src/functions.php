@@ -2,9 +2,17 @@
 
 namespace Castor;
 
+use Castor\Console\Application;
 use Joli\JoliNotif\Notification;
 use Joli\JoliNotif\NotifierFactory;
 use Joli\JoliNotif\Util\OsHelper;
+use Monolog\Level;
+use Monolog\Logger;
+use Psr\Log\LogLevel;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -266,19 +274,57 @@ function watch(string $path, callable $function, Context $context = null): void
 
 /**
  * @param array<string, mixed> $context
+ *
+ * @phpstan-param Level|LogLevel::* $level
  */
-function log(string $message, string $level = 'info', array $context = []): void
+function log(string|\Stringable $message, mixed $level = 'info', array $context = []): void
 {
     GlobalHelper::getLogger()->log($level, $message, $context);
 }
 
+function get_application(): Application
+{
+    return GlobalHelper::getApplication();
+}
+
+function get_input(): InputInterface
+{
+    return GlobalHelper::getInput();
+}
+
+function get_output(): OutputInterface
+{
+    return GlobalHelper::getOutput();
+}
+
+function io(): SymfonyStyle
+{
+    return GlobalHelper::getSymfonyStyle();
+}
+
+function get_logger(): Logger
+{
+    return GlobalHelper::getLogger();
+}
+
+function get_context(): Context
+{
+    return GlobalHelper::getInitialContext();
+}
+
+function variable(string $key, mixed $defaultValue = null): mixed
+{
+    return GlobalHelper::getVariable($key, $defaultValue);
+}
+
+function get_command(): Command
+{
+    return GlobalHelper::getCommand();
+}
+
 function fs(): Filesystem
 {
-    static $filesystem;
-
-    $filesystem ??= new Filesystem();
-
-    return $filesystem;
+    return GlobalHelper::getFilesystem();
 }
 
 function finder(): Finder

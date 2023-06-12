@@ -3,10 +3,10 @@
 namespace run;
 
 use Castor\Attribute\AsTask;
-use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Output\OutputInterface;
 
 use function Castor\capture;
+use function Castor\get_application;
+use function Castor\get_output;
 use function Castor\run;
 
 #[AsTask(description: 'Run a sub-process and display information about it')]
@@ -31,12 +31,12 @@ function whoami()
 }
 
 #[AsTask(description: 'Run a sub-process and display information about it, with ProcessHelper')]
-function with_process_helper(Application $application, OutputInterface $output)
+function with_process_helper()
 {
-    if (!$output->isVeryVerbose()) {
-        $output->writeln('Re-run with -vv, -vvv to see the output of the process.');
+    if (!get_output()->isVeryVerbose()) {
+        get_output()->writeln('Re-run with -vv, -vvv to see the output of the process.');
     }
     /** @var ProcessHelper */
-    $helper = $application->getHelperSet()->get('process');
-    $helper->run($output, ['ls', '-alh']);
+    $helper = get_application()->getHelperSet()->get('process');
+    $helper->run(get_output(), ['ls', '-alh']);
 }

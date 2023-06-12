@@ -22,6 +22,10 @@ you need more information, you can re-run the command with the `-v` option.
 You can use the `log()` function to log a message:
 
 ```php
+use Castor\Attribute\AsTask;
+
+use function Castor\log;
+
 #[AsTask]
 function log()
 {
@@ -32,6 +36,10 @@ function log()
 You can also attach a context to the log message:
 
 ```php
+use Castor\Attribute\AsTask;
+
+use function Castor\log;
+
 #[AsTask]
 function log()
 {
@@ -49,3 +57,25 @@ use the `OutputInterface`. Here is a small guide:
 * Don't use `echo`, it's not a good practice;
 * Use the `OutputInterface` when you want to display something to the user;
 * Use the `log()` function when you want to add some **debug** information.
+
+## Accessing the raw logger
+
+If you need to access the raw logger instance, you can get it with the
+`get_logger()` function:
+
+```php
+use Castor\Attribute\AsContext;
+use Castor\Context;
+use Castor\PathHelper;
+use Monolog\Handler\StreamHandler;
+
+use function Castor\get_logger;
+
+#[AsContext(name: 'preprod')]
+function preprodContext(): Context
+{
+    get_logger()->pushHandler(new StreamHandler(PathHelper::getRoot() . '/preprod.log'));
+
+    //return new Context(...);
+}
+```

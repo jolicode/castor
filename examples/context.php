@@ -5,9 +5,11 @@ namespace context;
 use Castor\Attribute\AsContext;
 use Castor\Attribute\AsTask;
 use Castor\Context;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
+use function Castor\get_context;
+use function Castor\io;
 use function Castor\run;
+use function Castor\variable;
 
 #[AsContext(default: true, name: 'my_default')]
 function defaultContext(): Context
@@ -44,10 +46,10 @@ function runContext(): Context
 }
 
 #[AsContext(name: 'interactive')]
-function interactiveContext(SymfonyStyle $io): Context
+function interactiveContext(): Context
 {
-    $production = $io->confirm('Are you in production?', 'no');
-    $foo = $io->ask('What is the "foo" value?', null);
+    $production = io()->confirm('Are you in production?', 'no');
+    $foo = io()->ask('What is the "foo" value?', null);
 
     return new Context([
         'name' => 'interactive',
@@ -57,10 +59,11 @@ function interactiveContext(SymfonyStyle $io): Context
 }
 
 #[AsTask(description: 'Displays information about the context')]
-function context(Context $context)
+function context()
 {
-    echo 'context name: ' . ($context->offsetExists('name') ? $context['name'] : 'N/A') . "\n";
-    echo 'Production? ' . ($context->offsetExists('production') && $context['production'] ? 'yes' : 'no') . "\n";
+    $context = get_context();
+    echo 'context name: ' . variable('name', 'N/A') . "\n";
+    echo 'Production? ' . (variable('production', false) ? 'yes' : 'no') . "\n";
     echo "verbosity: {$context->verbosityLevel->value}\n";
-    echo 'context: ' . ($context->offsetExists('foo') ? $context['foo'] : 'N/A') . "\n";
+    echo 'context: ' . variable('foo', 'N/A') . "\n";
 }

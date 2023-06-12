@@ -3,15 +3,15 @@
 namespace log;
 
 use Castor\Attribute\AsTask;
-use Symfony\Component\Console\Output\OutputInterface;
 
+use function Castor\get_output;
 use function Castor\log;
 
 #[AsTask(description: 'Logs an "info" message')]
-function info(OutputInterface $output): void
+function info(): void
 {
-    if (!$output->isVeryVerbose()) {
-        $output->writeln('Re-run with -vv, -vvv to different output.');
+    if (!get_output()->isVeryVerbose()) {
+        get_output()->writeln('Re-run with -vv, -vvv to different output.');
     }
 
     log('Hello, this is an "info" log message.', 'info');
@@ -24,10 +24,10 @@ function error(): void
 }
 
 #[AsTask(description: 'Logs an "error" message')]
-function with_context(OutputInterface $output): void
+function with_context(): void
 {
-    if (!$output->isVerbose()) {
-        $output->writeln('Re-run with -v, -vv, -vvv to different output.');
+    if (!get_output()->isVerbose()) {
+        get_output()->writeln('Re-run with -v, -vv, -vvv to different output.');
     }
 
     log('Hello, I\'have a context!', 'error', context: [
@@ -36,10 +36,10 @@ function with_context(OutputInterface $output): void
 }
 
 #[AsTask(description: 'Logs some messages with different levels')]
-function all_level(OutputInterface $output): void
+function all_level(): void
 {
-    if (!$output->isVerbose()) {
-        $output->writeln('Re-run with -v, -vv, -vvv to different output.');
+    if (!get_output()->isVerbose()) {
+        get_output()->writeln('Re-run with -v, -vv, -vvv to different output.');
     }
 
     $levels = [

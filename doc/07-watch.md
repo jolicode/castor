@@ -4,6 +4,10 @@ Castor provides a `watch()` function that will watch a file or a directory and
 call a callback function when the file or directory changes:
 
 ```php
+use Castor\Attribute\AsTask;
+
+use function Castor\watch;
+
 #[AsTask]
 function watch(): void
 {
@@ -22,6 +26,10 @@ By default the `watch()` function will not watch subdirectories. You can change
 that by passing a path suffixed by `/...`:
 
 ```php
+use Castor\Attribute\AsTask;
+
+use function Castor\watch;
+
 #[AsTask]
 function watch(): void
 {
@@ -38,6 +46,10 @@ The `watch()` function will look at the return value of the callback function. I
 the callback function returns `false` the watch will stop:
 
 ```php
+use Castor\Attribute\AsTask;
+
+use function Castor\watch;
+
 #[AsTask]
 function watch(): void
 {
