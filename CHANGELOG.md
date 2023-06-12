@@ -2,6 +2,11 @@
 
 ## 0.5.0 (not released yet)
 
+## 0.4.1 (2023-06-13)
+
+* Allow to use the cache in the context creator
+* Add `ExecutableFinder` in stubs
+
 ## 0.4.0 (2023-06-12)
 
 * [BC Break] replace specials helpers arguments by dedicated functions
