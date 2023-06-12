@@ -117,7 +117,7 @@ class GlobalHelper
         return self::$cache ?? throw new \LogicException('Cache not set yet.');
     }
 
-    public static function setupCacheIfNeeded(): void
+    public static function setupDefaultCache(): void
     {
         if (!isset(self::$cache)) {
             self::setCache(new FilesystemAdapter(directory: sys_get_temp_dir() . '/castor'));

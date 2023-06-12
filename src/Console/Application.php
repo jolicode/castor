@@ -79,11 +79,10 @@ class Application extends SymfonyApplication
     {
         GlobalHelper::setCommand($command);
 
+        GlobalHelper::setupDefaultCache();
+
         $context = $this->createContext($input, $output);
         GlobalHelper::setInitialContext($context);
-
-        // need to be after the context creation
-        GlobalHelper::setupCacheIfNeeded();
 
         if ('_complete' !== $command->getName()) {
             $this->stubsGenerator->generateStubsIfNeeded($this->rootDir . '/.castor.stub.php');
