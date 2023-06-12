@@ -22,10 +22,11 @@ $commandFilterList = [
     '_complete',
     'completion',
     'help',
-    // Never complete
+    // Never complete or impossible to run
     'watch:fs-change',
     'watch:parallel-change',
     'watch:stop',
+    'ssh:ls',
     // Not examples
     'castor:phar:build',
     'castor:phar:darwin',

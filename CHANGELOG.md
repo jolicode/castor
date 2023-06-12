@@ -5,6 +5,7 @@
 * [BC Break] replace specials helpers arguments by dedicated functions
 * Add `capture()` function to easily run a process and returns the output
 * Add `cache()` and `get_cache()` function to easily cache something
+* Add `ssh()` function to run commands on remote server via SSH
 * Display warning and update instructions when a new version is available
 * Better error reporting when a call to `run()` fails or when `import()` is not possible
 * Fix stubs generation

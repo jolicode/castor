@@ -10,6 +10,7 @@ use Monolog\Level;
 use Monolog\Logger;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LogLevel;
+use Spatie\Ssh\Ssh;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -191,6 +192,63 @@ function capture(
         context: $context,
         quiet: true,
     )->getOutput());
+}
+
+/**
+ * This function is considered experimental and may change in the future.
+ *
+ * @param array{
+ *     'port'?: int,
+ *     'path_private_key'?: string,
+ *     'jump_host'?: string,
+ *     'multiplexing_control_path'?: string,
+ *     'multiplexing_control_persist'?: string,
+ *     'enable_strict_check'?: bool,
+ *     'password_authentication'?: bool,
+ * } $sshOptions
+ */
+function ssh(
+    string $command,
+    string $host,
+    string $user,
+    array $sshOptions = [],
+    string|null $path = null,
+    bool|null $quiet = null,
+    bool|null $allowFailure = null,
+    bool|null $notify = null,
+    float|null $timeout = null,
+): Process {
+    $ssh = Ssh::create($user, $host, $sshOptions['port'] ?? null);
+
+    if ($sshOptions['path_private_key'] ?? false) {
+        $ssh->usePrivateKey($sshOptions['path_private_key']);
+    }
+    if ($sshOptions['jump_host'] ?? false) {
+        $ssh->useJumpHost($sshOptions['jump_host']);
+    }
+    if ($sshOptions['multiplexing_control_path'] ?? false) {
+        $ssh->useMultiplexing($sshOptions['multiplexing_control_path'], $sshOptions['multiplexing_control_persist'] ?? '10m');
+    }
+    if ($sshOptions['enable_strict_check'] ?? false) {
+        $sshOptions['enable_strict_check'] ? $ssh->enableStrictHostKeyChecking() : $ssh->disableStrictHostKeyChecking();
+    }
+    if ($sshOptions['password_authentication'] ?? false) {
+        $sshOptions['password_authentication'] ? $ssh->enablePasswordAuthentication() : $ssh->disableStrictHostKeyChecking();
+    }
+    if ($path) {
+        $command = sprintf('cd %s && %s', $path, $command);
+    }
+
+    return run(
+        $ssh->getExecuteCommand($command),
+        environment: [],
+        tty: false,
+        pty: false,
+        timeout: $timeout,
+        quiet: $quiet,
+        allowFailure: $allowFailure,
+        notify: $notify
+    );
 }
 
 function notify(string $message): void
