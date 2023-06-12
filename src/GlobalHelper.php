@@ -32,7 +32,7 @@ class GlobalHelper
 
     public static function getApplication(): Application
     {
-        return self::$application ?? throw new \LogicException('Application not set yet.');
+        return self::$application ?? throw new \LogicException('Application not available yet.');
     }
 
     public static function setInput(InputInterface $input): void
@@ -42,7 +42,7 @@ class GlobalHelper
 
     public static function getInput(): InputInterface
     {
-        return self::$input ?? throw new \LogicException('Input not set yet.');
+        return self::$input ?? throw new \LogicException('Input not available yet.');
     }
 
     public static function setOutput(OutputInterface $output): void
@@ -52,7 +52,7 @@ class GlobalHelper
 
     public static function getOutput(): OutputInterface
     {
-        return self::$output ?? throw new \LogicException('Output not set yet.');
+        return self::$output ?? throw new \LogicException('Output not available yet.');
     }
 
     public static function getSymfonyStyle(): SymfonyStyle
@@ -67,7 +67,7 @@ class GlobalHelper
 
     public static function getLogger(): Logger
     {
-        return self::$logger ?? throw new \LogicException('Logger not set yet.');
+        return self::$logger ?? throw new \LogicException('Logger not available yet.');
     }
 
     public static function setCommand(Command $command): void
@@ -99,7 +99,7 @@ class GlobalHelper
 
     public static function getCommand(): Command
     {
-        return self::$command ?? throw new \LogicException('Command not set yet.');
+        return self::$command ?? throw new \LogicException('Command not available yet.');
     }
 
     public static function getFilesystem(): Filesystem
@@ -114,7 +114,7 @@ class GlobalHelper
 
     public static function getCache(): CacheItemPoolInterface&CacheInterface
     {
-        return self::$cache ?? throw new \LogicException('Cache not set yet.');
+        return self::$cache ?? throw new \LogicException('Cache not available yet.');
     }
 
     public static function setupDefaultCache(): void
