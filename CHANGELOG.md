@@ -5,6 +5,7 @@
 ## 0.4.1 (2023-06-13)
 
 * Allow to use the cache in the context creator
+* Add `onFailure` argument to the `capture()` function
 * Add `ExecutableFinder` in stubs
 
 ## 0.4.0 (2023-06-12)

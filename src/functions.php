@@ -181,9 +181,18 @@ function capture(
     string|null $path = null,
     float|null $timeout = null,
     bool|null $allowFailure = null,
+    string $onFailure = null,
     Context $context = null,
 ): string {
-    return trim(run(
+    $hasOnFailure = null !== $onFailure;
+    if ($hasOnFailure) {
+        if (null !== $allowFailure) {
+            throw new \LogicException('The "allowFailure" argument cannot be used with "onFailure".');
+        }
+        $allowFailure = true;
+    }
+
+    $process = run(
         command: $command,
         environment: $environment,
         path: $path,
@@ -191,7 +200,13 @@ function capture(
         allowFailure: $allowFailure,
         context: $context,
         quiet: true,
-    )->getOutput());
+    );
+
+    if ($hasOnFailure && !$process->isSuccessful()) {
+        return $onFailure;
+    }
+
+    return trim($process->getOutput());
 }
 
 /**
