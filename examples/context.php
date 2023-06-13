@@ -48,8 +48,12 @@ function runContext(): Context
 #[AsContext(name: 'interactive')]
 function interactiveContext(): Context
 {
-    $production = io()->confirm('Are you in production?', 'no');
+    $production = io()->confirm('Are you in production?', false);
+
     $foo = io()->ask('What is the "foo" value?', null);
+    if (!\is_string($foo)) {
+        throw new \RuntimeException('foo must be a string.');
+    }
 
     return new Context([
         'name' => 'interactive',
@@ -59,7 +63,7 @@ function interactiveContext(): Context
 }
 
 #[AsTask(description: 'Displays information about the context')]
-function context()
+function context(): void
 {
     $context = get_context();
     echo 'context name: ' . variable('name', 'N/A') . "\n";

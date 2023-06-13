@@ -9,7 +9,7 @@ use function Castor\finder;
 use function Castor\fs;
 
 #[AsTask(description: 'Performs some operations on the filesystem')]
-function filesystem()
+function filesystem(): void
 {
     $fs = fs();
 
@@ -29,7 +29,7 @@ function filesystem()
 }
 
 #[AsTask(description: 'Search files and directories on the filesystem')]
-function find()
+function find(): void
 {
     $finder = finder();
 

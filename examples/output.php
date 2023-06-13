@@ -8,7 +8,7 @@ use function Castor\get_command;
 use function Castor\io;
 
 #[AsTask(description: 'Plays with Symfony Style')]
-function output()
+function output(): void
 {
     io()->title('This is a title');
 

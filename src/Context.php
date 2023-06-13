@@ -7,8 +7,9 @@ class Context implements \ArrayAccess
     public readonly string $currentDirectory;
 
     /**
-     * @param array<(int|string), mixed> $data        The input parameter accepts an array or an Object
-     * @param array<string, string>      $environment A list of environment variables to add to the command
+     * @phpstan-param ContextData $data The input parameter accepts an array or an Object
+     *
+     * @param array<string, string|\Stringable|int> $environment A list of environment variables to add to the command
      */
     public function __construct(
         public readonly array $data = [],
@@ -42,7 +43,7 @@ class Context implements \ArrayAccess
         );
     }
 
-    /** @param array<string, string> $environment */
+    /** @param array<string, string|\Stringable|int> $environment */
     public function withEnvironment(array $environment, bool $keepExisting = true): self
     {
         return new self(

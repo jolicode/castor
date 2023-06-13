@@ -8,6 +8,9 @@ use Castor\Attribute\AsTask;
 
 use function Castor\run;
 
+/**
+ * @param string[] $argument2
+ */
 #[AsTask(description: 'Dumps all arguments and options, with custom configuration')]
 function args(
     #[AsArgument(description: 'This is a required argument', suggestedValues: ['hello', 'bonjour', 'hola'])]
@@ -18,7 +21,7 @@ function args(
     string $option = 'default value',
     #[AsOption(description: 'This a an option without value in CLI')]
     bool $dryRun = false,
-) {
+): void {
     var_dump(\func_get_args());
 }
 
@@ -26,6 +29,6 @@ function args(
 function another_args(
     string $required,
     int $test2 = 1
-) {
+): void {
     run(['echo', $required, $test2]);
 }

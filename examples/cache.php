@@ -8,15 +8,15 @@ use Psr\Cache\CacheItemInterface;
 use function Castor\cache;
 
 #[AsTask(description: 'Cache a simple call')]
-function simple()
+function simple(): void
 {
-    echo cache('my-key', fn () => strip_tags(file_get_contents('https://perdu.com/'))) . "\n";
+    echo cache('my-key', fn () => strip_tags((string) file_get_contents('https://perdu.com/'))) . "\n";
     // Should returns the same things
-    echo cache('my-key', fn () => strip_tags(file_get_contents('https://estcequecestuntempsaraclette.fr/'))) . "\n";
+    echo cache('my-key', fn () => strip_tags((string) file_get_contents('https://estcequecestuntempsaraclette.fr/'))) . "\n";
 }
 
 #[AsTask(description: 'Cache with usage of CacheItemInterface')]
-function complex()
+function complex(): void
 {
     $hasBeenCalled = false;
     cache('another-key', function (CacheItemInterface $item) use (&$hasBeenCalled) {

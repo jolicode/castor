@@ -8,18 +8,18 @@ use function Castor\parallel;
 use function Castor\watch;
 
 #[AsTask(description: 'Watches on filesystem changes')]
-function fs_change()
+function fs_change(): void
 {
     echo "Try editing a file\n";
-    watch(\dirname(__DIR__) . '/...', function ($name, $type) {
+    watch(\dirname(__DIR__) . '/...', function (string $name, string $type) {
         echo "File {$name} has been {$type}\n";
     });
 }
 
 #[AsTask(description: 'Watches on filesystem changes and stop after first change')]
-function stop()
+function stop(): void
 {
-    watch(\dirname(__DIR__) . '/...', function ($name, $type) {
+    watch(\dirname(__DIR__) . '/...', function (string $name, string $type) {
         echo "File {$name} has been {$type}\n";
 
         return false;
@@ -28,7 +28,7 @@ function stop()
 }
 
 #[AsTask(description: 'Watches on filesystem changes with 2 watchers in parallel')]
-function parallel_change()
+function parallel_change(): void
 {
     parallel(
         function () {

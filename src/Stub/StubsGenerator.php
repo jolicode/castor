@@ -41,7 +41,6 @@ final class StubsGenerator
 
         foreach ($finder as $file) {
             $fileStmts = $parser->parse((string) file_get_contents($file->getPathname()));
-            // @phpstan-ignore-next-line
             $stmts = array_merge($stmts, $traverser->traverse($fileStmts));
         }
 
@@ -66,7 +65,6 @@ final class StubsGenerator
                 continue;
             }
             $fileStmts = $parser->parse((string) file_get_contents($file));
-            // @phpstan-ignore-next-line
             $stmts = array_merge($stmts, $traverser->traverse($fileStmts));
         }
 
