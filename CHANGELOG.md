@@ -2,6 +2,8 @@
 
 ## 0.5.0 (not released yet)
 
+* Add support for signals handling
+
 ## 0.4.1 (2023-06-13)
 
 * Allow to use the cache in the context creator

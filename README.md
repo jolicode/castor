@@ -117,6 +117,7 @@ Discover more by reading the docs:
 * [Notification](doc/09-notify.md)
 * [Log and Debug](doc/10-log.md)
 * [SSH and remote servers](doc/11-ssh.md)
+* [Handling signals](doc/12-signals.md)
 
 ## Questions and answers
 

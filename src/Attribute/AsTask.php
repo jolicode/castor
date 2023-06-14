@@ -6,13 +6,15 @@ namespace Castor\Attribute;
 class AsTask
 {
     /**
-     * @param array<string> $aliases
+     * @param array<string>                          $aliases
+     * @param array<int, callable(int): (int|false)> $onSignals
      */
     public function __construct(
         public string $name = '',
         public string|null $namespace = null,
         public string $description = '',
         public array $aliases = [],
+        public array $onSignals = [],
     ) {
     }
 }
