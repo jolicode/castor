@@ -11,7 +11,10 @@ function sigusr2(): void
     posix_kill(posix_getpid(), \SIGUSR2);
 }
 
-function onSigUsr2(int $signal): int|false
+/**
+ * @return false
+ */
+function onSigUsr2(int $signal): bool
 {
     echo "SIGUSR2 received\n";
 
