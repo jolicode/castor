@@ -14,8 +14,3 @@ parameters:
 			message: "#^Parameter \\#1 \\$data of class Castor\\\\Context constructor expects array\\{name\\: string, production\\: bool, foo\\?\\: string\\}, array\\<int\\|string, mixed\\> given\\.$#"
 			count: 1
 			path: src/Context.php
-
-		-
-			message: "#^Parameter \\#1 \\$nodes of method PhpParser\\\\NodeTraverser\\:\\:traverse\\(\\) expects array\\<PhpParser\\\\Node\\>, array\\<PhpParser\\\\Node\\\\Stmt\\>\\|null given\\.$#"
-			count: 2
-			path: src/Stub/StubsGenerator.php
