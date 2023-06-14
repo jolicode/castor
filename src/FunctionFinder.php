@@ -75,6 +75,12 @@ class FunctionFinder
                         $taskAttribute->namespace = $ns;
                     }
 
+                    foreach ($taskAttribute->onSignals as $signal => $callable) {
+                        if (!\is_callable($callable)) {
+                            throw new \LogicException(sprintf('The callable for signal "%s" is not callable.', $signal));
+                        }
+                    }
+
                     yield new TaskDescriptor($taskAttribute, $reflectionFunction);
 
                     continue;

@@ -8,6 +8,7 @@ use Castor\Attribute\AsOption;
 use Castor\Attribute\AsTask;
 use Castor\SluggerHelper;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Command\SignalableCommandInterface;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,7 +16,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /** @internal */
-class TaskCommand extends Command
+class TaskCommand extends Command implements SignalableCommandInterface
 {
     /**
      * @var array<string, string>
@@ -23,7 +24,7 @@ class TaskCommand extends Command
     private array $argumentsMap = [];
 
     public function __construct(
-        AsTask $taskAttribute,
+        private readonly AsTask $taskAttribute,
         private readonly \ReflectionFunction $function,
     ) {
         $this->setDescription($taskAttribute->description);
@@ -35,6 +36,23 @@ class TaskCommand extends Command
         }
 
         parent::__construct($commandName);
+    }
+
+    /**
+     * @return array<int>
+     */
+    public function getSubscribedSignals(): array
+    {
+        return array_keys($this->taskAttribute->onSignals);
+    }
+
+    public function handleSignal(int $signal): int|false
+    {
+        if (!\array_key_exists($signal, $this->taskAttribute->onSignals)) {
+            return false;
+        }
+
+        return $this->taskAttribute->onSignals[$signal]($signal);
     }
 
     protected function configure(): void
