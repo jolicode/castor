@@ -1,0 +1,16 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Function args\\\\args\\(\\) has parameter \\$word with no type specified\\.$#"
+			count: 1
+			path: examples/args.php
+
+		-
+			message: "#^Default value of the parameter \\#1 \\$data \\(array\\{\\}\\) of method Castor\\\\Context\\:\\:__construct\\(\\) is incompatible with type array\\{name\\: string, production\\: bool, foo\\?\\: string\\}\\.$#"
+			count: 1
+			path: src/Context.php
+
+		-
+			message: "#^Parameter \\#1 \\$data of class Castor\\\\Context constructor expects array\\{name\\: string, production\\: bool, foo\\?\\: string\\}, array\\<int\\|string, mixed\\> given\\.$#"
+			count: 1
+			path: src/Context.php

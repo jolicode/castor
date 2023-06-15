@@ -1,9 +1,21 @@
+includes:
+    - phpstan-baseline.neon
+
 parameters:
     level: 8
     paths:
         - src
+        - examples
     tmpDir: 'var/phpstan/tmp'
     inferPrivatePropertyTypeFromConstructor: true
     checkGenericClassInNonGenericObjectType: false
     excludePaths:
         analyse: []
+    typeAliases:
+        ContextData: '''
+            array{
+                name: string,
+                production: bool,
+                foo?: string,
+            }
+        '''

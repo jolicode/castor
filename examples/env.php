@@ -7,7 +7,7 @@ use Castor\Attribute\AsTask;
 use function Castor\run;
 
 #[AsTask(description: 'Display environment variables')]
-function env()
+function env(): void
 {
     run('echo \"$FOO\"', environment: [
         'FOO' => 'toto',

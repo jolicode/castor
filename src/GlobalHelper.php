@@ -86,12 +86,21 @@ class GlobalHelper
         return self::$initialContext ?? new Context();
     }
 
-    public static function getVariable(string $key, mixed $defaultValue = null): mixed
+    /**
+     * @template TKey of key-of<ContextData>
+     * @template TDefault
+     *
+     * @param TKey|string $key
+     * @param TDefault    $default
+     *
+     * @phpstan-return ($key is TKey ? ContextData[TKey] : TDefault)
+     */
+    public static function getVariable(string $key, mixed $default = null): mixed
     {
         $initialContext = self::getInitialContext();
 
         if (!isset($initialContext[$key])) {
-            return $defaultValue;
+            return $default;
         }
 
         return $initialContext[$key];

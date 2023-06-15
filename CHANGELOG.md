@@ -3,6 +3,7 @@
 ## 0.5.0 (not released yet)
 
 * Add support for signals handling
+* Add a way to type Context::$data
 
 ## 0.4.1 (2023-06-13)
 

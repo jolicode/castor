@@ -57,9 +57,9 @@ function parallel(callable ...$callbacks): array
 }
 
 /**
- * @param string|array<string>                           $command
+ * @param string|array<string|\Stringable|int>           $command
+ * @param array<string, string|\Stringable|int>|null     $environment
  * @param (callable(string, string, Process) :void)|null $callback
- * @param array<string, string>|null                     $environment
  */
 function run(
     string|array $command,
@@ -172,8 +172,8 @@ function run(
 }
 
 /**
- * @param string|array<string>       $command
- * @param array<string, string>|null $environment
+ * @param string|array<string|\Stringable|int>       $command
+ * @param array<string, string|\Stringable|int>|null $environment
  */
 function capture(
     string|array $command,
@@ -281,7 +281,7 @@ function notify(string $message): void
     $notifier->send($notification);
 }
 
-/** @param (callable(string, string) : (false|null)) $function */
+/** @param (callable(string, string) : (false|void|null)) $function */
 function watch(string $path, callable $function, Context $context = null): void
 {
     $context ??= GlobalHelper::getInitialContext();
@@ -387,9 +387,18 @@ function get_context(): Context
     return GlobalHelper::getInitialContext();
 }
 
-function variable(string $key, mixed $defaultValue = null): mixed
+/**
+ * @template TKey of key-of<ContextData>
+ * @template TDefault
+ *
+ * @param TKey|string $key
+ * @param TDefault    $default
+ *
+ * @phpstan-return ($key is TKey ? ContextData[TKey] : TDefault)
+ */
+function variable(string $key, mixed $default = null): mixed
 {
-    return GlobalHelper::getVariable($key, $defaultValue);
+    return GlobalHelper::getVariable($key, $default);
 }
 
 function get_command(): Command
