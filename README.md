@@ -1,7 +1,12 @@
-# Castor
 
-Castor is a **<abbr title="Developer eXperience">DX</abbr> oriented task
-runner** and **command launcher** built with PHP.
+<h1 align="center">
+    <img width="450" height="117" src="https://jolicode.com/media/original/castor-logo-line.svg?cool" alt="castor logo" />
+</h1>
+
+<p align="center">
+    <i>Castor is a <strong><abbr title="Developer eXperience">DX</abbr> oriented task
+    runner</strong> and <strong>command launcher</strong> built with PHP.</i>
+</p>
 
 It can be seen as a replacement of Makefile, Fabric, Invoke, Shell scripts...
 
