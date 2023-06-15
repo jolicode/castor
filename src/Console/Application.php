@@ -170,7 +170,6 @@ class Application extends SymfonyApplication
         }
 
         $symfonyStyle->block(sprintf('<info>A new Castor version is available</info> (<comment>%s</comment>, currently running <comment>%s</comment>).', $latestVersion['tag_name'], self::VERSION), escape: false);
-        $pharPath = '/home/loick/.local/bin/castor';
 
         if ($pharPath = \Phar::running(false)) {
             $assets = match (true) {
