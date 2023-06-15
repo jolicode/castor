@@ -20,7 +20,7 @@ function onSigUsr2(int $signal): int|false
 }
 ```
 
-Return false to stop continue the task, or return an integer to stop the task
+Return false to continue the task, or return an integer to stop the task
 with this exit code.
 
 If the task is in a namespace, you must use the fully qualified name of the function:
