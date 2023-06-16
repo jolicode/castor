@@ -30,7 +30,7 @@ use function Castor\run;
 /** @internal */
 class Application extends SymfonyApplication
 {
-    final public const VERSION = 'v0.4.1';
+    final public const VERSION = 'v0.5.0';
 
     public function __construct(
         private readonly string $rootDir,

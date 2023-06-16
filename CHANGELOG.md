@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 0.5.0 (not released yet)
+## 0.5.0 (2023-06-16)
 
 * Add support for signals handling
 * Add a way to type Context::$data
