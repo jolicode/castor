@@ -50,15 +50,14 @@ class CastorFileNotFoundCommand extends SingleCommandApplication
             <?php
 
             use Castor\Attribute\AsTask;
-            use Symfony\Component\Console\Style\SymfonyStyle;
 
             use function Castor\io;
-            use function Castor\run;
+            use function Castor\capture;
 
             #[AsTask(description: 'Welcome to Castor!')]
             function hello(): void
             {
-                $currentUser = trim(run('whoami', quiet: true)->getOutput());
+                $currentUser = capture('whoami');
 
                 io()->title(sprintf('Hello %s!', $currentUser));
             }
