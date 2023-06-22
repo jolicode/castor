@@ -2,6 +2,8 @@
 
 ## 0.5.1 (2023-06-22)
 
+* Fix curl download in installation instructions
+* Fix code on initial castor.php creation
 * Do not remove annotation from phar
 
 ## 0.5.0 (2023-06-16)
