@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.5.1 (2023-06-22)
+
+* Do not remove annotation from phar
+
 ## 0.5.0 (2023-06-16)
 
 * Add support for signals handling

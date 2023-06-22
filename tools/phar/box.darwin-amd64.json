@@ -18,6 +18,7 @@
   "compactors": [
     "KevinGH\\Box\\Compactor\\Php"
   ],
+  "annotations": false,
   "compression": "GZ",
   "check-requirements": false,
   "git-version": "package_version",
