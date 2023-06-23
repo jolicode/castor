@@ -56,6 +56,8 @@ class Application extends SymfonyApplication
         ]);
         GlobalHelper::setLogger($logger);
 
+        GlobalHelper::setContextRegistry($this->contextRegistry);
+
         GlobalHelper::setupDefaultCache();
 
         return parent::run($input, $output);

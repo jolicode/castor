@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.6.0 (not released yet)
+
+* Add support for registering `Context` programmatically
+
 ## 0.5.2 (2023-06-24)
 
 * Add documentation about installation in a Github Action
