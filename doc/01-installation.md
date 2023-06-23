@@ -85,6 +85,30 @@ We suggest you to create an alias for it:
 alias castor='docker run -it --rm -v `pwd`:/project -v "/var/run/docker.sock:/var/run/docker.sock:rw" castor'
 ```
 
+### In a Github Action
+
+Castor can also be installed in a Github Action by using the action `shivammathur/setup-php@v2` and specifying
+`castor` in the `tools` option. This will configure PHP with the right version but also make castor available
+in the next steps. Here is an example:
+
+```bash
+jobs:
+  my-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: castor
+
+      - name: Run castor "hello" task
+        run: castor hello
+```
+
 ## Autocomplete
 
 If you use bash, you can enable autocomplete for castor by executing the

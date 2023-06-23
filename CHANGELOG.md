@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Not yet released
+
+* Add documentation about installation in a Github Action
+
 ## 0.5.1 (2023-06-22)
 
 * Fix curl download in installation instructions
