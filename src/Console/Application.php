@@ -56,6 +56,8 @@ class Application extends SymfonyApplication
         ]);
         GlobalHelper::setLogger($logger);
 
+        GlobalHelper::setupDefaultCache();
+
         return parent::run($input, $output);
     }
 
@@ -78,8 +80,6 @@ class Application extends SymfonyApplication
     protected function doRunCommand(Command $command, InputInterface $input, OutputInterface $output): int
     {
         GlobalHelper::setCommand($command);
-
-        GlobalHelper::setupDefaultCache();
 
         $context = $this->createContext($input, $output);
         GlobalHelper::setInitialContext($context);
@@ -114,7 +114,7 @@ class Application extends SymfonyApplication
                 null,
                 InputOption::VALUE_REQUIRED,
                 sprintf('The context to use (%s)', implode('|', $contextNames)),
-                $this->contextRegistry->getDefault()->contextAttribute->name,
+                $this->contextRegistry->getDefault(),
                 $contextNames,
             ));
         }
@@ -130,7 +130,6 @@ class Application extends SymfonyApplication
         $context = $this
             ->contextRegistry
             ->get($input->getOption('context'))
-            ->function->invoke()
         ;
 
         if ($context->verbosityLevel->isNotConfigured()) {
