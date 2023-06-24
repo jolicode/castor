@@ -132,7 +132,10 @@ function run(
         };
     }
 
-    log(sprintf('Running command: "%s".', $process->getCommandLine()), 'debug');
+    log(sprintf('Running command: "%s".', $process->getCommandLine()), 'debug', [
+        'cwd' => $process->getWorkingDirectory(),
+        'env' => $process->getEnv(),
+    ]);
 
     $process->start(function ($type, $bytes) use ($callback, $process) {
         if ($callback) {
