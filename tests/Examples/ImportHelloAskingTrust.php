@@ -4,14 +4,14 @@ namespace Castor\Tests\Examples;
 
 use Castor\Tests\TaskTestCase;
 
-class ContextContextPathTest extends TaskTestCase
+class ImportHelloAskingTrust extends TaskTestCase
 {
-    // context:context
+    // import:hello
     public function test(): void
     {
-        $process = $this->runTask(['context:context', '--context', 'path', '--no-trust']);
+        $process = $this->runTask(['import:hello']);
 
-        $this->assertSame(0, $process->getExitCode());
+        $this->assertSame(1, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());
         if (file_exists(__FILE__ . '.err.txt')) {
             $this->assertStringEqualsFile(__FILE__ . '.err.txt', $process->getErrorOutput());

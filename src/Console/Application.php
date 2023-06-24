@@ -11,14 +11,15 @@ use Castor\FunctionFinder;
 use Castor\GlobalHelper;
 use Castor\Monolog\Processor\ProcessProcessor;
 use Castor\SectionOutput;
+use Castor\PlatformUtil;
 use Castor\Stub\StubsGenerator;
 use Castor\TaskDescriptor;
 use Castor\VerbosityLevel;
-use Joli\JoliNotif\Util\OsHelper;
 use Monolog\Logger;
 use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Command\CompleteCommand;
 use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -88,7 +89,12 @@ class Application extends SymfonyApplication
     {
         GlobalHelper::setCommand($command);
 
-        if ('_complete' !== $command->getName() && !class_exists(\RepackedApplication::class)) {
+        if ($command instanceof TaskCommand) {
+            $context = $this->createContext($input, $output);
+            GlobalHelper::setInitialContext($context);
+        }
+
+        if (!$command instanceof CompleteCommand && !class_exists(\RepackedApplication::class)) {
             $this->stubsGenerator->generateStubsIfNeeded($this->rootDir . '/.castor.stub.php');
             $this->displayUpdateWarningIfNeeded(new SymfonyStyle($input, $output));
         }
@@ -105,6 +111,16 @@ class Application extends SymfonyApplication
         if (class_exists(\RepackedApplication::class)) {
             $functionsRootDir = \RepackedApplication::ROOT_DIR;
         }
+
+        $this->getDefinition()->addOption(
+            new InputOption(
+                'trust',
+                null,
+                InputOption::VALUE_NEGATABLE,
+                'Trust all the imported functions from remote resources'
+            )
+        );
+
         // Find all potential commands / context
         $functions = $this->functionFinder->findFunctions($functionsRootDir);
         $tasks = [];
@@ -142,7 +158,7 @@ class Application extends SymfonyApplication
             // context and it will fail later anyway
         }
 
-        // occurs when running `castor -h`, or if no context is defined
+        // Occurs when running a native command (like `castor -h`, `castor list`, etc), or if no context is defined
         if (!$input->hasOption('context')) {
             return new Context();
         }
@@ -189,9 +205,9 @@ class Application extends SymfonyApplication
 
         if ($pharPath = \Phar::running(false)) {
             $assets = match (true) {
-                OsHelper::isWindows() || OsHelper::isWindowsSubsystemForLinux() => array_filter($latestVersion['assets'], fn (array $asset) => str_contains($asset['name'], 'windows')),
-                OsHelper::isMacOS() => array_filter($latestVersion['assets'], fn (array $asset) => str_contains($asset['name'], 'darwin')),
-                OsHelper::isUnix() => array_filter($latestVersion['assets'], fn (array $asset) => str_contains($asset['name'], 'linux')),
+                PlatformUtil::isWindows() || PlatformUtil::isWindowsSubsystemForLinux() => array_filter($latestVersion['assets'], fn (array $asset) => str_contains($asset['name'], 'windows')),
+                PlatformUtil::isMacOS() => array_filter($latestVersion['assets'], fn (array $asset) => str_contains($asset['name'], 'darwin')),
+                PlatformUtil::isUnix() => array_filter($latestVersion['assets'], fn (array $asset) => str_contains($asset['name'], 'linux')),
                 default => [],
             };
 
@@ -209,7 +225,7 @@ class Application extends SymfonyApplication
                 return;
             }
 
-            if (OsHelper::isUnix()) {
+            if (PlatformUtil::isUnix()) {
                 $symfonyStyle->block('Run the following command to update Castor:');
                 $symfonyStyle->block(sprintf('<comment>curl "%s" -Lso castor && chmod u+x castor && mv castor %s</comment>', $latestReleaseUrl, $pharPath), escape: false);
             } else {

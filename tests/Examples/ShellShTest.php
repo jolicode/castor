@@ -9,7 +9,7 @@ class ShellShTest extends TaskTestCase
     // shell:sh
     public function test(): void
     {
-        $process = $this->runTask(['shell:sh']);
+        $process = $this->runTask(['shell:sh', '--no-trust']);
 
         $this->assertSame(1, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());

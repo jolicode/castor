@@ -3,6 +3,7 @@
 ## Not released yet
 
 * Add `fingerprint()` function to condition code execution based on some hash changes
+* Allow to import functions from remote resources
 * Better handle default Symfony commands when no castor file exists yet
 
 ## 0.8.0 (2023-08-16)

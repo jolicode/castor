@@ -9,7 +9,7 @@ class NotRenameRenamedTest extends TaskTestCase
     // not-rename:renamed
     public function test(): void
     {
-        $process = $this->runTask(['not-rename:renamed']);
+        $process = $this->runTask(['not-rename:renamed', '--no-trust']);
 
         $this->assertSame(0, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());

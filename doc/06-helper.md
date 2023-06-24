@@ -197,7 +197,7 @@ function foo()
 }
 ```
 
-By default it caches items on the filesystem, in the `/tmp/castor` directory.
+By default it caches items on the filesystem, in the `$HOME/.castor/cache` directory.
 The function also prefix the key with a hash of the project directory to avoid
 any collision between different project.
 

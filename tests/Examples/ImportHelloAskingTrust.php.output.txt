@@ -1,0 +1,16 @@
+
+ [WARNING] Your Castor project tries to import functions from external resources.                                       
+
+ Trust github.com/pyrech/castor-setup-php and import? [not now]:
+  [0] not now
+  [1] never
+  [2] only this time
+  [3] always
+ > 
+In import.php line 14:
+                                                  
+  Call to undefined function pyrech\helloWorld()  
+                                                  
+
+import:hello
+

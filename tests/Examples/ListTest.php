@@ -9,7 +9,7 @@ class ListTest extends TaskTestCase
     // list
     public function test(): void
     {
-        $process = $this->runTask(['list', '--raw', '--format', 'txt', '--short']);
+        $process = $this->runTask(['list', '--raw', '--format', 'txt', '--short', '--no-trust']);
 
         $this->assertSame(0, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());

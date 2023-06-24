@@ -9,7 +9,7 @@ class OutputOutputTest extends TaskTestCase
     // output:output
     public function test(): void
     {
-        $process = $this->runTask(['output:output']);
+        $process = $this->runTask(['output:output', '--no-trust']);
 
         $this->assertSame(1, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());

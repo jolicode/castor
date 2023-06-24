@@ -6,6 +6,11 @@ parameters:
 			path: examples/args.php
 
 		-
+			message: "#^Function pyrech\\\\helloWorld not found\\.$#"
+			count: 1
+			path: examples/import.php
+
+		-
 			message: "#^Default value of the parameter \\#1 \\$data \\(array\\{\\}\\) of method Castor\\\\Context\\:\\:__construct\\(\\) is incompatible with type array\\{name\\: string, production\\: bool, foo\\?\\: string\\}\\.$#"
 			count: 1
 			path: src/Context.php

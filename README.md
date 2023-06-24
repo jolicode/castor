@@ -125,6 +125,7 @@ Discover more by reading the docs:
 * [Handling signals](doc/12-signals.md)
 * [Repacking your application in a new phar](doc/13-repack.md)
 * [Fingerprinting and code execution when a hash changes](doc/14-fingerprint.md)
+* [Import remote functions](doc/15-remote.md)
 
 ## Questions and answers
 

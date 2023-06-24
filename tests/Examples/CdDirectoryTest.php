@@ -10,7 +10,7 @@ class CdDirectoryTest extends TaskTestCase
     // cd:directory
     public function testCdDirectory(): void
     {
-        $process = $this->runTask(['cd:directory']);
+        $process = $this->runTask(['cd:directory', '--no-trust']);
         $this->assertSame(0, $process->getExitCode());
         $output = OutputCleaner::cleanOutput($process->getOutput());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $output);
