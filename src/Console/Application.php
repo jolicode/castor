@@ -9,10 +9,10 @@ use Castor\ContextDescriptor;
 use Castor\ContextRegistry;
 use Castor\FunctionFinder;
 use Castor\GlobalHelper;
+use Castor\PlatformUtil;
 use Castor\Stub\StubsGenerator;
 use Castor\TaskDescriptor;
 use Castor\VerbosityLevel;
-use Joli\JoliNotif\Util\OsHelper;
 use Monolog\Logger;
 use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
 use Symfony\Component\Console\Application as SymfonyApplication;
@@ -184,9 +184,9 @@ class Application extends SymfonyApplication
 
         if ($pharPath = \Phar::running(false)) {
             $assets = match (true) {
-                OsHelper::isWindows() || OsHelper::isWindowsSubsystemForLinux() => array_filter($latestVersion['assets'], fn (array $asset) => str_contains($asset['name'], 'windows')),
-                OsHelper::isMacOS() => array_filter($latestVersion['assets'], fn (array $asset) => str_contains($asset['name'], 'darwin')),
-                OsHelper::isUnix() => array_filter($latestVersion['assets'], fn (array $asset) => str_contains($asset['name'], 'linux')),
+                PlatformUtil::isWindows() || PlatformUtil::isWindowsSubsystemForLinux() => array_filter($latestVersion['assets'], fn (array $asset) => str_contains($asset['name'], 'windows')),
+                PlatformUtil::isMacOS() => array_filter($latestVersion['assets'], fn (array $asset) => str_contains($asset['name'], 'darwin')),
+                PlatformUtil::isUnix() => array_filter($latestVersion['assets'], fn (array $asset) => str_contains($asset['name'], 'linux')),
                 default => [],
             };
 
@@ -204,7 +204,7 @@ class Application extends SymfonyApplication
                 return;
             }
 
-            if (OsHelper::isUnix()) {
+            if (PlatformUtil::isUnix()) {
                 $symfonyStyle->block('Run the following command to update Castor:');
                 $symfonyStyle->block(sprintf('<comment>curl "%s" -Lso castor && chmod u+x castor && mv castor %s</comment>', $latestReleaseUrl, $pharPath), escape: false);
             } else {

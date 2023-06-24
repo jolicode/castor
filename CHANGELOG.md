@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* Allow to import functions from remote resources
+
 ## 0.7.1 (2023-07-11)
 
 * Fix the `castor --version` command when there is no `.castor.php` file

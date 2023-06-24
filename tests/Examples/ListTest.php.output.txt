@@ -26,6 +26,7 @@ failure:failure           A failing task not authorized to fail
 filesystem:filesystem     Performs some operations on the filesystem
 filesystem:find           Search files and directories on the filesystem
 foo:foo                   Prints foo
+import:hello              Use a function imported from a remote repository
 log:all-level             Logs some messages with different levels
 log:error                 Logs an "error" message
 log:info                  Logs an "info" message
@@ -35,6 +36,8 @@ notify:notify-on-finish   Sends a notification when the task finishes
 notify:send-notify        Sends a notification
 output:output             Plays with Symfony Style
 parallel:sleep            Sleeps for 5, 7, and 10 seconds in parallel
+pyrech:hello              Welcome to Castor!
+pyrech:hello-world        
 quiet:quiet               Executes something but does not output anything
 run:ls                    Run a sub-process and display information about it
 run:test-file             Run a sub-process and return its exit code, with get_exit_code() function

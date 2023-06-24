@@ -3,9 +3,9 @@
 namespace Castor;
 
 use Castor\Console\Application;
+use Castor\Remote\Import;
 use Joli\JoliNotif\Notification;
 use Joli\JoliNotif\NotifierFactory;
-use Joli\JoliNotif\Util\OsHelper;
 use Monolog\Level;
 use Monolog\Logger;
 use Psr\Cache\CacheItemPoolInterface;
@@ -331,8 +331,8 @@ function watch(string|array $path, callable $function, Context $context = null):
     $context ??= GlobalHelper::getInitialContext();
 
     $binary = match (true) {
-        OSHelper::isMacOS() => 'watcher-darwin',
-        OSHelper::isWindows() => 'watcher-windows.exe',
+        PlatformUtil::isMacOS() => 'watcher-darwin',
+        PlatformUtil::isWindows() => 'watcher-windows.exe',
         default => 'watcher-linux',
     };
 
@@ -483,6 +483,29 @@ function get_cache(): CacheItemPoolInterface&CacheInterface
 
 function import(string $path): void
 {
+    $scheme = parse_url($path, \PHP_URL_SCHEME);
+
+    if ($scheme) {
+        if ('github' === $scheme) {
+            if (!preg_match('#^github://(?<organization>[^/]+)/(?<repository>[^/]+)/(?<version>[^/]+)(?<function_path>.*)$#', $path, $matches)) {
+                throw fix_exception(new \InvalidArgumentException('The import path from GitHub repository must be formatted like this: "github://<organization>/<repository>/<version>/<function_path>".'));
+            }
+
+            $path = Import::importFunctionsFromGitRepository(
+                'github.com',
+                sprintf('%s/%s', $matches['organization'], $matches['repository']),
+                $matches['version'],
+                $matches['function_path'] ?? '/castor.php',
+            );
+
+            log('Using functions from remote resource.', 'info', [
+                'url' => $path,
+            ]);
+        } else {
+            throw fix_exception(new \InvalidArgumentException(sprintf('The scheme "%s" is not supported.', $scheme)));
+        }
+    }
+
     if (!file_exists($path)) {
         throw fix_exception(new \InvalidArgumentException(sprintf('The file "%s" does not exist.', $path)));
     }
