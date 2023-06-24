@@ -1,8 +1,9 @@
 # CHANGELOG
 
-## Not yet released
+## 0.5.2 (2023-06-24)
 
 * Add documentation about installation in a Github Action
+* Add more classes in stubs
 
 ## 0.5.1 (2023-06-22)
 
