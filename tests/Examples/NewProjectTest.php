@@ -6,10 +6,10 @@ use Castor\Tests\TaskTestCase;
 
 class NewProjectTest extends TaskTestCase
 {
-    // no task
+    // --no-trust
     public function test(): void
     {
-        $process = $this->runTask([], '/tmp');
+        $process = $this->runTask(['--no-trust'], '/tmp');
 
         $this->assertSame(0, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());

@@ -9,7 +9,7 @@ class QuietQuietTest extends TaskTestCase
     // quiet:quiet
     public function test(): void
     {
-        $process = $this->runTask(['quiet:quiet']);
+        $process = $this->runTask(['quiet:quiet', '--no-trust']);
 
         $this->assertSame(0, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());

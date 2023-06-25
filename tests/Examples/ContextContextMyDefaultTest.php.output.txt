@@ -1,4 +1,4 @@
 context name: my_default
 Production? no
-verbosity: 4
+verbosity: 2
 context: bar

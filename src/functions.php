@@ -3,6 +3,7 @@
 namespace Castor;
 
 use Castor\Console\Application;
+use Castor\Remote\Exception\NotTrusted;
 use Castor\Remote\Import;
 use Joli\JoliNotif\Notification;
 use Joli\JoliNotif\NotifierFactory;
@@ -486,23 +487,31 @@ function import(string $path): void
     $scheme = parse_url($path, \PHP_URL_SCHEME);
 
     if ($scheme) {
-        if ('github' === $scheme) {
-            if (!preg_match('#^github://(?<organization>[^/]+)/(?<repository>[^/]+)/(?<version>[^/]+)(?<function_path>.*)$#', $path, $matches)) {
-                throw fix_exception(new \InvalidArgumentException('The import path from GitHub repository must be formatted like this: "github://<organization>/<repository>/<version>/<function_path>".'));
+        try {
+            if ('github' === $scheme) {
+                if (!preg_match('#^github://(?<organization>[^/]+)/(?<repository>[^/]+)/(?<version>[^/]+)(?<function_path>.*)$#', $path, $matches)) {
+                    throw fix_exception(new \InvalidArgumentException('The import path from GitHub repository must be formatted like this: "github://<organization>/<repository>/<version>/<function_path>".'));
+                }
+
+                $path = Import::importFunctionsFromGitRepository(
+                    'github.com',
+                    sprintf('%s/%s', $matches['organization'], $matches['repository']),
+                    $matches['version'],
+                    $matches['function_path'] ?? '/castor.php',
+                );
+
+                log('Using functions from remote resource.', 'info', [
+                    'url' => $path,
+                ]);
+            } else {
+                throw fix_exception(new \InvalidArgumentException(sprintf('The scheme "%s" is not supported.', $scheme)));
             }
-
-            $path = Import::importFunctionsFromGitRepository(
-                'github.com',
-                sprintf('%s/%s', $matches['organization'], $matches['repository']),
-                $matches['version'],
-                $matches['function_path'] ?? '/castor.php',
-            );
-
-            log('Using functions from remote resource.', 'info', [
-                'url' => $path,
+        } catch (NotTrusted $e) {
+            log('Ignoring functions from untrusted resource.', 'info', [
+                'url' => $e->url,
             ]);
-        } else {
-            throw fix_exception(new \InvalidArgumentException(sprintf('The scheme "%s" is not supported.', $scheme)));
+
+            return;
         }
     }
 

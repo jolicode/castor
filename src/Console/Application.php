@@ -17,6 +17,7 @@ use Monolog\Logger;
 use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Command\CompleteCommand;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -89,10 +90,12 @@ class Application extends SymfonyApplication
     {
         GlobalHelper::setCommand($command);
 
-        $context = $this->createContext($input, $output);
-        GlobalHelper::setInitialContext($context);
+        if ($command instanceof TaskCommand) {
+            $context = $this->createContext($input, $output);
+            GlobalHelper::setInitialContext($context);
+        }
 
-        if ('_complete' !== $command->getName() && !class_exists(\RepackedApplication::class)) {
+        if (!$command instanceof CompleteCommand && !class_exists(\RepackedApplication::class)) {
             $this->stubsGenerator->generateStubsIfNeeded($this->rootDir . '/.castor.stub.php');
             $this->displayUpdateWarningIfNeeded(new SymfonyStyle($input, $output));
         }
@@ -106,6 +109,16 @@ class Application extends SymfonyApplication
         if (class_exists(\RepackedApplication::class)) {
             $functionsRootDir = \RepackedApplication::ROOT_DIR;
         }
+
+        $this->getDefinition()->addOption(
+            new InputOption(
+                'trust',
+                null,
+                InputOption::VALUE_NEGATABLE,
+                'Trust all the imported functions from remote resources'
+            )
+        );
+
         // Find all potential commands / context
         $functions = $this->functionFinder->findFunctions($functionsRootDir);
 
@@ -134,7 +147,7 @@ class Application extends SymfonyApplication
 
     private function createContext(InputInterface $input, OutputInterface $output): Context
     {
-        // occurs when running `castor -h`, or if no context is defined
+        // Occurs when running a native command (like `castor -h`, `castor list`, etc), or if no context is defined
         if (!$input->hasOption('context')) {
             return new Context();
         }
