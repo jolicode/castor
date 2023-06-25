@@ -3,6 +3,8 @@
 namespace Castor;
 
 use Castor\Console\Application;
+use Castor\Remote\Exception\ImportError;
+use Castor\Remote\Exception\InvalidImportUrl;
 use Castor\Remote\Exception\NotTrusted;
 use Castor\Remote\Import;
 use Joli\JoliNotif\Notification;
@@ -488,24 +490,13 @@ function import(string $path): void
 
     if ($scheme) {
         try {
-            if ('github' === $scheme) {
-                if (!preg_match('#^github://(?<organization>[^/]+)/(?<repository>[^/]+)/(?<version>[^/]+)(?<function_path>.*)$#', $path, $matches)) {
-                    throw fix_exception(new \InvalidArgumentException('The import path from GitHub repository must be formatted like this: "github://<organization>/<repository>/<version>/<function_path>".'));
-                }
+            $path = Import::importFunctions($scheme, mb_substr($path, mb_strlen($scheme) + 3));
+        } catch (InvalidImportUrl $e) {
+            throw fix_exception(new \InvalidArgumentException($e->getMessage(), 0, $e));
+        } catch (ImportError $e) {
+            log($e->getMessage(), 'warning');
 
-                $path = Import::importFunctionsFromGitRepository(
-                    'github.com',
-                    sprintf('%s/%s', $matches['organization'], $matches['repository']),
-                    $matches['version'],
-                    $matches['function_path'] ?? '/castor.php',
-                );
-
-                log('Using functions from remote resource.', 'info', [
-                    'url' => $path,
-                ]);
-            } else {
-                throw fix_exception(new \InvalidArgumentException(sprintf('The scheme "%s" is not supported.', $scheme)));
-            }
+            return;
         } catch (NotTrusted $e) {
             log('Ignoring functions from untrusted resource.', 'info', [
                 'url' => $e->url,
@@ -536,7 +527,7 @@ function import(string $path): void
     }
 }
 
-// Remove the last frame (the call to run() to display a nice message to the end user
+// Remove the last frame (the call to run()) to display a nice message to the end user
 function fix_exception(\Exception $exception): \Exception
 {
     $lastFrame = $exception->getTrace()[0];

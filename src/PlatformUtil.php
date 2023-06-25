@@ -45,6 +45,6 @@ class PlatformUtil extends OsHelper
             }
         }
 
-        throw new \RuntimeException('Could not determine user directory');
+        throw new \RuntimeException('Could not determine user directory.');
     }
 }

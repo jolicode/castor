@@ -13,7 +13,7 @@ To import functions from a GitHub repository, pass a path to the `import()`
 function, formatted like this:
 
 ```
-github://<user>/<repository>/<version>/<path of the php file to import>
+github://<user>/<repository>/<path of the php file to import>@<version>
 ```
 
 Here is an example:
@@ -21,7 +21,7 @@ Here is an example:
 ```php
 use function Castor\import;
 
-import('github://pyrech/castor-setup-php/main/castor.php');
+import('github://pyrech/castor-setup-php/castor.php@main');
 
 #[AsTask()]
 function hello(): void

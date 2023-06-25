@@ -1,5 +1,5 @@
 
- [WARNING] Your Castor project tries to import functions from external resources                                        
+ [WARNING] Your Castor project tries to import functions from external resources.                                       
 
  Trust github.com/pyrech/castor-setup-php and import? [not now]:
   [0] not now

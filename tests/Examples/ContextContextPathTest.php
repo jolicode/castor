@@ -9,7 +9,7 @@ class ContextContextPathTest extends TaskTestCase
     // context:context
     public function test(): void
     {
-        $process = $this->runTask(['context:context', '--context', 'path']);
+        $process = $this->runTask(['context:context', '--context', 'path', '--no-trust']);
 
         $this->assertSame(0, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());

@@ -141,13 +141,8 @@ class GlobalHelper
     public static function setupDefaultCache(): void
     {
         if (!isset(self::$cache)) {
-            self::setCache(new FilesystemAdapter(directory: self::getGlobalDirectory() . '/cache'));
+            self::setCache(new FilesystemAdapter(directory: self::getHomeDirectory() . '/cache'));
         }
-    }
-
-    public static function setHomeDirectory(string $homeDirectory): void
-    {
-        self::$homeDirectory = $homeDirectory;
     }
 
     /**
@@ -155,14 +150,6 @@ class GlobalHelper
      */
     public static function getHomeDirectory(): string
     {
-        return self::$homeDirectory ??= PlatformUtil::getUserDirectory();
-    }
-
-    /**
-     * @throws \RuntimeException If the user home could not reliably be determined
-     */
-    public static function getGlobalDirectory(): string
-    {
-        return self::getHomeDirectory() . '/.castor';
+        return self::$homeDirectory ??= (PlatformUtil::getUserDirectory() . '/.castor');
     }
 }
