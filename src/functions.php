@@ -285,9 +285,26 @@ function notify(string $message): void
     $notifier->send($notification);
 }
 
-/** @param (callable(string, string) : (false|void|null)) $function */
-function watch(string $path, callable $function, Context $context = null): void
+/**
+ * @param string|non-empty-array<string>                 $path
+ * @param (callable(string, string) : (false|void|null)) $function
+ */
+function watch(string|array $path, callable $function, Context $context = null): void
 {
+    if (\is_array($path)) {
+        $parallelCallbacks = [];
+
+        foreach ($path as $p) {
+            $parallelCallbacks[] = function () use ($p, $function, $context) {
+                watch($p, $function, $context);
+            };
+        }
+
+        parallel(...$parallelCallbacks);
+
+        return;
+    }
+
     $context ??= GlobalHelper::getInitialContext();
 
     $binary = match (true) {
