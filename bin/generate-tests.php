@@ -36,6 +36,8 @@ $commandFilterList = [
     'castor:watcher:darwin',
     'castor:watcher:linux',
     'castor:watcher:windows',
+    'castor:qa:cs',
+    'castor:qa:phpstan',
     // Customized tests
     'cd:directory',
     'log:all-level',
