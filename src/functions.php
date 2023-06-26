@@ -385,6 +385,11 @@ function get_logger(): Logger
     return GlobalHelper::getLogger();
 }
 
+function add_context(string $name, \Closure $callable, bool $default = false): void
+{
+    GlobalHelper::getContextRegistry()->addContext($name, $callable, $default);
+}
+
 function get_context(): Context
 {
     return GlobalHelper::getInitialContext();

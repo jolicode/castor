@@ -26,6 +26,14 @@ class ContextRegistry
         }
     }
 
+    public function addContext(string $name, \Closure $callable, bool $default = false): void
+    {
+        $this->add(new ContextDescriptor(
+            new Attribute\AsContext(name: $name, default: $default),
+            new \ReflectionFunction($callable),
+        ));
+    }
+
     public function setDefaultIfEmpty(): void
     {
         if ($this->default) {
@@ -73,6 +81,10 @@ class ContextRegistry
         $name = $function->getName();
         $shortFilename = str_replace(PathHelper::getRoot() . '/', '', (string) $function->getFileName());
         $location = sprintf('%s:%d', $shortFilename, $function->getStartLine());
+
+        if (str_contains($name, '{closure}')) {
+            return $location;
+        }
 
         return sprintf('%s@%s', $name, $location);
     }

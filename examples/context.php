@@ -6,6 +6,7 @@ use Castor\Attribute\AsContext;
 use Castor\Attribute\AsTask;
 use Castor\Context;
 
+use function Castor\add_context;
 use function Castor\get_context;
 use function Castor\io;
 use function Castor\run;
@@ -71,3 +72,9 @@ function context(): void
     echo "verbosity: {$context->verbosityLevel->value}\n";
     echo 'context: ' . variable('foo', 'N/A') . "\n";
 }
+
+add_context('dynamic', fn () => new Context([
+    'name' => 'dynamic',
+    'production' => false,
+    'foo' => 'baz',
+]));

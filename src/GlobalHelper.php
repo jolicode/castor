@@ -20,6 +20,7 @@ class GlobalHelper
     private static OutputInterface $output;
     private static SymfonyStyle $symfonyStyle;
     private static Logger $logger;
+    private static ContextRegistry $contextRegistry;
     private static Command $command;
     private static Context $initialContext;
     private static Filesystem $fs;
@@ -68,6 +69,16 @@ class GlobalHelper
     public static function getLogger(): Logger
     {
         return self::$logger ?? throw new \LogicException('Logger not available yet.');
+    }
+
+    public static function setContextRegistry(ContextRegistry $contextRegistry): void
+    {
+        self::$contextRegistry = $contextRegistry;
+    }
+
+    public static function getContextRegistry(): ContextRegistry
+    {
+        return self::$contextRegistry ?? throw new \LogicException('ContextRegistry not available yet.');
     }
 
     public static function setCommand(Command $command): void
