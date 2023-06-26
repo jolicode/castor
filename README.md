@@ -116,7 +116,7 @@ Discover more by reading the docs:
 * [The `run()` Function](doc/03-run.md)
 * [Command Arguments](doc/04-arguments.md)
 * [Using the Context](doc/05-context.md)
-* [Asking Something, Progress Bar, Cache, Finder, Filesystem, and more](doc/06-helper.md)
+* [Asking Something, Progress Bar, Cache, Finder, Filesystem, DotEnv, and more](doc/06-helper.md)
 * [Watching Files](doc/07-watch.md)
 * [Parallel Processing](doc/08-parallel.md)
 * [Notification](doc/09-notify.md)
