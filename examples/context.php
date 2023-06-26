@@ -9,6 +9,7 @@ use Castor\Context;
 use function Castor\add_context;
 use function Castor\get_context;
 use function Castor\io;
+use function Castor\load_dot_env;
 use function Castor\run;
 use function Castor\variable;
 
@@ -61,6 +62,15 @@ function interactiveContext(): Context
         'production' => (bool) $production,
         'foo' => $foo,
     ]);
+}
+
+#[AsContext(name: 'path')]
+function contextFromPath(): Context
+{
+    /** @var array{name: string, production: bool} $data */
+    $data = load_dot_env(__DIR__ . '/dotenv-context/.env');
+
+    return new Context($data);
 }
 
 #[AsTask(description: 'Displays information about the context')]

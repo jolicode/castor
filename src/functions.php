@@ -15,6 +15,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -481,4 +482,18 @@ function fix_exception(\Exception $exception): \Exception
     }
 
     return $exception;
+}
+
+/**
+ * @return array<string, mixed>
+ */
+function load_dot_env(string $path = null): array
+{
+    $path ??= PathHelper::getRoot() . '/.env';
+
+    $dotenv = new Dotenv();
+    $dotenv->loadEnv($path);
+    unset($_ENV['SYMFONY_DOTENV_VARS']);
+
+    return $_ENV;
 }

@@ -1,0 +1,4 @@
+context name: path
+Production? yes
+verbosity: 1
+context: bar

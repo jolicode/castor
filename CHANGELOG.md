@@ -1,8 +1,9 @@
 # CHANGELOG
 
-## 0.6.0 (not released yet)
+## Unreleased
 
 * Add support for registering `Context` programmatically
+* Add `load_dot_env()` function for loading the context's environment from a dotenv file
 
 ## 0.5.2 (2023-06-24)
 
