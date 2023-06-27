@@ -199,9 +199,24 @@ There are some low level helpers to access internal stuff:
 * `get_output()` returns the current
   [`Output`](https://github.com/symfony/symfony/blob/6.3/src/Symfony/Component/Console/Input/InputInterface.php)
 
-## Load a context from dotenv file
+## Load a DotEnv file
 
-You can also load your context from a dotenv file with the `load_dot_env()` function:
+You can also load a dotenv file with the `load_dot_env()` function:
+
+```php
+use Castor\Attribute\AsTask;
+use Castor\Context;
+
+#[AsTask]
+function my_context(): Context
+{
+    $env = load_dot_env();
+
+    echo $env['DATABASE_URL'] ?? throw new \RuntimeException('DATABASE_URL is not defined');
+}
+```
+
+And you can also create a context that load a dotenv file:
 
 ```php
 use Castor\Attribute\AsContext;
