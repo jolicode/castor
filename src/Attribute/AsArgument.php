@@ -9,7 +9,7 @@ class AsArgument extends AsCommandArgument
      * @param array<string> $suggestedValues
      */
     public function __construct(
-        string|null $name = null,
+        string $name = null,
         public readonly string $description = '',
         public readonly array $suggestedValues = [],
     ) {
