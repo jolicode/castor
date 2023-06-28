@@ -64,14 +64,14 @@ function parallel(callable ...$callbacks): array
  */
 function run(
     string|array $command,
-    array|null $environment = null,
-    string|null $path = null,
-    bool|null $tty = null,
-    bool|null $pty = null,
-    float|null $timeout = null,
-    bool|null $quiet = null,
-    bool|null $allowFailure = null,
-    bool|null $notify = null,
+    array $environment = null,
+    string $path = null,
+    bool $tty = null,
+    bool $pty = null,
+    float $timeout = null,
+    bool $quiet = null,
+    bool $allowFailure = null,
+    bool $notify = null,
     callable $callback = null,
     Context $context = null,
 ): Process {
@@ -181,10 +181,10 @@ function run(
  */
 function capture(
     string|array $command,
-    array|null $environment = null,
-    string|null $path = null,
-    float|null $timeout = null,
-    bool|null $allowFailure = null,
+    array $environment = null,
+    string $path = null,
+    float $timeout = null,
+    bool $allowFailure = null,
     string $onFailure = null,
     Context $context = null,
 ): string {
@@ -231,11 +231,11 @@ function ssh(
     string $host,
     string $user,
     array $sshOptions = [],
-    string|null $path = null,
-    bool|null $quiet = null,
-    bool|null $allowFailure = null,
-    bool|null $notify = null,
-    float|null $timeout = null,
+    string $path = null,
+    bool $quiet = null,
+    bool $allowFailure = null,
+    bool $notify = null,
+    float $timeout = null,
 ): Process {
     $ssh = Ssh::create($user, $host, $sshOptions['port'] ?? null);
 

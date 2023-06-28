@@ -10,7 +10,7 @@ class AsOption extends AsCommandArgument
      * @param array<string>             $suggestedValues
      */
     public function __construct(
-        string|null $name = null,
+        string $name = null,
         public readonly string|array|null $shortcut = null,
         public readonly int|null $mode = null,
         public readonly string $description = '',
