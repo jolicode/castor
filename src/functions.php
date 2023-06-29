@@ -295,9 +295,7 @@ function watch(string|array $path, callable $function, Context $context = null):
         $parallelCallbacks = [];
 
         foreach ($path as $p) {
-            $parallelCallbacks[] = function () use ($p, $function, $context) {
-                watch($p, $function, $context);
-            };
+            $parallelCallbacks[] = fn () => watch($p, $function, $context);
         }
 
         parallel(...$parallelCallbacks);
