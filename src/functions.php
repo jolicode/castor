@@ -214,6 +214,31 @@ function capture(
 }
 
 /**
+ * @param string|array<string|\Stringable|int>       $command
+ * @param array<string, string|\Stringable|int>|null $environment
+ */
+function get_exit_code(
+    string|array $command,
+    array $environment = null,
+    string $path = null,
+    float $timeout = null,
+    bool $quiet = null,
+    Context $context = null,
+): int {
+    $process = run(
+        command: $command,
+        environment: $environment,
+        path: $path,
+        timeout: $timeout,
+        allowFailure: true,
+        context: $context,
+        quiet: $quiet,
+    );
+
+    return $process->getExitCode() ?? 0;
+}
+
+/**
  * This function is considered experimental and may change in the future.
  *
  * @param array{

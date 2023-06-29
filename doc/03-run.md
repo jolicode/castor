@@ -144,6 +144,22 @@ function whoami()
 }
 ```
 
+Castor provides a `get_exit_code()` function that will run the command, allowing
+the process to fail and return its exit code. This is particularly useful when
+running tasks on CI as this allows the CI to know if the task failed or not:
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\get_exit_code;
+
+#[AsTask()]
+function cs(): int
+{
+    return get_exit_code('php-cs-fixer fix --dry-run');
+}
+```
+
 ## PTY & TTY
 
 By default, Castor will use a pseudo terminal (PTY) to run the command,
