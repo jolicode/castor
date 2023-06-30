@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.6.0 (2023-06-30)
+
 * Add support for registering `Context` programmatically
 * Add `load_dot_env()` function for loading the context's environment from a dotenv file
 * Add support for multiple paths in `watch()` function
