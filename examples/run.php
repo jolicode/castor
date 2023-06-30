@@ -7,6 +7,7 @@ use Symfony\Component\Console\Helper\ProcessHelper;
 
 use function Castor\capture;
 use function Castor\get_application;
+use function Castor\get_exit_code;
 use function Castor\get_output;
 use function Castor\run;
 
@@ -29,6 +30,12 @@ function whoami(): void
     $whoami = capture('echo whoami');
 
     echo "Hello: {$whoami}\n";
+}
+
+#[AsTask(description: 'Run a sub-process and return its exit code, with get_exit_code() function')]
+function testFile(): int
+{
+    return get_exit_code('test -f unknown-file');
 }
 
 #[AsTask(description: 'Run a sub-process and display information about it, with ProcessHelper')]

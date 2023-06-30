@@ -232,7 +232,7 @@ function my_context(): Context
 By default, it loads the `.env` file on your project root (where castor file or
 folder was found), but you can overload this by passing your `.env` file
 path as an argument.
-You can find more about how dotenv file loading and overloading works on
+You can find more about how `.env` file loading and overloading works on
 [related Symfony documentation](https://symfony.com/doc/current/configuration.html#configuring-environment-variables-in-env-files).
 
 ## Other helpers
