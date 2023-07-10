@@ -206,7 +206,7 @@ class Application extends SymfonyApplication
 
             if (OsHelper::isUnix()) {
                 $symfonyStyle->block('Run the following command to update Castor:');
-                $symfonyStyle->block(sprintf('<comment>curl "%s" --output castor && chmod u+x castor && mv castor %s</comment>', $latestReleaseUrl, $pharPath), escape: false);
+                $symfonyStyle->block(sprintf('<comment>curl "%s" -Lso castor && chmod u+x castor && mv castor %s</comment>', $latestReleaseUrl, $pharPath), escape: false);
             } else {
                 $symfonyStyle->block(sprintf('Download the latest version at <comment>%s</comment>', $latestReleaseUrl), escape: false);
             }
