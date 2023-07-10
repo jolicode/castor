@@ -11,6 +11,10 @@ class PathHelper
         static $root;
 
         if (null === $root) {
+            if (class_exists(\RepackedApplication::class)) {
+                return $root = Path::getDirectory(getcwd() ?: '.');
+            }
+
             $path = getcwd() ?: '/';
 
             while (!file_exists($path . '/castor.php')) {

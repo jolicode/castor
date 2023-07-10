@@ -2,6 +2,7 @@
 
 namespace Castor\Console;
 
+use Castor\Console\Command\RepackCommand;
 use Castor\Console\Command\TaskCommand;
 use Castor\Context;
 use Castor\ContextDescriptor;
@@ -30,7 +31,8 @@ use function Castor\run;
 /** @internal */
 class Application extends SymfonyApplication
 {
-    final public const VERSION = 'v0.6.0';
+    public const NAME = 'castor';
+    public const VERSION = 'v0.7.0';
 
     public function __construct(
         private readonly string $rootDir,
@@ -38,7 +40,11 @@ class Application extends SymfonyApplication
         private readonly StubsGenerator $stubsGenerator = new StubsGenerator(),
         private readonly FunctionFinder $functionFinder = new FunctionFinder(),
     ) {
-        parent::__construct('castor', self::VERSION);
+        if (!class_exists(\RepackedApplication::class)) {
+            $this->add(new RepackCommand());
+        }
+
+        parent::__construct(static::NAME, static::VERSION);
     }
 
     public function run(InputInterface $input = null, OutputInterface $output = null): int
@@ -86,7 +92,7 @@ class Application extends SymfonyApplication
         $context = $this->createContext($input, $output);
         GlobalHelper::setInitialContext($context);
 
-        if ('_complete' !== $command->getName()) {
+        if ('_complete' !== $command->getName() && !class_exists(\RepackedApplication::class)) {
             $this->stubsGenerator->generateStubsIfNeeded($this->rootDir . '/.castor.stub.php');
             $this->displayUpdateWarningIfNeeded(new SymfonyStyle($input, $output));
         }
@@ -96,8 +102,12 @@ class Application extends SymfonyApplication
 
     private function initializeApplication(): void
     {
+        $functionsRootDir = $this->rootDir;
+        if (class_exists(\RepackedApplication::class)) {
+            $functionsRootDir = \RepackedApplication::ROOT_DIR;
+        }
         // Find all potential commands / context
-        $functions = $this->functionFinder->findFunctions($this->rootDir);
+        $functions = $this->functionFinder->findFunctions($functionsRootDir);
 
         foreach ($functions as $function) {
             if ($function instanceof TaskDescriptor) {

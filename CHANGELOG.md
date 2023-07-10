@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* Add support for re-packing a castor application into a new phar file
+
 ## 0.6.0 (2023-06-30)
 
 * Add support for registering `Context` programmatically

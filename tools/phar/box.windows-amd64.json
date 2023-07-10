@@ -26,7 +26,6 @@
   "annotations": false,
   "compression": "GZ",
   "check-requirements": false,
-  "git-version": "package_version",
   "main": "bin/castor",
   "output": "tools/phar/build/castor.windows-amd64.phar"
 }

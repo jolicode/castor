@@ -5,7 +5,7 @@ use Castor\Console\ApplicationFactory;
 
 if (file_exists($file = __DIR__ . '/../vendor/autoload.php')) {
     require $file;
-} elseif ($file = __DIR__ . '/../../../../vendor/autoload.php') {
+} elseif (file_exists($file = __DIR__ . '/../../../../vendor/autoload.php')) {
     require $file;
 } else {
     throw new \RuntimeException('Unable to find autoloader.');
