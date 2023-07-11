@@ -32,7 +32,7 @@ use function Castor\run;
 class Application extends SymfonyApplication
 {
     public const NAME = 'castor';
-    public const VERSION = 'v0.7.0';
+    public const VERSION = 'v0.7.1';
 
     public function __construct(
         private readonly string $rootDir,
