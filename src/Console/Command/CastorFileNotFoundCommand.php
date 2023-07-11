@@ -2,6 +2,7 @@
 
 namespace Castor\Console\Command;
 
+use Castor\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,6 +17,7 @@ class CastorFileNotFoundCommand extends SingleCommandApplication
         private readonly \RuntimeException $e,
     ) {
         parent::__construct('castor');
+        $this->setVersion(Application::VERSION);
     }
 
     protected function configure(): void
