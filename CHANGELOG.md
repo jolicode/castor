@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.7.0 (2023-07-11)
+
 * Add support for re-packing a castor application into a new phar file
 * Fix the update command message to follow redirects with curl
 
