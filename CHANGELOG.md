@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+* Add `http()` function to easily make HTTP requests
+
 ## 0.7.1 (2023-07-11)
 
 * Fix the `castor --version` command when there is no `.castor.php` file

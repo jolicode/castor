@@ -112,6 +112,27 @@ You can check
 the [Symfony documentation](https://symfony.com/doc/current/components/finder.html)
 for more information about this class and how to use it.
 
+## HTTP Client
+
+The `http()` function returns an instance of
+`Symfony\Contracts\HttpClient\HttpClientInterface` to make HTTP requests easily:
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\http;
+
+#[AsTask]
+function foo()
+{
+    echo http()->request('GET', 'https://example.org')->getContent(), \PHP_EOL;
+}
+```
+
+You can check
+the [Symfony documentation](https://symfony.com/doc/current/http_client.html)
+for more information about this class and how to use it.
+
 ## Cache
 
 The `cache()` function allow to cache items:
