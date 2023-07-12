@@ -25,6 +25,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Contracts\Cache\ItemInterface;
 
+use function Castor\http;
 use function Castor\log;
 use function Castor\run;
 
@@ -155,19 +156,12 @@ class Application extends SymfonyApplication
     {
         $latestVersion = GlobalHelper::getCache()->get('latest-version', function (ItemInterface $item): array {
             $item->expiresAfter(3600 * 60 * 24);
-            $opts = [
-                'http' => [
-                    'method' => 'GET',
-                    'header' => 'User-Agent: castor',
-                    'timeout' => 5,
-                ],
-            ];
 
-            $context = stream_context_create($opts);
+            $response = http()->request('GET', 'https://api.github.com/repos/jolicode/castor/releases/latest', [
+                'timeout' => 5,
+            ]);
 
-            $content = @file_get_contents('https://api.github.com/repos/jolicode/castor/releases/latest', false, $context);
-
-            return json_decode($content ?: '', true) ?? [];
+            return $response->toArray();
         });
 
         if (!$latestVersion) {

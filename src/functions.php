@@ -21,6 +21,7 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * @return array<mixed>
@@ -463,6 +464,11 @@ function fs(): Filesystem
 function finder(): Finder
 {
     return new Finder();
+}
+
+function http(): HttpClientInterface
+{
+    return GlobalHelper::getHttpClient();
 }
 
 function cache(string $key, callable $callback): mixed
