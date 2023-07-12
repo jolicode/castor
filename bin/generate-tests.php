@@ -14,7 +14,7 @@ use function Symfony\Component\String\u;
 $application = ApplicationFactory::create();
 $application->setAutoExit(false);
 $application
-    ->run(new ArrayInput(['command' => 'list', '--format' => 'json']), $o = new BufferedOutput())
+    ->run(new ArrayInput(['command' => 'list', '--format' => 'json', '--no-trust']), $o = new BufferedOutput())
 ;
 $applicationDescription = json_decode($o->fetch(), true);
 
@@ -47,8 +47,12 @@ $commandFilterList = [
     'parallel:sleep',
     'run:run-parallel',
     'run:ls',
+    'import:hello',
+    // Imported tasks
+    'pyrech:hello',
+    'pyrech:hello-world',
 ];
-$optionFilterList = array_flip(['help', 'quiet', 'verbose', 'version', 'ansi', 'no-ansi', 'no-interaction', 'context']);
+$optionFilterList = array_flip(['help', 'quiet', 'verbose', 'version', 'ansi', 'no-ansi', 'no-interaction', 'context', 'trust', 'no-trust']);
 foreach ($applicationDescription['commands'] as $command) {
     if (in_array($command['name'], $commandFilterList, true)) {
         continue;
@@ -84,19 +88,26 @@ foreach ($applicationDescription['commands'] as $command) {
 }
 
 add_test(['context:context', '--context', 'run'], 'ContextContextRunTest');
-add_test(['context:context', '--context', 'my_default', '-vvv'], 'ContextContextMyDefaultTest');
+add_test(['context:context', '--context', 'my_default', '-v'], 'ContextContextMyDefaultTest');
 add_test(['context:context', '--context', 'no_no_exist'], 'ContextContextDoNotExistTest');
 add_test(['context:context', '--context', 'production'], 'ContextContextProductionTest');
 add_test(['context:context', '--context', 'path'], 'ContextContextPathTest');
 add_test(['context:context', '--context', 'dynamic'], 'ContextContextDynamicTest');
 add_test([], 'NewProjectTest', '/tmp');
 add_test(['unknown:command', 'toto', '--foo', 1], 'NoConfigTest', '/tmp');
+add_test(['import:hello'], 'ImportHelloAskingTrust', noTrust: false);
+add_test(['import:hello', '--no-trust'], 'ImportHelloNoTrustForced', noTrust: false);
+add_test(['import:hello', '--trust'], 'ImportHelloTrustForce', noTrust: false);
 
-function add_test(array $args, string $class, string $cwd = null)
+function add_test(array $args, string $class, string $cwd = null, bool $noTrust = true)
 {
     $fp = fopen(__FILE__, 'r');
     fseek($fp, __COMPILER_HALT_OFFSET__ + 1);
     $template = stream_get_contents($fp);
+
+    if ($noTrust) {
+        $args[] = '--no-trust';
+    }
 
     $process = new Process(
         [\PHP_BINARY,  __DIR__ . '/castor', ...$args],

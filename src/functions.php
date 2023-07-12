@@ -3,9 +3,12 @@
 namespace Castor;
 
 use Castor\Console\Application;
+use Castor\Remote\Exception\ImportError;
+use Castor\Remote\Exception\InvalidImportUrl;
+use Castor\Remote\Exception\NotTrusted;
+use Castor\Remote\Import;
 use Joli\JoliNotif\Notification;
 use Joli\JoliNotif\NotifierFactory;
-use Joli\JoliNotif\Util\OsHelper;
 use Monolog\Level;
 use Monolog\Logger;
 use Psr\Cache\CacheItemPoolInterface;
@@ -331,8 +334,8 @@ function watch(string|array $path, callable $function, Context $context = null):
     $context ??= GlobalHelper::getInitialContext();
 
     $binary = match (true) {
-        OSHelper::isMacOS() => 'watcher-darwin',
-        OSHelper::isWindows() => 'watcher-windows.exe',
+        PlatformUtil::isMacOS() => 'watcher-darwin',
+        PlatformUtil::isWindows() => 'watcher-windows.exe',
         default => 'watcher-linux',
     };
 
@@ -483,6 +486,26 @@ function get_cache(): CacheItemPoolInterface&CacheInterface
 
 function import(string $path): void
 {
+    $scheme = parse_url($path, \PHP_URL_SCHEME);
+
+    if ($scheme) {
+        try {
+            $path = Import::importFunctions($scheme, mb_substr($path, mb_strlen($scheme) + 3));
+        } catch (InvalidImportUrl $e) {
+            throw fix_exception(new \InvalidArgumentException($e->getMessage(), 0, $e));
+        } catch (ImportError $e) {
+            log($e->getMessage(), 'warning');
+
+            return;
+        } catch (NotTrusted $e) {
+            log('Ignoring functions from untrusted resource.', 'info', [
+                'url' => $e->url,
+            ]);
+
+            return;
+        }
+    }
+
     if (!file_exists($path)) {
         throw fix_exception(new \InvalidArgumentException(sprintf('The file "%s" does not exist.', $path)));
     }
@@ -504,7 +527,7 @@ function import(string $path): void
     }
 }
 
-// Remove the last frame (the call to run() to display a nice message to the end user
+// Remove the last frame (the call to run()) to display a nice message to the end user
 function fix_exception(\Exception $exception): \Exception
 {
     $lastFrame = $exception->getTrace()[0];

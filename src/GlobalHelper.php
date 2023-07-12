@@ -25,6 +25,7 @@ class GlobalHelper
     private static Context $initialContext;
     private static Filesystem $fs;
     private static CacheItemPoolInterface&CacheInterface $cache;
+    private static string $homeDirectory;
 
     public static function setApplication(Application $application): void
     {
@@ -140,7 +141,15 @@ class GlobalHelper
     public static function setupDefaultCache(): void
     {
         if (!isset(self::$cache)) {
-            self::setCache(new FilesystemAdapter(directory: sys_get_temp_dir() . '/castor'));
+            self::setCache(new FilesystemAdapter(directory: self::getHomeDirectory() . '/cache'));
         }
+    }
+
+    /**
+     * @throws \RuntimeException If the user home could not reliably be determined
+     */
+    public static function getHomeDirectory(): string
+    {
+        return self::$homeDirectory ??= (PlatformUtil::getUserDirectory() . '/.castor');
     }
 }

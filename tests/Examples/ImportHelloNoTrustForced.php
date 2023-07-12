@@ -4,12 +4,12 @@ namespace Castor\Tests\Examples;
 
 use Castor\Tests\TaskTestCase;
 
-class NoConfigTest extends TaskTestCase
+class ImportHelloNoTrustForced extends TaskTestCase
 {
-    // unknown:command
+    // import:hello
     public function test(): void
     {
-        $process = $this->runTask(['unknown:command', 'toto', '--foo', 1, '--no-trust'], '/tmp');
+        $process = $this->runTask(['import:hello', '--no-trust']);
 
         $this->assertSame(1, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());
