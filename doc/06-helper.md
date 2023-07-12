@@ -112,6 +112,66 @@ You can check
 the [Symfony documentation](https://symfony.com/doc/current/components/finder.html)
 for more information about this class and how to use it.
 
+## HTTP requests
+
+The `request()` function allows to make HTTP requests easily. It performs HTTP
+request and returns an instance of
+`Symfony\Contracts\HttpClient\ResponseInterface`:
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\request;
+
+#[AsTask]
+function foo()
+{
+    echo request('GET', 'https://example.org')->getContent(), \PHP_EOL;
+}
+```
+
+If you need to have a full control on the HTTP client, you can access the
+`HttpClientInterface` directly with the `http_client()` function:
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\http_client;
+
+#[AsTask]
+function foo()
+{
+    $client = http_client()
+        ->withOptions([
+            'verify_peer' => false,
+            'timeout' => 10,
+        ])
+    ;
+}
+```
+
+If you need to configure the HTTP client globally, you can do it in the context
+creator:
+
+```php
+use Castor\Attribute\AsContext;
+use Castor\GlobalContext;
+use Castor\Context;
+
+#[AsContext(name: 'preprod')]
+function preprodContext(): Context
+{
+    // $client = ...
+    GlobalContext::setHttpClient($client)
+
+    //return new Context(...);
+}
+```
+
+You can check
+the [Symfony documentation](https://symfony.com/doc/current/http_client.html)
+for more information about this component and how to use it.
+
 ## Cache
 
 The `cache()` function allow to cache items:

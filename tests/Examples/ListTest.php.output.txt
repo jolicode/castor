@@ -1,6 +1,7 @@
 completion                Dump the shell completion script
 hello                     hello
 help                      Display help for a command
+http-request              Make HTTP request
 list                      List commands
 no-namespace              Task without a namespace
 args:another-args         Dumps all arguments and options, without configuration

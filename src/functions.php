@@ -24,6 +24,8 @@ use Symfony\Component\Process\Process;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\CallbackInterface;
 use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**
  * @return array<mixed>
@@ -491,6 +493,21 @@ function cache(string $key, callable $or): mixed
 function get_cache(): CacheItemPoolInterface&CacheInterface
 {
     return GlobalHelper::getCache();
+}
+
+/**
+ * @see HttpClientInterface::OPTIONS_DEFAULTS
+ *
+ * @param array<string, mixed> $options
+ */
+function request(string $method, string $url, array $options = []): ResponseInterface
+{
+    return http_client()->request($method, $url, $options);
+}
+
+function http_client(): HttpClientInterface
+{
+    return GlobalHelper::getHttpClient();
 }
 
 function import(string $path): void
