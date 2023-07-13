@@ -9,6 +9,7 @@ use Castor\ContextDescriptor;
 use Castor\ContextRegistry;
 use Castor\FunctionFinder;
 use Castor\GlobalHelper;
+use Castor\Monolog\Processor\ProcessProcessor;
 use Castor\Stub\StubsGenerator;
 use Castor\TaskDescriptor;
 use Castor\VerbosityLevel;
@@ -57,9 +58,14 @@ class Application extends SymfonyApplication
         $output ??= new ConsoleOutput();
         GlobalHelper::setOutput($output);
 
-        $logger = new Logger('castor', [
-            new ConsoleHandler($output),
-        ]);
+        $logger = new Logger('castor',
+            [
+                new ConsoleHandler($output),
+            ],
+            [
+                new ProcessProcessor(),
+            ]
+        );
         GlobalHelper::setLogger($logger);
 
         GlobalHelper::setContextRegistry($this->contextRegistry);

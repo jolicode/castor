@@ -1,5 +1,6 @@
 /.castor.stub.php
 /.php-cs-fixer.cache
 /.phpunit.cache
+/my-app.linux.phar
 /var/
 /vendor/

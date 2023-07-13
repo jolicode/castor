@@ -14,7 +14,18 @@ use function Castor\run;
 #[AsTask(description: 'Run a sub-process and display information about it')]
 function ls(): void
 {
-    $process = run('ls -alh', quiet: true);
+    $process = run('ls -alh && echo $foo', quiet: true, environment: ['foo' => 'ba\'"`r']);
+
+    echo "Output: \n" . $process->getOutput();
+    echo "\nError output: \n" . $process->getErrorOutput();
+    echo "\nExit code: " . $process->getExitCode();
+    echo "\n";
+}
+
+#[AsTask(description: 'Run a sub-process with environment variables and display information about it')]
+function variables(): void
+{
+    $process = run('echo $foo', quiet: true, environment: ['foo' => 'ba\'"`r']);
 
     echo "Output: \n" . $process->getOutput();
     echo "\nError output: \n" . $process->getErrorOutput();
