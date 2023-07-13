@@ -45,8 +45,9 @@ $commandFilterList = [
     'log:info',
     'log:with-context',
     'parallel:sleep',
-    'run:run-parallel',
+    'repack',
     'run:ls',
+    'run:run-parallel',
 ];
 $optionFilterList = array_flip(['help', 'quiet', 'verbose', 'version', 'ansi', 'no-ansi', 'no-interaction', 'context']);
 foreach ($applicationDescription['commands'] as $command) {
