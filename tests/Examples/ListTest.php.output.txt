@@ -26,6 +26,7 @@ failure:failure           A failing task not authorized to fail
 filesystem:filesystem     Performs some operations on the filesystem
 filesystem:find           Search files and directories on the filesystem
 foo:foo                   Prints foo
+http:status               get httpbin status code
 log:all-level             Logs some messages with different levels
 log:error                 Logs an "error" message
 log:info                  Logs an "info" message

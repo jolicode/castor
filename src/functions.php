@@ -18,9 +18,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * @return array<mixed>
@@ -531,4 +533,14 @@ function load_dot_env(string $path = null): array
     unset($_ENV['SYMFONY_DOTENV_VARS']);
 
     return $_ENV;
+}
+
+/**
+ * @param array $defaultOptions Default request's options
+ *
+ * @see HttpClientInterface::OPTIONS_DEFAULTS for available options
+ */
+function http(array $defaultOptions = []): HttpClientInterface
+{
+    return HttpClient::create($defaultOptions);
 }
