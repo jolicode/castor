@@ -8,6 +8,7 @@ use Joli\JoliNotif\NotifierFactory;
 use Joli\JoliNotif\Util\OsHelper;
 use Monolog\Level;
 use Monolog\Logger;
+use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LogLevel;
 use Spatie\Ssh\Ssh;
@@ -21,6 +22,8 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\CallbackInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 /**
  * @return array<mixed>
@@ -464,7 +467,17 @@ function finder(): Finder
     return new Finder();
 }
 
-function cache(string $key, callable $callback): mixed
+/**
+ * @see CacheInterface::get()
+ *
+ * @template T
+ *
+ * @param string                                                                                      $key The key of the item to retrieve from the cache
+ * @param (callable(CacheItemInterface,bool):T)|(callable(ItemInterface,bool):T)|CallbackInterface<T> $or  Use this callback to compute the value
+ *
+ * @return T
+ */
+function cache(string $key, callable $or): mixed
 {
     $key = sprintf(
         '%s-%s',
@@ -472,7 +485,7 @@ function cache(string $key, callable $callback): mixed
         $key,
     );
 
-    return GlobalHelper::getCache()->get($key, $callback);
+    return GlobalHelper::getCache()->get($key, $or);
 }
 
 function get_cache(): CacheItemPoolInterface&CacheInterface
