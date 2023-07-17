@@ -4,6 +4,12 @@
 
 * Display more information when running a process
 * Add `request()` and `http_client()` functions to make HTTP requests
+* Rename `get_exit_code()` to `exit_code()`
+* Rename `get_context()` to `context()`
+* Rename `get_input()` to `input()`
+* Rename `get_output()` to `output()`
+* Rename `get_application()` to `app()`
+* Rename `get_command()` to `task()`
 
 ## 0.7.1 (2023-07-11)
 

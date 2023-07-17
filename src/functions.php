@@ -6,11 +6,8 @@ use Castor\Console\Application;
 use Joli\JoliNotif\Notification;
 use Joli\JoliNotif\NotifierFactory;
 use Joli\JoliNotif\Util\OsHelper;
-use Monolog\Level;
-use Monolog\Logger;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
-use Psr\Log\LogLevel;
 use Spatie\Ssh\Ssh;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -221,7 +218,7 @@ function capture(
  * @param string|array<string|\Stringable|int>       $command
  * @param array<string, string|\Stringable|int>|null $environment
  */
-function get_exit_code(
+function exit_code(
     string|array $command,
     array $environment = null,
     string $path = null,
@@ -240,6 +237,13 @@ function get_exit_code(
     );
 
     return $process->getExitCode() ?? 0;
+}
+
+function get_exit_code(...$args): int
+{
+    trigger_deprecation('jolicode/castor', '0.8', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'exit_code');
+
+    return exit_code(...$args);
 }
 
 /**
@@ -398,26 +402,47 @@ function watch(string|array $path, callable $function, Context $context = null):
 /**
  * @param array<string, mixed> $context
  *
- * @phpstan-param Level|LogLevel::* $level
+ * @phpstan-param \Monolog\Level|\Psr\Log\LogLevel::* $level
  */
 function log(string|\Stringable $message, mixed $level = 'info', array $context = []): void
 {
     GlobalHelper::getLogger()->log($level, $message, $context);
 }
 
-function get_application(): Application
+function app(): Application
 {
     return GlobalHelper::getApplication();
 }
 
-function get_input(): InputInterface
+function get_application(): Application
+{
+    trigger_deprecation('jolicode/castor', '0.8', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'app');
+
+    return app();
+}
+
+function input(): InputInterface
 {
     return GlobalHelper::getInput();
 }
 
-function get_output(): OutputInterface
+function get_input(): InputInterface
+{
+    trigger_deprecation('jolicode/castor', '0.8', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'input');
+
+    return input();
+}
+
+function output(): OutputInterface
 {
     return GlobalHelper::getOutput();
+}
+
+function get_output(): OutputInterface
+{
+    trigger_deprecation('jolicode/castor', '0.8', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'output');
+
+    return output();
 }
 
 function io(): SymfonyStyle
@@ -425,19 +450,21 @@ function io(): SymfonyStyle
     return GlobalHelper::getSymfonyStyle();
 }
 
-function get_logger(): Logger
-{
-    return GlobalHelper::getLogger();
-}
-
 function add_context(string $name, \Closure $callable, bool $default = false): void
 {
     GlobalHelper::getContextRegistry()->addContext($name, $callable, $default);
 }
 
-function get_context(): Context
+function context(): Context
 {
     return GlobalHelper::getInitialContext();
+}
+
+function get_context(): Context
+{
+    trigger_deprecation('jolicode/castor', '0.8', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'context');
+
+    return context();
 }
 
 /**
@@ -454,9 +481,16 @@ function variable(string $key, mixed $default = null): mixed
     return GlobalHelper::getVariable($key, $default);
 }
 
-function get_command(): Command
+function task(): Command
 {
     return GlobalHelper::getCommand();
+}
+
+function get_command(): Command
+{
+    trigger_deprecation('jolicode/castor', '0.8', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'task');
+
+    return task();
 }
 
 function fs(): Filesystem

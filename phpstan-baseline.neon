@@ -14,3 +14,8 @@ parameters:
 			message: "#^Parameter \\#1 \\$data of class Castor\\\\Context constructor expects array\\{name\\: string, production\\: bool, foo\\?\\: string\\}, array\\<int\\|string, mixed\\> given\\.$#"
 			count: 1
 			path: src/Context.php
+
+		-
+			message: "#^Function Castor\\\\get_exit_code\\(\\) has parameter \\$args with no type specified\\.$#"
+			count: 1
+			path: src/functions.php

@@ -12,18 +12,18 @@ context is created.
 
 ## Using the context
 
-You can get the initial context thanks to the `get_context()` function:
+You can get the initial context thanks to the `ctx()` function:
 
 ```php
 use Castor\Attribute\AsTask;
 
-use function Castor\get_context;
+use function Castor\ctx;
 use function Castor\run;
 
 #[AsTask]
 function foo(): void
 {
-    $context = get_context();
+    $context = ctx();
 
     echo $context->currentDirectory; // will print the directory of the castor.php file
 
@@ -37,7 +37,7 @@ There is a `variable()` function to get a value stored in the `Context`:
 ```php
 use Castor\Attribute\AsTask;
 
-use function Castor\get_context;
+use function Castor\ctx;
 use function Castor\variable;
 
 #[AsTask]
@@ -46,7 +46,7 @@ function foo(): void
     $foobar = variable('foobar', 'default value');
 
     // Same as:
-    $context = get_context();
+    $context = ctx();
     try {
         $foobar = $context['foobar'];
     } catch (\OutOfBoundsException) {

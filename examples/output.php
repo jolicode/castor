@@ -4,15 +4,15 @@ namespace output;
 
 use Castor\Attribute\AsTask;
 
-use function Castor\get_command;
 use function Castor\io;
+use function Castor\task;
 
 #[AsTask(description: 'Plays with Symfony Style')]
 function output(): void
 {
     io()->title('This is a title');
 
-    io()->text(sprintf('This is the command "%s"', get_command()->getName()));
+    io()->text(sprintf('This is the command "%s"', task()->getName()));
 
     io()->comment('With IO, you can ask questions ...');
     $value = io()->ask('Tell me something');
