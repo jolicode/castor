@@ -11,7 +11,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class GlobalHelper
 {
@@ -24,6 +26,7 @@ class GlobalHelper
     private static Command $command;
     private static Context $initialContext;
     private static Filesystem $fs;
+    private static HttpClientInterface $httpClient;
     private static CacheItemPoolInterface&CacheInterface $cache;
 
     public static function setApplication(Application $application): void
@@ -125,6 +128,20 @@ class GlobalHelper
     public static function getFilesystem(): Filesystem
     {
         return self::$fs ??= new Filesystem();
+    }
+
+    public static function setHttpClient(HttpClientInterface $httpClient): void
+    {
+        self::$httpClient = $httpClient;
+    }
+
+    public static function getHttpClient(): HttpClientInterface
+    {
+        return self::$httpClient ??= HttpClient::create([
+            'headers' => [
+                'User-Agent' => 'Castor/' . Application::VERSION,
+            ],
+        ]);
     }
 
     public static function setCache(CacheItemPoolInterface&CacheInterface $cache): void

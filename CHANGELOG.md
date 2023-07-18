@@ -3,6 +3,7 @@
 ## Unreleased
 
 * Display more information when running a process
+* Add `request()` and `http_client()` functions to make HTTP requests
 
 ## 0.7.1 (2023-07-11)
 
