@@ -21,7 +21,6 @@ enum VerbosityLevel: int
             OutputInterface::VERBOSITY_VERBOSE => self::VERBOSE,
             OutputInterface::VERBOSITY_VERY_VERBOSE => self::VERY_VERBOSE,
             OutputInterface::VERBOSITY_DEBUG => self::DEBUG,
-            default => throw new \InvalidArgumentException('Invalid verbosity level.'),
         };
     }
 

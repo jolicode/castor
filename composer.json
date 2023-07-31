@@ -32,7 +32,7 @@
         "nikic/php-parser": "^4.16",
         "spatie/ssh": "^1.9.2",
         "symfony/cache": "^6.3.1",
-        "symfony/console": "^6.3",
+        "symfony/console": "^6.4@dev",
         "symfony/dotenv": "^6.3",
         "symfony/filesystem": "^6.3.1",
         "symfony/finder": "^6.3",
