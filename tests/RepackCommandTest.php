@@ -37,6 +37,8 @@ class RepackCommandTest extends TestCase
             ],
             'require' => [
                 'jolicode/castor' => '*@dev',
+                // UPGRADE: Remove this dependency when castor require symfony/console 6.4@stable
+                'symfony/console' => '*@dev',
             ],
         ]));
 

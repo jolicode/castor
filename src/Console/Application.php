@@ -18,10 +18,8 @@ use Monolog\Logger;
 use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -47,58 +45,38 @@ class Application extends SymfonyApplication
             $this->add(new RepackCommand());
         }
 
+        $this->setCatchErrors(true);
+
         parent::__construct(static::NAME, static::VERSION);
-    }
-
-    public function run(InputInterface $input = null, OutputInterface $output = null): int
-    {
-        GlobalHelper::setApplication($this);
-
-        $input ??= new ArgvInput();
-        GlobalHelper::setInput($input);
-
-        $output ??= new ConsoleOutput();
-        GlobalHelper::setOutput($output);
-
-        $logger = new Logger('castor',
-            [
-                new ConsoleHandler($output),
-            ],
-            [
-                new ProcessProcessor(),
-            ]
-        );
-        GlobalHelper::setLogger($logger);
-
-        GlobalHelper::setContextRegistry($this->contextRegistry);
-
-        GlobalHelper::setupDefaultCache();
-
-        return parent::run($input, $output);
     }
 
     // We do all the logic as late as possible to ensure the exception handler
     // is registered
     public function doRun(InputInterface $input, OutputInterface $output): int
     {
+        GlobalHelper::setApplication($this);
+        GlobalHelper::setInput($input);
+        GlobalHelper::setOutput($output);
+        GlobalHelper::setLogger(new Logger('castor',
+            [
+                new ConsoleHandler($output),
+            ],
+            [
+                new ProcessProcessor(),
+            ]
+        ));
+        GlobalHelper::setContextRegistry($this->contextRegistry);
+        GlobalHelper::setupDefaultCache();
+
         $this->initializeApplication();
 
-        // Remove the try/catch when https://github.com/symfony/symfony/pull/50420 is released
-        try {
-            return parent::doRun($input, $output);
-        } catch (\Throwable $e) {
-            $this->renderThrowable($e, $output);
-
-            return 1;
-        }
+        return parent::doRun($input, $output);
     }
 
     protected function doRunCommand(Command $command, InputInterface $input, OutputInterface $output): int
     {
         GlobalHelper::setCommand($command);
-
-        $context = $this->createContext($input, $output);
-        GlobalHelper::setInitialContext($context);
+        GlobalHelper::setInitialContext($this->createContext($input, $output));
 
         if ('_complete' !== $command->getName() && !class_exists(\RepackedApplication::class)) {
             $this->stubsGenerator->generateStubsIfNeeded($this->rootDir . '/.castor.stub.php');

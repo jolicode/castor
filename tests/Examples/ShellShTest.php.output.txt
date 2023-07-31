@@ -1,8 +1,0 @@
-
-In Process.php line 1023:
-                                                   
-  TTY mode requires /dev/tty to be read/writable.  
-                                                   
-
-shell:sh
-

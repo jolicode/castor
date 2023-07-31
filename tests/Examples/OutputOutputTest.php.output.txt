@@ -8,9 +8,3 @@ This is a title
 
  Tell me something:
  > 
-            
-  Aborted.  
-            
-
-output:output
-
