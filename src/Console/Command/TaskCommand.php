@@ -6,7 +6,9 @@ use Castor\Attribute\AsArgument;
 use Castor\Attribute\AsCommandArgument;
 use Castor\Attribute\AsOption;
 use Castor\Attribute\AsTask;
+use Castor\FingerprintHelper;
 use Castor\SluggerHelper;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\SignalableCommandInterface;
 use Symfony\Component\Console\Exception\LogicException;
@@ -117,8 +119,20 @@ class TaskCommand extends Command implements SignalableCommandInterface
         }
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        if (false === $input->getOption('force')) {
+            $fingerprints = FingerprintHelper::getFingerprintsFromTaskAttribute($this->taskAttribute);
+            if (empty($fingerprints)) {
+                $output->writeln('<info>Command not executed because the files have not changed.</info>');
+
+                return Command::SUCCESS;
+            }
+        }
+
         $args = [];
 
         foreach ($this->function->getParameters() as $parameter) {
@@ -151,6 +165,10 @@ class TaskCommand extends Command implements SignalableCommandInterface
         }
 
         if (null === $result) {
+            if (false === $input->getOption('force')) {
+                FingerprintHelper::postProcessFingerprint();
+            }
+
             return Command::SUCCESS;
         }
 

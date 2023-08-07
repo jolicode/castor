@@ -562,3 +562,17 @@ function load_dot_env(string $path = null): array
 
     return $_ENV;
 }
+
+function run_with_fingerprint(Finder $finder, callable $whenFingerprintIsDifferent, callable $whenFingerprintIsSame = null): void
+{
+    $isForcedToRun = get_input()->hasOption('force') && get_input()->getOption('force');
+    if ($isForcedToRun) {
+        $whenFingerprintIsDifferent();
+    } else {
+        if (!FingerprintHelper::executeIfFingerprintIsDifferent($finder, $whenFingerprintIsDifferent)) {
+            if (null !== $whenFingerprintIsSame) {
+                $whenFingerprintIsSame();
+            }
+        }
+    }
+}
