@@ -18,12 +18,13 @@ use Monolog\Logger;
 use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Contracts\Cache\ItemInterface;
-use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpExceptionInterface;
 
 use function Castor\log;
 use function Castor\request;
@@ -68,7 +69,13 @@ class Application extends SymfonyApplication
         GlobalHelper::setContextRegistry($this->contextRegistry);
         GlobalHelper::setupDefaultCache();
 
-        $this->initializeApplication();
+        $tasks = $this->initializeApplication();
+
+        GlobalHelper::setInitialContext($this->createContext($input, $output));
+
+        foreach ($tasks as $task) {
+            $this->add(new TaskCommand($task->taskAttribute, $task->function));
+        }
 
         return parent::doRun($input, $output);
     }
@@ -76,7 +83,6 @@ class Application extends SymfonyApplication
     protected function doRunCommand(Command $command, InputInterface $input, OutputInterface $output): int
     {
         GlobalHelper::setCommand($command);
-        GlobalHelper::setInitialContext($this->createContext($input, $output));
 
         if ('_complete' !== $command->getName() && !class_exists(\RepackedApplication::class)) {
             $this->stubsGenerator->generateStubsIfNeeded($this->rootDir . '/.castor.stub.php');
@@ -86,7 +92,10 @@ class Application extends SymfonyApplication
         return parent::doRunCommand($command, $input, $output);
     }
 
-    private function initializeApplication(): void
+    /**
+     * @return TaskDescriptor[]
+     */
+    private function initializeApplication(): array
     {
         $functionsRootDir = $this->rootDir;
         if (class_exists(\RepackedApplication::class)) {
@@ -94,10 +103,10 @@ class Application extends SymfonyApplication
         }
         // Find all potential commands / context
         $functions = $this->functionFinder->findFunctions($functionsRootDir);
-
+        $tasks = [];
         foreach ($functions as $function) {
             if ($function instanceof TaskDescriptor) {
-                $this->add(new TaskCommand($function->taskAttribute, $function->function));
+                $tasks[] = $function;
             } elseif ($function instanceof ContextDescriptor) {
                 $this->contextRegistry->add($function);
             }
@@ -116,10 +125,19 @@ class Application extends SymfonyApplication
                 $contextNames,
             ));
         }
+
+        return $tasks;
     }
 
     private function createContext(InputInterface $input, OutputInterface $output): Context
     {
+        try {
+            $input->bind($this->getDefinition());
+        } catch (ExceptionInterface) {
+            // not an issue if parsing gone wrong, we'll just use the default
+            // context and it will fail later anyway
+        }
+
         // occurs when running `castor -h`, or if no context is defined
         if (!$input->hasOption('context')) {
             return new Context();
@@ -148,7 +166,7 @@ class Application extends SymfonyApplication
 
             try {
                 return $response->toArray();
-            } catch (ExceptionInterface) {
+            } catch (HttpExceptionInterface) {
                 return [];
             }
         });

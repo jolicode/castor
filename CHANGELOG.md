@@ -4,6 +4,7 @@
 
 * Display more information when running a process
 * Add `request()` and `http_client()` functions to make HTTP requests
+* Add support for disabling task dynamically
 * Rename `get_exit_code()` to `exit_code()`
 * Rename `get_context()` to `context()`
 * Rename `get_input()` to `input()`
