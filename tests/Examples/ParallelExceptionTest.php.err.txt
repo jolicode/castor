@@ -1,0 +1,24 @@
+
+In parallel.php line 67:
+                        
+  This is an exception  
+                        
+
+parallel:exception
+
+
+In parallel.php line 65:
+                                
+  The command "exit 1" failed.  
+                                
+
+parallel:exception
+
+
+In functions.php line 91:
+                                                   
+  One or more exceptions were thrown in parallel.  
+                                                   
+
+parallel:exception
+

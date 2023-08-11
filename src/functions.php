@@ -11,6 +11,7 @@ use Psr\Cache\CacheItemPoolInterface;
 use Spatie\Ssh\Ssh;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Dotenv\Dotenv;
@@ -29,10 +30,27 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
  */
 function parallel(callable ...$callbacks): array
 {
+    /** @var \Fiber[] $fibers */
     $fibers = [];
+    $exceptions = [];
+
     foreach ($callbacks as $callback) {
         $fiber = new \Fiber($callback);
-        $fiber->start();
+
+        try {
+            $fiber->start();
+        } catch (\Throwable $e) {
+            $app = app();
+            $output = output();
+
+            if ($output instanceof ConsoleOutput) {
+                $output = $output->getErrorOutput();
+            }
+
+            $app->renderThrowable($e, $output);
+
+            $exceptions[] = $e;
+        }
 
         $fibers[] = $fiber;
     }
@@ -46,7 +64,20 @@ function parallel(callable ...$callbacks): array
             $isRunning = $isRunning || !$fiber->isTerminated();
 
             if (!$fiber->isTerminated() && $fiber->isSuspended()) {
-                $fiber->resume();
+                try {
+                    $fiber->resume();
+                } catch (\Throwable $e) {
+                    $app = app();
+                    $output = output();
+
+                    if ($output instanceof ConsoleOutput) {
+                        $output = $output->getErrorOutput();
+                    }
+
+                    $app->renderThrowable($e, $output);
+
+                    $exceptions[] = $e;
+                }
             }
         }
 
@@ -54,6 +85,10 @@ function parallel(callable ...$callbacks): array
             \Fiber::suspend();
             usleep(1_000);
         }
+    }
+
+    if ($exceptions) {
+        throw new \RuntimeException('One or more exceptions were thrown in parallel.');
     }
 
     return array_map(fn ($fiber) => $fiber->getReturn(), $fibers);

@@ -57,3 +57,13 @@ function sleep(int $sleep5 = 5, int $sleep7 = 7, int $sleep10 = 10): void
     echo "Sleep 10: {$sleep10}\n";
     echo "Duration: {$duration}\n";
 }
+
+#[AsTask(description: 'Sleep and throw an exception')]
+function exception(): void
+{
+    parallel(
+        fn () => run('exit 1'),
+        fn () => run('sleep 1; echo "I am executed"'),
+        fn () => throw new \RuntimeException('This is an exception'),
+    );
+}
