@@ -7,7 +7,7 @@ use Castor\Attribute\AsTask;
 use Castor\Context;
 
 use function Castor\add_context;
-use function Castor\get_context;
+use function Castor\context;
 use function Castor\io;
 use function Castor\load_dot_env;
 use function Castor\run;
@@ -74,9 +74,9 @@ function contextFromPath(): Context
 }
 
 #[AsTask(description: 'Displays information about the context')]
-function context(): void
+function contextInfo(): void
 {
-    $context = get_context();
+    $context = context();
     echo 'context name: ' . variable('name', 'N/A') . "\n";
     echo 'Production? ' . (variable('production', false) ? 'yes' : 'no') . "\n";
     echo "verbosity: {$context->verbosityLevel->value}\n";

@@ -4,14 +4,14 @@ namespace log;
 
 use Castor\Attribute\AsTask;
 
-use function Castor\get_output;
 use function Castor\log;
+use function Castor\output;
 
 #[AsTask(description: 'Logs an "info" message')]
 function info(): void
 {
-    if (!get_output()->isVeryVerbose()) {
-        get_output()->writeln('Re-run with -vv, -vvv to different output.');
+    if (!output()->isVeryVerbose()) {
+        output()->writeln('Re-run with -vv, -vvv to different output.');
     }
 
     log('Hello, this is an "info" log message.', 'info');
@@ -26,8 +26,8 @@ function error(): void
 #[AsTask(description: 'Logs an "error" message')]
 function with_context(): void
 {
-    if (!get_output()->isVerbose()) {
-        get_output()->writeln('Re-run with -v, -vv, -vvv to different output.');
+    if (!output()->isVerbose()) {
+        output()->writeln('Re-run with -v, -vv, -vvv to different output.');
     }
 
     log('Hello, I\'have a context!', 'error', context: [
@@ -38,8 +38,8 @@ function with_context(): void
 #[AsTask(description: 'Logs some messages with different levels')]
 function all_level(): void
 {
-    if (!get_output()->isVerbose()) {
-        get_output()->writeln('Re-run with -v, -vv, -vvv to different output.');
+    if (!output()->isVerbose()) {
+        output()->writeln('Re-run with -v, -vv, -vvv to different output.');
     }
 
     $levels = [

@@ -20,7 +20,7 @@ castor:watcher:darwin     Build watcher for MacOS system
 castor:watcher:linux      Build watcher for Linux system
 castor:watcher:windows    Build watcher for Windows system
 cd:directory              Changes directory
-context:context           Displays information about the context
+context:context-info      Displays information about the context
 env:env                   Display environment variables
 failure:allow-failure     A failing task authorized to fail
 failure:failure           A failing task not authorized to fail
