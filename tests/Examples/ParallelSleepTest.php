@@ -13,6 +13,8 @@ class ParallelSleepTest extends TaskTestCase
         $process = $this->runTask(['parallel:sleep', '--sleep5', '0', '--sleep7', '0', '--sleep10', '0']);
 
         $this->assertSame(0, $process->getExitCode());
+        // normalize line endings
+        $output = str_replace("\r", '', $process->getOutput());
 
         $startWith = <<<'OUTPUT'
             sleep 0
@@ -22,7 +24,7 @@ class ParallelSleepTest extends TaskTestCase
             OUTPUT;
 
         try {
-            $this->assertStringStartsWith($startWith, $process->getOutput());
+            $this->assertStringStartsWith($startWith, $output);
         } catch (ExpectationFailedException) {
             // The order of the fibers might be different. So we try another
             // order.
@@ -32,7 +34,7 @@ class ParallelSleepTest extends TaskTestCase
                 sleep 0
                 re sleep 0
                 OUTPUT;
-            $this->assertStringStartsWith($startWith, $process->getOutput());
+            $this->assertStringStartsWith($startWith, $output);
         }
 
         $endWith = <<<'OUTPUT'
@@ -42,7 +44,7 @@ class ParallelSleepTest extends TaskTestCase
             Duration: 0
 
             OUTPUT;
-        $this->assertStringEndsWith($endWith, $process->getOutput());
+        $this->assertStringEndsWith($endWith, $output);
         $this->assertSame('', $process->getErrorOutput());
     }
 }

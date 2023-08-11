@@ -161,18 +161,16 @@ function run(
     }
 
     if (!$context->quiet && !$callback) {
-        $callback = static function ($type, $bytes) {
-            if (Process::OUT === $type) {
-                fwrite(\STDOUT, $bytes);
-            } else {
-                fwrite(\STDERR, $bytes);
-            }
+        $callback = static function ($type, $bytes, $process) {
+            GlobalHelper::getSectionOutput()->writeProcessOutput($type, $bytes, $process);
         };
     }
 
     log(sprintf('Running command: "%s".', $process->getCommandLine()), 'info', [
         'process' => $process,
     ]);
+
+    GlobalHelper::getSectionOutput()->initProcess($process);
 
     $process->start(function ($type, $bytes) use ($callback, $process) {
         if ($callback) {
@@ -182,12 +180,14 @@ function run(
 
     if (\Fiber::getCurrent()) {
         while ($process->isRunning()) {
+            GlobalHelper::getSectionOutput()->tickProcess($process);
             \Fiber::suspend();
-            usleep(1_000);
+            usleep(20_000);
         }
     }
 
     $exitCode = $process->wait();
+    GlobalHelper::getSectionOutput()->finishProcess($process);
 
     if ($context->notify) {
         notify(sprintf('The command "%s" has been finished %s.', $process->getCommandLine(), 0 === $exitCode ? 'successfully' : 'with an error'));
@@ -429,7 +429,7 @@ function watch(string|array $path, callable $function, Context $context = null):
                 array_shift($lines);
             }
         } else {
-            fwrite(\STDERR, "ERROR: {$type} : " . $bytes);
+            GlobalHelper::getSectionOutput()->writeProcessOutput($type, $bytes, $process);
         }
     }, context: $watchContext);
 }

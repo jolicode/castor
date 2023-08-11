@@ -11,6 +11,7 @@
 * Rename `get_application()` to `app()`
 * Rename `get_command()` to `task()`
 * Fix parallel when one of the callback fails, wait for the others to finish to throw exception
+* Experimental display with sections, allow better output when using parallel function, you can test this by using `CASTOR_USE_SECTION=true castor [task]`
 
 ## 0.7.1 (2023-07-11)
 

@@ -9,27 +9,22 @@ use function Castor\run;
 
 function sleep_5(int $sleep = 5): string
 {
-    echo "sleep {$sleep}\n";
-    run(['sleep', $sleep]);
-
-    echo "re sleep {$sleep}\n";
-    run(['sleep', $sleep]);
+    run("echo 'sleep {$sleep}'; sleep {$sleep}");
+    run("echo 're sleep {$sleep}'; sleep {$sleep}");
 
     return 'foo';
 }
 
 function sleep_7(int $sleep = 7): string
 {
-    echo "sleep {$sleep}\n";
-    run(['sleep', $sleep]);
+    run("echo 'sleep {$sleep}'; sleep {$sleep}");
 
     return 'bar';
 }
 
 function sleep_10(int $sleep = 10): string
 {
-    echo "sleep {$sleep}\n";
-    run(['sleep', $sleep]);
+    run("echo 'sleep {$sleep}'; sleep {$sleep}");
 
     return "sleep {$sleep}";
 }
@@ -48,7 +43,7 @@ function embed_sleep(int $sleep5 = 5, int $sleep7 = 7): array
 function sleep(int $sleep5 = 5, int $sleep7 = 7, int $sleep10 = 10): void
 {
     $start = microtime(true);
-    [[$foo, $bar], $sleep10] = parallel(fn () => embed_sleep($sleep5, $sleep7), fn () => sleep_10($sleep10));
+    [$sleep10, [$foo, $bar]] = parallel(fn () => sleep_10($sleep10), fn () => embed_sleep($sleep5, $sleep7));
     $end = microtime(true);
 
     $duration = (int) ($end - $start);
