@@ -631,3 +631,75 @@ function load_dot_env(string $path = null): array
 
     return $_ENV;
 }
+
+/**
+ * @template T
+ *
+ * @param (callable(Context) :T)                     $callback
+ * @param array<string, string|\Stringable|int>|null $data
+ * @param array<string, string|\Stringable|int>|null $environment
+ */
+function with(
+    callable $callback,
+    array $data = null,
+    array $environment = null,
+    string $path = null,
+    bool $tty = null,
+    bool $pty = null,
+    float $timeout = null,
+    bool $quiet = null,
+    bool $allowFailure = null,
+    bool $notify = null,
+    Context|string $context = null,
+): mixed {
+    $initialContext = GlobalHelper::getInitialContext();
+    $context ??= $initialContext;
+
+    if (\is_string($context)) {
+        $context = context($context);
+    }
+
+    if (null !== $data) {
+        $context = $context->withData($data);
+    }
+
+    if (null !== $environment) {
+        $context = $context->withEnvironment($environment);
+    }
+
+    if ($path) {
+        $context = $context->withPath($path);
+    }
+
+    if (null !== $tty) {
+        $context = $context->withTty($tty);
+    }
+
+    if (null !== $pty) {
+        $context = $context->withPty($pty);
+    }
+
+    if (null !== $timeout) {
+        $context = $context->withTimeout($timeout);
+    }
+
+    if (null !== $quiet) {
+        $context = $context->withQuiet($quiet);
+    }
+
+    if (null !== $allowFailure) {
+        $context = $context->withAllowFailure($allowFailure);
+    }
+
+    if (null !== $notify) {
+        $context = $context->withNotify($notify);
+    }
+
+    GlobalHelper::setInitialContext($context);
+
+    try {
+        return $callback($context);
+    } finally {
+        GlobalHelper::setInitialContext($initialContext);
+    }
+}

@@ -12,6 +12,7 @@ use function Castor\io;
 use function Castor\load_dot_env;
 use function Castor\run;
 use function Castor\variable;
+use function Castor\with;
 
 #[AsContext(default: true, name: 'my_default')]
 function defaultContext(): Context
@@ -94,4 +95,16 @@ function contextInfoForced(): void
 {
     $context = context('dynamic');
     echo 'context name: ' . $context->data['name'] . "\n";
+}
+
+#[AsTask(description: 'Displays information about the context, using a specific context')]
+function contextWith(): void
+{
+    $result = with(function (Context $context) {
+        contextInfo();
+
+        return $context->data['foo'] ?? 'N/A';
+    }, data: ['foo' => 'bar'], context: 'dynamic');
+
+    echo $result;
 }

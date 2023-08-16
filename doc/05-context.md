@@ -170,3 +170,31 @@ function foo(): void
     run('pwd', context: $context); // will print /tmp
 }
 ```
+
+## Running logic with a specific context or parameters
+
+You may want to run a bunch commands inside a specific directory or with a specific context.
+Instead of passing those parameters to each run you can use the `with()` function:
+
+```php
+use Castor\Attribute\AsContext;
+use Castor\Context;
+
+use function Castor\run;
+use function Castor\with;
+
+#[AsContext(name: 'my_context')]
+function create_my_context(): Context
+{
+    return new Context(['foo' => 'bar'], currentDirectory: '/tmp');
+}
+
+#[AsTask]
+function foo(): void
+{
+    with(function (Context $context) {
+        run(['echo', $context['foo']]); // will print bar even if you do not use the --context option
+        run('pwd'); // will print /tmp
+    }, context: 'my_context');
+}
+```
