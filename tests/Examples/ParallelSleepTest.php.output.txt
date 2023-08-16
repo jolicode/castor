@@ -1,0 +1,14 @@
+sleep 0s
+has slept 0s
+sleep 0s
+has slept 0s
+sleep 0s
+has slept 0s
+sleep for another 0s
+has slept for another 0s
+
+Duration: 0s
+
+$foo = 'foo';
+$bar = 'bar';
+$baz = 'baz';
