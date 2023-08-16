@@ -10,6 +10,7 @@
 * Rename `get_output()` to `output()`
 * Rename `get_application()` to `app()`
 * Rename `get_command()` to `task()`
+* Fix parallel when one of the callback fails, wait for the others to finish to throw exception
 
 ## 0.7.1 (2023-07-11)
 
