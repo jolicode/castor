@@ -178,7 +178,7 @@ function foo(): void
 ```
 
 This command will have a 2 minutes timeout. If you want to disable that feature,
-you need to se the timeout to `0`.
+you need to set the timeout to `0`.
 
 ```php
 use Castor\Attribute\AsTask;
