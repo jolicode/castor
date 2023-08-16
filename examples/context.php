@@ -73,7 +73,7 @@ function contextFromPath(): Context
     return new Context($data);
 }
 
-#[AsTask(description: 'Displays information about the context')]
+#[AsTask(description: 'Displays information about the context', name: 'context')]
 function contextInfo(): void
 {
     $context = context();
@@ -88,3 +88,10 @@ add_context('dynamic', fn () => new Context([
     'production' => false,
     'foo' => 'baz',
 ]));
+
+#[AsTask(description: 'Displays information about the context')]
+function contextInfoForced(): void
+{
+    $context = context('dynamic');
+    echo 'context name: ' . $context->data['name'] . "\n";
+}

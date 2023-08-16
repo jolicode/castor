@@ -4,12 +4,12 @@ namespace Castor\Tests\Examples;
 
 use Castor\Tests\TaskTestCase;
 
-class ContextContextInfoTest extends TaskTestCase
+class ContextContextTest extends TaskTestCase
 {
-    // context:context-info
+    // context:context
     public function test(): void
     {
-        $process = $this->runTask(['context:context-info']);
+        $process = $this->runTask(['context:context']);
 
         $this->assertSame(0, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());

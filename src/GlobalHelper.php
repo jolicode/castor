@@ -109,6 +109,15 @@ class GlobalHelper
         return self::$initialContext ?? new Context();
     }
 
+    public static function getContext(string $name = null): Context
+    {
+        if (null === $name) {
+            return self::$initialContext ?? new Context();
+        }
+
+        return self::getContextRegistry()->get($name);
+    }
+
     /**
      * @template TKey of key-of<ContextData>
      * @template TDefault

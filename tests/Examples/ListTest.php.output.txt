@@ -1,52 +1,53 @@
-completion                Dump the shell completion script
-hello                     hello
-help                      Display help for a command
-http-request              Make HTTP request
-list                      List commands
-no-namespace              Task without a namespace
-args:another-args         Dumps all arguments and options, without configuration
-args:args                 Dumps all arguments and options, with custom configuration
-bar:bar                   Prints bar, but also executes foo
-cache:complex             Cache with usage of CacheItemInterface
-cache:simple              Cache a simple call
-castor:phar:build         Build phar for all systems
-castor:phar:darwin        Build phar for MacOS system
-castor:phar:linux         Build phar for Linux system
-castor:phar:windows       Build phar for Windows system
-castor:qa:cs              Fix CS
-castor:qa:phpstan         Run PHPStan
-castor:watcher:build      Build watcher for all systems
-castor:watcher:darwin     Build watcher for MacOS system
-castor:watcher:linux      Build watcher for Linux system
-castor:watcher:windows    Build watcher for Windows system
-cd:directory              Changes directory
-context:context-info      Displays information about the context
-env:env                   Display environment variables
-failure:allow-failure     A failing task authorized to fail
-failure:failure           A failing task not authorized to fail
-filesystem:filesystem     Performs some operations on the filesystem
-filesystem:find           Search files and directories on the filesystem
-foo:foo                   Prints foo
-log:all-level             Logs some messages with different levels
-log:error                 Logs an "error" message
-log:info                  Logs an "info" message
-log:with-context          Logs an "error" message
-not-rename:renamed        Task that was renamed
-notify:notify-on-finish   Sends a notification when the task finishes
-notify:send-notify        Sends a notification
-output:output             Plays with Symfony Style
-parallel:exception        Sleep and throw an exception
-parallel:sleep            Sleeps for 5, 7, and 10 seconds in parallel
-quiet:quiet               Executes something but does not output anything
-run:ls                    Run a sub-process and display information about it
-run:test-file             Run a sub-process and return its exit code, with get_exit_code() function
-run:variables             Run a sub-process with environment variables and display information about it
-run:whoami                Run a sub-process and display information about it, with capture() function
-run:with-process-helper   Run a sub-process and display information about it, with ProcessHelper
-shell:bash                Runs a bash
-shell:sh                  Runs a sh
-signal:sigusr2            Captures SIGUSR2 signal
-ssh:ls                    Lists content of /var/www directory on the remote server
-watch:fs-change           Watches on filesystem changes
-watch:parallel-change     Watches on filesystem changes with 2 watchers in parallel
-watch:stop                Watches on filesystem changes and stop after first change
+completion                    Dump the shell completion script
+hello                         hello
+help                          Display help for a command
+http-request                  Make HTTP request
+list                          List commands
+no-namespace                  Task without a namespace
+args:another-args             Dumps all arguments and options, without configuration
+args:args                     Dumps all arguments and options, with custom configuration
+bar:bar                       Prints bar, but also executes foo
+cache:complex                 Cache with usage of CacheItemInterface
+cache:simple                  Cache a simple call
+castor:phar:build             Build phar for all systems
+castor:phar:darwin            Build phar for MacOS system
+castor:phar:linux             Build phar for Linux system
+castor:phar:windows           Build phar for Windows system
+castor:qa:cs                  Fix CS
+castor:qa:phpstan             Run PHPStan
+castor:watcher:build          Build watcher for all systems
+castor:watcher:darwin         Build watcher for MacOS system
+castor:watcher:linux          Build watcher for Linux system
+castor:watcher:windows        Build watcher for Windows system
+cd:directory                  Changes directory
+context:context               Displays information about the context
+context:context-info-forced   Displays information about the context
+env:env                       Display environment variables
+failure:allow-failure         A failing task authorized to fail
+failure:failure               A failing task not authorized to fail
+filesystem:filesystem         Performs some operations on the filesystem
+filesystem:find               Search files and directories on the filesystem
+foo:foo                       Prints foo
+log:all-level                 Logs some messages with different levels
+log:error                     Logs an "error" message
+log:info                      Logs an "info" message
+log:with-context              Logs an "error" message
+not-rename:renamed            Task that was renamed
+notify:notify-on-finish       Sends a notification when the task finishes
+notify:send-notify            Sends a notification
+output:output                 Plays with Symfony Style
+parallel:exception            Sleep and throw an exception
+parallel:sleep                Sleeps for 5, 7, and 10 seconds in parallel
+quiet:quiet                   Executes something but does not output anything
+run:ls                        Run a sub-process and display information about it
+run:test-file                 Run a sub-process and return its exit code, with get_exit_code() function
+run:variables                 Run a sub-process with environment variables and display information about it
+run:whoami                    Run a sub-process and display information about it, with capture() function
+run:with-process-helper       Run a sub-process and display information about it, with ProcessHelper
+shell:bash                    Runs a bash
+shell:sh                      Runs a sh
+signal:sigusr2                Captures SIGUSR2 signal
+ssh:ls                        Lists content of /var/www directory on the remote server
+watch:fs-change               Watches on filesystem changes
+watch:parallel-change         Watches on filesystem changes with 2 watchers in parallel
+watch:stop                    Watches on filesystem changes and stop after first change
