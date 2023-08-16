@@ -22,6 +22,7 @@ castor:watcher:windows        Build watcher for Windows system
 cd:directory                  Changes directory
 context:context               Displays information about the context
 context:context-info-forced   Displays information about the context
+context:context-with          Displays information about the context, using a specific context
 env:env                       Display environment variables
 failure:allow-failure         A failing task authorized to fail
 failure:failure               A failing task not authorized to fail

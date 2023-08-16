@@ -14,6 +14,7 @@
 * Fix parallel when one of the callback fails, wait for the others to finish to throw exception
 * Experimental display with sections, allow better output when using parallel function, you can test this by using `CASTOR_USE_SECTION=true castor [task]`
 * Allow to get a context by its name using `$fooContext = context('foo')`
+* Add a `with` function to run logic with a specific context or parameters without passing them to each `run`or other functions
 
 ## 0.7.1 (2023-07-11)
 
