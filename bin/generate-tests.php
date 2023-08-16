@@ -90,6 +90,7 @@ add_test(['context:context', '--context', 'no_no_exist'], 'ContextContextDoNotEx
 add_test(['context:context', '--context', 'production'], 'ContextContextProductionTest');
 add_test(['context:context', '--context', 'path'], 'ContextContextPathTest');
 add_test(['context:context', '--context', 'dynamic'], 'ContextContextDynamicTest');
+add_test(['enabled:hello', '--context', 'production'], 'EnabledInProduction');
 add_test([], 'NewProjectTest', '/tmp');
 add_test(['unknown:command', 'toto', '--foo', 1], 'NoConfigTest', '/tmp');
 

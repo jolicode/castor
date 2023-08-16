@@ -118,3 +118,29 @@ function foo(Context $context): void
     run('pwd'); // will print /tmp
 }
 ```
+
+## Disabled tasks according to the context
+
+You can disable a task according to the context by using the
+`AsTask::enabled` argument:
+
+```php
+use Castor\Attribute\AsTask;
+
+#[AsTask(description: 'Say hello, but only in production', enabled: "var('production') == true")]
+function hello(): void
+{
+    echo "Hello world!\n";
+}
+```
+
+The value can be one of:
+
+* `true`: always enabled (default value)
+* `false`: always disabled
+* a string: it represents an expression that will be evaluated in the context of
+  the task. The task will be enabled if the expression returns `true` and
+  disabled otherwise. The expression can use the `var()` function to get the
+  value of a variable. Internally, it use the
+  [symfony/expression-language](https://symfony.com/doc/current/components/expression_language.html)
+  component.
