@@ -2,19 +2,22 @@
 
 ## Unreleased
 
-* Display more information when running a process
 * Add `request()` and `http_client()` functions to make HTTP requests
 * Add support for disabling task dynamically
+* Add a `with` function to run logic with a specific context or parameters
+  without passing them to each `run` or other functions
+* Allow to get a context by its name using `$fooContext = context('foo')`
+* Experimental display with sections, allow better output when using parallel
+  function, enable it by by using `CASTOR_USE_SECTION=true castor [task]`
+* Display more information when running a process
 * Rename `get_exit_code()` to `exit_code()`
 * Rename `get_context()` to `context()`
 * Rename `get_input()` to `input()`
 * Rename `get_output()` to `output()`
 * Rename `get_application()` to `app()`
 * Rename `get_command()` to `task()`
-* Fix parallel when one of the callback fails, wait for the others to finish to throw exception
-* Experimental display with sections, allow better output when using parallel function, you can test this by using `CASTOR_USE_SECTION=true castor [task]`
-* Allow to get a context by its name using `$fooContext = context('foo')`
-* Add a `with` function to run logic with a specific context or parameters without passing them to each `run`or other functions
+* Fix parallel when one of the callback fails, wait for the others to finish to
+  throw exception
 
 ## 0.7.1 (2023-07-11)
 
