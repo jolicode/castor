@@ -160,6 +160,38 @@ function cs(): int
 }
 ```
 
+## Timeout
+
+By default, Castor will use a 60 seconds timeout on all your `run()` calls.
+If you want to tweak that you need to set the `timeout` argument.
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\run;
+
+#[AsTask]
+function foo(): void
+{
+    run('echo "bar"', timeout: 120);
+}
+```
+
+This command will have a 2 minutes timeout. If you want to disable that feature,
+you need to se the timeout to `0`.
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\run;
+
+#[AsTask]
+function foo(): void
+{
+    run('echo "bar"', timeout: 0);
+}
+```
+
 ## PTY & TTY
 
 By default, Castor will use a pseudo terminal (PTY) to run the command,
