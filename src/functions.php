@@ -490,9 +490,9 @@ function add_context(string $name, \Closure $callable, bool $default = false): v
     GlobalHelper::getContextRegistry()->addContext($name, $callable, $default);
 }
 
-function context(): Context
+function context(string $name = null): Context
 {
-    return GlobalHelper::getInitialContext();
+    return GlobalHelper::getContext($name);
 }
 
 function get_context(): Context

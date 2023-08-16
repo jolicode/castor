@@ -12,18 +12,18 @@ context is created.
 
 ## Using the context
 
-You can get the initial context thanks to the `ctx()` function:
+You can get the initial context thanks to the `context()` function:
 
 ```php
 use Castor\Attribute\AsTask;
 
-use function Castor\ctx;
+use function Castor\context;
 use function Castor\run;
 
 #[AsTask]
 function foo(): void
 {
-    $context = ctx();
+    $context = context();
 
     echo $context->currentDirectory; // will print the directory of the castor.php file
 
@@ -37,7 +37,7 @@ There is a `variable()` function to get a value stored in the `Context`:
 ```php
 use Castor\Attribute\AsTask;
 
-use function Castor\ctx;
+use function Castor\context;
 use function Castor\variable;
 
 #[AsTask]
@@ -46,7 +46,7 @@ function foo(): void
     $foobar = variable('foobar', 'default value');
 
     // Same as:
-    $context = ctx();
+    $context = context();
     try {
         $foobar = $context['foobar'];
     } catch (\OutOfBoundsException) {
@@ -144,3 +144,29 @@ The value can be one of:
   value of a variable. Internally, it use the
   [symfony/expression-language](https://symfony.com/doc/current/components/expression_language.html)
   component.
+
+## Getting a specific context
+
+You can get a specific context by its name using the `context()` function:
+
+```php
+use Castor\Attribute\AsContext;
+use Castor\Context;
+
+use function Castor\run;
+
+#[AsContext(name: 'my_context')]
+function create_my_context(): Context
+{
+    return new Context(['foo' => 'bar'], currentDirectory: '/tmp');
+}
+
+#[AsTask]
+function foo(): void
+{
+    $context = context('my_context');
+
+    run(['echo', $context['foo']]); // will print bar even if you do not use the --context option
+    run('pwd', context: $context); // will print /tmp
+}
+```
