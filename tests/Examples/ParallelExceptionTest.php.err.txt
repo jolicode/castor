@@ -1,5 +1,5 @@
 
-In parallel.php line 67:
+In parallel.php line 62:
                         
   This is an exception  
                         
@@ -7,7 +7,7 @@ In parallel.php line 67:
 parallel:exception
 
 
-In parallel.php line 65:
+In parallel.php line 60:
                                 
   The command "exit 1" failed.  
                                 

@@ -19,7 +19,7 @@ class GlobalHelper
 {
     private static Application $application;
     private static InputInterface $input;
-    private static OutputInterface $output;
+    private static SectionOutput $sectionOutput;
     private static SymfonyStyle $symfonyStyle;
     private static Logger $logger;
     private static ContextRegistry $contextRegistry;
@@ -49,14 +49,19 @@ class GlobalHelper
         return self::$input ?? throw new \LogicException('Input not available yet.');
     }
 
-    public static function setOutput(OutputInterface $output): void
-    {
-        self::$output = $output;
-    }
-
     public static function getOutput(): OutputInterface
     {
-        return self::$output ?? throw new \LogicException('Output not available yet.');
+        return self::getSectionOutput()->getConsoleOutput();
+    }
+
+    public static function setSectionOutput(SectionOutput $output): void
+    {
+        self::$sectionOutput = $output;
+    }
+
+    public static function getSectionOutput(): SectionOutput
+    {
+        return self::$sectionOutput ?? throw new \LogicException('Section output not available yet.');
     }
 
     public static function getSymfonyStyle(): SymfonyStyle

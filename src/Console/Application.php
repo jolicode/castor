@@ -10,6 +10,7 @@ use Castor\ContextRegistry;
 use Castor\FunctionFinder;
 use Castor\GlobalHelper;
 use Castor\Monolog\Processor\ProcessProcessor;
+use Castor\SectionOutput;
 use Castor\Stub\StubsGenerator;
 use Castor\TaskDescriptor;
 use Castor\VerbosityLevel;
@@ -54,12 +55,15 @@ class Application extends SymfonyApplication
     // is registered
     public function doRun(InputInterface $input, OutputInterface $output): int
     {
+        $sectionOutput = new SectionOutput($output);
+
         GlobalHelper::setApplication($this);
         GlobalHelper::setInput($input);
-        GlobalHelper::setOutput($output);
-        GlobalHelper::setLogger(new Logger('castor',
+        GlobalHelper::setSectionOutput($sectionOutput);
+        GlobalHelper::setLogger(new Logger(
+            'castor',
             [
-                new ConsoleHandler($output),
+                new ConsoleHandler($sectionOutput->getConsoleOutput()),
             ],
             [
                 new ProcessProcessor(),
