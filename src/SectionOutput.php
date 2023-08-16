@@ -2,7 +2,6 @@
 
 namespace Castor;
 
-use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -11,17 +10,20 @@ use Symfony\Component\Process\Process;
 /** @internal */
 class SectionOutput
 {
+    private const COLORS = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', 'default'];
+
     private OutputInterface|ConsoleSectionOutput $consoleOutput;
 
     private ConsoleOutput|null $mainOutput;
 
-    /** @var array{ConsoleSectionOutput, ConsoleSectionOutput, float, string}[] */
-    private array $sections = [];
+    /** @var \SplObjectStorage<Process, SectionDetails> */
+    private \SplObjectStorage $sections;
 
     public function __construct(OutputInterface $output)
     {
-        $this->mainOutput = null;
         $this->consoleOutput = $output;
+        $this->mainOutput = null;
+        $this->sections = new \SplObjectStorage();
 
         if ($output instanceof ConsoleOutput && posix_isatty(\STDOUT) && 'true' === getenv('CASTOR_USE_SECTION')) {
             $this->mainOutput = $output;
@@ -46,9 +48,8 @@ class SectionOutput
             return;
         }
 
-        /** @var ConsoleSectionOutput $section */
-        [$section] = $this->getSection($process);
-        $section->write($bytes);
+        $this->getSectionDetails($process)->section->write($bytes);
+
         $this->tickProcess($process);
     }
 
@@ -58,7 +59,7 @@ class SectionOutput
             return;
         }
 
-        $this->getSection($process);
+        $this->getSectionDetails($process);
     }
 
     public function finishProcess(Process $process): void
@@ -67,18 +68,20 @@ class SectionOutput
             return;
         }
 
-        [$outputSection, $progressBarSection, $start, $index] = $this->getSection($process);
-        $outputContent = $outputSection->getContent();
-        $time = number_format(microtime(true) - $start, 2);
+        $sectionDetails = $this->getSectionDetails($process);
+        $outputContent = $sectionDetails->section->getContent();
+        $time = number_format(microtime(true) - $sectionDetails->start, 2);
 
         $fg = 0 === $process->getExitCode() ? 'green' : 'red';
         $status = 0 === $process->getExitCode() ? 'success' : 'failure';
 
-        $this->consoleOutput->writeln("[RUN] [{$index}] <fg={$fg}>{$process->getCommandLine()}</> {$status} after {$time}s");
+        $color = self::COLORS[$sectionDetails->index % \count(self::COLORS)];
+
+        $this->consoleOutput->writeln("<bg={$color}> </>[{$sectionDetails->index}] <fg={$fg}>{$process->getCommandLine()}</> {$status} after {$time}s");
         $this->consoleOutput->write($outputContent);
 
-        $outputSection->clear();
-        $progressBarSection->clear();
+        $sectionDetails->section->clear();
+        $sectionDetails->progressBarSection->clear();
     }
 
     public function tickProcess(Process $process): void
@@ -87,34 +90,42 @@ class SectionOutput
             return;
         }
 
-        /* @var $progressBar ProgressBar */
-        [, $progressBarSection, $start, $index] = $this->getSection($process);
-        $time = number_format(microtime(true) - $start, 2);
-        $progressBarSection->writeln("[RUN] [{$index}] '<fg=yellow>{$process->getCommandLine()}</>' running for {$time}s");
+        $sectionDetails = $this->getSectionDetails($process);
+        $time = number_format(microtime(true) - $sectionDetails->start, 2);
+        $color = self::COLORS[$sectionDetails->index % \count(self::COLORS)];
+
+        $sectionDetails->progressBarSection->writeln("<bg={$color}> </>[{$sectionDetails->index}] <fg=yellow>{$process->getCommandLine()}</> running for {$time}s");
     }
 
-    /**
-     * @return array{ConsoleSectionOutput, ConsoleSectionOutput, float, string}
-     */
-    private function getSection(Process $process): array
+    private function getSectionDetails(Process $process): SectionDetails
     {
         if (!$this->mainOutput) {
-            throw new \LogicException('Cannot call getSection() without a main output.');
+            throw new \LogicException('Cannot call getSectionDetails() without a main output.');
         }
 
-        $id = spl_object_hash($process);
-
-        if (!isset($this->sections[$id]) || ('' === $this->sections[$id][1]->getContent())) {
+        if (!$this->sections->contains($process) || ('' === $this->sections[$process]->progressBarSection->getContent())) {
             $progressBarSection = $this->mainOutput->section();
             $section = $this->mainOutput->section();
             $index = sprintf('%02d', \count($this->sections) + 1);
-            $progressBarSection->writeln("[RUN] [{$index}] '<fg=yellow>{$process->getCommandLine()}</>' starting...");
+            $color = self::COLORS[$index % \count(self::COLORS)];
+            $progressBarSection->writeln("<bg={$color}> </>[{$index}] <fg=yellow>{$process->getCommandLine()}</> starting...");
             $progressBarSection->setDecorated(true);
             $progressBarSection->setMaxHeight(1);
 
-            $this->sections[$id] = [$section, $progressBarSection, microtime(true), $index];
+            $this->sections[$process] = new SectionDetails($section, $progressBarSection, microtime(true), $index);
         }
 
-        return $this->sections[$id];
+        return $this->sections[$process];
+    }
+}
+
+class SectionDetails
+{
+    public function __construct(
+        public ConsoleSectionOutput $section,
+        public ConsoleSectionOutput $progressBarSection,
+        public float $start,
+        public string $index,
+    ) {
     }
 }

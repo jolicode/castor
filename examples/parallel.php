@@ -9,24 +9,24 @@ use function Castor\run;
 
 function sleep_5(int $sleep = 5): string
 {
-    run("echo 'sleep {$sleep}'; sleep {$sleep}");
-    run("echo 're sleep {$sleep}'; sleep {$sleep}");
+    run("echo 'sleep {$sleep}s'; sleep {$sleep} ; echo 'has slept {$sleep}s'");
+    run("echo 'sleep for another {$sleep}s'; sleep {$sleep}; echo 'has slept for another {$sleep}s'");
 
     return 'foo';
 }
 
 function sleep_7(int $sleep = 7): string
 {
-    run("echo 'sleep {$sleep}'; sleep {$sleep}");
+    run("echo 'sleep {$sleep}s'; sleep {$sleep}; echo 'has slept {$sleep}s'");
 
     return 'bar';
 }
 
 function sleep_10(int $sleep = 10): string
 {
-    run("echo 'sleep {$sleep}'; sleep {$sleep}");
+    run("echo 'sleep {$sleep}s'; sleep {$sleep}; echo 'has slept {$sleep}s'");
 
-    return "sleep {$sleep}";
+    return 'baz';
 }
 
 /**
@@ -34,23 +34,34 @@ function sleep_10(int $sleep = 10): string
  */
 function embed_sleep(int $sleep5 = 5, int $sleep7 = 7): array
 {
-    [$foo, $bar] = parallel(fn () => sleep_5($sleep5), fn () => sleep_7($sleep7));
-
-    return [$foo, $bar];
+    return parallel(
+        fn () => sleep_5($sleep5),
+        fn () => sleep_7($sleep7)
+    );
 }
 
 #[AsTask(description: 'Sleeps for 5, 7, and 10 seconds in parallel')]
 function sleep(int $sleep5 = 5, int $sleep7 = 7, int $sleep10 = 10): void
 {
     $start = microtime(true);
-    [$sleep10, [$foo, $bar]] = parallel(fn () => sleep_10($sleep10), fn () => embed_sleep($sleep5, $sleep7));
-    $end = microtime(true);
 
-    $duration = (int) ($end - $start);
-    echo "Foo: {$foo}\n";
-    echo "Bar: {$bar}\n";
-    echo "Sleep 10: {$sleep10}\n";
-    echo "Duration: {$duration}\n";
+    [$baz, [$foo, $bar]] = parallel(
+        // $baz is the return value of sleep_10()
+        fn () => sleep_10($sleep10),
+
+        // $foo and $bar are the return values of sleep_5() and sleep_7()
+        fn () => embed_sleep($sleep5, $sleep7)
+    );
+
+    echo "\n";
+    $duration = (int) (microtime(true) - $start);
+    echo "Duration: {$duration}s\n";
+
+    echo "\n";
+
+    echo "\$foo = '{$foo}';\n";
+    echo "\$bar = '{$bar}';\n";
+    echo "\$baz = '{$baz}';\n";
 }
 
 #[AsTask(description: 'Sleep and throw an exception')]
