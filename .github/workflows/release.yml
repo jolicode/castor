@@ -18,38 +18,10 @@ jobs:
       - name: Build all the phars
         uses: ./.github/actions/phar
 
-      - name: Get release
-        id: get_release
-        uses: bruceadams/get-release@v1.3.2
+      - name: Upload files
+        run: |
+          gh release upload ${{ github.ref_name }} ./tools/phar/build/castor.linux-amd64.phar
+          gh release upload ${{ github.ref_name }} ./tools/phar/build/castor.darwin-amd64.phar
+          gh release upload ${{ github.ref_name }} ./tools/phar/build/castor.windows-amd64.phar
         env:
-          GITHUB_TOKEN: ${{ github.token }}
-
-      - name: Upload linux release binary
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ./tools/phar/build/castor.linux-amd64.phar
-          asset_name: castor.linux-amd64.phar
-          asset_content_type: application/octet-stream
-
-      - name: Upload darwin release binary
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ./tools/phar/build/castor.darwin-amd64.phar
-          asset_name: castor.darwin-amd64.phar
-          asset_content_type: application/octet-stream
-
-      - name: Upload windows release binary
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-            GITHUB_TOKEN: ${{ github.token }}
-        with:
-            upload_url: ${{ steps.get_release.outputs.upload_url }}
-            asset_path: ./tools/phar/build/castor.windows-amd64.phar
-            asset_name: castor.windows-amd64.phar
-            asset_content_type: application/octet-stream
+          GH_TOKEN: ${{ github.token }}

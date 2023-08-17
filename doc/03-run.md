@@ -144,19 +144,51 @@ function whoami()
 }
 ```
 
-Castor provides a `get_exit_code()` function that will run the command, allowing
+Castor provides a `exit_code()` function that will run the command, allowing
 the process to fail and return its exit code. This is particularly useful when
 running tasks on CI as this allows the CI to know if the task failed or not:
 
 ```php
 use Castor\Attribute\AsTask;
 
-use function Castor\get_exit_code;
+use function Castor\exit_code;
 
 #[AsTask()]
 function cs(): int
 {
-    return get_exit_code('php-cs-fixer fix --dry-run');
+    return exit_code('php-cs-fixer fix --dry-run');
+}
+```
+
+## Timeout
+
+By default, Castor will use a 60 seconds timeout on all your `run()` calls.
+If you want to tweak that you need to set the `timeout` argument.
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\run;
+
+#[AsTask]
+function foo(): void
+{
+    run('echo "bar"', timeout: 120);
+}
+```
+
+This command will have a 2 minutes timeout. If you want to disable that feature,
+you need to set the timeout to `0`.
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\run;
+
+#[AsTask]
+function foo(): void
+{
+    run('echo "bar"', timeout: 0);
 }
 ```
 

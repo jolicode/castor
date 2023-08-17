@@ -7,6 +7,7 @@ use Castor\Attribute\AsCommandArgument;
 use Castor\Attribute\AsOption;
 use Castor\Attribute\AsTask;
 use Castor\FingerprintHelper;
+use Castor\GlobalHelper;
 use Castor\SluggerHelper;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
@@ -55,6 +56,15 @@ class TaskCommand extends Command implements SignalableCommandInterface
         }
 
         return $this->taskAttribute->onSignals[$signal]($signal);
+    }
+
+    public function isEnabled(): bool
+    {
+        if (\is_bool($this->taskAttribute->enabled)) {
+            return $this->taskAttribute->enabled;
+        }
+
+        return GlobalHelper::getExpressionLanguage()->evaluate($this->taskAttribute->enabled);
     }
 
     protected function configure(): void

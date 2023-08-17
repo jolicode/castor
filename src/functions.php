@@ -6,14 +6,12 @@ use Castor\Console\Application;
 use Joli\JoliNotif\Notification;
 use Joli\JoliNotif\NotifierFactory;
 use Joli\JoliNotif\Util\OsHelper;
-use Monolog\Level;
-use Monolog\Logger;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
-use Psr\Log\LogLevel;
 use Spatie\Ssh\Ssh;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Dotenv\Dotenv;
@@ -32,10 +30,27 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
  */
 function parallel(callable ...$callbacks): array
 {
+    /** @var \Fiber[] $fibers */
     $fibers = [];
+    $exceptions = [];
+
     foreach ($callbacks as $callback) {
         $fiber = new \Fiber($callback);
-        $fiber->start();
+
+        try {
+            $fiber->start();
+        } catch (\Throwable $e) {
+            $app = app();
+            $output = output();
+
+            if ($output instanceof ConsoleOutput) {
+                $output = $output->getErrorOutput();
+            }
+
+            $app->renderThrowable($e, $output);
+
+            $exceptions[] = $e;
+        }
 
         $fibers[] = $fiber;
     }
@@ -49,7 +64,20 @@ function parallel(callable ...$callbacks): array
             $isRunning = $isRunning || !$fiber->isTerminated();
 
             if (!$fiber->isTerminated() && $fiber->isSuspended()) {
-                $fiber->resume();
+                try {
+                    $fiber->resume();
+                } catch (\Throwable $e) {
+                    $app = app();
+                    $output = output();
+
+                    if ($output instanceof ConsoleOutput) {
+                        $output = $output->getErrorOutput();
+                    }
+
+                    $app->renderThrowable($e, $output);
+
+                    $exceptions[] = $e;
+                }
             }
         }
 
@@ -57,6 +85,10 @@ function parallel(callable ...$callbacks): array
             \Fiber::suspend();
             usleep(1_000);
         }
+    }
+
+    if ($exceptions) {
+        throw new \RuntimeException('One or more exceptions were thrown in parallel.');
     }
 
     return array_map(fn ($fiber) => $fiber->getReturn(), $fibers);
@@ -129,18 +161,16 @@ function run(
     }
 
     if (!$context->quiet && !$callback) {
-        $callback = static function ($type, $bytes) {
-            if (Process::OUT === $type) {
-                fwrite(\STDOUT, $bytes);
-            } else {
-                fwrite(\STDERR, $bytes);
-            }
+        $callback = static function ($type, $bytes, $process) {
+            GlobalHelper::getSectionOutput()->writeProcessOutput($type, $bytes, $process);
         };
     }
 
     log(sprintf('Running command: "%s".', $process->getCommandLine()), 'info', [
         'process' => $process,
     ]);
+
+    GlobalHelper::getSectionOutput()->initProcess($process);
 
     $process->start(function ($type, $bytes) use ($callback, $process) {
         if ($callback) {
@@ -150,12 +180,14 @@ function run(
 
     if (\Fiber::getCurrent()) {
         while ($process->isRunning()) {
+            GlobalHelper::getSectionOutput()->tickProcess($process);
             \Fiber::suspend();
-            usleep(1_000);
+            usleep(20_000);
         }
     }
 
     $exitCode = $process->wait();
+    GlobalHelper::getSectionOutput()->finishProcess($process);
 
     if ($context->notify) {
         notify(sprintf('The command "%s" has been finished %s.', $process->getCommandLine(), 0 === $exitCode ? 'successfully' : 'with an error'));
@@ -221,7 +253,7 @@ function capture(
  * @param string|array<string|\Stringable|int>       $command
  * @param array<string, string|\Stringable|int>|null $environment
  */
-function get_exit_code(
+function exit_code(
     string|array $command,
     array $environment = null,
     string $path = null,
@@ -240,6 +272,13 @@ function get_exit_code(
     );
 
     return $process->getExitCode() ?? 0;
+}
+
+function get_exit_code(...$args): int
+{
+    trigger_deprecation('jolicode/castor', '0.8', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'exit_code');
+
+    return exit_code(...$args);
 }
 
 /**
@@ -390,7 +429,7 @@ function watch(string|array $path, callable $function, Context $context = null):
                 array_shift($lines);
             }
         } else {
-            fwrite(\STDERR, "ERROR: {$type} : " . $bytes);
+            GlobalHelper::getSectionOutput()->writeProcessOutput($type, $bytes, $process);
         }
     }, context: $watchContext);
 }
@@ -398,26 +437,47 @@ function watch(string|array $path, callable $function, Context $context = null):
 /**
  * @param array<string, mixed> $context
  *
- * @phpstan-param Level|LogLevel::* $level
+ * @phpstan-param \Monolog\Level|\Psr\Log\LogLevel::* $level
  */
 function log(string|\Stringable $message, mixed $level = 'info', array $context = []): void
 {
     GlobalHelper::getLogger()->log($level, $message, $context);
 }
 
-function get_application(): Application
+function app(): Application
 {
     return GlobalHelper::getApplication();
 }
 
-function get_input(): InputInterface
+function get_application(): Application
+{
+    trigger_deprecation('jolicode/castor', '0.8', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'app');
+
+    return app();
+}
+
+function input(): InputInterface
 {
     return GlobalHelper::getInput();
 }
 
-function get_output(): OutputInterface
+function get_input(): InputInterface
+{
+    trigger_deprecation('jolicode/castor', '0.8', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'input');
+
+    return input();
+}
+
+function output(): OutputInterface
 {
     return GlobalHelper::getOutput();
+}
+
+function get_output(): OutputInterface
+{
+    trigger_deprecation('jolicode/castor', '0.8', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'output');
+
+    return output();
 }
 
 function io(): SymfonyStyle
@@ -425,19 +485,21 @@ function io(): SymfonyStyle
     return GlobalHelper::getSymfonyStyle();
 }
 
-function get_logger(): Logger
-{
-    return GlobalHelper::getLogger();
-}
-
 function add_context(string $name, \Closure $callable, bool $default = false): void
 {
     GlobalHelper::getContextRegistry()->addContext($name, $callable, $default);
 }
 
+function context(string $name = null): Context
+{
+    return GlobalHelper::getContext($name);
+}
+
 function get_context(): Context
 {
-    return GlobalHelper::getInitialContext();
+    trigger_deprecation('jolicode/castor', '0.8', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'context');
+
+    return context();
 }
 
 /**
@@ -454,9 +516,16 @@ function variable(string $key, mixed $default = null): mixed
     return GlobalHelper::getVariable($key, $default);
 }
 
-function get_command(): Command
+function task(): Command
 {
     return GlobalHelper::getCommand();
+}
+
+function get_command(): Command
+{
+    trigger_deprecation('jolicode/castor', '0.8', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'task');
+
+    return task();
 }
 
 function fs(): Filesystem
@@ -561,6 +630,78 @@ function load_dot_env(string $path = null): array
     unset($_ENV['SYMFONY_DOTENV_VARS']);
 
     return $_ENV;
+}
+
+/**
+ * @template T
+ *
+ * @param (callable(Context) :T)                     $callback
+ * @param array<string, string|\Stringable|int>|null $data
+ * @param array<string, string|\Stringable|int>|null $environment
+ */
+function with(
+    callable $callback,
+    array $data = null,
+    array $environment = null,
+    string $path = null,
+    bool $tty = null,
+    bool $pty = null,
+    float $timeout = null,
+    bool $quiet = null,
+    bool $allowFailure = null,
+    bool $notify = null,
+    Context|string $context = null,
+): mixed {
+    $initialContext = GlobalHelper::getInitialContext();
+    $context ??= $initialContext;
+
+    if (\is_string($context)) {
+        $context = context($context);
+    }
+
+    if (null !== $data) {
+        $context = $context->withData($data);
+    }
+
+    if (null !== $environment) {
+        $context = $context->withEnvironment($environment);
+    }
+
+    if ($path) {
+        $context = $context->withPath($path);
+    }
+
+    if (null !== $tty) {
+        $context = $context->withTty($tty);
+    }
+
+    if (null !== $pty) {
+        $context = $context->withPty($pty);
+    }
+
+    if (null !== $timeout) {
+        $context = $context->withTimeout($timeout);
+    }
+
+    if (null !== $quiet) {
+        $context = $context->withQuiet($quiet);
+    }
+
+    if (null !== $allowFailure) {
+        $context = $context->withAllowFailure($allowFailure);
+    }
+
+    if (null !== $notify) {
+        $context = $context->withNotify($notify);
+    }
+
+    GlobalHelper::setInitialContext($context);
+
+    try {
+        return $callback($context);
+    } finally {
+        GlobalHelper::setInitialContext($initialContext);
+    }
 }
 
 function run_with_fingerprint(Finder $finder, callable $whenFingerprintIsDifferent, callable $whenFingerprintIsSame = null): void

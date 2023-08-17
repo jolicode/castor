@@ -250,13 +250,13 @@ for more information about this component and how to use it.
 
 There are some low level helpers to access internal stuff:
 
-* `get_application()` returns the current
+* `app()` returns the current
   [`Application`](https://github.com/symfony/symfony/blob/6.3/src/Symfony/Component/Console/Application.php)
-* `get_command()` returns the running command
+* `task()` returns the running task
   [`Command`](https://github.com/symfony/symfony/blob/6.3/src/Symfony/Component/Console/Command/Command.php)
-* `get_input()` returns the current
+* `input()` returns the current
   [`Input`](https://github.com/symfony/symfony/blob/6.3/src/Symfony/Component/Console/Output/OutputInterface.php)
-* `get_output()` returns the current
+* `output()` returns the current
   [`Output`](https://github.com/symfony/symfony/blob/6.3/src/Symfony/Component/Console/Input/InputInterface.php)
 
 ## Load a .env file
@@ -297,9 +297,7 @@ You can find more about how `.env` file loading and overloading works on
 
 ## Other helpers
 
-* `get_context()` returns the initial `Context`. See the [context
+* `context()` returns the initial `Context`. See the [context
   documentation](./05-context.md) for mor information
 * `variable()` returns a variable stored in the  `Context`. See the [context
   documentation](./05-context.md) for mor information
-* `get_loger()` returns the current `Logger`. See the [logger
-  documentation](./10-log.md) for more information

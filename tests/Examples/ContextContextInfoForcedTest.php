@@ -4,12 +4,12 @@ namespace Castor\Tests\Examples;
 
 use Castor\Tests\TaskTestCase;
 
-class ParallelSleepTest extends TaskTestCase
+class ContextContextInfoForcedTest extends TaskTestCase
 {
-    // parallel:sleep
+    // context:context-info-forced
     public function test(): void
     {
-        $process = $this->runTask(['parallel:sleep', '--sleep5', '0', '--sleep7', '0', '--sleep10', '0']);
+        $process = $this->runTask(['context:context-info-forced']);
 
         $this->assertSame(0, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());
