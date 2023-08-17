@@ -28,6 +28,9 @@ failure:allow-failure         A failing task authorized to fail
 failure:failure               A failing task not authorized to fail
 filesystem:filesystem         Performs some operations on the filesystem
 filesystem:find               Search files and directories on the filesystem
+fingerprint:complex-task      Run a command only if the fingerprint has changed in called task, sub-call does not count for fingerprint
+fingerprint:in-method         Run a command every time, but juste call some sub-task if fingerprint has changed
+fingerprint:simple-task       Run a command only if the fingerprint has changed
 foo:foo                       Prints foo
 log:all-level                 Logs some messages with different levels
 log:error                     Logs an "error" message

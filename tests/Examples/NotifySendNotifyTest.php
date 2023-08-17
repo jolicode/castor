@@ -9,7 +9,7 @@ class NotifySendNotifyTest extends TaskTestCase
     // notify:send-notify
     public function test(): void
     {
-        $process = $this->runTask(['notify:send-notify']);
+        $process = $this->runTask(['notify:send-notify', '--force']);
 
         $this->assertSame(0, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());

@@ -9,7 +9,7 @@ class CacheComplexTest extends TaskTestCase
     // cache:complex
     public function test(): void
     {
-        $process = $this->runTask(['cache:complex']);
+        $process = $this->runTask(['cache:complex', '--force']);
 
         $this->assertSame(0, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());

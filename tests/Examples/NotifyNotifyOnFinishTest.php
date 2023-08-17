@@ -9,7 +9,7 @@ class NotifyNotifyOnFinishTest extends TaskTestCase
     // notify:notify-on-finish
     public function test(): void
     {
-        $process = $this->runTask(['notify:notify-on-finish']);
+        $process = $this->runTask(['notify:notify-on-finish', '--force']);
 
         $this->assertSame(0, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());

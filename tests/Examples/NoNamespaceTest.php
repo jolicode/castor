@@ -9,7 +9,7 @@ class NoNamespaceTest extends TaskTestCase
     // no-namespace
     public function test(): void
     {
-        $process = $this->runTask(['no-namespace']);
+        $process = $this->runTask(['no-namespace', '--force']);
 
         $this->assertSame(0, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());

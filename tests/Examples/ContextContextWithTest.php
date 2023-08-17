@@ -9,7 +9,7 @@ class ContextContextWithTest extends TaskTestCase
     // context:context-with
     public function test(): void
     {
-        $process = $this->runTask(['context:context-with']);
+        $process = $this->runTask(['context:context-with', '--force']);
 
         $this->assertSame(0, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());

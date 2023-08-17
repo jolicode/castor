@@ -9,7 +9,7 @@ class FailureFailureTest extends TaskTestCase
     // failure:failure
     public function test(): void
     {
-        $process = $this->runTask(['failure:failure']);
+        $process = $this->runTask(['failure:failure', '--force']);
 
         $this->assertSame(1, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());
