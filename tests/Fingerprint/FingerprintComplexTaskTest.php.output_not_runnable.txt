@@ -1,1 +1,1 @@
-Command not executed because the files have not changed.
+Command "complex-task" not executed because the fingerprint is the same. (use --force to force execution)

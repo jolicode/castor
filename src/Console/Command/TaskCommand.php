@@ -6,7 +6,7 @@ use Castor\Attribute\AsArgument;
 use Castor\Attribute\AsCommandArgument;
 use Castor\Attribute\AsOption;
 use Castor\Attribute\AsTask;
-use Castor\FingerprintHelper;
+use Castor\Fingerprint\FingerprintHelper;
 use Castor\GlobalHelper;
 use Castor\SluggerHelper;
 use Psr\Cache\InvalidArgumentException;
@@ -135,9 +135,9 @@ class TaskCommand extends Command implements SignalableCommandInterface
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         if (false === $input->getOption('force')) {
-            $fingerprints = FingerprintHelper::getFingerprintsFromTaskAttribute($this->taskAttribute);
-            if (empty($fingerprints)) {
-                $output->writeln('<info>Command not executed because the files have not changed.</info>');
+            $isRunnable = FingerprintHelper::verifyTaskFingerprintFromTaskAttribute($this->taskAttribute);
+            if (!$isRunnable) {
+                $output->writeln("<info>Command \"{$this->taskAttribute->name}\" not executed because the fingerprint is the same. (use --force to force execution)</info>");
 
                 return Command::SUCCESS;
             }
@@ -176,7 +176,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
 
         if (null === $result) {
             if (false === $input->getOption('force')) {
-                FingerprintHelper::postProcessFingerprint();
+                FingerprintHelper::postProcessFingerprintForTask($this->taskAttribute);
             }
 
             return Command::SUCCESS;

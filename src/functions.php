@@ -3,6 +3,7 @@
 namespace Castor;
 
 use Castor\Console\Application;
+use Castor\Fingerprint\FingerprintHelper;
 use Joli\JoliNotif\Notification;
 use Joli\JoliNotif\NotifierFactory;
 use Joli\JoliNotif\Util\OsHelper;
@@ -98,6 +99,7 @@ function parallel(callable ...$callbacks): array
  * @param string|array<string|\Stringable|int>           $command
  * @param array<string, string|\Stringable|int>|null     $environment
  * @param (callable(string, string, Process) :void)|null $callback
+ * @param string                                         $fingerprint
  */
 function run(
     string|array $command,
@@ -111,7 +113,16 @@ function run(
     bool $notify = null,
     callable $callback = null,
     Context $context = null,
-): Process {
+    ?string $fingerprint = null,
+): false|Process {
+    if (null !== $fingerprint) {
+        $isForcedToRun = get_input()->hasOption('force') && get_input()->getOption('force');
+        if (false === FingerprintHelper::verifyFingerprintFromHash($fingerprint) && false === $isForcedToRun) {
+            io()->warning('Fingerprint is the same, skipping.');
+            return false;
+        }
+    }
+
     $context ??= GlobalHelper::getInitialContext();
 
     if (null !== $environment) {
@@ -204,6 +215,10 @@ function run(
         }
 
         return $process;
+    }
+
+    if (null !== $fingerprint) {
+        FingerprintHelper::postProcessFingerprintForHash($fingerprint);
     }
 
     log('Command finished successfully.', 'debug');
@@ -704,16 +719,11 @@ function with(
     }
 }
 
-function run_with_fingerprint(Finder $finder, callable $whenFingerprintIsDifferent, callable $whenFingerprintIsSame = null): void
+/**
+ * @see https://www.php.net/manual/en/function.hash-algos.php
+ */
+function hasher(string $algo = 'md5'): HasherHelper
 {
-    $isForcedToRun = get_input()->hasOption('force') && get_input()->getOption('force');
-    if ($isForcedToRun) {
-        $whenFingerprintIsDifferent();
-    } else {
-        if (!FingerprintHelper::executeIfFingerprintIsDifferent($finder, $whenFingerprintIsDifferent)) {
-            if (null !== $whenFingerprintIsSame) {
-                $whenFingerprintIsSame();
-            }
-        }
-    }
+    return new HasherHelper($algo);
 }
+

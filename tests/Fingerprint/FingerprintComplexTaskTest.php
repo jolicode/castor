@@ -6,11 +6,11 @@ use Castor\Tests\TaskTestCase;
 
 class FingerprintComplexTaskTest extends TaskTestCase
 {
+    use FingerprintedTest;
+
     // fingerprint:complex-task
     public function test(): void
     {
-        $this->clearTestsArtifacts();
-
         // Run for the first time, should run
         $this->runProcessAndExpect(__FILE__ . '.output_runnable.txt');
 
@@ -22,8 +22,6 @@ class FingerprintComplexTaskTest extends TaskTestCase
 
         // change file content for complex, should run
         $this->runProcessAndExpect(__FILE__ . '.output_runnable.txt', 'Hello World', 'Hello World');
-
-        $this->clearTestsArtifacts();
     }
 
     private function runProcessAndExpect(
@@ -52,16 +50,5 @@ class FingerprintComplexTaskTest extends TaskTestCase
         }
 
         $this->assertSame(0, $process->getExitCode());
-    }
-
-    private function clearTestsArtifacts(): void
-    {
-        shell_exec('rm -rf /tmp/castor');
-        if (file_exists(\dirname(__DIR__, 2) . '/examples/fingerprint_file.fingerprint_single')) {
-            unlink(\dirname(__DIR__, 2) . '/examples/fingerprint_file.fingerprint_single');
-        }
-        if (file_exists(\dirname(__DIR__, 2) . '/examples/fingerprint_file.fingerprint_multiple')) {
-            unlink(\dirname(__DIR__, 2) . '/examples/fingerprint_file.fingerprint_multiple');
-        }
     }
 }
