@@ -4,14 +4,14 @@ namespace Castor\Tests\Examples;
 
 use Castor\Tests\TaskTestCase;
 
-class NoConfigTest extends TaskTestCase
+class NoConfigCompletionTest extends TaskTestCase
 {
-    // unknown:command
+    // completion
     public function test(): void
     {
-        $process = $this->runTask(['unknown:command', 'toto', '--foo', 1], '/tmp');
+        $process = $this->runTask(['completion', 'bash'], '/tmp');
 
-        $this->assertSame(1, $process->getExitCode());
+        $this->assertSame(0, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());
         if (file_exists(__FILE__ . '.err.txt')) {
             $this->assertStringEqualsFile(__FILE__ . '.err.txt', $process->getErrorOutput());

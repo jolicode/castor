@@ -2,19 +2,18 @@
 
 namespace Castor\Console;
 
-use Castor\Console\Command\CastorFileNotFoundCommand;
 use Castor\PathHelper;
-use Symfony\Component\Console\SingleCommandApplication;
+use Symfony\Component\Console\Application as SymfonyApplication;
 
 /** @internal */
 class ApplicationFactory
 {
-    public static function create(): Application|SingleCommandApplication
+    public static function create(): SymfonyApplication
     {
         try {
             $rootDir = PathHelper::getRoot();
         } catch (\RuntimeException $e) {
-            return new CastorFileNotFoundCommand($e);
+            return new CastorFileNotFoundApplication($e);
         }
 
         if (class_exists(\RepackedApplication::class)) {
