@@ -26,10 +26,12 @@ class CastorFileNotFoundApplication extends SymfonyApplication
 
     protected function getCommandName(InputInterface $input): ?string
     {
-        if (!\in_array($input->getFirstArgument(), ['completion', 'list', 'help'], true)) {
-            return 'init';
+        $commands = $this->all();
+
+        if ($commands[$firstArgument = $input->getFirstArgument()] ?? false) {
+            return $firstArgument;
         }
 
-        return $input->getFirstArgument();
+        return 'init';
     }
 }
