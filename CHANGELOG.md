@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## 0.8.0 (2023-08-16)
 
 * Add `request()` and `http_client()` functions to make HTTP requests
 * Add support for disabling task dynamically
