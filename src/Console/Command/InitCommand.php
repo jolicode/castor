@@ -2,37 +2,33 @@
 
 namespace Castor\Console\Command;
 
-use Castor\Console\Application;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\SingleCommandApplication;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /** @internal */
-class CastorFileNotFoundCommand extends SingleCommandApplication
+#[AsCommand(
+    name: 'init',
+    description: 'Initializes a new Castor project',
+)]
+class InitCommand extends Command
 {
     public function __construct(
         private readonly \RuntimeException $e,
     ) {
-        parent::__construct('castor');
-        $this->setVersion(Application::VERSION);
+        parent::__construct();
     }
 
-    protected function configure(): void
-    {
-        $this->addArgument('options', InputArgument::IS_ARRAY | InputArgument::OPTIONAL);
-        $this->ignoreValidationErrors();
-    }
-
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
         $message = $this->e->getMessage();
 
-        if ($input->getArgument('options')) {
+        if ($input->getFirstArgument() && 'init' !== $input->getFirstArgument()) {
             $message .= ' Did you run castor in the right directory?';
 
             $io->error($message);
@@ -70,5 +66,11 @@ class CastorFileNotFoundCommand extends SingleCommandApplication
         $io->note('Run "castor" to see the available tasks.');
 
         return Command::SUCCESS;
+    }
+
+    protected function configure(): void
+    {
+        $this->addArgument('options', InputArgument::IS_ARRAY | InputArgument::OPTIONAL);
+        $this->ignoreValidationErrors();
     }
 }

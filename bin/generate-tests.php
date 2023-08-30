@@ -93,7 +93,10 @@ add_test(['context:context', '--context', 'path'], 'ContextContextPathTest');
 add_test(['context:context', '--context', 'dynamic'], 'ContextContextDynamicTest');
 add_test(['enabled:hello', '--context', 'production'], 'EnabledInProduction');
 add_test([], 'NewProjectTest', '/tmp');
-add_test(['unknown:command', 'toto', '--foo', 1], 'NoConfigTest', '/tmp');
+add_test(['init'], 'NewProjectInitTest', '/tmp');
+add_test(['unknown:command'], 'NoConfigUnknownTest', '/tmp');
+add_test(['unknown:command', 'toto', '--foo', 1], 'NoConfigUnknownWithArgsTest', '/tmp');
+add_test(['completion', 'bash'], 'NoConfigCompletionTest', '/tmp');
 
 function add_test(array $args, string $class, string $cwd = null)
 {

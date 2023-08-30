@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Not released yet
+
+* Better handle default Symfony commands when no castor file exists yet
+
 ## 0.8.0 (2023-08-16)
 
 * Add `request()` and `http_client()` functions to make HTTP requests
