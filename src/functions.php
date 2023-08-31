@@ -99,7 +99,6 @@ function parallel(callable ...$callbacks): array
  * @param string|array<string|\Stringable|int>           $command
  * @param array<string, string|\Stringable|int>|null     $environment
  * @param (callable(string, string, Process) :void)|null $callback
- * @param string                                         $fingerprint
  */
 function run(
     string|array $command,
