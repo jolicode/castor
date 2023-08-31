@@ -34,17 +34,6 @@ class FingerprintHelper
         return self::checkFingerprintIsInCache($itemKey, $fingerprint);
     }
 
-    private static function getFingerprintFromCallable(callable $callable): string
-    {
-        $hash = call_user_func($callable);
-
-        if (!is_string($hash)) {
-            throw new \LogicException('The fingerprint callable must return a string');
-        }
-
-        return $hash;
-    }
-
     public static function verifyFingerprintFromHash(string $fingerprint): bool
     {
         $itemKey = $fingerprint . self::SUFFIX;
@@ -57,6 +46,17 @@ class FingerprintHelper
         $itemKey = $hash . self::SUFFIX;
 
         self::compareFingerprint($itemKey, $hash);
+    }
+
+    private static function getFingerprintFromCallable(callable $callable): string
+    {
+        $hash = \call_user_func($callable);
+
+        if (!\is_string($hash)) {
+            throw new \LogicException('The fingerprint callable must return a string');
+        }
+
+        return $hash;
     }
 
     private static function checkFingerprintIsInCache(string $itemKey, string $fingerprint): bool

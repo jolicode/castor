@@ -113,17 +113,18 @@ function run(
     bool $notify = null,
     callable $callback = null,
     Context $context = null,
-    ?string $fingerprint = null,
-): false|Process {
+    string $fingerprint = null,
+): Process {
+    $context ??= GlobalHelper::getInitialContext();
+
     if (null !== $fingerprint) {
         $isForcedToRun = get_input()->hasOption('force') && get_input()->getOption('force');
         if (false === FingerprintHelper::verifyFingerprintFromHash($fingerprint) && false === $isForcedToRun) {
             io()->warning('Fingerprint is the same, skipping.');
-            return false;
+
+            return new Process(['echo', ''], $context->currentDirectory, $context->environment, null, $context->timeout);
         }
     }
-
-    $context ??= GlobalHelper::getInitialContext();
 
     if (null !== $environment) {
         $context = $context->withEnvironment($environment);
@@ -726,4 +727,3 @@ function hasher(string $algo = 'md5'): HasherHelper
 {
     return new HasherHelper($algo);
 }
-

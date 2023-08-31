@@ -3,7 +3,6 @@
 namespace Castor\Tests\Fingerprint;
 
 use Castor\Tests\TaskTestCase;
-use Symfony\Component\Finder\Finder;
 
 class FingerprintSimpleTaskTest extends TaskTestCase
 {

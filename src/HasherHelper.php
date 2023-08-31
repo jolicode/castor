@@ -46,9 +46,11 @@ class HasherHelper
         switch ($strategy) {
             case FileHashStrategy::Content:
                 hash_update_file($this->hashContext, $path);
+
                 break;
             case FileHashStrategy::MTimes:
                 hash_update($this->hashContext, sprintf('%s:%s', $path, filemtime($path)));
+
                 break;
         }
 
@@ -64,9 +66,11 @@ class HasherHelper
             switch ($strategy) {
                 case FileHashStrategy::Content:
                     hash_update_file($this->hashContext, $file->getPathname());
+
                     break;
                 case FileHashStrategy::MTimes:
                     hash_update($this->hashContext, "{$file->getPathname()}:{$file->getMTime()}");
+
                     break;
             }
         }
@@ -80,13 +84,22 @@ class HasherHelper
             'pattern' => $pattern,
             'strategy' => $strategy->name,
         ]);
-        foreach (glob($pattern) as $file) {
+        $files = glob($pattern);
+
+        if (false === $files) {
+            throw new \InvalidArgumentException(sprintf('The pattern "%s" is invalid', $pattern));
+        }
+
+        foreach ($files as $file) {
             switch ($strategy) {
                 case FileHashStrategy::Content:
                     hash_update_file($this->hashContext, $file);
+
                     break;
                 case FileHashStrategy::MTimes:
-                    hash_update($this->hashContext, "{$file}:{$file->getMTime()}");
+                    $modifiedTime = filemtime($file);
+                    hash_update($this->hashContext, "{$file}:{$modifiedTime}");
+
                     break;
             }
         }
@@ -127,6 +140,11 @@ class HasherHelper
         $this->writeTaskName();
         foreach (GlobalHelper::getInput()->getArguments() as $name => $value) {
             if (!empty($value)) {
+                if (\is_array($value)) {
+                    $value = implode(',', $value);
+                } else {
+                    $value = (string) $value;
+                }
                 $this->write($value);
             }
         }

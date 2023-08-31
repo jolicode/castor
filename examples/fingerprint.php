@@ -8,7 +8,6 @@ use Castor\Fingerprint\FileHashStrategy;
 use function Castor\finder;
 use function Castor\hasher;
 use function Castor\run;
-use function Castor\run_with_fingerprint;
 
 #[AsTask(description: 'Run a command only if the fingerprint has changed', fingerprint: 'fingerprint\fingerprintCheck')]
 function simpleTask(): void
@@ -27,7 +26,8 @@ function fingerprintCheck(): string
             FileHashStrategy::Content
         )
         ->writeTask()
-        ->finish();
+        ->finish()
+    ;
 }
 
 // Pay attention that if the fingerprint of "simpleTask" changes, and "complexTask" is called. Nothing will be executed until the fingerprint of "complexTask" changes.
@@ -49,7 +49,8 @@ function fingerprintCheck2(): string
             FileHashStrategy::Content
         )
         ->writeTask()
-        ->finish();
+        ->finish()
+    ;
 }
 
 #[AsTask(description: 'Run a command every time, but juste call some sub-task if fingerprint has changed')]

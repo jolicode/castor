@@ -28,11 +28,11 @@ class FingerprintCleaner
             }
         }
 
-
         $examplesFingerprintFile = (new Finder())
             ->in(\dirname(__DIR__, 2) . '/examples')
             ->name('*.fingerprint_*')
-            ->notName('*.php');
+            ->notName('*.php')
+        ;
 
         foreach ($examplesFingerprintFile as $file) {
             unlink($file->getRealPath());
