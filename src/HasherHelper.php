@@ -12,7 +12,7 @@ class HasherHelper
     /**
      * @see https://www.php.net/manual/en/function.hash-algos.php
      */
-    public function __construct(string $algo = 'md5')
+    public function __construct(string $algo = 'xxh128')
     {
         $this->hashContext = hash_init($algo);
     }

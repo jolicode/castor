@@ -722,7 +722,7 @@ function with(
 /**
  * @see https://www.php.net/manual/en/function.hash-algos.php
  */
-function hasher(string $algo = 'md5'): HasherHelper
+function hasher(string $algo = 'xxh128'): HasherHelper
 {
     return new HasherHelper($algo);
 }
