@@ -29,7 +29,7 @@ curl "https://github.com/jolicode/castor/releases/latest/download/castor.darwin-
 
 Example for Windows:
 ```bash
-curl "https://github.com/jolicode/castor/releases/latest/download/castor.windows-amd64.phar" -Lso $HOME/.local/bin/castor && chmod u+x $HOME/.local/bin/castor
+curl.exe "https://github.com/jolicode/castor/releases/latest/download/castor.windows-amd64.phar" -Lso C:\<a directory in your PATH>\castor
 ```
 
 ### Globally with Composer
