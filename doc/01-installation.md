@@ -22,6 +22,16 @@ Example for Linux:
 curl "https://github.com/jolicode/castor/releases/latest/download/castor.linux-amd64.phar" -Lso $HOME/.local/bin/castor && chmod u+x $HOME/.local/bin/castor
 ```
 
+Example for MacOS:
+```bash
+curl "https://github.com/jolicode/castor/releases/latest/download/castor.darwin-amd64.phar" -Lso $HOME/.local/bin/castor && chmod u+x $HOME/.local/bin/castor
+```
+
+Example for Windows:
+```bash
+curl "https://github.com/jolicode/castor/releases/latest/download/castor.windows-amd64.phar" -Lso $HOME/.local/bin/castor && chmod u+x $HOME/.local/bin/castor
+```
+
 ### Globally with Composer
 
 You can install Castor globally with Composer:
