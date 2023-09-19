@@ -24,7 +24,7 @@ curl "https://github.com/jolicode/castor/releases/latest/download/castor.linux-a
 
 Example for MacOS:
 ```bash
-curl "https://github.com/jolicode/castor/releases/latest/download/castor.darwin-amd64.phar" -Lso $HOME/.local/bin/castor && chmod u+x $HOME/.local/bin/castor
+curl "https://github.com/jolicode/castor/releases/latest/download/castor.darwin-amd64.phar" -Lso /usr/local/bin/castor && chmod u+x /usr/local/bin/castor
 ```
 
 Example for Windows:
