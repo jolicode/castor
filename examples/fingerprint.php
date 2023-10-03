@@ -51,5 +51,6 @@ function fingerprintCheck(): string
             FileHashStrategy::Content
         )
         ->writeTask()
-        ->finish();
+        ->finish()
+    ;
 }

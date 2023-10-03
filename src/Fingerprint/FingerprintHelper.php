@@ -2,7 +2,6 @@
 
 namespace Castor\Fingerprint;
 
-use Castor\Attribute\AsTask;
 use Castor\GlobalHelper;
 
 class FingerprintHelper
