@@ -130,13 +130,6 @@ class Application extends SymfonyApplication
             ));
         }
 
-        $this->getDefinition()->addOption(new InputOption(
-            'force',
-            'f',
-            InputOption::VALUE_NONE,
-            'Force the execution of the task, even if fingerprint prevents it.',
-        ));
-
         return $tasks;
     }
 

@@ -92,38 +92,29 @@ function parallel(callable ...$callbacks): array
         throw new \RuntimeException('One or more exceptions were thrown in parallel.');
     }
 
-    return array_map(fn ($fiber) => $fiber->getReturn(), $fibers);
+    return array_map(fn($fiber) => $fiber->getReturn(), $fibers);
 }
 
 /**
- * @param string|array<string|\Stringable|int>           $command
- * @param array<string, string|\Stringable|int>|null     $environment
+ * @param string|array<string|\Stringable|int> $command
+ * @param array<string, string|\Stringable|int>|null $environment
  * @param (callable(string, string, Process) :void)|null $callback
  */
 function run(
     string|array $command,
-    array $environment = null,
-    string $path = null,
-    bool $tty = null,
-    bool $pty = null,
-    float $timeout = null,
-    bool $quiet = null,
-    bool $allowFailure = null,
-    bool $notify = null,
-    callable $callback = null,
-    Context $context = null,
-    string $fingerprint = null,
-): Process {
+    array        $environment = null,
+    string       $path = null,
+    bool         $tty = null,
+    bool         $pty = null,
+    float        $timeout = null,
+    bool         $quiet = null,
+    bool         $allowFailure = null,
+    bool         $notify = null,
+    callable     $callback = null,
+    Context      $context = null,
+): Process
+{
     $context ??= GlobalHelper::getInitialContext();
-
-    if (null !== $fingerprint) {
-        $isForcedToRun = get_input()->hasOption('force') && get_input()->getOption('force');
-        if (false === FingerprintHelper::verifyFingerprintFromHash($fingerprint) && false === $isForcedToRun) {
-            io()->warning('Fingerprint is the same, skipping.');
-
-            return new Process(['echo', ''], $context->currentDirectory, $context->environment, null, $context->timeout);
-        }
-    }
 
     if (null !== $environment) {
         $context = $context->withEnvironment($environment);
@@ -217,28 +208,25 @@ function run(
         return $process;
     }
 
-    if (null !== $fingerprint) {
-        FingerprintHelper::postProcessFingerprintForHash($fingerprint);
-    }
-
     log('Command finished successfully.', 'debug');
 
     return $process;
 }
 
 /**
- * @param string|array<string|\Stringable|int>       $command
+ * @param string|array<string|\Stringable|int> $command
  * @param array<string, string|\Stringable|int>|null $environment
  */
 function capture(
     string|array $command,
-    array $environment = null,
-    string $path = null,
-    float $timeout = null,
-    bool $allowFailure = null,
-    string $onFailure = null,
-    Context $context = null,
-): string {
+    array        $environment = null,
+    string       $path = null,
+    float        $timeout = null,
+    bool         $allowFailure = null,
+    string       $onFailure = null,
+    Context      $context = null,
+): string
+{
     $hasOnFailure = null !== $onFailure;
     if ($hasOnFailure) {
         if (null !== $allowFailure) {
@@ -265,17 +253,18 @@ function capture(
 }
 
 /**
- * @param string|array<string|\Stringable|int>       $command
+ * @param string|array<string|\Stringable|int> $command
  * @param array<string, string|\Stringable|int>|null $environment
  */
 function exit_code(
     string|array $command,
-    array $environment = null,
-    string $path = null,
-    float $timeout = null,
-    bool $quiet = null,
-    Context $context = null,
-): int {
+    array        $environment = null,
+    string       $path = null,
+    float        $timeout = null,
+    bool         $quiet = null,
+    Context      $context = null,
+): int
+{
     $process = run(
         command: $command,
         environment: $environment,
@@ -313,13 +302,14 @@ function ssh(
     string $command,
     string $host,
     string $user,
-    array $sshOptions = [],
+    array  $sshOptions = [],
     string $path = null,
-    bool $quiet = null,
-    bool $allowFailure = null,
-    bool $notify = null,
-    float $timeout = null,
-): Process {
+    bool   $quiet = null,
+    bool   $allowFailure = null,
+    bool   $notify = null,
+    float  $timeout = null,
+): Process
+{
     $ssh = Ssh::create($user, $host, $sshOptions['port'] ?? null);
 
     if ($sshOptions['path_private_key'] ?? false) {
@@ -362,14 +352,13 @@ function notify(string $message): void
     $notification =
         (new Notification())
             ->setTitle('Castor')
-            ->setBody($message)
-    ;
+            ->setBody($message);
 
     $notifier->send($notification);
 }
 
 /**
- * @param string|non-empty-array<string>                 $path
+ * @param string|non-empty-array<string> $path
  * @param (callable(string, string) : (false|void|null)) $function
  */
 function watch(string|array $path, callable $function, Context $context = null): void
@@ -378,7 +367,7 @@ function watch(string|array $path, callable $function, Context $context = null):
         $parallelCallbacks = [];
 
         foreach ($path as $p) {
-            $parallelCallbacks[] = fn () => watch($p, $function, $context);
+            $parallelCallbacks[] = fn() => watch($p, $function, $context);
         }
 
         parallel(...$parallelCallbacks);
@@ -522,7 +511,7 @@ function get_context(): Context
  * @template TDefault
  *
  * @param TKey|string $key
- * @param TDefault    $default
+ * @param TDefault $default
  *
  * @phpstan-return ($key is TKey ? ContextData[TKey] : TDefault)
  */
@@ -554,14 +543,14 @@ function finder(): Finder
 }
 
 /**
+ * @param string $key The key of the item to retrieve from the cache
+ * @param (callable(CacheItemInterface,bool):T)|(callable(ItemInterface,bool):T)|CallbackInterface<T> $or Use this callback to compute the value
+ *
+ * @return T
  * @see CacheInterface::get()
  *
  * @template T
  *
- * @param string                                                                                      $key The key of the item to retrieve from the cache
- * @param (callable(CacheItemInterface,bool):T)|(callable(ItemInterface,bool):T)|CallbackInterface<T> $or  Use this callback to compute the value
- *
- * @return T
  */
 function cache(string $key, callable $or): mixed
 {
@@ -580,9 +569,9 @@ function get_cache(): CacheItemPoolInterface&CacheInterface
 }
 
 /**
+ * @param array<string, mixed> $options
  * @see HttpClientInterface::OPTIONS_DEFAULTS
  *
- * @param array<string, mixed> $options
  */
 function request(string $method, string $url, array $options = []): ResponseInterface
 {
@@ -608,8 +597,7 @@ function import(string $path): void
         $files = Finder::create()
             ->files()
             ->name('*.php')
-            ->in($path)
-        ;
+            ->in($path);
 
         foreach ($files as $file) {
             castor_require($file->getPathname());
@@ -650,23 +638,24 @@ function load_dot_env(string $path = null): array
 /**
  * @template T
  *
- * @param (callable(Context) :T)                     $callback
+ * @param (callable(Context) :T) $callback
  * @param array<string, string|\Stringable|int>|null $data
  * @param array<string, string|\Stringable|int>|null $environment
  */
 function with(
-    callable $callback,
-    array $data = null,
-    array $environment = null,
-    string $path = null,
-    bool $tty = null,
-    bool $pty = null,
-    float $timeout = null,
-    bool $quiet = null,
-    bool $allowFailure = null,
-    bool $notify = null,
+    callable       $callback,
+    array          $data = null,
+    array          $environment = null,
+    string         $path = null,
+    bool           $tty = null,
+    bool           $pty = null,
+    float          $timeout = null,
+    bool           $quiet = null,
+    bool           $allowFailure = null,
+    bool           $notify = null,
     Context|string $context = null,
-): mixed {
+): mixed
+{
     $initialContext = GlobalHelper::getInitialContext();
     $context ??= $initialContext;
 
@@ -725,4 +714,26 @@ function with(
 function hasher(string $algo = 'xxh128'): HasherHelper
 {
     return new HasherHelper($algo);
+}
+
+function fingerprint_exists(string $fingerprint): bool
+{
+    return FingerprintHelper::verifyFingerprintFromHash($fingerprint);
+}
+
+function fingerprint_save(string $fingerprint): void
+{
+    FingerprintHelper::postProcessFingerprintForHash($fingerprint);
+}
+
+function fingerprint(callable $callback, string $fingerprint): void
+{
+    if (!fingerprint_exists($fingerprint)) {
+        try {
+            $callback();
+            fingerprint_save($fingerprint);
+        } catch (\Throwable $e) {
+            throw $e;
+        }
+    }
 }

@@ -129,20 +129,8 @@ class TaskCommand extends Command implements SignalableCommandInterface
         }
     }
 
-    /**
-     * @throws InvalidArgumentException
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        if (false === $input->getOption('force')) {
-            $isRunnable = FingerprintHelper::verifyTaskFingerprintFromTaskAttribute($this->taskAttribute);
-            if (!$isRunnable) {
-                $output->writeln("<info>Command \"{$this->taskAttribute->name}\" not executed because the fingerprint is the same. (use --force to force execution)</info>");
-
-                return Command::SUCCESS;
-            }
-        }
-
         $args = [];
 
         foreach ($this->function->getParameters() as $parameter) {
@@ -175,10 +163,6 @@ class TaskCommand extends Command implements SignalableCommandInterface
         }
 
         if (null === $result) {
-            if (false === $input->getOption('force')) {
-                FingerprintHelper::postProcessFingerprintForTask($this->taskAttribute);
-            }
-
             return Command::SUCCESS;
         }
 

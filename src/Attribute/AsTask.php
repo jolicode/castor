@@ -8,7 +8,6 @@ class AsTask
     /**
      * @param array<string>                          $aliases
      * @param array<int, callable(int): (int|false)> $onSignals
-     * @param ?callable-string                       $fingerprint
      */
     public function __construct(
         public string $name = '',
@@ -17,7 +16,6 @@ class AsTask
         public array $aliases = [],
         public array $onSignals = [],
         public string|bool $enabled = true,
-        public ?string $fingerprint = null,
     ) {
     }
 }

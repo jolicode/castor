@@ -6,13 +6,38 @@ use Castor\Attribute\AsTask;
 use Castor\Fingerprint\FileHashStrategy;
 
 use function Castor\finder;
+use function Castor\fingerprint;
+use function Castor\fingerprint_exists;
+use function Castor\fingerprint_save;
 use function Castor\hasher;
 use function Castor\run;
 
-#[AsTask(description: 'Run a command only if the fingerprint has changed', fingerprint: 'fingerprint\fingerprintCheck')]
-function simpleTask(): void
+#[AsTask(description: 'Run a command and run part of it only if the fingerprint has changed')]
+function task_with_some_fingerprint(): void
 {
-    echo "Hello Simple Task !\n";
+    run('echo "Hello Task with Fingerprint !"');
+
+    if (!fingerprint_exists(fingerprintCheck())) {
+        run('echo "Cool, no fingerprint ! Executing..."');
+        fingerprint_save(fingerprintCheck());
+    }
+
+    run('echo "Cool ! I finished !"');
+}
+
+#[AsTask(description: 'Run a command only if the fingerprint has changed')]
+function task_with_some_fingerprint_with_helper(): void
+{
+    run('echo "Hello Task with Fingerprint but with helper !"');
+
+    fingerprint(
+        callback: function () {
+            run('echo "Cool, no fingerprint ! Executing..."');
+        },
+        fingerprint: fingerprintCheck()
+    );
+
+    run('echo "Cool ! I finished !"');
 }
 
 function fingerprintCheck(): string
@@ -26,48 +51,5 @@ function fingerprintCheck(): string
             FileHashStrategy::Content
         )
         ->writeTask()
-        ->finish()
-    ;
-}
-
-// Pay attention that if the fingerprint of "simpleTask" changes, and "complexTask" is called. Nothing will be executed until the fingerprint of "complexTask" changes.
-#[AsTask(description: 'Run a command only if the fingerprint has changed in called task, sub-call does not count for fingerprint', fingerprint: 'fingerprint\fingerprintCheck2')]
-function complexTask(): void
-{
-    simpleTask();
-    echo "Hello Complex Task !\n";
-}
-
-function fingerprintCheck2(): string
-{
-    return hasher()
-        ->writeWithFinder(
-            finder()
-                ->in(__DIR__)
-                ->name('*.fingerprint_multiple')
-                ->files(),
-            FileHashStrategy::Content
-        )
-        ->writeTask()
-        ->finish()
-    ;
-}
-
-#[AsTask(description: 'Run a command every time, but juste call some sub-task if fingerprint has changed')]
-function inMethod(): void
-{
-    echo "Hello Fingerprint in Method !\n";
-    run(
-        'echo "Hey ! I\'m a sub-task ! Only executed if fingerprint has changed !"',
-        fingerprint: hasher()
-            ->writeWithFinder(
-                finder()
-                    ->in(__DIR__)
-                    ->name('*.fingerprint_in_method')
-                    ->files(),
-                FileHashStrategy::Content
-            )
-            ->finish(),
-    );
-    echo "Is a thing was executed before me ?\n";
+        ->finish();
 }
