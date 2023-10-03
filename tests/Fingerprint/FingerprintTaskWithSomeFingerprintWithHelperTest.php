@@ -4,7 +4,7 @@ namespace Castor\Tests\Fingerprint;
 
 use Castor\Tests\TaskTestCase;
 
-class FingerprintSimpleTaskTest extends TaskTestCase
+class FingerprintTaskWithSomeFingerprintWithHelperTest extends TaskTestCase
 {
     use FingerprintedTest;
 
@@ -23,7 +23,6 @@ class FingerprintSimpleTaskTest extends TaskTestCase
 
     private function runProcessAndExpect(string $expectedOutputFilePath, string $withFileContent = 'Hello'): void
     {
-        // remove all contents of "/tmp/castor" directory
         $filepath = \dirname(__DIR__, 2) . '/examples/fingerprint_file.fingerprint_single';
         if (file_exists($filepath)) {
             unlink($filepath);
@@ -31,7 +30,7 @@ class FingerprintSimpleTaskTest extends TaskTestCase
 
         file_put_contents($filepath, $withFileContent);
 
-        $process = $this->runTask(['fingerprint:simple-task']);
+        $process = $this->runTask(['fingerprint:task-with-some-fingerprint-with-helper']);
 
         if (file_exists($expectedOutputFilePath)) {
             $this->assertStringEqualsFile($expectedOutputFilePath, $process->getOutput());

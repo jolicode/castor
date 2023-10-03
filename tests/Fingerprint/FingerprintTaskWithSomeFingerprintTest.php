@@ -4,33 +4,33 @@ namespace Castor\Tests\Fingerprint;
 
 use Castor\Tests\TaskTestCase;
 
-class FingerprintInMethodTest extends TaskTestCase
+class FingerprintTaskWithSomeFingerprintTest extends TaskTestCase
 {
     use FingerprintedTest;
 
-    // fingerprint:simple-task
+    // fingerprint:in-method
     public function test(): void
     {
         // Run for the first time, should run
-        $this->runProcessAndExpect(__FILE__ . '.output_with_sub_task.txt');
+        $this->runProcessAndExpect(__FILE__ . '.output_runnable.txt');
 
         // should don't run because the fingerprint is the same
-        $this->runProcessAndExpect(__FILE__ . '.output_without_sub_task.txt');
+        $this->runProcessAndExpect(__FILE__ . '.output_not_runnable.txt');
 
         // change file content, should run
-        $this->runProcessAndExpect(__FILE__ . '.output_with_sub_task.txt', 'Hello World');
+        $this->runProcessAndExpect(__FILE__ . '.output_runnable.txt', 'Hello World');
     }
 
     private function runProcessAndExpect(string $expectedOutputFilePath, string $withFileContent = 'Hello'): void
     {
-        $filepath = \dirname(__DIR__, 2) . '/examples/fingerprint_file.fingerprint_in_method';
+        $filepath = \dirname(__DIR__, 2) . '/examples/fingerprint_file.fingerprint_single';
         if (file_exists($filepath)) {
             unlink($filepath);
         }
 
         file_put_contents($filepath, $withFileContent);
 
-        $process = $this->runTask(['fingerprint:in-method']);
+        $process = $this->runTask(['fingerprint:task-with-some-fingerprint']);
 
         if (file_exists($expectedOutputFilePath)) {
             $this->assertStringEqualsFile($expectedOutputFilePath, $process->getOutput());
