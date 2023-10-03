@@ -9,7 +9,7 @@ class ParallelExceptionTest extends TaskTestCase
     // parallel:exception
     public function test(): void
     {
-        $process = $this->runTask(['parallel:exception', '--force']);
+        $process = $this->runTask(['parallel:exception']);
 
         $this->assertSame(1, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());

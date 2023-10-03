@@ -9,7 +9,7 @@ class BarBarTest extends TaskTestCase
     // bar:bar
     public function test(): void
     {
-        $process = $this->runTask(['bar:bar', '--force']);
+        $process = $this->runTask(['bar:bar']);
 
         $this->assertSame(0, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());

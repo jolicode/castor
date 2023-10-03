@@ -9,7 +9,7 @@ class HttpRequestTest extends TaskTestCase
     // http-request
     public function test(): void
     {
-        $process = $this->runTask(['http-request', '--force']);
+        $process = $this->runTask(['http-request']);
 
         $this->assertSame(0, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());
