@@ -14,7 +14,7 @@ class FingerprintTaskWithSomeFingerprintWithHelperTest extends TaskTestCase
         // Run for the first time, should run
         $this->runProcessAndExpect(__FILE__ . '.output_runnable.txt');
 
-        // should don't run because the fingerprint is the same
+        // should not run because the fingerprint is the same
         $this->runProcessAndExpect(__FILE__ . '.output_not_runnable.txt');
 
         // change file content, should run

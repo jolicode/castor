@@ -124,6 +124,7 @@ Discover more by reading the docs:
 * [SSH and remote servers](doc/11-ssh.md)
 * [Handling signals](doc/12-signals.md)
 * [Repacking your application in a new phar](doc/13-repack.md)
+* [Fingerprinting and code execution when a hash changes](doc/14-fingerprint.md)
 
 ## Questions and answers
 
