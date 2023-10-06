@@ -126,6 +126,5 @@ class SectionDetails
         public ConsoleSectionOutput $progressBarSection,
         public float $start,
         public string $index,
-    ) {
-    }
+    ) {}
 }
