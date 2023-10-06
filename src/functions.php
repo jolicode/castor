@@ -3,6 +3,7 @@
 namespace Castor;
 
 use Castor\Console\Application;
+use Castor\Fingerprint\FingerprintHelper;
 use Joli\JoliNotif\Notification;
 use Joli\JoliNotif\NotifierFactory;
 use Joli\JoliNotif\Util\OsHelper;
@@ -539,14 +540,14 @@ function finder(): Finder
 }
 
 /**
- * @see CacheInterface::get()
- *
- * @template T
- *
  * @param string                                                                                      $key The key of the item to retrieve from the cache
  * @param (callable(CacheItemInterface,bool):T)|(callable(ItemInterface,bool):T)|CallbackInterface<T> $or  Use this callback to compute the value
  *
  * @return T
+ *
+ * @see CacheInterface::get()
+ *
+ * @template T
  */
 function cache(string $key, callable $or): mixed
 {
@@ -565,9 +566,9 @@ function get_cache(): CacheItemPoolInterface&CacheInterface
 }
 
 /**
- * @see HttpClientInterface::OPTIONS_DEFAULTS
- *
  * @param array<string, mixed> $options
+ *
+ * @see HttpClientInterface::OPTIONS_DEFAULTS
  */
 function request(string $method, string $url, array $options = []): ResponseInterface
 {
@@ -701,5 +702,35 @@ function with(
         return $callback($context);
     } finally {
         GlobalHelper::setInitialContext($initialContext);
+    }
+}
+
+/**
+ * @see https://www.php.net/manual/en/function.hash-algos.php
+ */
+function hasher(string $algo = 'xxh128'): HasherHelper
+{
+    return new HasherHelper($algo);
+}
+
+function fingerprint_exists(string $fingerprint): bool
+{
+    return FingerprintHelper::verifyFingerprintFromHash($fingerprint);
+}
+
+function fingerprint_save(string $fingerprint): void
+{
+    FingerprintHelper::postProcessFingerprintForHash($fingerprint);
+}
+
+function fingerprint(callable $callback, string $fingerprint): void
+{
+    if (!fingerprint_exists($fingerprint)) {
+        try {
+            $callback();
+            fingerprint_save($fingerprint);
+        } catch (\Throwable $e) {
+            throw $e;
+        }
     }
 }
