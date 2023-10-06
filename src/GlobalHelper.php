@@ -175,7 +175,7 @@ class GlobalHelper
     public static function setupDefaultCache(): void
     {
         if (!isset(self::$cache)) {
-            $home = getenv('HOME');
+            $home = PlatformUtil::getUserDirectory();
             $directory = $home ? $home . '/.cache' : sys_get_temp_dir();
 
             self::setCache(new FilesystemAdapter(directory: $directory . '/castor'));
