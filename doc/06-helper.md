@@ -266,9 +266,10 @@ You can load a `.env` file with the `load_dot_env()` function:
 ```php
 use Castor\Attribute\AsTask;
 use Castor\Context;
+use function Castor\load_dot_env;
 
 #[AsTask]
-function my_context(): Context
+function show_database_url(): void
 {
     $env = load_dot_env();
 
@@ -281,6 +282,7 @@ And you can also create a context that load a `.env` file:
 ```php
 use Castor\Attribute\AsContext;
 use Castor\Context;
+use function Castor\load_dot_env;
 
 #[AsContext]
 function my_context(): Context
