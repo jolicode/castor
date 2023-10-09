@@ -4,6 +4,7 @@
 
 * Add `fingerprint()` function to condition code execution based on some hash changes
 * Better handle default Symfony commands when no castor file exists yet
+* Add `-c` option to `castor` command to specify a context
 
 ## 0.8.0 (2023-08-16)
 
