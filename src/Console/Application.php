@@ -122,7 +122,7 @@ class Application extends SymfonyApplication
         if ($contextNames) {
             $this->getDefinition()->addOption(new InputOption(
                 'context',
-                '_complete' === $input->getFirstArgument() ? null : 'c',
+                '_complete' === $input->getFirstArgument() || 'list' === $input->getFirstArgument() ? null : 'c',
                 InputOption::VALUE_REQUIRED,
                 sprintf('The context to use (%s)', implode('|', $contextNames)),
                 $this->contextRegistry->getDefault(),
