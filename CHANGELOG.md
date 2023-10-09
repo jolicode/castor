@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+* Add `ssh_upload()` and `ssh_download()` functions to upload/download files via SSH
+
 ## 0.9.1 (2023-10-09)
 
 * Fix castor application version

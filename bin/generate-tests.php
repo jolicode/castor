@@ -27,6 +27,8 @@ $commandFilterList = [
     'watch:parallel-change',
     'watch:stop',
     'ssh:ls',
+    'ssh:upload',
+    'ssh:download',
     // Not examples
     'castor:phar:build',
     'castor:phar:darwin',
