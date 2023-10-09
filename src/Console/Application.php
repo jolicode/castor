@@ -73,7 +73,7 @@ class Application extends SymfonyApplication
         GlobalHelper::setContextRegistry($this->contextRegistry);
         GlobalHelper::setupDefaultCache();
 
-        $tasks = $this->initializeApplication();
+        $tasks = $this->initializeApplication($input);
 
         GlobalHelper::setInitialContext($this->createContext($input, $output));
 
@@ -99,7 +99,7 @@ class Application extends SymfonyApplication
     /**
      * @return TaskDescriptor[]
      */
-    private function initializeApplication(): array
+    private function initializeApplication(InputInterface $input): array
     {
         $functionsRootDir = $this->rootDir;
         if (class_exists(\RepackedApplication::class)) {
@@ -122,7 +122,7 @@ class Application extends SymfonyApplication
         if ($contextNames) {
             $this->getDefinition()->addOption(new InputOption(
                 'context',
-                null,
+                '_complete' === $input->getFirstArgument() ? null : 'c',
                 InputOption::VALUE_REQUIRED,
                 sprintf('The context to use (%s)', implode('|', $contextNames)),
                 $this->contextRegistry->getDefault(),
