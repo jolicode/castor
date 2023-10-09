@@ -2,6 +2,11 @@
 
 ## Not released yet
 
+## 0.9.1 (2023-10-09)
+
+* Fix castor application version
+* Fix typo in `run()` error message
+
 ## 0.9.0 (2023-10-09)
 
 * Add `fingerprint()` function to condition code execution based on some hash changes
