@@ -195,7 +195,7 @@ function run(
     }
 
     if (0 !== $exitCode) {
-        log(sprintf('Command finished with and error (exit code=%d).', $process->getExitCode()), 'notice');
+        log(sprintf('Command finished with an error (exit code=%d).', $process->getExitCode()), 'notice');
         if (!$context->allowFailure) {
             if ($context->verbosityLevel->isVeryVerbose()) {
                 throw new ProcessFailedException($process);
