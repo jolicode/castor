@@ -295,7 +295,7 @@ function get_exit_code(...$args): int
  *     'password_authentication'?: bool,
  * } $sshOptions
  */
-function ssh(
+function ssh_run(
     string $command,
     string $host,
     string $user,
@@ -306,6 +306,125 @@ function ssh(
     bool $notify = null,
     float $timeout = null,
 ): Process {
+    $ssh = ssh_configuration($host, $user, $sshOptions);
+
+    if ($path) {
+        $command = sprintf('cd %s && %s', $path, $command);
+    }
+
+    return run(
+        $ssh->getExecuteCommand($command),
+        environment: [],
+        tty: false,
+        pty: false,
+        timeout: $timeout,
+        quiet: $quiet,
+        allowFailure: $allowFailure,
+        notify: $notify
+    );
+}
+
+function ssh(...$args): Process
+{
+    trigger_deprecation('jolicode/castor', '0.10', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'ssh_run');
+
+    return ssh_run(...$args);
+}
+
+/**
+ * This function is considered experimental and may change in the future.
+ *
+ * @param array{
+ *     'port'?: int,
+ *     'path_private_key'?: string,
+ *     'jump_host'?: string,
+ *     'multiplexing_control_path'?: string,
+ *     'multiplexing_control_persist'?: string,
+ *     'enable_strict_check'?: bool,
+ *     'password_authentication'?: bool,
+ * } $sshOptions
+ */
+function ssh_upload(
+    string $sourcePath,
+    string $destinationPath,
+    string $host,
+    string $user,
+    array $sshOptions = [],
+    bool $quiet = null,
+    bool $allowFailure = null,
+    bool $notify = null,
+    float $timeout = null,
+): Process {
+    $ssh = ssh_configuration($host, $user, $sshOptions);
+
+    return run(
+        $ssh->getUploadCommand($sourcePath, $destinationPath),
+        environment: [],
+        tty: false,
+        pty: false,
+        timeout: $timeout,
+        quiet: $quiet,
+        allowFailure: $allowFailure,
+        notify: $notify
+    );
+}
+
+/**
+ * This function is considered experimental and may change in the future.
+ *
+ * @param array{
+ *     'port'?: int,
+ *     'path_private_key'?: string,
+ *     'jump_host'?: string,
+ *     'multiplexing_control_path'?: string,
+ *     'multiplexing_control_persist'?: string,
+ *     'enable_strict_check'?: bool,
+ *     'password_authentication'?: bool,
+ * } $sshOptions
+ */
+function ssh_download(
+    string $sourcePath,
+    string $destinationPath,
+    string $host,
+    string $user,
+    array $sshOptions = [],
+    bool $quiet = null,
+    bool $allowFailure = null,
+    bool $notify = null,
+    float $timeout = null,
+): Process {
+    $ssh = ssh_configuration($host, $user, $sshOptions);
+
+    return run(
+        $ssh->getDownloadCommand($sourcePath, $destinationPath),
+        environment: [],
+        tty: false,
+        pty: false,
+        timeout: $timeout,
+        quiet: $quiet,
+        allowFailure: $allowFailure,
+        notify: $notify
+    );
+}
+
+/**
+ * @param array{
+ *     'port'?: int,
+ *     'path_private_key'?: string,
+ *     'jump_host'?: string,
+ *     'multiplexing_control_path'?: string,
+ *     'multiplexing_control_persist'?: string,
+ *     'enable_strict_check'?: bool,
+ *     'password_authentication'?: bool,
+ * } $sshOptions
+ *
+ * @internal
+ */
+function ssh_configuration(
+    string $host,
+    string $user,
+    array $sshOptions = [],
+): Ssh {
     $ssh = Ssh::create($user, $host, $sshOptions['port'] ?? null);
 
     if ($sshOptions['path_private_key'] ?? false) {
@@ -323,20 +442,8 @@ function ssh(
     if ($sshOptions['password_authentication'] ?? false) {
         $sshOptions['password_authentication'] ? $ssh->enablePasswordAuthentication() : $ssh->disableStrictHostKeyChecking();
     }
-    if ($path) {
-        $command = sprintf('cd %s && %s', $path, $command);
-    }
 
-    return run(
-        $ssh->getExecuteCommand($command),
-        environment: [],
-        tty: false,
-        pty: false,
-        timeout: $timeout,
-        quiet: $quiet,
-        allowFailure: $allowFailure,
-        notify: $notify
-    );
+    return $ssh;
 }
 
 function notify(string $message): void

@@ -19,3 +19,8 @@ parameters:
 			message: "#^Function Castor\\\\get_exit_code\\(\\) has parameter \\$args with no type specified\\.$#"
 			count: 1
 			path: src/functions.php
+
+		-
+			message: "#^Function Castor\\\\ssh\\(\\) has parameter \\$args with no type specified\\.$#"
+			count: 1
+			path: src/functions.php
