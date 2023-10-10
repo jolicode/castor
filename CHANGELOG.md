@@ -3,6 +3,7 @@
 ## Not released yet
 
 * Add `ssh_upload()` and `ssh_download()` functions to upload/download files via SSH
+* Rename `ssh()` to `ssh_run()`
 
 ## 0.9.1 (2023-10-09)
 

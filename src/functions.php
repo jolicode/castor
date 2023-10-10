@@ -295,7 +295,7 @@ function get_exit_code(...$args): int
  *     'password_authentication'?: bool,
  * } $sshOptions
  */
-function ssh(
+function ssh_run(
     string $command,
     string $host,
     string $user,
@@ -322,6 +322,13 @@ function ssh(
         allowFailure: $allowFailure,
         notify: $notify
     );
+}
+
+function ssh(...$args): Process
+{
+    trigger_deprecation('jolicode/castor', '0.10', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'ssh_run');
+
+    return ssh_run(...$args);
 }
 
 /**
@@ -410,6 +417,8 @@ function ssh_download(
  *     'enable_strict_check'?: bool,
  *     'password_authentication'?: bool,
  * } $sshOptions
+ *
+ * @internal
  */
 function ssh_configuration(
     string $host,
