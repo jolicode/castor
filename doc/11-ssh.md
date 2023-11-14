@@ -1,6 +1,8 @@
 # SSH and remote servers
 
-Castor supports running commands on remote servers through SSH with the `ssh()`
+## Run SSH commands
+
+Castor supports running commands on remote servers through SSH with the `ssh_run()`
 function:
 
 ```php
@@ -12,7 +14,7 @@ use function Castor\ssh;
 function ls(): void
 {
     // List content of /var/www directory on the remote server
-    ssh('ls -alh', host: 'server-1.example.com', user: 'debian', sshOptions: [
+    ssh_run('ls -alh', host: 'server-1.example.com', user: 'debian', sshOptions: [
         'port' => 2222,
     ], path: '/var/www');
 }
@@ -21,10 +23,32 @@ function ls(): void
 > **Note**
 > This feature is marked as experimental and may change in the future.
 
-## Available options
+## Upload and download files
 
-You can pass additional options in the `ssh_options` argument of the `ssh()`
-function. The following options are currently available:
+Castor provides 2 functions `ssh_upload()` and `ssh_download()` to exchange files
+between localhost and a remote server:
+
+```php
+#[AsTask]
+function upload_file(): void
+{
+    ssh_upload('/tmp/test.html', '/var/www/index.html', host: 'server-1.example.com', user: 'debian');
+}
+
+#[AsTask]
+function download_file(): void
+{
+    ssh_download('/tmp/test.html', '/var/www/index.html', host: 'server-1.example.com', user: 'debian');
+}
+```
+
+> **Note**
+> These functions are marked as experimental and may change in the future.
+
+## Available SSH options
+
+All `ssh_xxx()` functions offer an additional `ssh_options` argument to configure
+the SSH connection. The following options are currently available:
 
 - `port`: port to use to connect to the remote server (default: 22)
 - `path_private_key`: path to the private key to use to connect to the remote
