@@ -10,6 +10,7 @@ use Castor\ContextRegistry;
 use Castor\FunctionFinder;
 use Castor\GlobalHelper;
 use Castor\Monolog\Processor\ProcessProcessor;
+use Castor\PlatformUtil;
 use Castor\SectionOutput;
 use Castor\Stub\StubsGenerator;
 use Castor\TaskDescriptor;
@@ -119,13 +120,16 @@ class Application extends SymfonyApplication
         $this->contextRegistry->setDefaultIfEmpty();
 
         $contextNames = $this->contextRegistry->getNames();
+
         if ($contextNames) {
+            $defaultContext = PlatformUtil::getEnv('CASTOR_CONTEXT') ?: $this->contextRegistry->getDefault();
+
             $this->getDefinition()->addOption(new InputOption(
                 'context',
                 '_complete' === $input->getFirstArgument() || 'list' === $input->getFirstArgument() ? null : 'c',
                 InputOption::VALUE_REQUIRED,
                 sprintf('The context to use (%s)', implode('|', $contextNames)),
-                $this->contextRegistry->getDefault(),
+                $defaultContext,
                 $contextNames,
             ));
         }
