@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+## 0.10.0 (2023-11-14)
+
 * Add `ssh_upload()` and `ssh_download()` functions to upload/download files via SSH
 * Rename `ssh()` to `ssh_run()`
 * Allow to set default context with an env variable
