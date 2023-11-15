@@ -23,7 +23,7 @@ It comes with many helpers to make your life easier:
 * Robust **logging** for capturing and analyzing essential information
 * A strong emphasis on exceptional **Developer Experience** (DX)
 
-> **Note**
+> [!NOTE]
 > Castor is still in early development, and the API is not stable yet. Even if
 > it not likely to change, it is still possible that it will change in the
 > future.
@@ -84,7 +84,7 @@ directory.
 
 ## Installation
 
-> **Note**
+> [!NOTE]
 > Castor requires PHP >= 8.1 to run.
 
 ### As a phar - recommended way
