@@ -8,7 +8,7 @@ function:
 ```php
 use Castor\Attribute\AsTask;
 
-use function Castor\ssh;
+use function Castor\ssh_run;
 
 #[AsTask]
 function ls(): void
@@ -29,6 +29,9 @@ Castor provides 2 functions `ssh_upload()` and `ssh_download()` to exchange file
 between localhost and a remote server:
 
 ```php
+use function Castor\ssh_download;
+use function Castor\ssh_upload;
+
 #[AsTask]
 function upload_file(): void
 {
