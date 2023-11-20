@@ -19,12 +19,18 @@ files. Download the correct one and make it available in your shell:
 
 Example for Linux:
 ```bash
-curl "https://github.com/jolicode/castor/releases/latest/download/castor.linux-amd64.phar" -Lso $HOME/.local/bin/castor && chmod u+x $HOME/.local/bin/castor
+curl "https://github.com/jolicode/castor/releases/latest/download/castor.linux-amd64.phar" -Lfso $HOME/.local/bin/castor && \
+    chmod u+x $HOME/.local/bin/castor && \
+    castor --version || \
+    (echo "Could not install castor. Is the target directory writeable?" && (exit 1))
 ```
 
 Example for MacOS:
 ```bash
-curl "https://github.com/jolicode/castor/releases/latest/download/castor.darwin-amd64.phar" -Lso /usr/local/bin/castor && chmod u+x /usr/local/bin/castor
+curl "https://github.com/jolicode/castor/releases/latest/download/castor.darwin-amd64.phar" -Lfso /usr/local/bin/castor && \
+    chmod /usr/local/bin/castor && \
+    castor --version || \
+    (echo "Could not install castor. Is the target directory writeable?" && (exit 1))
 ```
 
 Example for Windows:

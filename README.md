@@ -101,7 +101,10 @@ files. Download the correct one and make it available in your shell:
 
 Example for Linux:
 ```bash
-curl "https://github.com/jolicode/castor/releases/latest/download/castor.linux-amd64.phar" -Lso $HOME/.local/bin/castor && chmod u+x $HOME/.local/bin/castor
+curl "https://github.com/jolicode/castor/releases/latest/download/castor.linux-amd64.phar" -Lfso $HOME/.local/bin/castor && \
+    chmod u+x $HOME/.local/bin/castor && \
+    castor --version || \
+    (echo "Could not install castor. Is the target directory writeable?" && (exit 1))
 ```
 
 There are other ways to install Castor, please refer to the
