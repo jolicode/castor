@@ -14,6 +14,8 @@ Consider the following example:
 use Castor\Attribute\AsTask;
 use Castor\Fingerprint\FileHashStrategy;
 use function Castor\finder;
+use function Castor\fingerprint_exists;
+use function Castor\fingerprint_save;
 use function Castor\hasher;
 
 #[AsTask(description: 'Run a command and run part of it only if the fingerprint has changed')]
