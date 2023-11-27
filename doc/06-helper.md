@@ -255,9 +255,9 @@ There are some low level helpers to access internal stuff:
 * `task()` returns the running task
   [`Command`](https://github.com/symfony/symfony/blob/6.3/src/Symfony/Component/Console/Command/Command.php)
 * `input()` returns the current
-  [`Input`](https://github.com/symfony/symfony/blob/6.3/src/Symfony/Component/Console/Output/OutputInterface.php)
+  [`Input`](https://github.com/symfony/symfony/blob/6.3/src/Symfony/Component/Console/Input/InputInterface.php
 * `output()` returns the current
-  [`Output`](https://github.com/symfony/symfony/blob/6.3/src/Symfony/Component/Console/Input/InputInterface.php)
+  [`Output`](https://github.com/symfony/symfony/blob/6.3/src/Symfony/Component/Console/Output/OutputInterface.php)
 
 ## Load a .env file
 
