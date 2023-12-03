@@ -106,7 +106,7 @@ class RepackCommand extends Command
         $process = new Process([$box, 'compile', '--config=.box.json']);
 
         try {
-            $process->mustRun(fn ($type, $buffer) => print($buffer));
+            $process->mustRun(fn ($type, $buffer) => print ($buffer));
         } finally {
             unlink('.box.json');
             unlink('.main.php');
