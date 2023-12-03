@@ -2,12 +2,12 @@
 
 namespace Castor;
 
-use Joli\JoliNotif\Util\OsHelper;
+use JoliCode\PhpOsHelper\OsHelper;
 
 /**
  * Platform helper inspired by Composer's Platform class.
  */
-class PlatformUtil extends OsHelper
+class PlatformUtil
 {
     /**
      * getenv() equivalent but reads from the runtime global variables first.
@@ -33,7 +33,7 @@ class PlatformUtil extends OsHelper
             return $home;
         }
 
-        if (self::isWindows() && false !== ($home = self::getEnv('USERPROFILE'))) {
+        if (OsHelper::isWindows() && false !== ($home = self::getEnv('USERPROFILE'))) {
             return $home;
         }
 

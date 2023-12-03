@@ -6,7 +6,7 @@ use Castor\Console\Application;
 use Castor\Fingerprint\FingerprintHelper;
 use Joli\JoliNotif\Notification;
 use Joli\JoliNotif\NotifierFactory;
-use Joli\JoliNotif\Util\OsHelper;
+use JoliCode\PhpOsHelper\OsHelper;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Spatie\Ssh\Ssh;
