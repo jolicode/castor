@@ -28,6 +28,7 @@
     "require": {
         "php": ">=8.1",
         "jolicode/jolinotif": "^2.5.2",
+        "jolicode/php-os-helper": "^0.1.0",
         "monolog/monolog": "^3.4",
         "nikic/php-parser": "^4.16",
         "spatie/ssh": "^1.9.2",

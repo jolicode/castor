@@ -15,7 +15,7 @@ use Castor\SectionOutput;
 use Castor\Stub\StubsGenerator;
 use Castor\TaskDescriptor;
 use Castor\VerbosityLevel;
-use Joli\JoliNotif\Util\OsHelper;
+use JoliCode\PhpOsHelper\OsHelper;
 use Monolog\Logger;
 use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
 use Symfony\Component\Console\Application as SymfonyApplication;
