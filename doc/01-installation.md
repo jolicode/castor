@@ -58,7 +58,8 @@ composer config --list --global | grep -F "[home]"
 ```
 
 With this knowledge, we can now add the correct path.
-Instead of `/home/<my_username>` you can use `$HOME` and then append `/vendor/bin`.
+Instead of `/home/<my_username>` you can use `$HOME` and then append the
+composer path from `[home]` and append `/vendor/bin`.
 With my system the final path looks like this: `$HOME/.config/composer/vendor/bin`
 
 ```bash
