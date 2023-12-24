@@ -46,10 +46,23 @@ You can install Castor globally with Composer:
 composer global require jolicode/castor
 ```
 
-Then make sure that the Composer global bin directory is in your `PATH`:
+Then make sure that the Composer global bin directory is in your `PATH`.
+The global Composer path may vary depending on the operating system.
+It is best to run the following command and look at the "[home]" path.
 
 ```bash
-export PATH="$HOME/.composer/vendor/bin:$PATH"
+composer config --list --global | grep -F "[home]"
+
+# On my Ubuntu the output looks like this:
+# [home] /home/<my_username>/.config/composer
+```
+
+With this knowledge, we can now add the correct path.
+Instead of `/home/<my_username>` you can use `$HOME` and then append `/vendor/bin`.
+With my system the final path looks like this: `$HOME/.config/composer/vendor/bin`
+
+```bash
+export PATH="$HOME/.config/composer/vendor/bin:$PATH"
 ```
 
 ### Manually
