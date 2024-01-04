@@ -2,16 +2,17 @@
 
 namespace Castor\Tests\Fingerprint;
 
+use Castor\PlatformUtil;
 use Symfony\Component\Finder\Finder;
 
 class FingerprintCleaner
 {
     public static function clearFingerprintsCache(): void
     {
-        if (is_dir('/tmp/castor')) {
+        if (is_dir(PlatformUtil::getCacheDirectory())) {
             foreach (
                 (new Finder())
-                    ->in('/tmp/castor')
+                    ->in(PlatformUtil::getCacheDirectory())
                     ->contains('.fingerprint')
                     ->files() as $file
             ) {
@@ -20,7 +21,7 @@ class FingerprintCleaner
 
             foreach (
                 (new Finder())
-                    ->in('/tmp/castor')
+                    ->in(PlatformUtil::getCacheDirectory())
                     ->notContains('.fingerprint')
                     ->directories() as $directory
             ) {
