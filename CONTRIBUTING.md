@@ -10,10 +10,32 @@ Everybody should be able to help. Here's how you can do it:
 
 Here's some tips to make you the best contributor ever:
 
+* [Getting started](#getting-started)
 * [Rules](#rules)
 * [Green tests](#green-tests)
 * [Standard code](#standard-code)
 * [Keeping your fork up-to-date](#keeping-your-fork-up-to-date)
+
+## Getting started
+
+Contribute using the docker environment
+
+> Composer vendor is directly install during the container run. (You can also run `composer install` in the container)
+
+1. Start the container:
+    ```shell
+    docker compose up -d --build --wait
+    ```
+
+2. Access the container:
+    ```shell
+    docker compose exec php bash
+    ```
+   
+3. Test castor withing the container:
+    ```shell
+    castor --version
+    ```
 
 ## Rules
 

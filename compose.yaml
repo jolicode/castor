@@ -1,0 +1,9 @@
+version: '3.9'
+
+services:
+    php:
+        build:
+            target: dev
+        working_dir: /app
+        volumes:
+            - "./:/app"

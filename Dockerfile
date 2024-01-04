@@ -32,3 +32,41 @@ RUN if [ "$WITH_DOCKER" = "1" ]; then \
 
 WORKDIR /project
 ENTRYPOINT [ "/usr/local/bin/castor" ]
+
+FROM boxproject/box:4.6.1 as box
+
+FROM ubuntu:22.04 as dev
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    wget \
+    software-properties-common \
+    && add-apt-repository ppa:ondrej/php -y
+
+RUN apt-get update && apt-get install -y \
+    php8.2-cli \
+    php8.2-curl \
+    php8.2-mbstring \
+    php8.2-xml \
+    php8.2-zip \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=box /box.phar /usr/local/bin/box
+
+COPY --from=composer:2.6.6 /usr/bin/composer /usr/bin/composer
+
+COPY . ./
+
+RUN ln -s /app/bin/castor /usr/local/bin/castor
+
+COPY entrypoint.sh /
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT [ "/entrypoint.sh" ]
+
+
