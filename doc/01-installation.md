@@ -47,24 +47,30 @@ composer global require jolicode/castor
 ```
 
 Then make sure that the Composer global bin directory is in your `PATH`.
-The global Composer path may vary depending on the operating system.
-It is best to run the following command and look at the "[home]" path.
+
+> **Note**
+> The global Composer path may vary depending on your operating system.
+
+You can run the following command to determine it:
 
 ```bash
 composer config --list --global | grep -F "[home]"
 
-# On my Ubuntu the output looks like this:
-# [home] /home/<my_username>/.config/composer
+# It may looks like this on some Linux systems:
+# [home] /home/<your_username>/.config/composer
+# Or like this too:
+# [home] /home/<your_username>/.composer
 ```
 
-With this knowledge, we can now add the correct path.
-Instead of `/home/<my_username>` you can use `$HOME` and then append the
-composer path from `[home]` and append `/vendor/bin`.
-With my system the final path looks like this: `$HOME/.config/composer/vendor/bin`
+You can optionally replace `/home/<your_username>` with the Unix
+`$HOME` environment variable. Now, append `/vendor/bin` to that path to get the
+Composer global bin directory to add to your `PATH`:
 
 ```bash
 export PATH="$HOME/.config/composer/vendor/bin:$PATH"
 ```
+
+Any binary globally installed with Composer will now work everywhere.
 
 ### Manually
 
