@@ -830,9 +830,9 @@ function fingerprint_save(string $fingerprint): void
     FingerprintHelper::postProcessFingerprintForHash($fingerprint);
 }
 
-function fingerprint(callable $callback, string $fingerprint): void
+function fingerprint(callable $callback, string $fingerprint, bool $force = false): void
 {
-    if (!fingerprint_exists($fingerprint)) {
+    if (!fingerprint_exists($fingerprint) || $force) {
         try {
             $callback();
             fingerprint_save($fingerprint);

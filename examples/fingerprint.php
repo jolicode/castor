@@ -2,6 +2,7 @@
 
 namespace fingerprint;
 
+use Castor\Attribute\AsOption;
 use Castor\Attribute\AsTask;
 use Castor\Fingerprint\FileHashStrategy;
 
@@ -35,6 +36,23 @@ function task_with_some_fingerprint_with_helper(): void
             run('echo "Cool, no fingerprint ! Executing..."');
         },
         fingerprint: fingerprintCheck()
+    );
+
+    run('echo "Cool ! I finished !"');
+}
+
+#[AsTask(description: 'Run a command and run part of it only if the fingerprint has changed (with force option)')]
+function task_with_some_fingerprint_and_force(
+    #[AsOption(description: 'Force the command to run even if the fingerprint has not changed')] bool $force = false
+): void {
+    run('echo "Hello Task with Fingerprint !"');
+
+    fingerprint(
+        callback: function () {
+            run('echo "Cool, no fingerprint ! Executing..."');
+        },
+        fingerprint: fingerprintCheck(),
+        force: $force // This option will force the command to run even if the fingerprint has not changed
     );
 
     run('echo "Cool ! I finished !"');
