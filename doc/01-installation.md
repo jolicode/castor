@@ -28,7 +28,7 @@ curl "https://github.com/jolicode/castor/releases/latest/download/castor.linux-a
 Example for MacOS:
 ```bash
 curl "https://github.com/jolicode/castor/releases/latest/download/castor.darwin-amd64.phar" -Lfso /usr/local/bin/castor && \
-    chmod /usr/local/bin/castor && \
+    chmod u+x /usr/local/bin/castor && \
     castor --version || \
     (echo "Could not install castor. Is the target directory writeable?" && (exit 1))
 ```
