@@ -11,8 +11,8 @@ class FingerprintTaskWithSomeFingerprintWithForceOptionTest extends TaskTestCase
     // fingerprint:task-with-some-fingerprint-and-force
     public function test(): void
     {
-        $filepath = \dirname(__DIR__, 2) . '/examples/fingerprint_file.fingerprint_single
-        ';
+        $filepath = \dirname(__DIR__, 2) . '/examples/fingerprint_file.fingerprint_single';
+
         if (file_exists($filepath)) {
             unlink($filepath);
         }
