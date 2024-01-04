@@ -16,5 +16,6 @@ class AsTask
         public array $aliases = [],
         public array $onSignals = [],
         public string|bool $enabled = true,
-    ) {}
+    ) {
+    }
 }

@@ -8,5 +8,6 @@ class AsContext
     public function __construct(
         public string $name = '',
         public bool $default = false
-    ) {}
+    ) {
+    }
 }
