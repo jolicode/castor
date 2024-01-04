@@ -841,3 +841,15 @@ function fingerprint(callable $callback, string $fingerprint): void
         }
     }
 }
+
+/**
+ * Check if a command exists. This function is not reliable on Windows.
+ *
+ * The test is performed by running the command "which".
+ */
+function command_exists(string $command): bool
+{
+    $process = run("which {$command}", quiet: true, allowFailure: true);
+
+    return 0 === $process->getExitCode();
+}
