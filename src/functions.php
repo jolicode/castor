@@ -918,7 +918,7 @@ function wait_for_url(
 function wait_for_http_status(
     string $url,
     int $status = 200,
-    ?callable $contentCheckerCallback = null,
+    callable $contentCheckerCallback = null,
     int $timeout = 10,
     string $name = null,
     bool $throw = false,

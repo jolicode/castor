@@ -117,6 +117,7 @@ class NetworkUtil
                 $fp = @fsockopen($host, $port, $errno, $errstr, 1);
                 if ($fp) {
                     fclose($fp);
+
                     return true;
                 }
 
@@ -158,6 +159,7 @@ class NetworkUtil
                 $fp = @fopen($url, 'r');
                 if ($fp) {
                     fclose($fp);
+
                     return true;
                 }
 
@@ -183,7 +185,7 @@ class NetworkUtil
     public static function wait_for_http_status(
         string $url,
         int $status = 200,
-        ?callable $contentCheckerCallback = null,
+        callable $contentCheckerCallback = null,
         int $timeout = 10,
         string $name = null,
         bool $throw = false,

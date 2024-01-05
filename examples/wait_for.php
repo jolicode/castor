@@ -4,8 +4,6 @@ namespace wait_for;
 
 use Castor\Attribute\AsTask;
 
-use Fiber;
-
 use function Castor\wait_for;
 use function Castor\wait_for_http_status;
 use function Castor\wait_for_port;
@@ -42,11 +40,11 @@ function wait_for_url_with_content_checker_task(): void
 #[AsTask(description: 'Use custom wait for, to check anything')]
 function custom_wait_for_task(): void
 {
-    $tmpFilePath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'castor-wait-for-custom.tmp';
+    $tmpFilePath = sys_get_temp_dir() . \DIRECTORY_SEPARATOR . 'castor-wait-for-custom.tmp';
     $endTime = time() + 1;
-    $fiber = new Fiber(function () use ($endTime, $tmpFilePath) {
+    $fiber = new \Fiber(function () use ($endTime, $tmpFilePath) {
         while (time() < $endTime) {
-            Fiber::suspend();
+            \Fiber::suspend();
         }
 
         touch($tmpFilePath);
@@ -60,6 +58,7 @@ function custom_wait_for_task(): void
             if ($fiber->isSuspended()) {
                 $fiber->resume();
             }
+
             return file_exists($tmpFilePath);
         },
         timeout: 2,
