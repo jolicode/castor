@@ -2,6 +2,13 @@
 
 ## Not released yet
 
+* Add `wait_for()` function to wait for a condition to be true by using a
+  callback
+* Add `wait_for_port()` function to wait for a port to be open
+* Add `wait_for_url()` function to wait for an URL to be accessible
+* Add `wait_for_http_status()` function to wait for an URL to return a specific
+  HTTP status code (can check the response content too)
+
 ## 0.10.0 (2023-11-14)
 
 * Add `ssh_upload()` and `ssh_download()` functions to upload/download files via SSH

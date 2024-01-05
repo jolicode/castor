@@ -1,0 +1,2 @@
+Waiting for Google (https://example.com) to be accessible....  OK Google (https://example.com) is accessible !
+

@@ -53,6 +53,10 @@ signal:sigusr2                                       Captures SIGUSR2 signal
 ssh:download                                         Downloads a file from the remote server
 ssh:ls                                               Lists content of /var/www directory on the remote server
 ssh:upload                                           Uploads a file to the remote server
+wait-for:custom-wait-for-task                        Use custom wait for, to check anything
+wait-for:wait-for-port-task                          Wait for a service available on a port
+wait-for:wait-for-url-task                           Wait for an URL to be available
+wait-for:wait-for-url-with-content-checker-task      Wait for an URL to be available with a custom content checker
 watch:fs-change                                      Watches on filesystem changes
 watch:parallel-change                                Watches on filesystem changes with 2 watchers in parallel
 watch:stop                                           Watches on filesystem changes and stop after first change

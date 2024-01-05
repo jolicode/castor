@@ -1,0 +1,2 @@
+Waiting for My custom service name (93.184.216.34:80) to be accessible....  OK My custom service name (93.184.216.34:80) is accessible !
+
