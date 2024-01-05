@@ -4,18 +4,6 @@ namespace Castor;
 
 class NetworkUtil
 {
-    /**
-     * Check if a port is accessible for a host.
-     *
-     * @param int         $port    The port to check
-     * @param string      $host    The host to check (default to 127.0.0.1)
-     * @param int         $timeout The timeout in seconds
-     * @param string|null $name    The name of the port (will be displayed in the output when $quiet is false)
-     * @param bool        $throw   If true, will throw an exception if the port is not accessible instead of returning
-     * @param bool        $quiet   If true, will not output anything
-     *
-     * @return bool True if the port is accessible, false otherwise
-     */
     public static function wait_for_port(
         int $port,
         string $host = '127.0.0.1',
@@ -60,17 +48,6 @@ class NetworkUtil
         return false;
     }
 
-    /**
-     * Check if a URL is accessible.
-     *
-     * @param string      $url     The URL to check
-     * @param int         $timeout The timeout in seconds
-     * @param string|null $name    The name of the URL (will be displayed in the output when $quiet is false)
-     * @param bool        $throw   If true, will throw an exception if the URL is not accessible instead of returning
-     * @param bool        $quiet   If true, will not output anything
-     *
-     * @return bool True if the URL is accessible, false otherwise
-     */
     public static function wait_for_url(
         string $url,
         int $timeout = 30,
@@ -111,14 +88,6 @@ class NetworkUtil
         return false;
     }
 
-    /**
-     * @param string      $url     The URL to check
-     * @param int         $status  The HTTP status to check
-     * @param int         $timeout The timeout in seconds
-     * @param string|null $name    The name of the URL (will be displayed in the output when $quiet is false)
-     * @param bool        $throw   If true, will throw an exception if the URL is not accessible instead of returning
-     * @param bool        $quiet   If true, will not output anything
-     */
     public static function wait_for_http_status(
         string $url,
         int $status = 200,
