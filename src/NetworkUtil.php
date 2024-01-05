@@ -12,26 +12,41 @@ class NetworkUtil
         bool $throw = false,
         bool $quiet = false
     ): bool {
-        $msg = $name ? "Waiting for {$name} ({$host}:{$port}) to be accessible..." : "Waiting for {$host}:{$port} to be accessible...";
-        false === $quiet && io()->write($msg);
-        $successMessage = $name ? " <fg=green> OK {$name} ({$host}:{$port}) is accessible !</>" : " <fg=green> OK {$host}:{$port} is accessible !</>";
+        if ($name) {
+            $msg = "Waiting for {$name} ({$host}:{$port}) to be accessible...";
+            $successMessage = " <fg=green> OK {$name} ({$host}:{$port}) is accessible !</>";
+        } else {
+            $msg = "Waiting for {$host}:{$port} to be accessible...";
+            $successMessage = " <fg=green> OK {$host}:{$port} is accessible !</>";
+        }
+        if (false === $quiet) {
+            io()->write($msg);
+        }
 
         $start = time();
         $end = $start + $timeout;
 
+        $iterateCount = 0;
         while (time() < $end) {
-            false === $quiet && io()->write('.');
+            ++$iterateCount;
+            if (false === $quiet && 0 === $iterateCount % 10) {
+                io()->write('.');
+            }
             $fp = @fsockopen($host, $port, $errno, $errstr, 1);
             if ($fp) {
                 fclose($fp);
-                false === $quiet && io()->write($successMessage);
-                false === $quiet && io()->newLine();
+                if (false === $quiet) {
+                    io()->write($successMessage);
+                    io()->newLine();
+                }
 
                 return true;
             }
-            sleep(1);
+            sleep(0.1);
         }
-        false === $quiet && io()->writeln(' <fg=red>FAIL</>');
+        if (false === $quiet) {
+            io()->writeln(' <fg=red>FAIL</>');
+        }
 
         log("Port {$port} on {$host} not available after {$timeout} seconds", 'error', [
             'host' => $host,
@@ -55,25 +70,40 @@ class NetworkUtil
         bool $throw = false,
         bool $quiet = false
     ): bool {
-        $msg = $name ? "Waiting for {$name} ({$url}) to be accessible..." : "Waiting for {$url} to be accessible...";
-        false === $quiet && io()->write($msg);
-        $successMessage = $name ? "{$name} ({$url}) is accessible !" : "{$url} is accessible !";
+        if ($name) {
+            $msg = "Waiting for {$name} ({$url}) to be accessible...";
+            $successMessage = " <fg=green> OK {$name} ({$host}:{$port}) is accessible !</>";
+        } else {
+            $msg = "Waiting for {$url} to be accessible...";
+            $successMessage = " <fg=green> OK {$host}:{$port} is accessible !</>";
+        }
+        if (false === $quiet) {
+            io()->write($msg);
+        }
 
         $start = time();
         $end = $start + $timeout;
 
+        $iterateCount = 0;
         while (time() < $end) {
-            false === $quiet && io()->write('.');
+            ++$iterateCount;
+            if (false === $quiet && 0 === $iterateCount % 10) {
+                io()->write('.');
+            }
             $fp = @fopen($url, 'r');
             if ($fp) {
                 fclose($fp);
-                false === $quiet && io()->writeln(' <fg=green>OK</>');
-                false === $quiet && io()->write($successMessage);
-                false === $quiet && io()->newLine();
+                if ($iterateCount > 100) {
+                    if (false === $quiet) {
+                        io()->writeln(' <fg=green>OK</>');
+                        io()->write($successMessage);
+                        io()->newLine();
+                    }
 
-                return true;
+                    return true;
+                }
             }
-            sleep(1);
+            sleep(0.1);
         }
 
         log("URL {$url} not available after {$timeout} seconds", 'error', [
@@ -102,20 +132,26 @@ class NetworkUtil
         $start = time();
         $end = $start + $timeout;
 
+        $iterateCount = 0;
         while (time() < $end) {
-            false === $quiet && io()->write('.');
+            ++$iterateCount;
+            if (false === $quiet && 0 === $iterateCount % 10) {
+                io()->write('.');
+            }
             $fp = @fopen($url, 'r');
             if ($fp) {
                 $meta = stream_get_meta_data($fp);
                 $status = $meta['wrapper_data'][0] ?? null;
                 if (str_contains($status, '200 OK')) {
                     fclose($fp);
-                    false === $quiet && io()->writeln(' <fg=green>OK</>');
+                    if (false === $quiet) {
+                        io()->writeln(' <fg=green>OK</>');
+                    }
 
                     return true;
                 }
             }
-            sleep(1);
+            sleep(0.1);
         }
 
         log("URL {$url} not available after {$timeout} seconds", 'error', [
