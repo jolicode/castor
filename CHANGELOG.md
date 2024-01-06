@@ -2,7 +2,7 @@
 
 ## Not released yet
 
-* Add `--force` option to `fingerprint()` method to force run the callable, even if fingerprint is same
+* Add `force` argument to `fingerprint()` method to force run the callable, even if fingerprint is same
 * Fix directory for fingerprinted test
 
 ## 0.10.0 (2023-11-14)
