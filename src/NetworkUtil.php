@@ -112,7 +112,7 @@ class NetworkUtil
             $successMessage = " <fg=green> OK {$host}:{$port} is accessible !</>";
         }
 
-        self::wait_for(
+        return self::wait_for(
             callback: function () use ($host, $port) {
                 $fp = @fsockopen($host, $port, $errno, $errstr, 1);
                 if ($fp) {
@@ -131,8 +131,6 @@ class NetworkUtil
             message: $msg,
             successMessage: $successMessage
         );
-
-        return false;
     }
 
     /**
@@ -154,7 +152,7 @@ class NetworkUtil
             $successMessage = " <fg=green> OK {$url} is accessible !</>";
         }
 
-        self::wait_for(
+        return self::wait_for(
             callback: function () use ($url) {
                 $fp = @fopen($url, 'r');
                 if ($fp) {
@@ -173,8 +171,6 @@ class NetworkUtil
             message: $msg,
             successMessage: $successMessage
         );
-
-        return false;
     }
 
     /**
@@ -238,7 +234,7 @@ class NetworkUtil
             return true;
         };
 
-        self::wait_for(
+        return self::wait_for(
             callback: function () use ($contentCheckFunction, $quiet, $successMessage, $url, $status) {
                 try {
                     io()->write('.');
@@ -263,7 +259,5 @@ class NetworkUtil
             quiet: true,
             intervalMs: $intervalMs,
         );
-
-        return false;
     }
 }

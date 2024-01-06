@@ -4,6 +4,7 @@ namespace wait_for;
 
 use Castor\Attribute\AsTask;
 
+use function Castor\io;
 use function Castor\wait_for;
 use function Castor\wait_for_http_status;
 use function Castor\wait_for_port;
@@ -14,19 +15,22 @@ use function Symfony\Component\String\u;
 function wait_for_port_task(): void
 {
     $googleIp = gethostbyname('example.com');
-    wait_for_port(port: 80, host: $googleIp, timeout: 2, name: 'My custom service name');
+    $success = wait_for_port(port: 80, host: $googleIp, timeout: 2, name: 'My custom service name');
+
+    io()->writeln($success ? 'OK' : 'KO');
 }
 
 #[AsTask(description: 'Wait for an URL to be available')]
 function wait_for_url_task(): void
 {
-    wait_for_url(url: 'https://example.com', timeout: 2, name: 'Google');
+    $success = wait_for_url(url: 'https://example.com', timeout: 2, name: 'Google');
+    io()->writeln($success ? 'OK' : 'KO');
 }
 
 #[AsTask(description: 'Wait for an URL to be available with a custom content checker')]
 function wait_for_url_with_content_checker_task(): void
 {
-    wait_for_http_status(
+    $success = wait_for_http_status(
         url: 'https://example.com',
         status: 200,
         contentCheckerCallback: function (string $content) {
@@ -35,6 +39,7 @@ function wait_for_url_with_content_checker_task(): void
         timeout: 2,
         name: 'Google'
     );
+    io()->writeln($success ? 'OK' : 'KO');
 }
 
 #[AsTask(description: 'Use custom wait for, to check anything')]
@@ -50,7 +55,7 @@ function custom_wait_for_task(): void
         touch($tmpFilePath);
     });
 
-    wait_for(
+    $success = wait_for(
         callback: function () use ($tmpFilePath, $fiber) {
             if (!$fiber->isStarted()) {
                 $fiber->start();
@@ -67,6 +72,7 @@ function custom_wait_for_task(): void
         message: 'Waiting for my custom check (%s)...',
         successMessage: ' <fg=green> OK my custom check (%s) is accessible !</>'
     );
+    io()->writeln($success ? 'OK' : 'KO');
 
     unlink($tmpFilePath);
 }

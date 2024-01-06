@@ -1,2 +1,3 @@
 Waiting for Google (https://example.com) to return HTTP 200....  OK Google (https://example.com) returned HTTP 200 !
 As content checker callback, checking content... Content check OK !
+OK
