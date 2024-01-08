@@ -2,6 +2,9 @@
 
 ## Not released yet
 
+* Add `force` argument to `fingerprint()` method to force run the callable, even if fingerprint is same
+* Fix directory for fingerprinted test
+
 ## 0.10.0 (2023-11-14)
 
 * Add `ssh_upload()` and `ssh_download()` functions to upload/download files via SSH

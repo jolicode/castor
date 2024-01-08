@@ -8,7 +8,7 @@ class FingerprintTaskWithSomeFingerprintTest extends TaskTestCase
 {
     use FingerprintedTest;
 
-    // fingerprint:in-method
+    // fingerprint:task-with-some-fingerprint
     public function test(): void
     {
         // Run for the first time, should run

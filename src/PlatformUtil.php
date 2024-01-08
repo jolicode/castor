@@ -47,4 +47,12 @@ class PlatformUtil
 
         throw new \RuntimeException('Could not determine user directory.');
     }
+
+    public static function getCacheDirectory(): string
+    {
+        $home = self::getUserDirectory();
+        $directory = $home ? $home . '/.cache' : sys_get_temp_dir();
+
+        return $directory . '/castor';
+    }
 }
