@@ -29,6 +29,7 @@ failure:failure                                      A failing task not authoriz
 filesystem:filesystem                                Performs some operations on the filesystem
 filesystem:find                                      Search files and directories on the filesystem
 fingerprint:task-with-some-fingerprint               Run a command and run part of it only if the fingerprint has changed
+fingerprint:task-with-some-fingerprint-and-force     Run a command and run part of it only if the fingerprint has changed (with force option)
 fingerprint:task-with-some-fingerprint-with-helper   Run a command only if the fingerprint has changed
 foo:foo                                              Prints foo
 log:all-level                                        Logs some messages with different levels

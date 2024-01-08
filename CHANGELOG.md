@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+* Add `force` argument to `fingerprint()` method to force run the callable, even if fingerprint is same
+* Fix directory for fingerprinted test
 * Add `wait_for()` function to wait for a condition to be true by using a
   callback
 * Add `wait_for_port()` function to wait for a port to be open
