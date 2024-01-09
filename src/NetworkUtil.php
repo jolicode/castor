@@ -2,6 +2,7 @@
 
 namespace Castor;
 
+use Castor\Exception\WaitForExitedBeforeTimeoutException;
 use Castor\Exception\WaitForInvalidCallbackCheckException;
 use Castor\Exception\WaitForTimeoutReachedException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -19,35 +20,17 @@ class NetworkUtil
      * @param callable $callback function(): bool|null (return null to break the loop, true if is OK, false otherwise)
      *
      * @throws WaitForTimeoutReachedException
+     * @throws WaitForExitedBeforeTimeoutException
      */
     public static function wait_for(
         callable $callback,
         int $timeout = 10,
-        string $name = null,
-        bool $throw = false,
         bool $quiet = false,
         int $intervalMs = 100,
         string $message = null,
-        string $successMessage = null,
-    ): bool {
-        if ($name) {
-            if ($message) {
-                $msg = sprintf($message, $name);
-            } else {
-                $msg = "Waiting for {$name} to be available...";
-            }
-            if ($successMessage) {
-                $successMessage = sprintf($successMessage, $name);
-            } else {
-                $successMessage = " <fg=green> OK {$name} is available !</>";
-            }
-        } else {
-            $msg = $message ?? 'Waiting for callback to be available...';
-            $successMessage ??= ' <fg=green> OK callback is available !</>';
-        }
-
+    ): void {
         if (false === $quiet) {
-            io()->write($msg);
+            io()->write($message ?? 'Waiting for callback to be available...');
         }
 
         $start = time();
@@ -62,18 +45,18 @@ class NetworkUtil
             $callbackResult = $callback();
             if (true === $callbackResult) {
                 if (false === $quiet) {
-                    io()->writeln($successMessage);
+                    io()->writeln(' <fg=green>OK</>');
                     io()->newLine();
                 }
 
-                return true;
+                return;
             }
             if (null === $callbackResult) {
                 if (false === $quiet) {
                     io()->writeln(' <fg=red>FAIL</>');
                 }
 
-                return false;
+                throw new WaitForExitedBeforeTimeoutException();
             }
             usleep($intervalMs * 1000);
         }
@@ -85,34 +68,22 @@ class NetworkUtil
             'timeout' => $timeout,
         ]);
 
-        if ($throw) {
-            throw new WaitForTimeoutReachedException(name: $name ?? 'callback', timeout: $timeout);
-        }
-
-        return false;
+        throw new WaitForTimeoutReachedException(timeout: $timeout);
     }
 
     /**
      * @throws WaitForTimeoutReachedException
+     * @throws WaitForExitedBeforeTimeoutException
      */
     public static function wait_for_port(
         int $port,
         string $host = '127.0.0.1',
         int $timeout = 10,
-        string $name = null,
-        bool $throw = false,
         bool $quiet = false,
-        int $intervalMs = 100
-    ): bool {
-        if ($name) {
-            $msg = "Waiting for {$name} ({$host}:{$port}) to be accessible...";
-            $successMessage = " <fg=green> OK {$name} ({$host}:{$port}) is accessible !</>";
-        } else {
-            $msg = "Waiting for {$host}:{$port} to be accessible...";
-            $successMessage = " <fg=green> OK {$host}:{$port} is accessible !</>";
-        }
-
-        return self::wait_for(
+        int $intervalMs = 100,
+        string $message = null,
+    ): void {
+        self::wait_for(
             callback: function () use ($host, $port) {
                 $fp = @fsockopen($host, $port, $errno, $errstr, 1);
                 if ($fp) {
@@ -124,35 +95,24 @@ class NetworkUtil
                 return false;
             },
             timeout: $timeout,
-            name: $name,
-            throw: $throw,
             quiet: $quiet,
             intervalMs: $intervalMs,
-            message: $msg,
-            successMessage: $successMessage
+            message: sprintf($message ?? 'Waiting for port %s:%s to be accessible...', $host, $port),
         );
     }
 
     /**
      * @throws WaitForTimeoutReachedException
+     * @throws WaitForExitedBeforeTimeoutException
      */
     public static function wait_for_url(
         string $url,
         int $timeout = 10,
-        string $name = null,
-        bool $throw = false,
         bool $quiet = false,
-        int $intervalMs = 100
-    ): bool {
-        if ($name) {
-            $msg = "Waiting for {$name} ({$url}) to be accessible...";
-            $successMessage = " <fg=green> OK {$name} ({$url}) is accessible !</>";
-        } else {
-            $msg = "Waiting for {$url} to be accessible...";
-            $successMessage = " <fg=green> OK {$url} is accessible !</>";
-        }
-
-        return self::wait_for(
+        int $intervalMs = 100,
+        string $message = null,
+    ): void {
+        self::wait_for(
             callback: function () use ($url) {
                 $fp = @fopen($url, 'r');
                 if ($fp) {
@@ -164,51 +124,39 @@ class NetworkUtil
                 return false;
             },
             timeout: $timeout,
-            name: $name,
-            throw: $throw,
             quiet: $quiet,
             intervalMs: $intervalMs,
-            message: $msg,
-            successMessage: $successMessage
+            message: sprintf($message ?? 'Waiting for URL %s to be accessible...', $url),
         );
     }
 
     /**
-     * @param ?callable $contentCheckerCallback function(array|string $content): bool (array if application/json, string otherwise)
+     * @param ?callable $contentCheckerCallback function(array|string $content): bool (array if application/json,
+     *                                          string otherwise)
      *
      * @throws ($throw is true ? WaitForTimeoutReachedException : never)
+     * @throws WaitForExitedBeforeTimeoutException
      */
     public static function wait_for_http_status(
         string $url,
         int $status = 200,
         callable $contentCheckerCallback = null,
         int $timeout = 10,
-        string $name = null,
-        bool $throw = false,
         bool $quiet = false,
-        int $intervalMs = 100
-    ): bool {
-        if ($name) {
-            $msg = "Waiting for {$name} ({$url}) to return HTTP {$status}...";
-            $successMessage = " <fg=green> OK {$name} ({$url}) returned HTTP {$status} !</>";
-        } else {
-            $msg = "Waiting for {$url} to return HTTP {$status}...";
-            $successMessage = " <fg=green> OK {$url} returned HTTP {$status} !</>";
-        }
-
+        int $intervalMs = 100,
+        string $message = null,
+    ): void {
         if (false === $quiet) {
-            io()->write($msg);
+            io()->write($message ?? "Waiting for URL {$url} to return HTTP status {$status}...");
         }
 
         $contentCheckFunction = function (ResponseInterface $response) use (
             $contentCheckerCallback,
             $url,
-            $name,
             $quiet,
-            $throw
-        ): ?bool {
+        ): void {
             if (null === $contentCheckerCallback) {
-                return true;
+                return;
             }
             if (false === $quiet) {
                 io()->write('As content checker callback, checking content...');
@@ -218,34 +166,27 @@ class NetworkUtil
             $content = $isJson ? $response->toArray() : $response->getContent();
             $callbackResult = $contentCheckerCallback($content);
             if (false === $callbackResult) {
-                if ($throw) {
-                    throw new WaitForInvalidCallbackCheckException($name ?? $url);
-                }
-                if (false === $quiet) {
-                    io()->writeln(' <fg=red>FAIL</>');
+                io()->writeln(' <fg=red>FAIL</>');
 
-                    return null;
-                }
+                throw new WaitForInvalidCallbackCheckException(message: "HTTP Content checker callback returned false for URL {$url}");
             }
             if (false === $quiet) {
                 io()->writeln(' <fg=green>Content check OK !</>');
             }
-
-            return true;
         };
 
-        return self::wait_for(
-            callback: function () use ($contentCheckFunction, $quiet, $successMessage, $url, $status) {
+        self::wait_for(
+            callback: function () use ($quiet, $url, $status) {
                 try {
                     io()->write('.');
                     $response = http_client()->request('GET', $url);
 
                     if ($response->getStatusCode() === $status) {
                         if (false === $quiet) {
-                            io()->writeln($successMessage);
+                            io()->writeln(' <fg=green>OK</>');
                         }
 
-                        return $contentCheckFunction($response);
+                        return true;
                     }
                 } catch (DecodingExceptionInterface|ClientExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface|TransportExceptionInterface $e) {
                     return false;
@@ -254,8 +195,6 @@ class NetworkUtil
                 return false;
             },
             timeout: $timeout,
-            name: $name,
-            throw: $throw,
             quiet: true,
             intervalMs: $intervalMs,
         );

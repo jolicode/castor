@@ -10,33 +10,17 @@ The following parameters are common to most of the functions:
 
 `$timeout` (int): Timeout duration in seconds. Default is 10 seconds.
 
-`$name` (string|null): A custom name for the condition (optional).
-
-`$throw` (bool): Whether to throw an exception on timeout. Default is false and will return false on timeout or true on success.
-
 `$quiet` (bool): Whether to suppress output. Default is false.
 
 `$intervalMs` (int): Interval between checks in milliseconds. Default is 100.
 
+`$message` (?string): Custom message to display before waiting. Default is null.
+
 ## How to handle when the condition is met or when timeout is reached
 
-The `wait_for` and `wait_for_*` functions return a boolean value indicating whether the condition was met or not. If the condition was met, the function will return true. If the condition was not met within the specified timeout, the function will return false. If the `$throw` parameter is set to true, the function will throw a `WaitForTimeoutException` exception on timeout.
+The `wait_for` and `wait_for_*` functions throw a `WaitForTimeoutException` exception when the timeout is reached. You can catch this exception and handle it accordingly.
 
-### Examples:
-
-#### How to handle return values
-
-```php
-$result = wait_for(...); // wait_for_port, wait_for_url, wait_for_http_status, etc.
-
-if ($result) {
-    // Condition was met
-} else {
-    // Condition was not met
-}
-```
-
-#### How to handle exceptions
+### Example:
 
 ```php
 try {
@@ -64,12 +48,9 @@ The `wait_for` method is a general-purpose waiting function. It takes a callback
            return true; // Change this based on your condition
        },
        $timeout = 10,
-       $name = 'My Custom Condition',
-       $throw = false,
        $quiet = false,
        $intervalMs = 100,
-       $message = 'Waiting for %s to be available...', // %s will be replaced with the $name parameter
-       $successMessage = ' <fg=green> OK %s is available !</>' // %s will be replaced with the $name parameter
+       $message = 'Waiting for something to happen...',
    );
    ```
 
@@ -78,12 +59,9 @@ The `wait_for` method is a general-purpose waiting function. It takes a callback
    $result = wait_for(
        fn () => file_exists('/path/to/file.txt'),
        $timeout = 5,
-       $name = 'file',
-       $throw = true,
        $quiet = false,
        $intervalMs = 200,
-       $message = 'Waiting for %s to be available...',
-       $successMessage = ' <fg=green> OK %s is available !</>'
+       $message = 'Waiting for file.txt to be created...',
    );
    ```
 
@@ -100,10 +78,9 @@ $result = wait_for_port(
     $port = 8080,
     $host = '127.0.0.1',
     $timeout = 15,
-    $name = 'My Local Server',
-    $throw = false,
     $quiet = false,
-    $intervalMs = 500
+    $intervalMs = 500,
+    $message = 'Waiting for port localhost:8080 to be accessible...',
 );
 ```
 
@@ -117,12 +94,11 @@ The `wait_for_url` method waits for a URL to be accessible. It attempts to open 
 
 ```php
 $result = wait_for_url(
-    $url = 'http://example.com',
+    $url = 'https://example.com',
     $timeout = 10,
-    $name = 'Example Website',
-    $throw = true,
     $quiet = false,
-    $intervalMs = 200
+    $intervalMs = 200,
+    $message = 'Waiting for https://example.com to be accessible...',
 );
 ```
 
@@ -141,9 +117,8 @@ $result = wait_for_http_status(
     $status = 200,
     $contentCheckerCallback = fn (array|string $content) => isset($content['result']), // Type depends on the response content type (array for JSON application/json, string for text/plain, etc.)
     $timeout = 10,
-    $name = 'My Beautiful API',
-    $throw = false,
     $quiet = false,
-    $intervalMs = 300
+    $intervalMs = 300,
+    $message = 'Waiting for https://example.com/api to return HTTP 200 with valid content...',
 );
 ```

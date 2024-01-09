@@ -1,3 +1,2 @@
-Waiting for my custom check (My Custom Check Name).....  OK my custom check (My Custom Check Name) is accessible !
+Waiting for my custom check... OK
 
-OK
