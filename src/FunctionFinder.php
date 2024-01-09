@@ -52,7 +52,7 @@ class FunctionFinder
             foreach ($newFunctions as $functionName) {
                 $reflectionFunction = new \ReflectionFunction($functionName);
 
-                $attributes = $reflectionFunction->getAttributes(AsTask::class);
+                $attributes = $reflectionFunction->getAttributes(AsTask::class, \ReflectionAttribute::IS_INSTANCEOF);
                 if (\count($attributes) > 0) {
                     $taskAttribute = $attributes[0]->newInstance();
 
@@ -77,7 +77,7 @@ class FunctionFinder
                     continue;
                 }
 
-                $attributes = $reflectionFunction->getAttributes(AsContext::class);
+                $attributes = $reflectionFunction->getAttributes(AsContext::class, \ReflectionAttribute::IS_INSTANCEOF);
                 if (\count($attributes) > 0) {
                     $contextAttribute = $attributes[0]->newInstance();
 

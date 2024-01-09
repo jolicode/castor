@@ -24,4 +24,8 @@
             <directory suffix=".php">src</directory>
         </include>
     </coverage>
+
+    <php>
+        <server name="SYMFONY_PHPUNIT_REQUIRE" value="nikic/php-parser:^4" />
+    </php>
 </phpunit>

@@ -3,6 +3,7 @@
 ## Not released yet
 
 * Add `force` argument to `fingerprint()` method to force run the callable, even if fingerprint is same
+* Allow to override `AsTask` and `AsContext` attributes
 * Fix directory for fingerprinted test
 
 ## 0.10.0 (2023-11-14)
