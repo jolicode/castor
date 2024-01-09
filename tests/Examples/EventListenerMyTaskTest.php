@@ -4,12 +4,12 @@ namespace Castor\Tests\Examples;
 
 use Castor\Tests\TaskTestCase;
 
-class ContextContextMyDefaultTest extends TaskTestCase
+class EventListenerMyTaskTest extends TaskTestCase
 {
-    // context:context
+    // event-listener:my-task
     public function test(): void
     {
-        $process = $this->runTask(['context:context', '--context', 'my_default', '-vv']);
+        $process = $this->runTask(['event-listener:my-task']);
 
         $this->assertSame(0, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());

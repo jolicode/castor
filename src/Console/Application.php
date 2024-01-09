@@ -7,8 +7,11 @@ use Castor\Console\Command\TaskCommand;
 use Castor\Context;
 use Castor\ContextDescriptor;
 use Castor\ContextRegistry;
+use Castor\Event\AfterApplicationInitializationEvent;
+use Castor\EventDispatcher;
 use Castor\FunctionFinder;
 use Castor\GlobalHelper;
+use Castor\ListenerDescriptor;
 use Castor\Monolog\Processor\ProcessProcessor;
 use Castor\PlatformUtil;
 use Castor\SectionOutput;
@@ -43,6 +46,7 @@ class Application extends SymfonyApplication
         private readonly ContextRegistry $contextRegistry = new ContextRegistry(),
         private readonly StubsGenerator $stubsGenerator = new StubsGenerator(),
         private readonly FunctionFinder $functionFinder = new FunctionFinder(),
+        private readonly EventDispatcher $eventManager = new EventDispatcher(),
     ) {
         if (!class_exists(\RepackedApplication::class)) {
             $this->add(new RepackCommand());
@@ -60,6 +64,7 @@ class Application extends SymfonyApplication
         $sectionOutput = new SectionOutput($output);
 
         GlobalHelper::setApplication($this);
+        GlobalHelper::setEventManager($this->eventManager);
         GlobalHelper::setInput($input);
         GlobalHelper::setSectionOutput($sectionOutput);
         GlobalHelper::setLogger(new Logger(
@@ -114,6 +119,12 @@ class Application extends SymfonyApplication
                 $tasks[] = $function;
             } elseif ($function instanceof ContextDescriptor) {
                 $this->contextRegistry->add($function);
+            } elseif ($function instanceof ListenerDescriptor && null !== $function->reflectionFunction->getClosure()) {
+                $this->eventManager->addListener(
+                    $function->asListener->event,
+                    $function->reflectionFunction->getClosure(),
+                    $function->asListener->priority
+                );
             }
         }
 
@@ -133,6 +144,11 @@ class Application extends SymfonyApplication
                 $contextNames,
             ));
         }
+
+        $this->eventManager->dispatch(
+            new AfterApplicationInitializationEvent($this, $tasks),
+            AfterApplicationInitializationEvent::class,
+        );
 
         return $tasks;
     }
