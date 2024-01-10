@@ -3,6 +3,8 @@
 namespace Castor;
 
 use Castor\Console\Application;
+use Castor\Exception\WaitForExitedBeforeTimeoutException;
+use Castor\Exception\WaitForTimeoutReachedException;
 use Castor\Fingerprint\FingerprintHelper;
 use Joli\JoliNotif\Notification;
 use Joli\JoliNotif\NotifierFactory;
@@ -840,4 +842,89 @@ function fingerprint(callable $callback, string $fingerprint, bool $force = fals
             throw $e;
         }
     }
+}
+
+/**
+ * @throws WaitForTimeoutReachedException
+ * @throws WaitForExitedBeforeTimeoutException
+ */
+function wait_for(
+    callable $callback,
+    int $timeout = 10,
+    bool $quiet = false,
+    int $intervalMs = 100,
+    string $message = null,
+): void {
+    NetworkUtil::wait_for(
+        callback: $callback,
+        timeout: $timeout,
+        quiet: $quiet,
+        intervalMs: $intervalMs,
+        message: $message,
+    );
+}
+
+/**
+ * @throws WaitForTimeoutReachedException
+ * @throws WaitForExitedBeforeTimeoutException
+ */
+function wait_for_port(
+    int $port,
+    string $host = '127.0.0.1',
+    int $timeout = 10,
+    bool $quiet = false,
+    int $intervalMs = 100,
+    string $message = null,
+): void {
+    NetworkUtil::wait_for_port(
+        port: $port,
+        host: $host,
+        timeout: $timeout,
+        quiet: $quiet,
+        intervalMs: $intervalMs,
+        message: $message,
+    );
+}
+
+/**
+ * @throws WaitForTimeoutReachedException
+ * @throws WaitForExitedBeforeTimeoutException
+ */
+function wait_for_url(
+    string $url,
+    int $timeout = 10,
+    bool $quiet = false,
+    int $intervalMs = 100,
+    string $message = null,
+): void {
+    NetworkUtil::wait_for_url(
+        url: $url,
+        timeout: $timeout,
+        quiet: $quiet,
+        intervalMs: $intervalMs,
+        message: $message,
+    );
+}
+
+/**
+ * @throws WaitForTimeoutReachedException
+ */
+function wait_for_http_status(
+    string $url,
+    int $status = 200,
+    callable $contentCheckerCallback = null,
+    int $timeout = 10,
+    bool $quiet = false,
+    int $intervalMs = 100,
+    string $message = null,
+): void {
+    NetworkUtil::wait_for_http_status(
+        url: $url,
+        status: $status,
+        contentCheckerCallback: $contentCheckerCallback,
+        timeout: $timeout,
+        quiet: $quiet,
+        intervalMs: $intervalMs,
+        message: $message,
+    );
 }
