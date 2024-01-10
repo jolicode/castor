@@ -8,11 +8,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class EventDispatcher implements EventDispatcherInterface
 {
-    private SymfonyEventDispatcher $eventDispatcher;
-
-    public function __construct()
-    {
-        $this->eventDispatcher = new SymfonyEventDispatcher();
+    public function __construct(
+        private EventDispatcherInterface $eventDispatcher = new SymfonyEventDispatcher(),
+    ) {
     }
 
     public function dispatch(object $event, string $eventName = null): object
@@ -30,6 +28,7 @@ class EventDispatcher implements EventDispatcherInterface
             'listener' => $listener,
             'priority' => $priority,
         ]);
+
         $this->eventDispatcher->addListener($eventName, $listener, $priority);
     }
 
@@ -38,6 +37,7 @@ class EventDispatcher implements EventDispatcherInterface
         log("Removing listener for event {$eventName}", 'debug', [
             'listener' => $listener,
         ]);
+
         $this->eventDispatcher->removeListener($eventName, $listener);
     }
 

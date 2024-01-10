@@ -27,8 +27,8 @@ class TaskCommand extends Command implements SignalableCommandInterface
     private array $argumentsMap = [];
 
     public function __construct(
-        private readonly AsTask $taskAttribute,
-        private readonly \ReflectionFunction $function,
+        public readonly AsTask $taskAttribute,
+        public readonly \ReflectionFunction $function,
     ) {
         $this->setDescription($taskAttribute->description);
         $this->setAliases($taskAttribute->aliases);
@@ -149,15 +149,12 @@ class TaskCommand extends Command implements SignalableCommandInterface
             if (!\is_callable($function)) {
                 throw new \LogicException('The function is not a callable.');
             }
-            GlobalHelper::getEventManager()->dispatch(
-                new BeforeExecuteTaskEvent($this, $this->taskAttribute),
-                BeforeExecuteTaskEvent::class,
-            );
+
+            GlobalHelper::getEventDispatcher()->dispatch(new BeforeExecuteTaskEvent($this));
+
             $result = $function(...$args);
-            GlobalHelper::getEventManager()->dispatch(
-                new AfterExecuteTaskEvent($this, $this->taskAttribute, $result),
-                AfterExecuteTaskEvent::class,
-            );
+
+            GlobalHelper::getEventDispatcher()->dispatch(new AfterExecuteTaskEvent($this, $result));
         } catch (\Error $e) {
             $castorFunctions = array_filter(get_defined_functions()['user'], fn (string $functionName) => str_starts_with($functionName, 'castor\\'));
             $castorFunctionsWithoutNamespace = array_map(fn (string $functionName) => substr($functionName, \strlen('castor\\')), $castorFunctions);

@@ -32,7 +32,7 @@ class GlobalHelper
     private static HttpClientInterface $httpClient;
     private static CacheItemPoolInterface&CacheInterface $cache;
     private static ExpressionLanguage $expressionLanguage;
-    private static EventDispatcher $eventManager;
+    private static EventDispatcher $eventDispatcher;
 
     public static function setApplication(Application $application): void
     {
@@ -198,13 +198,13 @@ class GlobalHelper
         return self::$expressionLanguage;
     }
 
-    public static function getEventManager(): EventDispatcher
+    public static function getEventDispatcher(): EventDispatcher
     {
-        return self::$eventManager;
+        return self::$eventDispatcher;
     }
 
-    public static function setEventManager(EventDispatcher $eventManager): void
+    public static function setEventDispatcher(EventDispatcher $eventDispatcher): void
     {
-        self::$eventManager = $eventManager;
+        self::$eventDispatcher = $eventDispatcher;
     }
 }

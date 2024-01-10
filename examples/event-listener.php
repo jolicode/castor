@@ -15,7 +15,6 @@ function my_task(): void
     io()->writeln('Hello from task!');
 }
 
-// Listen to a provided event
 #[AsListener(event: BeforeExecuteTaskEvent::class, priority: 1)]
 function my_listener(BeforeExecuteTaskEvent $event): void
 {

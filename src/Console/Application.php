@@ -28,6 +28,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\VarDumper\Cloner\AbstractCloner;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpExceptionInterface;
 
@@ -46,13 +47,16 @@ class Application extends SymfonyApplication
         private readonly ContextRegistry $contextRegistry = new ContextRegistry(),
         private readonly StubsGenerator $stubsGenerator = new StubsGenerator(),
         private readonly FunctionFinder $functionFinder = new FunctionFinder(),
-        private readonly EventDispatcher $eventManager = new EventDispatcher(),
+        private readonly EventDispatcher $eventDispatcher = new EventDispatcher(),
     ) {
         if (!class_exists(\RepackedApplication::class)) {
             $this->add(new RepackCommand());
         }
 
         $this->setCatchErrors(true);
+
+        AbstractCloner::$defaultCasters[self::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
+        AbstractCloner::$defaultCasters[AfterApplicationInitializationEvent::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
 
         parent::__construct(static::NAME, static::VERSION);
     }
@@ -64,7 +68,7 @@ class Application extends SymfonyApplication
         $sectionOutput = new SectionOutput($output);
 
         GlobalHelper::setApplication($this);
-        GlobalHelper::setEventManager($this->eventManager);
+        GlobalHelper::setEventDispatcher($this->eventDispatcher);
         GlobalHelper::setInput($input);
         GlobalHelper::setSectionOutput($sectionOutput);
         GlobalHelper::setLogger(new Logger(
@@ -120,7 +124,7 @@ class Application extends SymfonyApplication
             } elseif ($function instanceof ContextDescriptor) {
                 $this->contextRegistry->add($function);
             } elseif ($function instanceof ListenerDescriptor && null !== $function->reflectionFunction->getClosure()) {
-                $this->eventManager->addListener(
+                $this->eventDispatcher->addListener(
                     $function->asListener->event,
                     $function->reflectionFunction->getClosure(),
                     $function->asListener->priority
@@ -145,10 +149,7 @@ class Application extends SymfonyApplication
             ));
         }
 
-        $this->eventManager->dispatch(
-            new AfterApplicationInitializationEvent($this, $tasks),
-            AfterApplicationInitializationEvent::class,
-        );
+        $this->eventDispatcher->dispatch(new AfterApplicationInitializationEvent($this, $tasks));
 
         return $tasks;
     }

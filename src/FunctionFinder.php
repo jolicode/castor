@@ -34,6 +34,35 @@ class FunctionFinder
     }
 
     /**
+     * @param iterable<\SplFileInfo> $files
+     *
+     * @return iterable<TaskDescriptor|ContextDescriptor|ListenerDescriptor>
+     *
+     * @throws \ReflectionException
+     */
+    private function doFindFunctions(iterable $files): iterable
+    {
+        $existingFunctions = get_defined_functions()['user'];
+
+        foreach ($files as $file) {
+            castor_require($file->getPathname());
+
+            $newExistingFunctions = get_defined_functions()['user'];
+
+            $newFunctions = array_diff($newExistingFunctions, $existingFunctions);
+            $existingFunctions = $newExistingFunctions;
+
+            foreach ($newFunctions as $functionName) {
+                $reflectionFunction = new \ReflectionFunction($functionName);
+
+                yield from $this->resolveTasks($reflectionFunction);
+                yield from $this->resolveContexts($reflectionFunction);
+                yield from $this->resolveListeners($reflectionFunction);
+            }
+        }
+    }
+
+    /**
      * @return iterable<TaskDescriptor>
      */
     private function resolveTasks(\ReflectionFunction $reflectionFunction): iterable
@@ -80,37 +109,6 @@ class FunctionFinder
             }
 
             yield new ContextDescriptor($contextAttribute, $reflectionFunction);
-        }
-
-        return $attributes;
-    }
-
-    /**
-     * @param iterable<\SplFileInfo> $files
-     *
-     * @return iterable<TaskDescriptor|ContextDescriptor|ListenerDescriptor>
-     *
-     * @throws \ReflectionException
-     */
-    private function doFindFunctions(iterable $files): iterable
-    {
-        $existingFunctions = get_defined_functions()['user'];
-
-        foreach ($files as $file) {
-            castor_require($file->getPathname());
-
-            $newExistingFunctions = get_defined_functions()['user'];
-
-            $newFunctions = array_diff($newExistingFunctions, $existingFunctions);
-            $existingFunctions = $newExistingFunctions;
-
-            foreach ($newFunctions as $functionName) {
-                $reflectionFunction = new \ReflectionFunction($functionName);
-
-                yield from $this->resolveTasks($reflectionFunction);
-                yield from $this->resolveContexts($reflectionFunction);
-                yield from $this->resolveListeners($reflectionFunction);
-            }
         }
     }
 
