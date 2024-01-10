@@ -2,10 +2,10 @@
 
 ## Not released yet
 
-* Add `AsListener` attribute to register a task as event listener
-* Add `force` argument to `fingerprint()` method to force run the callable, even if fingerprint is same
-* Allow to override `AsTask` and `AsContext` attributes
+* Add `AsListener` attribute to register an event listener
 * Add `wait_for()`, `wait_for_port()`, `wait_for_url()`, `wait_for_http_status()` functions
+* Allow to override `AsTask` and `AsContext` attributes
+* Add `force` argument to `fingerprint()` method to force run the callable, even if fingerprint is same
 * Fix directory for fingerprinted test
 
 ## 0.10.0 (2023-11-14)

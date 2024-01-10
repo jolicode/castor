@@ -9,7 +9,7 @@ use Castor\Event\BeforeExecuteTaskEvent;
 
 use function Castor\io;
 
-#[AsTask(description: 'Task that need ensure the environment is set')]
+#[AsTask(description: 'An dummy task wich event listeners attached')]
 function my_task(): void
 {
     io()->writeln('Hello from task!');
