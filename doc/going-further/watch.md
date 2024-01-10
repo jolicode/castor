@@ -1,4 +1,4 @@
-# Watch
+# Watching file changes
 
 Castor provides a `watch()` function that will watch a file or a directory and
 call a callback function when the file or directory changes:

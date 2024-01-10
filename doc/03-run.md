@@ -127,7 +127,9 @@ function foo(): void
 }
 ```
 
-Castor also provides a `capture()` function that will run the command quietly,
+### The `capture()` function
+
+Castor provides a `capture()` function that will run the command quietly,
 trims the output, then returns it:
 
 ```php
@@ -143,6 +145,8 @@ function whoami()
     echo "Hello: $whoami\n";
 }
 ```
+
+### The `exit_code()` function
 
 Castor provides a `exit_code()` function that will run the command, allowing
 the process to fail and return its exit code. This is particularly useful when
@@ -211,7 +215,7 @@ function foo(): void
 }
 ```
 
-> **Warning**
+> [!WARNING]
 > When using a TTY, the output of the command is empty in the process object
 > (when using `getOutput()` or `getErrorOutput()`).
 

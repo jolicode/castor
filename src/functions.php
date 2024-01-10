@@ -8,6 +8,7 @@ use Castor\Exception\WaitFor\TimeoutReachedException;
 use Joli\JoliNotif\Notification;
 use Joli\JoliNotif\NotifierFactory;
 use JoliCode\PhpOsHelper\OsHelper;
+use Monolog\Logger;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Spatie\Ssh\Ssh;
@@ -441,7 +442,7 @@ function ssh_configuration(
         $sshOptions['enable_strict_check'] ? $ssh->enableStrictHostKeyChecking() : $ssh->disableStrictHostKeyChecking();
     }
     if ($sshOptions['password_authentication'] ?? false) {
-        $sshOptions['password_authentication'] ? $ssh->enablePasswordAuthentication() : $ssh->disableStrictHostKeyChecking();
+        $sshOptions['password_authentication'] ? $ssh->enablePasswordAuthentication() : $ssh->disablePasswordAuthentication();
     }
 
     return $ssh;
@@ -551,6 +552,11 @@ function watch(string|array $path, callable $function, Context $context = null):
 function log(string|\Stringable $message, mixed $level = 'info', array $context = []): void
 {
     GlobalHelper::getLogger()->log($level, $message, $context);
+}
+
+function logger(): Logger
+{
+    return GlobalHelper::getLogger();
 }
 
 function app(): Application
@@ -714,7 +720,11 @@ function import(string $path): void
     }
 }
 
-// Remove the last frame (the call to run() to display a nice message to the end user
+/**
+ * Remove the last frame (the call to run() to display a nice message to the end user.
+ *
+ * @internal
+ */
 function fix_exception(\Exception $exception): \Exception
 {
     $lastFrame = $exception->getTrace()[0];

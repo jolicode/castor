@@ -1,3 +1,0 @@
-Hello Task with Fingerprint but with helper !
-Cool, no fingerprint ! Executing...
-Cool ! I finished !

@@ -4,11 +4,11 @@ namespace Castor\Tests\Fingerprint;
 
 use Castor\Tests\TaskTestCase;
 
-class FingerprintTaskWithSomeFingerprintWithHelperTest extends TaskTestCase
+class FingerprintTaskWithAFingerprintTest extends TaskTestCase
 {
     use FingerprintedTest;
 
-    // fingerprint:task-with-some-fingerprint-with-helper
+    // fingerprint:task-with-a-fingerprint
     public function test(): void
     {
         // Run for the first time, should run
@@ -30,7 +30,7 @@ class FingerprintTaskWithSomeFingerprintWithHelperTest extends TaskTestCase
 
         file_put_contents($filepath, $withFileContent);
 
-        $process = $this->runTask(['fingerprint:task-with-some-fingerprint-with-helper']);
+        $process = $this->runTask(['fingerprint:task-with-complete-fingerprint-check']);
 
         if (file_exists($expectedOutputFilePath)) {
             $this->assertStringEqualsFile($expectedOutputFilePath, $process->getOutput());

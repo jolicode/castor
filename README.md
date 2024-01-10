@@ -119,16 +119,8 @@ Discover more by reading the docs:
 * [The `run()` Function](doc/03-run.md)
 * [Command Arguments](doc/04-arguments.md)
 * [Using the Context](doc/05-context.md)
-* [Asking Something, Progress Bar, Cache, Finder, Filesystem, .env, and more](doc/06-helper.md)
-* [Watching Files](doc/07-watch.md)
-* [Parallel Processing](doc/08-parallel.md)
-* [Notification](doc/09-notify.md)
-* [Log and Debug](doc/10-log.md)
-* [SSH and remote servers](doc/11-ssh.md)
-* [Handling signals](doc/12-signals.md)
-* [Repacking your application in a new phar](doc/13-repack.md)
-* [Fingerprinting and code execution when a hash changes](doc/14-fingerprint.md)
-* [Wait For Utilities (Network util to wait for port, http code, or anything with callback)](doc/15-wait-for.md)
+* [Castor reference](doc/06-reference.md)
+* [Going further with Castor](doc/going-further/index.md)
 
 ## Questions and answers
 

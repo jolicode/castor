@@ -1,9 +1,9 @@
 # Repacking your application in a new phar
 
-You have created a castor application, with many tasks, and you want to
+You have created a Castor application, with many tasks, and you want to
 distribute it as a single phar file? Castor can help you with that.
 
-In your project, install castor as a dependency:
+In your project, install Castor as a dependency:
 
 ```bash
 composer require castor/castor
@@ -30,6 +30,7 @@ See the help for more options:
 vendor/bin/castor repack --help
 ```
 
-> **Note**: Castor will automatically import all files in the current directly.
+> [!NOTE]
+> Castor will automatically import all files in the current directly.
 > So ensure to have the less files possible in the directory where you run the
 > repack command to avoid including useless files in the phar.

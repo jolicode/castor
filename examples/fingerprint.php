@@ -13,52 +13,52 @@ use function Castor\fingerprint_save;
 use function Castor\hasher;
 use function Castor\run;
 
-#[AsTask(description: 'Run a command and run part of it only if the fingerprint has changed')]
-function task_with_some_fingerprint(): void
+#[AsTask(description: 'Execute a callback only if the fingerprint has changed')]
+function task_with_a_fingerprint(): void
 {
-    run('echo "Hello Task with Fingerprint !"');
-
-    if (!fingerprint_exists(fingerprintCheck())) {
-        run('echo "Cool, no fingerprint ! Executing..."');
-        fingerprint_save(fingerprintCheck());
-    }
-
-    run('echo "Cool ! I finished !"');
-}
-
-#[AsTask(description: 'Run a command only if the fingerprint has changed')]
-function task_with_some_fingerprint_with_helper(): void
-{
-    run('echo "Hello Task with Fingerprint but with helper !"');
+    run('echo "Hello Task with Fingerprint!"');
 
     fingerprint(
         callback: function () {
-            run('echo "Cool, no fingerprint ! Executing..."');
+            run('echo "Cool, no fingerprint! Executing..."');
         },
-        fingerprint: fingerprintCheck()
+        fingerprint: my_fingerprint_check()
     );
 
-    run('echo "Cool ! I finished !"');
+    run('echo "Cool! I finished!"');
 }
 
-#[AsTask(description: 'Run a command and run part of it only if the fingerprint has changed (with force option)')]
-function task_with_some_fingerprint_and_force(
-    #[AsOption(description: 'Force the command to run even if the fingerprint has not changed')] bool $force = false
+#[AsTask(description: 'Check if the fingerprint has changed before executing some code')]
+function task_with_complete_fingerprint_check(): void
+{
+    run('echo "Hello Task with Fingerprint!"');
+
+    if (!fingerprint_exists(my_fingerprint_check())) {
+        run('echo "Cool, no fingerprint! Executing..."');
+        fingerprint_save(my_fingerprint_check());
+    }
+
+    run('echo "Cool! I finished!"');
+}
+
+#[AsTask(description: 'Check if the fingerprint has changed before executing a callback (with force option)')]
+function task_with_a_fingerprint_and_force(
+    #[AsOption(description: 'Force the callback to run even if the fingerprint has not changed')] bool $force = false
 ): void {
-    run('echo "Hello Task with Fingerprint !"');
+    run('echo "Hello Task with Fingerprint!"');
 
     fingerprint(
         callback: function () {
-            run('echo "Cool, no fingerprint ! Executing..."');
+            run('echo "Cool, no fingerprint! Executing..."');
         },
-        fingerprint: fingerprintCheck(),
+        fingerprint: my_fingerprint_check(),
         force: $force // This option will force the command to run even if the fingerprint has not changed
     );
 
-    run('echo "Cool ! I finished !"');
+    run('echo "Cool! I finished!"');
 }
 
-function fingerprintCheck(): string
+function my_fingerprint_check(): string
 {
     return hasher()
         ->writeWithFinder(

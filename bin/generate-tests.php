@@ -50,9 +50,9 @@ $commandFilterList = [
     'repack',
     'run:ls',
     'run:run-parallel',
-    'fingerprint:task-with-some-fingerprint', // Tested in Castor\Tests\Fingerprint\FingerprintTaskWithSomeFingerprintTest
-    'fingerprint:task-with-some-fingerprint-with-helper', // Tested in Castor\Tests\Fingerprint\FingerprintTaskWithSomeFingerprintWithHelperTest
-    'fingerprint:task-with-some-fingerprint-and-force', // Tested in Castor\Tests\Fingerprint\FingerprintTaskWithSomeFingerprintWithForceOptionTest
+    'fingerprint:task-with-a-fingerprint ', // Tested in Castor\Tests\Fingerprint\FingerprintTaskWithAFingerprintTest
+    'fingerprint:task-with-complete-fingerprint-check', // Tested in Castor\Tests\Fingerprint\FingerprintTaskWithCompleteFingerprintTest
+    'fingerprint:task-with-a-fingerprint-and-force', // Tested in Castor\Tests\Fingerprint\FingerprintTaskWithAFingerprintAndForceTest
 ];
 $optionFilterList = array_flip(['help', 'quiet', 'verbose', 'version', 'ansi', 'no-ansi', 'no-interaction', 'context']);
 foreach ($applicationDescription['commands'] as $command) {

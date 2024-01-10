@@ -58,10 +58,10 @@ use the `OutputInterface`. Here is a small guide:
 * Use the `OutputInterface` when you want to display something to the user;
 * Use the `log()` function when you want to add some **debug** information.
 
-## Accessing the raw logger
+## The `logger()` function
 
 If you need to access the raw logger instance, you can get it with the
-`get_logger()` function:
+`logger()` function:
 
 ```php
 use Castor\Attribute\AsContext;
@@ -69,12 +69,12 @@ use Castor\Context;
 use Castor\PathHelper;
 use Monolog\Handler\StreamHandler;
 
-use function Castor\get_logger;
+use function Castor\logger;
 
 #[AsContext(name: 'preprod')]
 function preprodContext(): Context
 {
-    get_logger()->pushHandler(new StreamHandler(PathHelper::getRoot() . '/preprod.log'));
+    logger()->pushHandler(new StreamHandler(PathHelper::getRoot() . '/preprod.log'));
 
     //return new Context(...);
 }
