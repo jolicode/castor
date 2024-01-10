@@ -18,6 +18,7 @@ return (new PhpCsFixer\Config())
         '@Symfony' => true,
         '@Symfony:risky' => true,
         'heredoc_indentation' => false,
+        'single_line_empty_body' => false,
         'ordered_types' => false, // From @PhpCsFixer but we don't want it
         'php_unit_internal_class' => false, // From @PhpCsFixer but we don't want it
         'php_unit_test_class_requires_covers' => false, // From @PhpCsFixer but we don't want it
