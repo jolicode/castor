@@ -1,0 +1,5 @@
+Hello from listener! (higher priority) before task execution
+Hello from listener! (lower priority)
+Ola from listener! I am listening to multiple events but only showing only for BeforeExecuteTaskEvent
+Hello from task!
+Ola from listener! I am listening to multiple events but only showing only for AfterExecuteTaskEvent

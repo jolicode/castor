@@ -6,6 +6,8 @@ use Castor\Attribute\AsArgument;
 use Castor\Attribute\AsCommandArgument;
 use Castor\Attribute\AsOption;
 use Castor\Attribute\AsTask;
+use Castor\Event\AfterExecuteTaskEvent;
+use Castor\Event\BeforeExecuteTaskEvent;
 use Castor\GlobalHelper;
 use Castor\SluggerHelper;
 use Symfony\Component\Console\Command\Command;
@@ -25,8 +27,8 @@ class TaskCommand extends Command implements SignalableCommandInterface
     private array $argumentsMap = [];
 
     public function __construct(
-        private readonly AsTask $taskAttribute,
-        private readonly \ReflectionFunction $function,
+        public readonly AsTask $taskAttribute,
+        public readonly \ReflectionFunction $function,
     ) {
         $this->setDescription($taskAttribute->description);
         $this->setAliases($taskAttribute->aliases);
@@ -143,11 +145,16 @@ class TaskCommand extends Command implements SignalableCommandInterface
         }
 
         try {
-            $function = $this->function->getName();
+            $function = $this->function->getClosure();
             if (!\is_callable($function)) {
                 throw new \LogicException('The function is not a callable.');
             }
+
+            GlobalHelper::getEventDispatcher()->dispatch(new BeforeExecuteTaskEvent($this));
+
             $result = $function(...$args);
+
+            GlobalHelper::getEventDispatcher()->dispatch(new AfterExecuteTaskEvent($this, $result));
         } catch (\Error $e) {
             $castorFunctions = array_filter(get_defined_functions()['user'], fn (string $functionName) => str_starts_with($functionName, 'castor\\'));
             $castorFunctionsWithoutNamespace = array_map(fn (string $functionName) => substr($functionName, \strlen('castor\\')), $castorFunctions);
