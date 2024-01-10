@@ -1,8 +1,8 @@
 <?php
 
-namespace Castor\Exception;
+namespace Castor\Exception\WaitFor;
 
-class WaitForExitedBeforeTimeoutException extends \Exception
+class ExitedBeforeTimeoutException extends \RuntimeException
 {
     public function __construct()
     {
