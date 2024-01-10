@@ -24,7 +24,7 @@ context:context                                      Displays information about 
 context:context-info-forced                          Displays information about the context
 context:context-with                                 Displays information about the context, using a specific context
 env:env                                              Display environment variables
-event-listener:my-task                               Task that need ensure the environment is set
+event-listener:my-task                               An dummy task with event listeners attached
 failure:allow-failure                                A failing task authorized to fail
 failure:failure                                      A failing task not authorized to fail
 filesystem:filesystem                                Performs some operations on the filesystem

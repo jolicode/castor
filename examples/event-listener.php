@@ -9,7 +9,7 @@ use Castor\Event\BeforeExecuteTaskEvent;
 
 use function Castor\io;
 
-#[AsTask(description: 'An dummy task wich event listeners attached')]
+#[AsTask(description: 'An dummy task with event listeners attached')]
 function my_task(): void
 {
     io()->writeln('Hello from task!');
