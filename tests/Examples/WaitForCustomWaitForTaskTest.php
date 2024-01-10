@@ -9,7 +9,7 @@ class WaitForCustomWaitForTaskTest extends TaskTestCase
     // wait-for:custom-wait-for-task
     public function test(): void
     {
-        $process = $this->runTask(['wait-for:custom-wait-for-task']);
+        $process = $this->runTask(['wait-for:custom-wait-for-task', '--sleep', 1]);
 
         $this->assertSame(0, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());

@@ -3,8 +3,9 @@
 namespace wait_for;
 
 use Castor\Attribute\AsTask;
-use Castor\Exception\WaitForExitedBeforeTimeoutException;
-use Castor\Exception\WaitForTimeoutReachedException;
+use Castor\Exception\WaitFor\ExitedBeforeTimeoutException;
+use Castor\Exception\WaitFor\TimeoutReachedException;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
 use function Castor\io;
 use function Castor\wait_for;
@@ -20,9 +21,9 @@ function wait_for_port_task(): void
 
     try {
         wait_for_port(port: 80, host: $googleIp, timeout: 2, message: 'Checking if example.com is available...');
-    } catch (WaitForExitedBeforeTimeoutException $e) {
+    } catch (ExitedBeforeTimeoutException $e) {
         io()->error('example.com is not available. (exited before timeout)');
-    } catch (WaitForTimeoutReachedException $e) {
+    } catch (TimeoutReachedException $e) {
         io()->error('example.com is not available. (timeout reached)');
     }
 }
@@ -32,9 +33,9 @@ function wait_for_url_task(): void
 {
     try {
         wait_for_url(url: 'https://example.com', timeout: 2, message: 'Waiting for Google...');
-    } catch (WaitForExitedBeforeTimeoutException $e) {
+    } catch (ExitedBeforeTimeoutException) {
         io()->error('example.com is not available. (exited before timeout)');
-    } catch (WaitForTimeoutReachedException $e) {
+    } catch (TimeoutReachedException) {
         io()->error('example.com is not available. (timeout reached)');
     }
 }
@@ -46,49 +47,32 @@ function wait_for_url_with_content_checker_task(): void
         wait_for_http_status(
             url: 'https://example.com',
             status: 200,
-            contentCheckerCallback: function (string $content) {
-                return u($content)->containsAny(['Example Domain']);
+            responseChecker: function (ResponseInterface $response) {
+                return u($response->getContent())->containsAny(['Example Domain']);
             },
             timeout: 2,
         );
-    } catch (WaitForTimeoutReachedException $e) {
+    } catch (TimeoutReachedException) {
         io()->error('example.com is not available. (timeout reached)');
     }
 }
 
 #[AsTask(description: 'Use custom wait for, to check anything')]
-function custom_wait_for_task(): void
+function custom_wait_for_task(int $sleep = 1): void
 {
-    $tmpFilePath = sys_get_temp_dir() . \DIRECTORY_SEPARATOR . 'castor-wait-for-custom.tmp';
-    $endTime = time() + 1;
-    $fiber = new \Fiber(function () use ($endTime, $tmpFilePath) {
-        while (time() < $endTime) {
-            \Fiber::suspend();
-        }
-
-        touch($tmpFilePath);
-    });
+    $okAt = time() + $sleep;
 
     try {
         wait_for(
-            callback: function () use ($tmpFilePath, $fiber) {
-                if (!$fiber->isStarted()) {
-                    $fiber->start();
-                }
-                if ($fiber->isSuspended()) {
-                    $fiber->resume();
-                }
-
-                return file_exists($tmpFilePath);
+            callback: function () use ($okAt) {
+                return time() >= $okAt;
             },
-            timeout: 2,
+            timeout: 5,
             message: 'Waiting for my custom check...',
         );
-    } catch (WaitForExitedBeforeTimeoutException $e) {
+    } catch (ExitedBeforeTimeoutException) {
         io()->error('My custom check failed. (exited before timeout)');
-    } catch (WaitForTimeoutReachedException $e) {
+    } catch (TimeoutReachedException) {
         io()->error('My custom check failed. (timeout reached)');
     }
-
-    unlink($tmpFilePath);
 }

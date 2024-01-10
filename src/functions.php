@@ -3,8 +3,8 @@
 namespace Castor;
 
 use Castor\Console\Application;
-use Castor\Exception\WaitForExitedBeforeTimeoutException;
-use Castor\Exception\WaitForTimeoutReachedException;
+use Castor\Exception\WaitFor\ExitedBeforeTimeoutException;
+use Castor\Exception\WaitFor\TimeoutReachedException;
 use Castor\Fingerprint\FingerprintHelper;
 use Joli\JoliNotif\Notification;
 use Joli\JoliNotif\NotifierFactory;
@@ -845,17 +845,17 @@ function fingerprint(callable $callback, string $fingerprint, bool $force = fals
 }
 
 /**
- * @throws WaitForTimeoutReachedException
- * @throws WaitForExitedBeforeTimeoutException
+ * @throws TimeoutReachedException
+ * @throws ExitedBeforeTimeoutException
  */
 function wait_for(
     callable $callback,
     int $timeout = 10,
     bool $quiet = false,
     int $intervalMs = 100,
-    string $message = null,
+    string $message = 'Waiting for callback to be available...',
 ): void {
-    NetworkUtil::wait_for(
+    WaitForHelper::waitFor(
         callback: $callback,
         timeout: $timeout,
         quiet: $quiet,
@@ -865,8 +865,8 @@ function wait_for(
 }
 
 /**
- * @throws WaitForTimeoutReachedException
- * @throws WaitForExitedBeforeTimeoutException
+ * @throws TimeoutReachedException
+ * @throws ExitedBeforeTimeoutException
  */
 function wait_for_port(
     int $port,
@@ -876,7 +876,7 @@ function wait_for_port(
     int $intervalMs = 100,
     string $message = null,
 ): void {
-    NetworkUtil::wait_for_port(
+    WaitForHelper::waitForPort(
         port: $port,
         host: $host,
         timeout: $timeout,
@@ -887,8 +887,8 @@ function wait_for_port(
 }
 
 /**
- * @throws WaitForTimeoutReachedException
- * @throws WaitForExitedBeforeTimeoutException
+ * @throws TimeoutReachedException
+ * @throws ExitedBeforeTimeoutException
  */
 function wait_for_url(
     string $url,
@@ -897,7 +897,7 @@ function wait_for_url(
     int $intervalMs = 100,
     string $message = null,
 ): void {
-    NetworkUtil::wait_for_url(
+    WaitForHelper::waitForUrl(
         url: $url,
         timeout: $timeout,
         quiet: $quiet,
@@ -907,21 +907,22 @@ function wait_for_url(
 }
 
 /**
- * @throws WaitForTimeoutReachedException
+ * @throws TimeoutReachedException
+ * @throws ExitedBeforeTimeoutException
  */
 function wait_for_http_status(
     string $url,
     int $status = 200,
-    callable $contentCheckerCallback = null,
+    callable $responseChecker = null,
     int $timeout = 10,
     bool $quiet = false,
     int $intervalMs = 100,
     string $message = null,
 ): void {
-    NetworkUtil::wait_for_http_status(
+    WaitForHelper::waitForHttpStatus(
         url: $url,
         status: $status,
-        contentCheckerCallback: $contentCheckerCallback,
+        responseChecker: $responseChecker,
         timeout: $timeout,
         quiet: $quiet,
         intervalMs: $intervalMs,
