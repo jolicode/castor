@@ -6,17 +6,22 @@ use Castor\Console\Application;
 use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\Finder\Finder;
-
-use function Castor\log;
 
 /** @internal */
 final class StubsGenerator
 {
+    public function __construct(
+        private readonly LoggerInterface $logger = new NullLogger(),
+    ) {
+    }
+
     public function generateStubsIfNeeded(string $dest): void
     {
         if ($this->shouldGenerate($dest)) {
-            log('Generating stubs...', 'debug');
+            $this->logger->debug('Generating stubs...');
             $this->generateStubs($dest);
         }
     }
@@ -24,7 +29,7 @@ final class StubsGenerator
     public function generateStubs(string $dest): void
     {
         if (!is_writable(\dirname($dest))) {
-            log("Could not generate stubs as the destination \"{$dest}\" is not writeable.", 'warning');
+            $this->logger->warning("Could not generate stubs as the destination \"{$dest}\" is not writeable.");
 
             return;
         }

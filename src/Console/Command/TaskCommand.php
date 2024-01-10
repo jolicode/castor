@@ -8,7 +8,8 @@ use Castor\Attribute\AsOption;
 use Castor\Attribute\AsTask;
 use Castor\Event\AfterExecuteTaskEvent;
 use Castor\Event\BeforeExecuteTaskEvent;
-use Castor\GlobalHelper;
+use Castor\EventDispatcher;
+use Castor\ExpressionLanguage;
 use Castor\SluggerHelper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\SignalableCommandInterface;
@@ -29,6 +30,8 @@ class TaskCommand extends Command implements SignalableCommandInterface
     public function __construct(
         public readonly AsTask $taskAttribute,
         public readonly \ReflectionFunction $function,
+        private readonly EventDispatcher $eventDispatcher,
+        private readonly ExpressionLanguage $expressionLanguage,
     ) {
         $this->setDescription($taskAttribute->description);
         $this->setAliases($taskAttribute->aliases);
@@ -64,7 +67,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
             return $this->taskAttribute->enabled;
         }
 
-        return GlobalHelper::getExpressionLanguage()->evaluate($this->taskAttribute->enabled);
+        return $this->expressionLanguage->evaluate($this->taskAttribute->enabled);
     }
 
     protected function configure(): void
@@ -150,11 +153,11 @@ class TaskCommand extends Command implements SignalableCommandInterface
                 throw new \LogicException('The function is not a callable.');
             }
 
-            GlobalHelper::getEventDispatcher()->dispatch(new BeforeExecuteTaskEvent($this));
+            $this->eventDispatcher->dispatch(new BeforeExecuteTaskEvent($this));
 
             $result = $function(...$args);
 
-            GlobalHelper::getEventDispatcher()->dispatch(new AfterExecuteTaskEvent($this, $result));
+            $this->eventDispatcher->dispatch(new AfterExecuteTaskEvent($this, $result));
         } catch (\Error $e) {
             $castorFunctions = array_filter(get_defined_functions()['user'], fn (string $functionName) => str_starts_with($functionName, 'castor\\'));
             $castorFunctionsWithoutNamespace = array_map(fn (string $functionName) => substr($functionName, \strlen('castor\\')), $castorFunctions);

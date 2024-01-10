@@ -2,6 +2,8 @@
 
 namespace Castor;
 
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\EventDispatcher\EventDispatcher as SymfonyEventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -10,12 +12,13 @@ class EventDispatcher implements EventDispatcherInterface
 {
     public function __construct(
         private EventDispatcherInterface $eventDispatcher = new SymfonyEventDispatcher(),
+        private LoggerInterface $logger = new NullLogger(),
     ) {
     }
 
     public function dispatch(object $event, string $eventName = null): object
     {
-        log("Dispatching event {$eventName}", 'debug', [
+        $this->logger->debug("Dispatching event {$eventName}", [
             'event' => $event,
         ]);
 
@@ -24,7 +27,7 @@ class EventDispatcher implements EventDispatcherInterface
 
     public function addListener(string $eventName, callable $listener, int $priority = 0): void
     {
-        log("Adding listener for event {$eventName}", 'debug', [
+        $this->logger->debug("Adding listener for event {$eventName}", [
             'listener' => $listener,
             'priority' => $priority,
         ]);
@@ -34,7 +37,7 @@ class EventDispatcher implements EventDispatcherInterface
 
     public function removeListener(string $eventName, callable $listener): void
     {
-        log("Removing listener for event {$eventName}", 'debug', [
+        $this->logger->debug("Removing listener for event {$eventName}", [
             'listener' => $listener,
         ]);
 

@@ -2,7 +2,6 @@
 
 namespace Castor\Tests\Stub;
 
-use Castor\GlobalHelper;
 use Castor\Stub\StubsGenerator;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
@@ -18,9 +17,7 @@ class StubsGeneratorTest extends TestCase
         $fs = new Filesystem();
         $fs->remove($file);
 
-        GlobalHelper::setLogger(new Logger('name'));
-
-        $generator = new StubsGenerator();
+        $generator = new StubsGenerator(new Logger('name'));
         $generator->generateStubs($file);
 
         $process = new Process([\PHP_BINARY, '-l', $file]);

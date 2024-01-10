@@ -7,9 +7,11 @@ class ContextRegistry
 {
     /** @var array<string, ContextDescriptor> */
     private array $descriptors = [];
-    private ?string $default = null;
+    private ?string $defaultName = null;
 
-    public function add(ContextDescriptor $descriptor): void
+    private Context $currentContext;
+
+    public function addDescriptor(ContextDescriptor $descriptor): void
     {
         $name = $descriptor->contextAttribute->name;
         if (\array_key_exists($name, $this->descriptors)) {
@@ -19,16 +21,16 @@ class ContextRegistry
         $this->descriptors[$name] = $descriptor;
 
         if ($descriptor->contextAttribute->default) {
-            if ($this->default) {
-                throw new \RuntimeException(sprintf('You cannot set multiple "default: true" context. There is one defined in "%s" and another in "%s".', $this->default, $this->describeFunction($descriptor->function)));
+            if ($this->defaultName) {
+                throw new \RuntimeException(sprintf('You cannot set multiple "default: true" context. There is one defined in "%s" and another in "%s".', $this->defaultName, $this->describeFunction($descriptor->function)));
             }
-            $this->default = $name;
+            $this->defaultName = $name;
         }
     }
 
     public function addContext(string $name, \Closure $callable, bool $default = false): void
     {
-        $this->add(new ContextDescriptor(
+        $this->addDescriptor(new ContextDescriptor(
             new Attribute\AsContext(name: $name, default: $default),
             new \ReflectionFunction($callable),
         ));
@@ -36,7 +38,7 @@ class ContextRegistry
 
     public function setDefaultIfEmpty(): void
     {
-        if ($this->default) {
+        if ($this->defaultName) {
             return;
         }
 
@@ -48,21 +50,55 @@ class ContextRegistry
             throw new \RuntimeException(sprintf('Since there are multiple contexts "%s", you must set a "default: true" context.', implode('", "', $this->getNames())));
         }
 
-        $this->default = array_key_first($this->descriptors);
+        $this->defaultName = array_key_first($this->descriptors);
     }
 
-    public function getDefault(): string
+    public function getDefaultName(): string
     {
-        return $this->default ?? throw new \LogicException('Default context not set yet.');
+        return $this->defaultName ?? throw new \LogicException('Default context name not set yet.');
     }
 
-    public function get(string $name): Context
+    public function get(string $name = null): Context
     {
+        if (null === $name) {
+            return $this->getCurrentContext();
+        }
+
         if (!\array_key_exists($name, $this->descriptors)) {
             throw new \RuntimeException(sprintf('Context "%s" not found.', $name));
         }
 
         return $this->descriptors[$name]->function->invoke();
+    }
+
+    public function setCurrentContext(Context $context): void
+    {
+        $this->currentContext = $context;
+    }
+
+    public function getCurrentContext(): Context
+    {
+        return $this->currentContext ?? throw new \LogicException('Current context not set yet.');
+    }
+
+    /**
+     * @template TKey of key-of<ContextData>
+     * @template TDefault
+     *
+     * @param TKey|string $key
+     * @param TDefault    $default
+     *
+     * @phpstan-return ($key is TKey ? ContextData[TKey] : TDefault)
+     */
+    public function getVariable(string $key, mixed $default = null): mixed
+    {
+        $context = $this->getCurrentContext();
+
+        if (!isset($context[$key])) {
+            return $default;
+        }
+
+        return $context[$key];
     }
 
     /**
