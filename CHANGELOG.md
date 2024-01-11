@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+* Add an error handler, and wire the logger to it so display deprecation notices
+
 ## 0.11.1 (2024-01-11)
 
 * Fix issue when using `ContextRegistry::getCurrentContext()` without setting first a context

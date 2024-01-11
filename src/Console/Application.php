@@ -23,6 +23,7 @@ use Castor\WaitForHelper;
 use JoliCode\PhpOsHelper\OsHelper;
 use Monolog\Logger;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Log\LogLevel;
 use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Command\Command;
@@ -31,6 +32,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\ErrorHandler\ErrorHandler;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 use Symfony\Component\VarDumper\Cloner\AbstractCloner;
@@ -65,6 +67,26 @@ class Application extends SymfonyApplication
         public WaitForHelper $waitForHelper,
         public FingerprintHelper $fingerprintHelper,
     ) {
+        $handler = ErrorHandler::register();
+        $handler->setDefaultLogger($logger, [
+            \E_COMPILE_WARNING => LogLevel::WARNING,
+            \E_CORE_WARNING => LogLevel::WARNING,
+            \E_USER_WARNING => LogLevel::WARNING,
+            \E_WARNING => LogLevel::WARNING,
+            \E_USER_DEPRECATED => LogLevel::WARNING,
+            \E_DEPRECATED => LogLevel::WARNING,
+            \E_USER_NOTICE => LogLevel::WARNING,
+            \E_NOTICE => LogLevel::WARNING,
+
+            \E_COMPILE_ERROR => LogLevel::ERROR,
+            \E_CORE_ERROR => LogLevel::ERROR,
+            \E_ERROR => LogLevel::ERROR,
+            \E_PARSE => LogLevel::ERROR,
+            \E_RECOVERABLE_ERROR => LogLevel::ERROR,
+            \E_STRICT => LogLevel::ERROR,
+            \E_USER_ERROR => LogLevel::ERROR,
+        ]);
+
         $this->setCatchErrors(true);
 
         AbstractCloner::$defaultCasters[self::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
