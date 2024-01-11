@@ -2,21 +2,27 @@
 
 namespace Castor\Fingerprint;
 
-use Castor\GlobalHelper;
+use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Contracts\Cache\CacheInterface;
 
 class FingerprintHelper
 {
     private const SUFFIX = '.fingerprint';
 
-    public static function verifyFingerprintFromHash(string $fingerprint): bool
+    public function __construct(
+        private readonly CacheItemPoolInterface&CacheInterface $cache,
+    ) {
+    }
+
+    public function verifyFingerprintFromHash(string $fingerprint): bool
     {
         $itemKey = $fingerprint . self::SUFFIX;
 
-        if (false === GlobalHelper::getCache()->hasItem($itemKey)) {
+        if (false === $this->cache->hasItem($itemKey)) {
             return false;
         }
 
-        $cacheItem = GlobalHelper::getCache()->getItem($itemKey);
+        $cacheItem = $this->cache->getItem($itemKey);
 
         if (false === $cacheItem->isHit()) {
             return false;
@@ -29,15 +35,15 @@ class FingerprintHelper
         return false;
     }
 
-    public static function postProcessFingerprintForHash(string $hash): void
+    public function postProcessFingerprintForHash(string $hash): void
     {
         $itemKey = $hash . self::SUFFIX;
 
-        $cacheItem = GlobalHelper::getCache()->getItem($itemKey);
+        $cacheItem = $this->cache->getItem($itemKey);
 
         $cacheItem->set($hash);
 
         $cacheItem->expiresAt(new \DateTimeImmutable('+1 month'));
-        GlobalHelper::getCache()->save($cacheItem);
+        $this->cache->save($cacheItem);
     }
 }

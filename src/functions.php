@@ -5,7 +5,6 @@ namespace Castor;
 use Castor\Console\Application;
 use Castor\Exception\WaitFor\ExitedBeforeTimeoutException;
 use Castor\Exception\WaitFor\TimeoutReachedException;
-use Castor\Fingerprint\FingerprintHelper;
 use Joli\JoliNotif\Notification;
 use Joli\JoliNotif\NotifierFactory;
 use JoliCode\PhpOsHelper\OsHelper;
@@ -115,7 +114,7 @@ function run(
     callable $callback = null,
     Context $context = null,
 ): Process {
-    $context ??= GlobalHelper::getInitialContext();
+    $context ??= GlobalHelper::getContext();
 
     if (null !== $environment) {
         $context = $context->withEnvironment($environment);
@@ -481,7 +480,7 @@ function watch(string|array $path, callable $function, Context $context = null):
         return;
     }
 
-    $context ??= GlobalHelper::getInitialContext();
+    $context ??= GlobalHelper::getContext();
 
     $binary = match (true) {
         OSHelper::isMacOS() => 'watcher-darwin',
@@ -583,6 +582,9 @@ function output(): OutputInterface
     return GlobalHelper::getOutput();
 }
 
+/**
+ * @deprecated
+ */
 function get_output(): OutputInterface
 {
     trigger_deprecation('jolicode/castor', '0.8', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'output');
@@ -762,7 +764,8 @@ function with(
     bool $notify = null,
     Context|string $context = null,
 ): mixed {
-    $initialContext = GlobalHelper::getInitialContext();
+    $contextRegistry = GlobalHelper::getContextRegistry();
+    $initialContext = $contextRegistry->getCurrentContext();
     $context ??= $initialContext;
 
     if (\is_string($context)) {
@@ -805,12 +808,12 @@ function with(
         $context = $context->withNotify($notify);
     }
 
-    GlobalHelper::setInitialContext($context);
+    $contextRegistry->setCurrentContext($context);
 
     try {
         return $callback($context);
     } finally {
-        GlobalHelper::setInitialContext($initialContext);
+        $contextRegistry->setCurrentContext($initialContext);
     }
 }
 
@@ -819,17 +822,17 @@ function with(
  */
 function hasher(string $algo = 'xxh128'): HasherHelper
 {
-    return new HasherHelper($algo);
+    return new HasherHelper(GlobalHelper::getApplication(), GlobalHelper::getLogger(), $algo);
 }
 
 function fingerprint_exists(string $fingerprint): bool
 {
-    return FingerprintHelper::verifyFingerprintFromHash($fingerprint);
+    return GlobalHelper::getApplication()->fingerprintHelper->verifyFingerprintFromHash($fingerprint);
 }
 
 function fingerprint_save(string $fingerprint): void
 {
-    FingerprintHelper::postProcessFingerprintForHash($fingerprint);
+    GlobalHelper::getApplication()->fingerprintHelper->postProcessFingerprintForHash($fingerprint);
 }
 
 function fingerprint(callable $callback, string $fingerprint, bool $force = false): void
@@ -855,7 +858,8 @@ function wait_for(
     int $intervalMs = 100,
     string $message = 'Waiting for callback to be available...',
 ): void {
-    WaitForHelper::waitFor(
+    GlobalHelper::getApplication()->waitForHelper->waitFor(
+        io: io(),
         callback: $callback,
         timeout: $timeout,
         quiet: $quiet,
@@ -876,7 +880,8 @@ function wait_for_port(
     int $intervalMs = 100,
     string $message = null,
 ): void {
-    WaitForHelper::waitForPort(
+    GlobalHelper::getApplication()->waitForHelper->waitForPort(
+        io: io(),
         port: $port,
         host: $host,
         timeout: $timeout,
@@ -897,7 +902,8 @@ function wait_for_url(
     int $intervalMs = 100,
     string $message = null,
 ): void {
-    WaitForHelper::waitForUrl(
+    GlobalHelper::getApplication()->waitForHelper->waitForUrl(
+        io: io(),
         url: $url,
         timeout: $timeout,
         quiet: $quiet,
@@ -919,7 +925,8 @@ function wait_for_http_status(
     int $intervalMs = 100,
     string $message = null,
 ): void {
-    WaitForHelper::waitForHttpStatus(
+    GlobalHelper::getApplication()->waitForHelper->waitForHttpStatus(
+        io: io(),
         url: $url,
         status: $status,
         responseChecker: $responseChecker,

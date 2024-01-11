@@ -38,8 +38,9 @@ function productionContext(): Context
 #[AsContext(name: 'run')]
 function runContext(): Context
 {
-    $production = (bool) trim(run('echo $PRODUCTION', quiet: true)->getOutput());
-    $foo = trim(run('echo $FOO', quiet: true)->getOutput()) ?: 'no defined';
+    $blankContext = new Context();
+    $production = (bool) trim(run('echo $PRODUCTION', quiet: true, context: $blankContext)->getOutput());
+    $foo = trim(run('echo $FOO', quiet: true, context: $blankContext)->getOutput()) ?: 'no defined';
 
     return new Context([
         'name' => 'run',

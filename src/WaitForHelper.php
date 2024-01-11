@@ -4,18 +4,29 @@ namespace Castor;
 
 use Castor\Exception\WaitFor\ExitedBeforeTimeoutException;
 use Castor\Exception\WaitFor\TimeoutReachedException;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /** @internal */
 class WaitForHelper
 {
+    public function __construct(
+        private readonly HttpClientInterface $httpClient,
+        private readonly LoggerInterface $logger = new NullLogger(),
+    ) {
+    }
+
     /**
      * @param callable $callback function(): bool|null (return null to break the loop, true if is OK, false otherwise)
      *
      * @throws TimeoutReachedException
      * @throws ExitedBeforeTimeoutException
      */
-    public static function waitFor(
+    public function waitFor(
+        SymfonyStyle $io,
         callable $callback,
         int $timeout = 10,
         bool $quiet = false,
@@ -23,7 +34,7 @@ class WaitForHelper
         string $message = 'Waiting for callback to be available...',
     ): void {
         if (!$quiet) {
-            io()->write($message);
+            $io->write($message);
         }
 
         $end = time() + $timeout;
@@ -34,15 +45,15 @@ class WaitForHelper
             $callbackResult = $callback();
             if (true === $callbackResult) {
                 if (!$quiet) {
-                    io()->writeln(' <fg=green>OK</>');
-                    io()->newLine();
+                    $io->writeln(' <fg=green>OK</>');
+                    $io->newLine();
                 }
 
                 return;
             }
             if (null === $callbackResult) {
                 if (!$quiet) {
-                    io()->writeln(' <fg=red>FAIL</>');
+                    $io->writeln(' <fg=red>FAIL</>');
                 }
 
                 throw new ExitedBeforeTimeoutException();
@@ -50,15 +61,15 @@ class WaitForHelper
 
             usleep($intervalMs * 1000);
             if (!$quiet && 0 === $elapsed % 1000) {
-                io()->write('.');
+                $io->write('.');
             }
         }
 
         if (!$quiet) {
-            io()->writeln(' <fg=red>FAIL</>');
+            $io->writeln(' <fg=red>FAIL</>');
         }
 
-        log("Callback not available after {$timeout} seconds", 'error', [
+        $this->logger->error("Callback not available after {$timeout} seconds", [
             'timeout' => $timeout,
             'message' => $message,
         ]);
@@ -70,7 +81,8 @@ class WaitForHelper
      * @throws TimeoutReachedException
      * @throws ExitedBeforeTimeoutException
      */
-    public static function waitForPort(
+    public function waitForPort(
+        SymfonyStyle $io,
         int $port,
         string $host = '127.0.0.1',
         int $timeout = 10,
@@ -78,7 +90,8 @@ class WaitForHelper
         int $intervalMs = 100,
         string $message = null,
     ): void {
-        self::waitFor(
+        $this->waitFor(
+            io: $io,
             callback: function () use ($host, $port) {
                 $fp = @fsockopen($host, $port, $errno, $errstr, 1);
                 if ($fp) {
@@ -100,14 +113,16 @@ class WaitForHelper
      * @throws TimeoutReachedException
      * @throws ExitedBeforeTimeoutException
      */
-    public static function waitForUrl(
+    public function waitForUrl(
+        SymfonyStyle $io,
         string $url,
         int $timeout = 10,
         bool $quiet = false,
         int $intervalMs = 100,
         string $message = null,
     ): void {
-        self::waitFor(
+        $this->waitFor(
+            io: $io,
             callback: function () use ($url) {
                 $fp = @fopen($url, 'r');
                 if ($fp) {
@@ -131,7 +146,8 @@ class WaitForHelper
      * @throws ExitedBeforeTimeoutException
      * @throws TimeoutReachedException
      */
-    public static function waitForHttpStatus(
+    public function waitForHttpStatus(
+        SymfonyStyle $io,
         string $url,
         int $status = 200,
         callable $responseChecker = null,
@@ -140,10 +156,11 @@ class WaitForHelper
         int $intervalMs = 100,
         string $message = null,
     ): void {
-        self::waitFor(
+        $this->waitFor(
+            io: $io,
             callback: function () use ($url, $status, $responseChecker) {
                 try {
-                    $response = http_client()->request('GET', $url);
+                    $response = $this->httpClient->request('GET', $url);
 
                     if ($response->getStatusCode() !== $status) {
                         return false;

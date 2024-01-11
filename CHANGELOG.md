@@ -7,6 +7,7 @@
 * Allow to override `AsTask` and `AsContext` attributes
 * Add `force` argument to `fingerprint()` method to force run the callable, even if fingerprint is same
 * Fix directory for fingerprinted test
+* Remove almost all setters in the GlobalHelper class
 
 ## 0.10.0 (2023-11-14)
 

@@ -2,24 +2,31 @@
 
 namespace Castor;
 
+use Castor\Console\Application;
 use Castor\Fingerprint\FileHashStrategy;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\Finder\Finder;
 
 class HasherHelper
 {
-    private \HashContext $hashContext;
+    private readonly \HashContext $hashContext;
 
     /**
      * @see https://www.php.net/manual/en/function.hash-algos.php
      */
-    public function __construct(string $algo = 'xxh128')
-    {
+    public function __construct(
+        private readonly Application $application,
+        private readonly LoggerInterface $logger = new NullLogger(),
+        string $algo = 'xxh128',
+    ) {
         $this->hashContext = hash_init($algo);
     }
 
     public function write(string $value): self
     {
-        log('Hashing value "{value}"', 'debug', ['value' => $value]);
+        $this->logger->debug('Hashing value "{value}".', ['value' => $value]);
+
         hash_update($this->hashContext, $value);
 
         return $this;
@@ -39,10 +46,11 @@ class HasherHelper
             throw new \InvalidArgumentException(sprintf('The file "%s" is not readable', $path));
         }
 
-        log('Hashing file "{path}" with strategy "{strategy}"', 'debug', [
+        $this->logger->debug('Hashing file "{path}" with strategy "{strategy}".', [
             'path' => $path,
             'strategy' => $strategy->name,
         ]);
+
         switch ($strategy) {
             case FileHashStrategy::Content:
                 hash_update_file($this->hashContext, $path);
@@ -59,9 +67,10 @@ class HasherHelper
 
     public function writeWithFinder(Finder $finder, FileHashStrategy $strategy = FileHashStrategy::MTimes): self
     {
-        log('Hashing files with Finder with strategy "{strategy}"', 'debug', [
+        $this->logger->debug('Hashing files with Finder with strategy "{strategy}".', [
             'strategy' => $strategy->name,
         ]);
+
         foreach ($finder as $file) {
             switch ($strategy) {
                 case FileHashStrategy::Content:
@@ -80,10 +89,11 @@ class HasherHelper
 
     public function writeGlob(string $pattern, FileHashStrategy $strategy = FileHashStrategy::MTimes): self
     {
-        log('Hashing files {pattern} with strategy "{strategy}"', 'debug', [
+        $this->logger->debug('Hashing files {pattern} with strategy "{strategy}".', [
             'pattern' => $pattern,
             'strategy' => $strategy->name,
         ]);
+
         $files = glob($pattern);
 
         if (false === $files) {
@@ -109,45 +119,38 @@ class HasherHelper
 
     public function writeTaskName(): self
     {
-        log('Hashing task name "{name}"', 'debug', [
-            'name' => GlobalHelper::getApplication()->getName(),
+        $commandName = $this->application->getCommand()->getName() ?? 'n/a';
+
+        $this->logger->debug('Hashing task name "{name}".', [
+            'name' => $commandName,
         ]);
-        hash_update($this->hashContext, GlobalHelper::getApplication()->getName());
+
+        hash_update($this->hashContext, $commandName);
 
         return $this;
     }
 
     public function writeTaskArgs(string ...$args): self
     {
-        log('Hashing task args "{args}"', 'debug', [
+        $this->logger->debug('Hashing task args "{args}".', [
             'args' => implode(', ', $args),
         ]);
+
+        $input = $this->application->getInput();
+
         foreach ($args as $arg) {
-            if (GlobalHelper::getInput()->hasArgument($arg)) {
-                $this->write(GlobalHelper::getInput()->getArgument($arg));
+            if ($input->hasArgument($arg)) {
+                $this->write($input->getArgument($arg));
             }
         }
 
         return $this;
     }
 
-    public function writeTask(): self
+    public function writeTask(string ...$args): self
     {
-        log('Hashing task name "{name}" and args', 'debug', [
-            'name' => GlobalHelper::getApplication()->getName(),
-        ]);
-
         $this->writeTaskName();
-        foreach (GlobalHelper::getInput()->getArguments() as $name => $value) {
-            if (!empty($value)) {
-                if (\is_array($value)) {
-                    $value = implode(',', $value);
-                } else {
-                    $value = (string) $value;
-                }
-                $this->write($value);
-            }
-        }
+        $this->writeTaskArgs(...$args);
 
         return $this;
     }
