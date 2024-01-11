@@ -127,3 +127,28 @@ wait_for_http_status(
     message: 'Waiting for https://example.com/api to return HTTP 200',
 );
 ```
+
+### The `wait_for_docker_container()` function
+
+The `wait_for_docker_container()` function waits for a Docker container to be
+ready. It checks if the container is running and if the specified port is
+accessible within the specified timeout.
+It can also wait for a specific check to be successful, by providing a
+`$check` callback function.
+
+
+Example:
+
+```php
+wait_for_docker_container(
+    container: 'mysql-container',
+    containerChecker: function ($containerId) {
+        return run("docker exec $containerId mysql -uroot -proot -e 'SELECT 1'", allowFailure: true)->isSuccessful();
+    },
+    portsToCheck: [3306]
+    timeout: 30,
+    quiet: false,
+    intervalMs: 100,
+    message: 'Waiting for my-container to be ready...',
+);
+```

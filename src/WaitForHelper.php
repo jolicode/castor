@@ -2,11 +2,14 @@
 
 namespace Castor;
 
+use Castor\Exception\ExecutableNotFoundException;
+use Castor\Exception\WaitFor\DockerContainerStateException;
 use Castor\Exception\WaitFor\ExitedBeforeTimeoutException;
 use Castor\Exception\WaitFor\TimeoutReachedException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
@@ -208,6 +211,67 @@ class WaitForHelper
             quiet: $quiet,
             intervalMs: $intervalMs,
             message: $message ?? "Waiting for URL \"{$url}\" to return HTTP response...",
+        );
+    }
+
+    /**
+     * @param array<int> $portsToCheck
+     *
+     * @throws TimeoutReachedException
+     */
+    public function waitForDockerContainer(
+        SymfonyStyle $io,
+        string $containerName,
+        int $timeout = 10,
+        bool $quiet = false,
+        int $intervalMs = 100,
+        string $message = null,
+        callable $containerChecker = null,
+        array $portsToCheck = [],
+    ): void {
+        if (null === (new ExecutableFinder())->find('docker')) {
+            throw new ExecutableNotFoundException('docker');
+        }
+        $this->waitFor(
+            io: $io,
+            callback: function () use ($timeout, $io, $portsToCheck, $containerChecker, $containerName) {
+                $containerId = capture("docker ps -a -q --filter name={$containerName}", allowFailure: true);
+                $isContainerExist = (bool) $containerId;
+                $isContainerRunning = (bool) capture("docker inspect -f '{{.State.Running}}' {$containerId}", allowFailure: true);
+
+                if (false === $isContainerExist) {
+                    throw new DockerContainerStateException($containerName, 'not exist');
+                }
+
+                if (false === $isContainerRunning) {
+                    throw new DockerContainerStateException($containerName, 'not running');
+                }
+
+                foreach ($portsToCheck as $port) {
+                    $this->waitForPort(io: $io, port: $port, timeout: $timeout, quiet: true);
+                }
+
+                if (null !== $containerChecker) {
+                    try {
+                        $this->waitFor(
+                            io: $io,
+                            callback: function () use ($containerChecker, $containerId) {
+                                return $containerChecker($containerId);
+                            },
+                            timeout: $timeout,
+                            quiet: true,
+                        );
+                    } catch (TimeoutReachedException) {
+                        return false;
+                    }
+                }
+
+                return true;
+            },
+            timeout: $timeout,
+            quiet: $quiet,
+            intervalMs: $intervalMs,
+            message: sprintf($message ?? 'Waiting for docker container "%s" to be available...', $containerName),
         );
     }
 }
