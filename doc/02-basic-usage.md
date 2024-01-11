@@ -48,7 +48,7 @@ the `castor.php` file and load all the PHP files from it.
 You could then have an empty `castor.php` file and split your commands in
 multiple files, like `castor/hello.php` and `castor/foo.php`.
 
-### Using the `import()` function
+### The `import()` function
 
 You can also use the `import()` function to import commands from another file.
 This function takes a file path, or a directory as an argument.
@@ -60,10 +60,9 @@ use function Castor\import;
 
 import(__DIR__ . '/custom-commands.php');
 import(__DIR__ . '/my-app/castor');
-
 ```
 
-> **Warning**
+> [!WARNING]
 > You cannot dynamically import commands. The `import()` function must be called
 > at the top level of the file.
 

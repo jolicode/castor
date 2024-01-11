@@ -1,5 +1,7 @@
 # Parallel execution
 
+## The `parallel()` function
+
 The `parallel()` function provides a way to run functions in parallel,
 so you do not have to wait for a function to finish before starting another one:
 
@@ -28,7 +30,7 @@ function foo(): void
 The `parallel()` function use the [`\Fiber`](https://www.php.net/Fiber) class to
 run the functions in parallel.
 
-> **Note**
+> [!NOTE]
 > The code is not executed in parallel. Only functions using this concept
 > will be executed in parallel, which is the case for
 > the `run()` and `watch()` function.

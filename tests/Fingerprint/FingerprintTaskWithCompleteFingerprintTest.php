@@ -4,7 +4,7 @@ namespace Castor\Tests\Fingerprint;
 
 use Castor\Tests\TaskTestCase;
 
-class FingerprintTaskWithSomeFingerprintTest extends TaskTestCase
+class FingerprintTaskWithCompleteFingerprintTest extends TaskTestCase
 {
     use FingerprintedTest;
 
@@ -30,7 +30,7 @@ class FingerprintTaskWithSomeFingerprintTest extends TaskTestCase
 
         file_put_contents($filepath, $withFileContent);
 
-        $process = $this->runTask(['fingerprint:task-with-some-fingerprint']);
+        $process = $this->runTask(['fingerprint:task-with-complete-fingerprint']);
 
         if (file_exists($expectedOutputFilePath)) {
             $this->assertStringEqualsFile($expectedOutputFilePath, $process->getOutput());

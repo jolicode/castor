@@ -2,6 +2,9 @@
 
 Castor uses the [JoliNotif](https://github.com/jolicode/jolinotif) library to
 display notifications.
+
+## The `notify()` function
+
 You can use the `notify()` function to display a desktop notification:
 
 ```php

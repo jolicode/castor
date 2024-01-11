@@ -50,8 +50,12 @@ class PlatformUtil
 
     public static function getCacheDirectory(): string
     {
-        $home = self::getUserDirectory();
-        $directory = $home ? $home . '/.cache' : sys_get_temp_dir();
+        try {
+            $home = self::getUserDirectory();
+            $directory = $home ? $home . '/.cache' : sys_get_temp_dir();
+        } catch (\RuntimeException $e) {
+            $directory = sys_get_temp_dir();
+        }
 
         return $directory . '/castor';
     }

@@ -2,7 +2,7 @@
 
 ## Installation
 
-> **Note**
+> [!NOTE]
 > Castor requires PHP >= 8.1 to run.
 
 ### As a phar - recommended way
@@ -48,7 +48,7 @@ composer global require jolicode/castor
 
 Then make sure that the Composer global bin directory is in your `PATH`.
 
-> **Note**
+> [!NOTE]
 > The global Composer path may vary depending on your operating system.
 
 You can run the following command to determine it:
