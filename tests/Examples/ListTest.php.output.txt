@@ -32,6 +32,7 @@ filesystem:find                                    Search files and directories 
 fingerprint:task-with-a-fingerprint                Execute a callback only if the fingerprint has changed
 fingerprint:task-with-a-fingerprint-and-force      Check if the fingerprint has changed before executing a callback (with force option)
 fingerprint:task-with-complete-fingerprint-check   Check if the fingerprint has changed before executing some code
+foo:bar                                            Echo foo bar
 foo:foo                                            Prints foo
 log:all-level                                      Logs some messages with different levels
 log:error                                          Logs an "error" message

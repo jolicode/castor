@@ -41,6 +41,9 @@ function foo(): void
 }
 ```
 
+> [!TIP]
+> Related example: [run.php](https://github.com/jolicode/castor/blob/main/examples/run.php)
+
 ## Failure
 
 By default, Castor will throw an exception if the command fails. You can disable
@@ -57,6 +60,9 @@ function foo(): void
     run('a_command_that_does_not_exist', allowFailure: true);
 }
 ```
+
+> [!TIP]
+> Related example: [failure.php](https://github.com/jolicode/castor/blob/main/examples/failure.php)
 
 ## Working directory
 
@@ -77,6 +83,9 @@ function foo(): void
 }
 ```
 
+> [!TIP]
+> Related example: [cd.php](https://github.com/jolicode/castor/blob/main/examples/cd.php)
+
 ## Environment variables
 
 By default, Castor will use the same environment variables as the current
@@ -94,6 +103,9 @@ function foo(): void
     run('echo $FOO', environment: ['FOO' => 'bar']); // will print "bar"
 }
 ```
+
+> [!TIP]
+> Related example: [env.php](https://github.com/jolicode/castor/blob/main/examples/env.php)
 
 ## Processing the output
 
@@ -129,6 +141,9 @@ function foo(): void
 }
 ```
 
+> [!TIP]
+> Related example: [quiet.php](https://github.com/jolicode/castor/blob/main/examples/quiet.php)
+
 ### The `capture()` function
 
 Castor provides a `capture()` function that will run the command quietly,
@@ -148,6 +163,9 @@ function whoami()
 }
 ```
 
+> [!TIP]
+> Related example: [run.php](https://github.com/jolicode/castor/blob/main/examples/run.php)
+
 ### The `exit_code()` function
 
 Castor provides a `exit_code()` function that will run the command, allowing
@@ -165,6 +183,9 @@ function cs(): int
     return exit_code('php-cs-fixer fix --dry-run');
 }
 ```
+
+> [!TIP]
+> Related example: [run.php](https://github.com/jolicode/castor/blob/main/examples/run.php)
 
 ## Timeout
 
@@ -197,6 +218,9 @@ function foo(): void
     run('echo "bar"', timeout: 0);
 }
 ```
+
+> [!TIP]
+> Related example: [wait_for.php](https://github.com/jolicode/castor/blob/main/examples/wait_for.php)
 
 ## PTY & TTY
 
