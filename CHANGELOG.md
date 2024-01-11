@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+## 0.11.0 (2024-01-11)
+
 * Add `AsListener` attribute to register an event listener
 * Add `wait_for()`, `wait_for_port()`, `wait_for_url()`, `wait_for_http_status()` functions
 * Allow to override `AsTask` and `AsContext` attributes
