@@ -78,7 +78,13 @@ class ContextRegistry
 
     public function getCurrentContext(): Context
     {
-        return $this->currentContext ?? throw new \LogicException('Current context not set yet.');
+        if (isset($this->currentContext)) {
+            return $this->currentContext;
+        }
+
+        trigger_deprecation('castor', '0.11.1', 'Calling getCurrentContext() without setCurrentContext() is deprecated. Pass a context instead to the function, or set a Current context before.');
+
+        return new Context();
     }
 
     /**
