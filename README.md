@@ -116,7 +116,7 @@ Discover more by reading the docs:
 
 * [Installation and Autocomplete](doc/01-installation.md)
 * [Basic Usage](doc/02-basic-usage.md)
-* [The `run()` Function](doc/03-run.md)
+* [Executing commands](doc/03-run.md)
 * [Command Arguments](doc/04-arguments.md)
 * [Using the Context](doc/05-context.md)
 * [Castor reference](doc/06-reference.md)

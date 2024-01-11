@@ -1,4 +1,6 @@
-# The `run()` function
+# Executing commands
+
+## The `run()` function
 
 Castor provides a `Castor\run()` function to run commands. It allows to run a
 process:
