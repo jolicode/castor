@@ -8,9 +8,7 @@
     "LICENSE",
     "Test",
     "tools",
-    "vendor/psr/event-dispatcher",
     "vendor/symfony/error-handler",
-    "vendor/symfony/event-dispatcher-contracts",
     "vendor/symfony/http-foundation",
     ".exe",
     ".dll"
