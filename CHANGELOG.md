@@ -2,6 +2,13 @@
 
 ## Not released yet
 
+## 0.11.1 (2024-01-11)
+
+* Fix issue when using `ContextRegistry::getCurrentContext()` without setting first a context
+* Calling `ContextRegistry::getCurrentContext()` without `setCurrentContext()`
+  is deprecated. Pass a `$context` instead to the function, or set a current
+  context before.
+
 ## 0.11.0 (2024-01-11)
 
 * Add `AsListener` attribute to register an event listener
