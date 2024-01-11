@@ -34,6 +34,9 @@ function foo(): void
 }
 ```
 
+> [!TIP]
+> Related example: [context.php](https://github.com/jolicode/castor/blob/main/examples/context.php)
+
 ### The `variable()` function
 
 Castor also provides a `variable()` function to get the value of a variable
@@ -59,6 +62,9 @@ function foo(): void
     }
 }
 ```
+
+> [!TIP]
+> Related example: [context.php](https://github.com/jolicode/castor/blob/main/examples/context.php)
 
 ## Creating a new context
 
@@ -98,6 +104,9 @@ BAR
 > [!NOTE]
 > You can override the context name by setting the `name` argument of the
 > `AsContext` attribute.
+
+> [!TIP]
+> Related example: [context.php](https://github.com/jolicode/castor/blob/main/examples/context.php)
 
 ## Setting a default context
 

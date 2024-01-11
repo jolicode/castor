@@ -38,6 +38,9 @@ namespace then the command will have no namespace.
 
 From now on, we will omit the leading `<?php` in all doc examples.
 
+> [!TIP]
+> Related example: [foo.php](https://github.com/jolicode/castor/blob/main/examples/foo.php)
+
 ## Splitting commands in multiple files
 
 ### Using a directory
@@ -80,3 +83,6 @@ function a_very_long_function_name_that_is_very_painful_to_write(): void
     echo 'Foo bar';
 }
 ```
+
+> [!TIP]
+> Related example: [foo.php](https://github.com/jolicode/castor/blob/main/examples/foo.php)

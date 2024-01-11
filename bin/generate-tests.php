@@ -50,7 +50,7 @@ $commandFilterList = [
     'repack',
     'run:ls',
     'run:run-parallel',
-    'fingerprint:task-with-a-fingerprint ', // Tested in Castor\Tests\Fingerprint\FingerprintTaskWithAFingerprintTest
+    'fingerprint:task-with-a-fingerprint', // Tested in Castor\Tests\Fingerprint\FingerprintTaskWithAFingerprintTest
     'fingerprint:task-with-complete-fingerprint-check', // Tested in Castor\Tests\Fingerprint\FingerprintTaskWithCompleteFingerprintTest
     'fingerprint:task-with-a-fingerprint-and-force', // Tested in Castor\Tests\Fingerprint\FingerprintTaskWithAFingerprintAndForceTest
 ];
