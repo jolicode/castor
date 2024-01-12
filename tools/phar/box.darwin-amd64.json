@@ -8,7 +8,6 @@
     "LICENSE",
     "Test",
     "tools",
-    "vendor/symfony/error-handler",
     "vendor/symfony/http-foundation",
     ".exe",
     ".dll"
