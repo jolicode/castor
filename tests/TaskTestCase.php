@@ -25,7 +25,7 @@ abstract class TaskTestCase extends TestCase
         }
 
         $process = new Process(
-            [\PHP_BINARY, $bin, ...$args],
+            [\PHP_BINARY, $bin, '--no-ansi', ...$args],
             cwd: $cwd ?? __DIR__ . '/..',
             env: [
                 'COLUMNS' => 120,
