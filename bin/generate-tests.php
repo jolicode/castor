@@ -110,7 +110,7 @@ function add_test(array $args, string $class, string $cwd = null)
     $template = stream_get_contents($fp);
 
     $process = new Process(
-        [\PHP_BINARY,  __DIR__ . '/castor', ...$args],
+        [\PHP_BINARY,  __DIR__ . '/castor', '--no-ansi', ...$args],
         cwd: $cwd ?: __DIR__ . '/../',
         env: [
             'COLUMNS' => 120,
