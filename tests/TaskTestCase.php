@@ -29,6 +29,7 @@ abstract class TaskTestCase extends TestCase
             cwd: $cwd ?? __DIR__ . '/..',
             env: [
                 'COLUMNS' => 120,
+                'TERM' => 'dumb',
                 ...$extraEnv,
             ],
         );
