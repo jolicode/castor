@@ -18,6 +18,7 @@ Castor provides the following built-in functions:
 - [`fingerprint_save`](going-further/fingerprint.md#the-fingerprint_exists-and-fingerprint_save-functions)
 - [`fs`](going-further/filesystem.md#the-fs-function)
 - [`get_cache`](going-further/cache.md#the-get_cache-function)
+- [`guard_min_version`](going-further/version-check.md#the-guard_min_version-function)
 - [`hasher`](going-further/fingerprint.md#the-hasher-function)
 - [`http_client`](going-further/http-request.md#the-http_client-function)
 - [`import`](02-basic-usage.md#the-import-function)

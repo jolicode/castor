@@ -1,0 +1,8 @@
+
+In functions.php line 959:
+                                                                                                
+  Castor requires at least version v999.0.0, you are using v0.11.1. Please consider upgrading.  
+                                                                                                
+
+version-guard:min-version-check-fail
+

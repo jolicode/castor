@@ -243,7 +243,7 @@ class Application extends SymfonyApplication
     private function displayUpdateWarningIfNeeded(SymfonyStyle $symfonyStyle): void
     {
         $latestVersion = $this->cache->get('latest-version', function (ItemInterface $item): array {
-            $item->expiresAfter(3600 * 60 * 24);
+            $item->expiresAfter(60 * 60 * 24);
 
             $response = $this->httpClient->request('GET', 'https://api.github.com/repos/jolicode/castor/releases/latest', [
                 'timeout' => 1,

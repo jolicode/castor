@@ -3,6 +3,7 @@
 namespace Castor;
 
 use Castor\Console\Application;
+use Castor\Exception\MinimumVersionRequirementNotMetException;
 use Castor\Exception\WaitFor\ExitedBeforeTimeoutException;
 use Castor\Exception\WaitFor\TimeoutReachedException;
 use Joli\JoliNotif\Notification;
@@ -27,6 +28,8 @@ use Symfony\Contracts\Cache\CallbackInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
+
+use function Symfony\Component\String\u;
 
 /**
  * @return array<mixed>
@@ -945,4 +948,14 @@ function wait_for_http_status(
         intervalMs: $intervalMs,
         message: $message,
     );
+}
+
+function guard_min_version(string $minVersion): void
+{
+    $currentVersion = GlobalHelper::getApplication()->getVersion();
+
+    $minVersion = u($minVersion)->ensureStart('v')->toString();
+    if (version_compare($currentVersion, $minVersion, '<')) {
+        throw new MinimumVersionRequirementNotMetException($minVersion, $currentVersion);
+    }
 }
