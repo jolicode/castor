@@ -932,7 +932,6 @@ function wait_for_url(
 function wait_for_http_status(
     string $url,
     int $status = 200,
-    callable $responseChecker = null,
     int $timeout = 10,
     bool $quiet = false,
     int $intervalMs = 100,
@@ -942,6 +941,28 @@ function wait_for_http_status(
         io: io(),
         url: $url,
         status: $status,
+        timeout: $timeout,
+        quiet: $quiet,
+        intervalMs: $intervalMs,
+        message: $message,
+    );
+}
+
+/**
+ * @throws TimeoutReachedException
+ * @throws ExitedBeforeTimeoutException
+ */
+function wait_for_http_response(
+    string $url,
+    callable $responseChecker = null,
+    int $timeout = 10,
+    bool $quiet = false,
+    int $intervalMs = 100,
+    string $message = null,
+): void {
+    GlobalHelper::getApplication()->waitForHelper->waitForHttpResponse(
+        io: io(),
+        url: $url,
         responseChecker: $responseChecker,
         timeout: $timeout,
         quiet: $quiet,

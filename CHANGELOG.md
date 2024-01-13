@@ -5,6 +5,8 @@
 * Add an error handler, and wire the logger to it so display deprecation notices
 * Add `guard_min_version()` function to ensure a minimum version of Castor is used
 * Edited the duration of update check from `60 days` to `24 hours`
+* Add `waitForHttpResponse` for a more generic response check and remove 
+  `callable $responseChecker` parameter from `waitForHttpStatus`
 
 ## 0.11.1 (2024-01-11)
 
