@@ -9,6 +9,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 use function Castor\io;
 use function Castor\wait_for;
+use function Castor\wait_for_http_response;
 use function Castor\wait_for_http_status;
 use function Castor\wait_for_port;
 use function Castor\wait_for_url;
@@ -40,16 +41,30 @@ function wait_for_url_task(): void
     }
 }
 
-#[AsTask(description: 'Wait for an URL to be available with a custom content checker')]
-function wait_for_url_with_content_checker_task(): void
+#[AsTask(description: 'Wait for an URL to respond with a "200" status code and a specific content')]
+function wait_for_url_with_specific_response_content_and_status(): void
+{
+    try {
+        wait_for_http_response(
+            url: 'https://example.com',
+            responseChecker: function (ResponseInterface $response) {
+                return 200 !== $response->getStatusCode()
+                && u($response->getContent())->containsAny(['Example Domain']);
+            },
+            timeout: 2,
+        );
+    } catch (TimeoutReachedException) {
+        io()->error('example.com is not available. (timeout reached)');
+    }
+}
+
+#[AsTask(description: 'Wait for an URL to respond with a specific status code only')]
+function wait_for_url_with_status_code_only(): void
 {
     try {
         wait_for_http_status(
             url: 'https://example.com',
             status: 200,
-            responseChecker: function (ResponseInterface $response) {
-                return u($response->getContent())->containsAny(['Example Domain']);
-            },
             timeout: 2,
         );
     } catch (TimeoutReachedException) {

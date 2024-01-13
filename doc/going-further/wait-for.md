@@ -90,11 +90,30 @@ wait_for_url(
 );
 ```
 
+### The `wait_for_http_response()` function
+
+The `wait_for_http_response()` function waits for a specified URL to return a
+response assessed using a user-defined `$responseChecker` callback function.
+It allows for a detailed validation of the response content.
+
+Example validating the status code and the response content:
+
+```php
+wait_for_http_response(
+    url: 'https://example.com',
+    responseChecker: function (ResponseInterface $response) {
+        return $response->getStatusCode() !== 200
+        && u($response->getContent())->containsAny(['Example Domain']);
+    },
+    timeout: 2,
+);
+```
+
 ### The `wait_for_http_status()` function
 
-The `wait_for_http_status()` method waits for a URL to return a specific HTTP
-status code. It checks if the URL returns the expected status code within the
-specified timeout. 
+The `wait_for_http_status()` function is a specialized version of 
+`wait_for_http_response()`, specifically designed to monitor a URL until it 
+returns a desired HTTP status code.
 
 Example:
 
@@ -106,20 +125,5 @@ wait_for_http_status(
     quiet: false,
     intervalMs: 300,
     message: 'Waiting for https://example.com/api to return HTTP 200',
-);
-```
-
-Additionally, it provide a `$responseChecker` callable parameter to further
-validate the response content. It should check the response and return true if
-the content is valid, or false if the content is invalid.
-
-Example:
-
-```php
-wait_for_http_status(
-    url: 'https://example.com/api',
-    status: 200,
-    message: 'Waiting for https://example.com/api to return HTTP 200 with OK response...',
-    responseChecker: fn(ResponseInterface $response) => $response->getContent() === 'OK',
 );
 ```

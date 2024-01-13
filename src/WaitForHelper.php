@@ -9,6 +9,7 @@ use Psr\Log\NullLogger;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /** @internal */
 class WaitForHelper
@@ -141,8 +142,6 @@ class WaitForHelper
     }
 
     /**
-     * @param ?callable $responseChecker function(ResponseInterface $response): bool
-     *
      * @throws ExitedBeforeTimeoutException
      * @throws TimeoutReachedException
      */
@@ -150,6 +149,37 @@ class WaitForHelper
         SymfonyStyle $io,
         string $url,
         int $status = 200,
+        int $timeout = 10,
+        bool $quiet = false,
+        int $intervalMs = 100,
+        string $message = null,
+    ): void {
+        $this->waitForHttpResponse(
+            io: $io,
+            url: $url,
+            responseChecker: function (ResponseInterface $response) use ($url, $status) {
+                if ($response->getStatusCode() !== $status) {
+                    throw new ExitedBeforeTimeoutException(sprintf('Response from URL "%s" contained status code "%s". Expected "%s"', $url, $response->getStatusCode(), $status));
+                }
+
+                return true;
+            },
+            timeout: $timeout,
+            quiet: $quiet,
+            intervalMs: $intervalMs,
+            message: $message ?? "Waiting for URL \"{$url}\" to return HTTP status \"{$status}\"...",
+        );
+    }
+
+    /**
+     * @param ?callable $responseChecker function(ResponseInterface $response): bool
+     *
+     * @throws ExitedBeforeTimeoutException
+     * @throws TimeoutReachedException
+     */
+    public function waitForHttpResponse(
+        SymfonyStyle $io,
+        string $url,
         callable $responseChecker = null,
         int $timeout = 10,
         bool $quiet = false,
@@ -158,13 +188,10 @@ class WaitForHelper
     ): void {
         $this->waitFor(
             io: $io,
-            callback: function () use ($url, $status, $responseChecker) {
+            callback: function () use ($url, $responseChecker) {
                 try {
                     $response = $this->httpClient->request('GET', $url);
 
-                    if ($response->getStatusCode() !== $status) {
-                        return false;
-                    }
                     if ($responseChecker) {
                         // We return null to break the loop, there is no need to
                         // wait for a timeout, nothing will change at this
@@ -180,7 +207,7 @@ class WaitForHelper
             timeout: $timeout,
             quiet: $quiet,
             intervalMs: $intervalMs,
-            message: $message ?? "Waiting for URL \"{$url}\" to return HTTP status \"{$status}\"...",
+            message: $message ?? "Waiting for URL \"{$url}\" to return HTTP response...",
         );
     }
 }
