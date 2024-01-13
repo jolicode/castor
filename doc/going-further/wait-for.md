@@ -92,9 +92,9 @@ wait_for_url(
 
 ### The `wait_for_http_response()` function
 
-`wait_for_http_response()` function actively waits for a specified URL to return
- a response assessed using a user-defined `$responseChecker` 
-callback function. Allowing for detailed validation of the response content.
+The `wait_for_http_response()` function waits for a specified URL to return a
+response assessed using a user-defined `$responseChecker` callback function.
+It allows for a detailed validation of the response content.
 
 Example validating the status code and the response content:
 
@@ -106,7 +106,6 @@ wait_for_http_response(
         && u($response->getContent())->containsAny(['Example Domain']);
     },
     timeout: 2,
-    );
 );
 ```
 
