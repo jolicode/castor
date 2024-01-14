@@ -8,3 +8,6 @@ indent_size = 4
 
 [*.md]
 max_line_length = 80
+
+[*.yml]
+indent_size = 2
