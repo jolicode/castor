@@ -17,19 +17,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      - name: PHP-CS-Fixer
+        uses: docker://oskarstark/php-cs-fixer-ga
         with:
-          # Keep in sync with PHP version pinned in tools/php-cs-fixer/composer.json
-          php-version: '8.3'
-
-      - name: Install PHP CS Fixer dependencies
-        uses: ramsey/composer-install@v2
-        with:
-          working-directory: tools/php-cs-fixer
-
-      - name: Run PHP CS Fixer
-        run: tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php
+          args: --config=.php-cs-fixer.php --diff --dry-run
 
   phpstan:
     name: Static Analysis
@@ -38,24 +29,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          # Keep in sync with PHP version pinned in tools/phpstan/composer.json
-          php-version: '8.3'
-
-      - name: Install PHPStan dependencies
-        uses: ramsey/composer-install@v2
-        with:
-          working-directory: tools/phpstan
-
-      - name: Install Castor dependencies
-        uses: ramsey/composer-install@v2
-        with:
-          composer-options: --prefer-dist --no-progress --optimize-autoloader --classmap-authoritative
-
-      - name: Run PHPStan
-        run: tools/phpstan/vendor/bin/phpstan --configuration=phpstan.neon
+      - name: PHPStan
+        uses: docker://oskarstark/phpstan-ga
+        env:
+          REQUIRE_DEV: true
 
   phpunit:
     name: PHPUnit on ${{ matrix.php }}
@@ -71,17 +48,15 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php }}
+          php-version: "${{ matrix.php }}"
 
-      - name: Install Castor dependencies
-        uses: ramsey/composer-install@v2
-        with:
-          composer-options: --prefer-dist --no-progress --optimize-autoloader --classmap-authoritative
+      - name: Install dependencies (project)
+        run: composer install --prefer-dist --no-progress --optimize-autoloader --classmap-authoritative
 
+      # Needed because we repack an application in some tests
       - name: Install dependencies (phar builder)
-        uses: ramsey/composer-install@v2
-        with:
-          working-directory: tools/phar
+        run: composer install --prefer-dist --no-progress --optimize-autoloader --classmap-authoritative
+        working-directory: tools/phar
 
       - name: Link box
         run: sudo ln -s $GITHUB_WORKSPACE/tools/phar/vendor/bin/box /usr/local/bin/box
@@ -91,3 +66,13 @@ jobs:
 
       - name: Run tests
         run: vendor/bin/simple-phpunit
+
+  phar:
+    name: Ensure PHAR is OK
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build all the phars
+        uses: ./.github/actions/phar
