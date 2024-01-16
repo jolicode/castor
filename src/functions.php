@@ -487,8 +487,8 @@ function watch(string|array $path, callable $function, Context $context = null):
     $context ??= GlobalHelper::getContext();
 
     $binary = match (true) {
-        OSHelper::isMacOS() => 'watcher-darwin',
-        OSHelper::isWindows() => 'watcher-windows.exe',
+        OsHelper::isMacOS() => 'watcher-darwin',
+        OsHelper::isWindows() => 'watcher-windows.exe',
         default => 'watcher-linux',
     };
 
