@@ -2,17 +2,25 @@
 
 namespace Castor\Tests;
 
+use Castor\Tests\Helper\WebServerHelper;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\Process;
 
 abstract class TaskTestCase extends TestCase
 {
+    public static function setUpBeforeClass(): void
+    {
+        WebServerHelper::start();
+    }
+
     public function runTask(array $args, string $cwd = null): Process
     {
         $coverage = $this->getTestResultObject()?->getCodeCoverage();
 
         $bin = __DIR__ . '/../bin/castor';
-        $extraEnv = [];
+        $extraEnv = [
+            'ENDPOINT' => $_SERVER['ENDPOINT'],
+        ];
 
         if ($coverage) {
             $bin = __DIR__ . '/bin/castor';

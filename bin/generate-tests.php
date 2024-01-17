@@ -4,12 +4,21 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use Castor\Console\ApplicationFactory;
+use Castor\PlatformUtil;
+use Castor\Tests\Helper\WebServerHelper;
 use Castor\Tests\OutputCleaner;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 
 use function Symfony\Component\String\u;
+
+$_SERVER['ENDPOINT'] ??= 'http://127.0.0.1:9955';
+WebServerHelper::start();
+
+$fs = new Filesystem();
+$fs->remove(PlatformUtil::getCacheDirectory());
 
 $application = ApplicationFactory::create();
 $application->setAutoExit(false);
@@ -114,6 +123,7 @@ function add_test(array $args, string $class, string $cwd = null)
         cwd: $cwd ?: __DIR__ . '/../',
         env: [
             'COLUMNS' => 120,
+            'ENDPOINT' => $_SERVER['ENDPOINT'],
         ],
     );
     $process->run();

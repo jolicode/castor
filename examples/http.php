@@ -7,7 +7,9 @@ use function Castor\request;
 #[AsTask(description: 'Make HTTP request')]
 function httpRequest(): void
 {
-    $response = request('GET', 'https://example.com/');
+    $url = $_SERVER['ENDPOINT'] ?? 'https://example.com';
+
+    $response = request('GET', $url);
 
     echo $response->getContent();
 }

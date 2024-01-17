@@ -1,2 +1,2 @@
-Checking if example.com is available... OK
+Checking if 127.0.0.1 is available... OK
 

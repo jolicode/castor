@@ -11,7 +11,7 @@ class WaitForWaitForUrlWithSpecificResponseContentAndStatusTest extends TaskTest
     {
         $process = $this->runTask(['wait-for:wait-for-url-with-specific-response-content-and-status']);
 
-        $this->assertSame(1, $process->getExitCode());
+        $this->assertSame(0, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());
         if (file_exists(__FILE__ . '.err.txt')) {
             $this->assertStringEqualsFile(__FILE__ . '.err.txt', $process->getErrorOutput());
