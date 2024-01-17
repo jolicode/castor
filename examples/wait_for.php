@@ -77,15 +77,11 @@ function wait_for_url_with_status_code_only(): void
 }
 
 #[AsTask(description: 'Use custom wait for, to check anything')]
-function custom_wait_for_task(int $sleep = 1): void
+function custom_wait_for_task(string $thing = 'foobar'): void
 {
-    $okAt = time() + $sleep;
-
     try {
         wait_for(
-            callback: function () use ($okAt) {
-                return time() >= $okAt;
-            },
+            callback: fn () => \in_array($thing, ['foo', 'bar', 'foobar'], true),
             timeout: 5,
             message: 'Waiting for my custom check...',
         );
