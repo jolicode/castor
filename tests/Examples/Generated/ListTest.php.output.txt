@@ -59,6 +59,7 @@ ssh:upload                                                        Uploads a file
 version-guard:min-version-check                                   Check if the minimum castor version requirement is met
 version-guard:min-version-check-fail                              Check if the minimum castor version requirement is met (fail)
 wait-for:custom-wait-for-task                                     Use custom wait for, to check anything
+wait-for:wait-for-docker-container-task                           Wait for docker container to be ready
 wait-for:wait-for-port-task                                       Wait for a service available on a port
 wait-for:wait-for-url-task                                        Wait for an URL to be available
 wait-for:wait-for-url-with-specific-response-content-and-status   Wait for an URL to respond with a "200" status code and a specific content

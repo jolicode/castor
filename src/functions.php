@@ -971,6 +971,28 @@ function wait_for_http_response(
     );
 }
 
+/**
+ * @throws TimeoutReachedException
+ */
+function wait_for_docker_container(
+    string $containerName,
+    int $timeout = 10,
+    bool $quiet = false,
+    int $intervalMs = 100,
+    string $message = null,
+    callable $containerChecker = null,
+): void {
+    GlobalHelper::getApplication()->waitForHelper->waitForDockerContainer(
+        io: io(),
+        containerName: $containerName,
+        timeout: $timeout,
+        quiet: $quiet,
+        intervalMs: $intervalMs,
+        message: $message,
+        containerChecker: $containerChecker,
+    );
+}
+
 function guard_min_version(string $minVersion): void
 {
     $currentVersion = GlobalHelper::getApplication()->getVersion();

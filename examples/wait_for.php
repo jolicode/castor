@@ -7,8 +7,11 @@ use Castor\Exception\WaitFor\ExitedBeforeTimeoutException;
 use Castor\Exception\WaitFor\TimeoutReachedException;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
+use function Castor\capture;
 use function Castor\io;
+use function Castor\run;
 use function Castor\wait_for;
+use function Castor\wait_for_docker_container;
 use function Castor\wait_for_http_response;
 use function Castor\wait_for_http_status;
 use function Castor\wait_for_port;
@@ -89,5 +92,25 @@ function custom_wait_for_task(string $thing = 'foobar'): void
         io()->error('My custom check failed. (exited before timeout)');
     } catch (TimeoutReachedException) {
         io()->error('My custom check failed. (timeout reached)');
+    }
+}
+
+#[AsTask(description: 'Wait for docker container to be ready')]
+function wait_for_docker_container_task(): void
+{
+    try {
+        run('docker run -d --rm --name helloworld alpine sh -c "echo hello world ; sleep 10"', quiet: true);
+        wait_for_docker_container(
+            containerName: 'helloworld',
+            timeout: 5,
+            containerChecker: function ($containerId): bool {
+                // Check some things (logs, command result, etc.)
+                $output = capture("docker logs {$containerId}", allowFailure: true);
+
+                return u($output)->containsAny(['hello world']);
+            },
+        );
+    } catch (TimeoutReachedException) {
+        io()->error('Docker container is not available. (timeout reached)');
     }
 }

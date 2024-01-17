@@ -38,10 +38,11 @@ Castor provides the following built-in functions:
 - [`ssh_upload`](going-further/ssh.md#the-ssh_upload-function)
 - [`variable`](05-context.md#the-variable-function)
 - [`wait_for`](going-further/wait-for.md#the-wait_for-function)
+- [`wait_for_url`](going-further/wait-for.md#the-wait_for_url-function)
 - [`wait_for_http_response`](going-further/wait-for.md#the-wait_for_http_response-function)
 - [`wait_for_http_status`](going-further/wait-for.md#the-wait_for_http_status-function)
 - [`wait_for_port`](going-further/wait-for.md#the-wait_for_port-function)
-- [`wait_for_url`](going-further/wait-for.md#the-wait_for_url-function)
+- [`wait_for_docker_container`](going-further/wait-for.md#the-wait_for_docker_container-function)
 - [`watch`](going-further/watch.md)
 - [`with`](going-further/advanced-context.md#the-with-function)
 
