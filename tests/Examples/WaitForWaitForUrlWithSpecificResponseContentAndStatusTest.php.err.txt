@@ -1,8 +1,0 @@
-
-In WaitForHelper.php line 60:
-                                                         
-  Callback check returned null, exiting before timeout.  
-                                                         
-
-wait-for:wait-for-url-with-specific-response-content-and-status
-
