@@ -37,7 +37,6 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 use Symfony\Component\VarDumper\Cloner\AbstractCloner;
 use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -242,21 +241,24 @@ class Application extends SymfonyApplication
 
     private function displayUpdateWarningIfNeeded(SymfonyStyle $symfonyStyle): void
     {
-        $latestVersion = $this->cache->get('latest-version', function (ItemInterface $item): array {
-            $item->expiresAfter(60 * 60 * 24);
+        $item = $this->cache->getItem('last-update-warning');
+        if ($item->isHit()) {
+            return;
+        }
 
-            $response = $this->httpClient->request('GET', 'https://api.github.com/repos/jolicode/castor/releases/latest', [
-                'timeout' => 1,
-            ]);
+        // We save it right now, even if there are some failures later. We don't
+        // want to waste bandwidth or CPU usage, nor log too much information.
+        $item->expiresAfter(60 * 60 * 24);
+        $item->set(true);
+        $this->cache->save($item);
 
-            try {
-                return $response->toArray();
-            } catch (HttpExceptionInterface) {
-                return [];
-            }
-        });
+        $response = $this->httpClient->request('GET', 'https://api.github.com/repos/jolicode/castor/releases/latest', [
+            'timeout' => 1,
+        ]);
 
-        if (!$latestVersion) {
+        try {
+            $latestVersion = $response->toArray();
+        } catch (HttpExceptionInterface) {
             $this->logger->info('Failed to fetch latest Castor version from GitHub.');
 
             return;
