@@ -1,13 +1,9 @@
 <?php
 
-namespace Castor\Tests\Fingerprint;
+namespace Castor\Tests\Examples\Fingerprint;
 
-use Castor\Tests\TaskTestCase;
-
-class FingerprintTaskWithCompleteFingerprintTest extends TaskTestCase
+class FingerprintTaskWithCompleteFingerprintTest extends FingerprintedTestCase
 {
-    use FingerprintedTest;
-
     // fingerprint:task-with-some-fingerprint
     public function test(): void
     {
@@ -23,7 +19,7 @@ class FingerprintTaskWithCompleteFingerprintTest extends TaskTestCase
 
     private function runProcessAndExpect(string $expectedOutputFilePath, string $withFileContent = 'Hello'): void
     {
-        $filepath = \dirname(__DIR__, 2) . '/examples/fingerprint_file.fingerprint_single';
+        $filepath = \dirname(__DIR__, 3) . '/examples/fingerprint_file.fingerprint_single';
         if (file_exists($filepath)) {
             unlink($filepath);
         }

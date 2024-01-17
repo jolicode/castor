@@ -1,13 +1,24 @@
 <?php
 
-namespace Castor\Tests\Fingerprint;
+namespace Castor\Tests\Examples\Fingerprint;
 
 use Castor\PlatformUtil;
+use Castor\Tests\TaskTestCase;
 use Symfony\Component\Finder\Finder;
 
-class FingerprintCleaner
+abstract class FingerprintedTestCase extends TaskTestCase
 {
-    public static function clearFingerprintsCache(): void
+    public static function tearDownAfterClass(): void
+    {
+        self::clearFingerprintsCache();
+    }
+
+    protected function setUp(): void
+    {
+        self::clearFingerprintsCache();
+    }
+
+    private static function clearFingerprintsCache(): void
     {
         if (is_dir(PlatformUtil::getCacheDirectory())) {
             foreach (
@@ -30,7 +41,7 @@ class FingerprintCleaner
         }
 
         $examplesFingerprintFile = (new Finder())
-            ->in(\dirname(__DIR__, 2) . '/examples')
+            ->in(\dirname(__DIR__, 3) . '/examples')
             ->name('*.fingerprint_*')
             ->notName('*.php')
         ;
