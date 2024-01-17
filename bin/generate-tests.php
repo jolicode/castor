@@ -19,6 +19,8 @@ WebServerHelper::start();
 
 $fs = new Filesystem();
 $fs->remove(PlatformUtil::getCacheDirectory());
+$fs->remove(__DIR__ . '/../tests/Examples/Generated');
+$fs->mkdir(__DIR__ . '/../tests/Examples/Generated');
 
 $application = ApplicationFactory::create();
 $application->setAutoExit(false);
@@ -59,9 +61,9 @@ $commandFilterList = [
     'repack',
     'run:ls',
     'run:run-parallel',
-    'fingerprint:task-with-a-fingerprint', // Tested in Castor\Tests\Fingerprint\FingerprintTaskWithAFingerprintTest
-    'fingerprint:task-with-complete-fingerprint-check', // Tested in Castor\Tests\Fingerprint\FingerprintTaskWithCompleteFingerprintTest
-    'fingerprint:task-with-a-fingerprint-and-force', // Tested in Castor\Tests\Fingerprint\FingerprintTaskWithAFingerprintAndForceTest
+    'fingerprint:task-with-a-fingerprint',
+    'fingerprint:task-with-complete-fingerprint-check',
+    'fingerprint:task-with-a-fingerprint-and-force',
 ];
 $optionFilterList = array_flip(['help', 'quiet', 'verbose', 'version', 'ansi', 'no-ansi', 'no-interaction', 'context']);
 foreach ($applicationDescription['commands'] as $command) {
@@ -136,11 +138,11 @@ function add_test(array $args, string $class, string $cwd = null)
         '{{ cwd }}' => $cwd ? ', ' . var_export($cwd, true) : '',
     ]);
 
-    file_put_contents(__DIR__ . '/../tests/Examples/' . $class . '.php', $code);
-    file_put_contents(__DIR__ . '/../tests/Examples/' . $class . '.php.output.txt', OutputCleaner::cleanOutput($process->getOutput()));
+    file_put_contents(__DIR__ . '/../tests/Examples/Generated/' . $class . '.php', $code);
+    file_put_contents(__DIR__ . '/../tests/Examples/Generated/' . $class . '.php.output.txt', OutputCleaner::cleanOutput($process->getOutput()));
     $err = OutputCleaner::cleanOutput($process->getErrorOutput());
     if ($err) {
-        file_put_contents(__DIR__ . '/../tests/Examples/' . $class . '.php.err.txt', $process->getErrorOutput());
+        file_put_contents(__DIR__ . '/../tests/Examples/Generated/' . $class . '.php.err.txt', $process->getErrorOutput());
     }
 }
 

@@ -1,17 +1,13 @@
 <?php
 
-namespace Castor\Tests\Fingerprint;
+namespace Castor\Tests\Examples\Fingerprint;
 
-use Castor\Tests\TaskTestCase;
-
-class FingerprintTaskWithAFingerprintAndForceTest extends TaskTestCase
+class FingerprintTaskWithAFingerprintAndForceTest extends FingerprintedTestCase
 {
-    use FingerprintedTest;
-
     // fingerprint:task-with-a-fingerprint-and-force
     public function test(): void
     {
-        $filepath = \dirname(__DIR__, 2) . '/examples/fingerprint_file.fingerprint_single';
+        $filepath = \dirname(__DIR__, 3) . '/examples/fingerprint_file.fingerprint_single';
 
         if (file_exists($filepath)) {
             unlink($filepath);
