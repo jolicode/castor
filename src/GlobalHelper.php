@@ -62,11 +62,6 @@ class GlobalHelper
         return self::getApplication()->getInput();
     }
 
-    public static function getSectionOutput(): SectionOutput
-    {
-        return self::getApplication()->getSectionOutput();
-    }
-
     public static function getOutput(): OutputInterface
     {
         return self::getApplication()->getOutput();

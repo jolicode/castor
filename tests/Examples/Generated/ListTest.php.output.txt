@@ -46,6 +46,7 @@ parallel:exception                                                Sleep and thro
 parallel:sleep                                                    Sleeps for 5, 7, and 10 seconds in parallel
 quiet:quiet                                                       Executes something but does not output anything
 run:ls                                                            Run a sub-process and display information about it
+run:say-hi                                                        Say Hi
 run:test-file                                                     Run a sub-process and return its exit code, with get_exit_code() function
 run:variables                                                     Run a sub-process with environment variables and display information about it
 run:whoami                                                        Run a sub-process and display information about it, with capture() function

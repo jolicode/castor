@@ -7,6 +7,8 @@ use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
+// Disabled for now, see https://github.com/jolicode/castor/pull/251
+
 /** @internal */
 class SectionOutput
 {

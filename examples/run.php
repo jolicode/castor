@@ -11,6 +11,12 @@ use function Castor\exit_code;
 use function Castor\output;
 use function Castor\run;
 
+#[AsTask(description: 'Say Hi')]
+function say_hi(): void
+{
+    run(['echo', 'hello']);
+}
+
 #[AsTask(description: 'Run a sub-process and display information about it')]
 function ls(): void
 {

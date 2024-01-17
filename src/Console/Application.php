@@ -15,7 +15,6 @@ use Castor\FunctionFinder;
 use Castor\GlobalHelper;
 use Castor\ListenerDescriptor;
 use Castor\PlatformUtil;
-use Castor\SectionOutput;
 use Castor\Stub\StubsGenerator;
 use Castor\TaskDescriptor;
 use Castor\VerbosityLevel;
@@ -48,7 +47,7 @@ class Application extends SymfonyApplication
 
     // "Current" objects availables at some point of the lifecycle
     private InputInterface $input;
-    private SectionOutput $sectionOutput;
+    private OutputInterface $output;
     private SymfonyStyle $symfonyStyle;
     private Command $command;
 
@@ -105,14 +104,9 @@ class Application extends SymfonyApplication
         return $this->input ?? throw new \LogicException('Input not available yet.');
     }
 
-    public function getSectionOutput(): SectionOutput
-    {
-        return $this->sectionOutput ?? throw new \LogicException('Section output not available yet.');
-    }
-
     public function getOutput(): OutputInterface
     {
-        return $this->getSectionOutput()->getConsoleOutput();
+        return $this->output ?? throw new \LogicException('Output not available yet.');
     }
 
     public function getSymfonyStyle(): SymfonyStyle
@@ -130,7 +124,7 @@ class Application extends SymfonyApplication
     public function doRun(InputInterface $input, OutputInterface $output): int
     {
         $this->input = $input;
-        $this->sectionOutput = new SectionOutput($output);
+        $this->output = $output;
         $this->symfonyStyle = new SymfonyStyle($input, $output);
         $this->logger->pushHandler(new ConsoleHandler($output));
 
