@@ -91,7 +91,7 @@ foreach ($applicationDescription['commands'] as $command) {
 
 add_test(['parallel:sleep', '--sleep5', '0', '--sleep7', '0', '--sleep10', '0'], 'ParallelSleepTest');
 add_test(['context:context', '--context', 'run'], 'ContextContextRunTest');
-add_test(['context:context', '--context', 'my_default', '-vv'], 'ContextContextMyDefaultTest');
+add_test(['context:context', '--context', 'my_default', '-v'], 'ContextContextMyDefaultTest');
 add_test(['context:context', '--context', 'no_no_exist'], 'ContextContextDoNotExistTest');
 add_test(['context:context', '--context', 'production'], 'ContextContextProductionTest');
 add_test(['context:context', '--context', 'path'], 'ContextContextPathTest');
