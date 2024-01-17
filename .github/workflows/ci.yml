@@ -18,9 +18,9 @@ jobs:
         uses: actions/checkout@v3
 
       - name: PHP-CS-Fixer
-        uses: docker://oskarstark/php-cs-fixer-ga
+        uses: docker://ghcr.io/php-cs-fixer/php-cs-fixer:3-php8.3
         with:
-          args: --config=.php-cs-fixer.php --diff --dry-run
+          args: --config=.php-cs-fixer.php check --diff
 
   phpstan:
     name: Static Analysis
