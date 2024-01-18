@@ -29,7 +29,7 @@ $application
 ;
 $applicationDescription = json_decode($o->fetch(), true);
 
-$commandFilterList = [
+$taskFilterList = [
     '_complete',
     'completion',
     'help',
@@ -66,19 +66,19 @@ $commandFilterList = [
     'fingerprint:task-with-a-fingerprint-and-force',
 ];
 $optionFilterList = array_flip(['help', 'quiet', 'verbose', 'version', 'ansi', 'no-ansi', 'no-interaction', 'context']);
-foreach ($applicationDescription['commands'] as $command) {
-    if (in_array($command['name'], $commandFilterList, true)) {
+foreach ($applicationDescription['commands'] as $task) {
+    if (in_array($task['name'], $taskFilterList, true)) {
         continue;
     }
 
-    echo "Generating test for {$command['name']}\n";
+    echo "Generating test for {$task['name']}\n";
 
     $args = [
-        $command['name'],
+        $task['name'],
     ];
 
-    $options = array_diff_key($command['definition']['options'], $optionFilterList);
-    foreach ($command['definition']['arguments'] as $argument) {
+    $options = array_diff_key($task['definition']['options'], $optionFilterList);
+    foreach ($task['definition']['arguments'] as $argument) {
         if (!$argument['is_required']) {
             continue;
         }
@@ -95,7 +95,7 @@ foreach ($applicationDescription['commands'] as $command) {
         $args[] = $option['default'] ?? 'FIXME';
     }
 
-    $class = u($command['name'])->camel()->title()->append('Test')->toString();
+    $class = u($task['name'])->camel()->title()->append('Test')->toString();
 
     add_test($args, $class);
 }
@@ -110,8 +110,8 @@ add_test(['context:context', '--context', 'dynamic'], 'ContextContextDynamicTest
 add_test(['enabled:hello', '--context', 'production'], 'EnabledInProduction');
 add_test([], 'NewProjectTest', '/tmp');
 add_test(['init'], 'NewProjectInitTest', '/tmp');
-add_test(['unknown:command'], 'NoConfigUnknownTest', '/tmp');
-add_test(['unknown:command', 'toto', '--foo', 1], 'NoConfigUnknownWithArgsTest', '/tmp');
+add_test(['unknown:task'], 'NoConfigUnknownTest', '/tmp');
+add_test(['unknown:task', 'toto', '--foo', 1], 'NoConfigUnknownWithArgsTest', '/tmp');
 add_test(['completion', 'bash'], 'NoConfigCompletionTest', '/tmp');
 
 function add_test(array $args, string $class, string $cwd = null)

@@ -1,9 +1,8 @@
-# Executing commands
+# Executing Processes
 
 ## The `run()` function
 
-Castor provides a `Castor\run()` function to run commands. It allows to run a
-process:
+Castor provides a `run()` function to execute external processes.
 
 ```php
 use Castor\Attribute\AsTask;
@@ -15,18 +14,18 @@ function foo(): void
 {
     run('echo "bar"');
     run(['echo', 'bar']);
-}
+}AsTaskArgument
 ```
 
-You can pass a string or an array of string for this command. When passing a
+You can pass a string or an array of string for this function. When passing a
 string, arguments will not be escaped - use it carefully.
 
 ## Process object
 
 Under the hood, Castor uses the
 [`Symfony\Component\Process\Process`](https://github.com/symfony/symfony/blob/6.3/src/Symfony/Component/Process/Process.php)
-object to run the command. The `run()` function will return this object. So
-you can use the API of this class to interact with the process:
+object to execute the process. The `run()` function will return this object. So
+you can use the API of this class to interact with the underlying process:
 
 ```php
 use Castor\Attribute\AsTask;
@@ -46,7 +45,7 @@ function foo(): void
 
 ## Failure
 
-By default, Castor will throw an exception if the command fails. You can disable
+By default, Castor will throw an exception if the process fails. You can disable
 that by setting the `allowFailure` option to `true`:
 
 ```php
@@ -66,7 +65,7 @@ function foo(): void
 
 ## Working directory
 
-By default, Castor will run the command in the same directory as
+By default, Castor will execute the process in the same directory as
 the `castor.php` file. You can change that by setting the `path` argument. It
 can be either a relative or an absolute path:
 
@@ -78,8 +77,8 @@ use function Castor\run;
 #[AsTask]
 function foo(): void
 {
-    run('pwd', path: '../'); // run the command in the parent directory of the castor.php file
-    run('pwd', path: '/tmp'); // run the command in the /tmp directory
+    run('pwd', path: '../'); // run the process in the parent directory of the castor.php file
+    run('pwd', path: '/tmp'); // run the process in the /tmp directory
 }
 ```
 
@@ -110,7 +109,7 @@ function foo(): void
 ## Processing the output
 
 By default, Castor will forward the stdout and stderr to the current terminal.
-If you do not want to print the output of the command you can set the `quiet`
+If you do not want to print the process output you can set the `quiet`
 option to `true`:
 
 ```php
@@ -125,8 +124,8 @@ function foo(): void
 }
 ```
 
-You can also fetch the output of the command by using the API of
-the `Symfony\Component\Process\Process` object:
+You can also fetch the process output by using the 
+returned `Symfony\Component\Process\Process` object:
 
 ```php
 use Castor\Attribute\AsTask;
@@ -146,7 +145,7 @@ function foo(): void
 
 ### The `capture()` function
 
-Castor provides a `capture()` function that will run the command quietly,
+Castor provides a `capture()` function that will run the process quietly,
 trims the output, then returns it:
 
 ```php
@@ -204,7 +203,7 @@ function foo(): void
 }
 ```
 
-This command will have a 2 minutes timeout. If you want to disable that feature,
+This process will have a 2 minutes timeout. If you want to disable that feature,
 you need to set the timeout to `0`.
 
 ```php
@@ -224,7 +223,7 @@ function foo(): void
 
 ## PTY & TTY
 
-By default, Castor will use a pseudo terminal (PTY) to run the command,
+By default, Castor will use a pseudo terminal (PTY) to run the underlying process,
 which allows to have nice output in most cases.
 For some commands you may want to disable the PTY and use a TTY instead. You can
 do that by setting the `tty` option to `true`:
@@ -247,7 +246,7 @@ function foo(): void
 
 You can also disable the pty by setting the `pty` option to `false`. If `pty`
 and `tty` are both set to `false`, the standard input will not be forwarded to
-the command:
+the process:
 
 ```php
 use Castor\Attribute\AsTask;

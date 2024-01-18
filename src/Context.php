@@ -9,7 +9,7 @@ class Context implements \ArrayAccess
     /**
      * @phpstan-param ContextData $data The input parameter accepts an array or an Object
      *
-     * @param array<string, string|\Stringable|int> $environment A list of environment variables to add to the command
+     * @param array<string, string|\Stringable|int> $environment A list of environment variables to add to the task
      */
     public function __construct(
         public readonly array $data = [],

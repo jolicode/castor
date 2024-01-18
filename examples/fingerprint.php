@@ -52,7 +52,7 @@ function task_with_a_fingerprint_and_force(
             run('echo "Cool, no fingerprint! Executing..."');
         },
         fingerprint: my_fingerprint_check(),
-        force: $force // This option will force the command to run even if the fingerprint has not changed
+        force: $force // This option will force the task to run even if the fingerprint has not changed
     );
 
     run('echo "Cool! I finished!"');

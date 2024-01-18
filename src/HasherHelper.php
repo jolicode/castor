@@ -119,13 +119,13 @@ class HasherHelper
 
     public function writeTaskName(): self
     {
-        $commandName = $this->application->getCommand()->getName() ?? 'n/a';
+        $taskName = $this->application->getCommand()->getName() ?? 'n/a';
 
         $this->logger->debug('Hashing task name "{name}".', [
-            'name' => $commandName,
+            'name' => $taskName,
         ]);
 
-        hash_update($this->hashContext, $commandName);
+        hash_update($this->hashContext, $taskName);
 
         return $this;
     }

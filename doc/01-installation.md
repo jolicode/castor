@@ -147,8 +147,8 @@ jobs:
 
 ## Autocomplete
 
-If you use bash, you can enable autocomplete for castor by executing the
-following commands:
+If you use bash, you can enable autocomplete for castor by running the
+following task:
 
 ```
 castor completion | sudo tee /etc/bash_completion.d/castor
