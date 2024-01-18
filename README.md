@@ -5,23 +5,22 @@
 
 <p align="center">
     <i>Castor is a <strong><abbr title="Developer eXperience">DX</abbr> oriented task
-    runner</strong> and <strong>command launcher</strong> built with PHP.</i>
+    runner</strong> built in PHP featuring a range of functions for common task processing.</i>
 </p>
 
-It can be seen as a replacement of Makefile, Fabric, Invoke, Shell scripts...
+It can be viewed as an alternative to Makefile, Fabric, Invoke, Shell scripts,
+etc., but it leverages PHP's scripting capabilities and its extensive library ecosystem.
 
-It comes with many helpers to make your life easier:
+It comes with many features to make your life easier:
 
 * Seamless parsing of **arguments and options**, simplifying input handling
-* **Autocomplete** support for faster and error-free command entry
-* Effortless **process execution**, enabling seamless integration with external
-  tools
-* **Parallel processing** capabilities to maximize resource utilization
-* Intelligent **file watching** that automatically triggers actions on file
-  modifications
-* Customizable **notifications** to keep you informed and in control
-* Robust **logging** for capturing and analyzing essential information
-* A strong emphasis on exceptional **Developer Experience** (DX)
+* **Autocomplete** support for faster and error-free typing
+* A built-in list of useful functions:
+    * [`run()`](doc/03-run.md#the-run-function): Runs external processes, enabling seamless integration with external tools
+    * [`parallel()`](doc/going-further/parallel.md#the-parallel-function): Parallelizes process execution to maximize resource utilization
+    * [`watch()`](doc/going-further/watch.md): Watches files and automatically triggers actions on file modifications
+    * [`log()`](doc/going-further/log.md#the-log-function): Captures and analyzes essential information
+    * [And even more advanced functions](doc/06-reference.md)
 
 > [!NOTE]
 > Castor is still in early development, and the API is not stable yet. Even if
@@ -30,8 +29,11 @@ It comes with many helpers to make your life easier:
 
 ## Usage
 
-As an example, you could create a command that prints "Hello from castor" by creating
-a file `castor.php` with the following content:
+In Castor, tasks are set up as typical PHP functions marked with the `#[AsTask]` attribute in a `castor.php` file. 
+
+These tasks can run any PHP code but also make use of various [functions for standard operations](doc/06-reference.md) that come pre-packaged with Castor.
+
+For example:
 
 ```php
 <?php
@@ -48,14 +50,14 @@ function hello(): void
 }
 ```
 
-Then you can run the command with `castor greetings:hello`:
+Will expose a `greetings:hello` task that you can run with `castor greetings:hello`:
 
 ```bash
 $ castor greetings:hello
 Hello from castor
 ```
 
-Then, you can go wild and create more complex commands:
+Then, you can go wild and create more complex tasks:
 
 ```php
 #[AsTask(description: 'Clean the infrastructure (remove container, volume, networks)')]
@@ -116,8 +118,8 @@ Discover more by reading the docs:
 
 * [Installation and Autocomplete](doc/01-installation.md)
 * [Basic Usage](doc/02-basic-usage.md)
-* [Executing commands](doc/03-run.md)
-* [Command Arguments](doc/04-arguments.md)
+* [Executing Processes with `run()`](doc/03-run.md)
+* [Task Arguments](doc/04-arguments.md)
 * [Using the Context](doc/05-context.md)
 * [Castor reference](doc/06-reference.md)
 * [Going further with Castor](doc/going-further/index.md)

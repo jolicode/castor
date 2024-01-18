@@ -174,7 +174,7 @@ class Application extends SymfonyApplication
         if (class_exists(\RepackedApplication::class)) {
             $functionsRootDir = \RepackedApplication::ROOT_DIR;
         }
-        // Find all potential commands / context
+
         $functions = $this->functionFinder->findFunctions($functionsRootDir);
         $tasks = [];
         foreach ($functions as $function) {

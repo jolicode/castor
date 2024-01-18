@@ -2,7 +2,7 @@
 This is a title
 ===============
 
- This is the command "output:output"
+ This is the task "output:output"
 
  // With IO, you can ask questions ...                                                                                  
 

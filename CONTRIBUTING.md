@@ -56,10 +56,10 @@ supported PHP versions and the lowest PHP version with lowest dependencies versi
 
 So it could be green on your local php version but fail on CI.
 
-### Testing helpers
+### Testing functions
 
-When your changes are related to helpers, run the `bin/generate-tests.php` 
-to generate helpers tests to reflect your changes.
+When your changes are related to Castor's provided functions, run the `bin/generate-tests.php` 
+to generate tests that would reflect your changes.
 
 ## Coding Standards
 
@@ -96,12 +96,14 @@ tools/phpstan/vendor/bin/phpstan fix --config=phpstan.neon
 ## Update the Documentation
 
 When introducing non-internal code that user will be able to rely on in their
-own project, like new helpers for example, make sure to document its usage.
+own project, like new Castor functions for example, make sure to document its usage.
 
 ## Update the Changelog
 
 Add a new entry in [CHANGELOG.md](CHANGELOG.md) summarizing your changes.
-Multiple points for a single PR is fine. Prefix with `[BC Break]` entries that 
+Multiple points for a single PR is fine. 
+
+Prefix with `[BC Break]` entries that 
 are related to backward compatibility breaking changes.
 
 ## Keeping your fork up-to-date

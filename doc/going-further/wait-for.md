@@ -53,7 +53,7 @@ wait_for(
 
 > [!NOTE]
 > you can also return null if you want to abort the waiting process. The
-> helper will throw an exception if the callback returns null.
+> function will throw an exception if the callback returns null.
 
 ### The `wait_for_port()` function
 

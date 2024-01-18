@@ -15,7 +15,7 @@ castor -vvv # display level "debug" and above
 ```
 
 When an error occurs, the error message is displayed and the program exits. If
-you need more information, you can re-run the command with the `-v` option.
+you need more information, you can re-run the task with the `-v` option.
 
 ## The `log()` function
 

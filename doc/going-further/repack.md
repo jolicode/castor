@@ -33,4 +33,4 @@ vendor/bin/castor repack --help
 > [!NOTE]
 > Castor will automatically import all files in the current directly.
 > So ensure to have the less files possible in the directory where you run the
-> repack command to avoid including useless files in the phar.
+> repack task to avoid including useless files in the phar.

@@ -36,12 +36,12 @@ class TaskCommand extends Command implements SignalableCommandInterface
         $this->setDescription($taskAttribute->description);
         $this->setAliases($taskAttribute->aliases);
 
-        $commandName = $taskAttribute->name;
+        $taskName = $taskAttribute->name;
         if ($taskAttribute->namespace) {
-            $commandName = $taskAttribute->namespace . ':' . $commandName;
+            $taskName = $taskAttribute->namespace . ':' . $taskName;
         }
 
-        parent::__construct($commandName);
+        parent::__construct($taskName);
     }
 
     /**
@@ -73,20 +73,20 @@ class TaskCommand extends Command implements SignalableCommandInterface
     protected function configure(): void
     {
         foreach ($this->function->getParameters() as $parameter) {
-            $commandArgumentAttribute = $parameter->getAttributes(AsCommandArgument::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null;
+            $taskArgumentAttribute = $parameter->getAttributes(AsCommandArgument::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null;
 
-            if ($commandArgumentAttribute) {
-                $commandArgumentAttribute = $commandArgumentAttribute->newInstance();
+            if ($taskArgumentAttribute) {
+                $taskArgumentAttribute = $taskArgumentAttribute->newInstance();
             } elseif ($parameter->isOptional()) {
-                $commandArgumentAttribute = new AsOption();
+                $taskArgumentAttribute = new AsOption();
             } else {
-                $commandArgumentAttribute = new AsArgument();
+                $taskArgumentAttribute = new AsArgument();
             }
 
-            $name = $this->setParameterName($parameter, $commandArgumentAttribute->name);
+            $name = $this->setParameterName($parameter, $taskArgumentAttribute->name);
 
             try {
-                if ($commandArgumentAttribute instanceof AsArgument) {
+                if ($taskArgumentAttribute instanceof AsArgument) {
                     if ($parameter->isOptional()) {
                         $mode = InputArgument::OPTIONAL;
                     } else {
@@ -99,12 +99,12 @@ class TaskCommand extends Command implements SignalableCommandInterface
                     $this->addArgument(
                         $name,
                         $mode,
-                        $commandArgumentAttribute->description,
+                        $taskArgumentAttribute->description,
                         $parameter->isOptional() ? $parameter->getDefaultValue() : null,
-                        $commandArgumentAttribute->suggestedValues,
+                        $taskArgumentAttribute->suggestedValues,
                     );
-                } elseif ($commandArgumentAttribute instanceof AsOption) {
-                    $mode = $commandArgumentAttribute->mode;
+                } elseif ($taskArgumentAttribute instanceof AsOption) {
+                    $mode = $taskArgumentAttribute->mode;
                     $defaultValue = $parameter->isOptional() ? $parameter->getDefaultValue() : null;
 
                     if (!$mode) {
@@ -119,15 +119,15 @@ class TaskCommand extends Command implements SignalableCommandInterface
 
                     $this->addOption(
                         $name,
-                        $commandArgumentAttribute->shortcut,
+                        $taskArgumentAttribute->shortcut,
                         $mode,
-                        $commandArgumentAttribute->description,
+                        $taskArgumentAttribute->description,
                         $defaultValue,
-                        $commandArgumentAttribute->suggestedValues,
+                        $taskArgumentAttribute->suggestedValues,
                     );
                 }
             } catch (LogicException $e) {
-                throw new \LogicException(sprintf('The argument "%s" for command "%s" cannot be configured: "%s".', $parameter->getName(), $this->getName(), $e->getMessage()));
+                throw new \LogicException(sprintf('The argument "%s" for task "%s" cannot be configured: "%s".', $parameter->getName(), $this->getName(), $e->getMessage()));
             }
         }
     }

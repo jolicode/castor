@@ -68,5 +68,5 @@ object.
 ## The `task()` function
 
 Castor provides the `task()` to access the current
-[`Command`](https://github.com/symfony/symfony/blob/6.3/src/Symfony/Component/Console/Command/Command.php)
+[`Symfony Command`](https://github.com/symfony/symfony/blob/6.3/src/Symfony/Component/Console/Command/Command.php)
 object that powers your current task.

@@ -8,6 +8,7 @@
 * Add `wait_for_http_response()` function for a more generic response check
 * Add `wait_for_docker_container()` function to wait for a docker container to be ready
 * [BC Break] Remove `callable $responseChecker` parameter from `wait_for_http_status()`
+* Revise the usage of the terms `command` and `task` for consistency through code and docs.
 
 ## 0.11.1 (2024-01-11)
 

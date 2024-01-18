@@ -1,11 +1,11 @@
 # Basic usage
 
-Castor use a convention to find commands. It will look for the
+Castor use a convention to find tasks. It will look for the
 first `castor.php` file in the current directory or in parents directory.
 
 In this file, all functions with the `Castor\Attribute\AsTask` attribute will be
-transformed as commands. The name of the function will be the name of the
-command and the namespace will be the namespace of the command.
+transformed as tasks. The name of the function will be the task's name
+and the namespace will be the task's namespace.
 
 For example, if you have the following file:
 
@@ -33,27 +33,27 @@ function bar(): void
 }
 ```
 
-You will have two commands: `hello:castor` and `foo:bar`. If there is no
-namespace then the command will have no namespace.
+You will have two tasks: `hello:castor` and `foo:bar`. If there is no
+namespace then the task will have no namespace.
 
 From now on, we will omit the leading `<?php` in all doc examples.
 
 > [!TIP]
 > Related example: [foo.php](https://github.com/jolicode/castor/blob/main/examples/foo.php)
 
-## Splitting commands in multiple files
+## Splitting tasks in multiple files
 
 ### Using a directory
 
 Castor will also look for `castor` directory in the same directory of
 the `castor.php` file and load all the PHP files from it.
 
-You could then have an empty `castor.php` file and split your commands in
+You could then have an empty `castor.php` file and split your tasks in
 multiple files, like `castor/hello.php` and `castor/foo.php`.
 
 ### The `import()` function
 
-You can also use the `import()` function to import commands from another file.
+You can also use the `import()` function to import tasks from another file.
 This function takes a file path, or a directory as an argument.
 
 When using a directory as an argument, Castor will load all the PHP files in it:
@@ -66,10 +66,10 @@ import(__DIR__ . '/my-app/castor');
 ```
 
 > [!WARNING]
-> You cannot dynamically import commands. The `import()` function must be called
+> You cannot dynamically import tasks. The `import()` function must be called
 > at the top level of the file.
 
-## Overriding command name, namespace or description
+## Overriding task name, namespace or description
 
 The `Castor\Attribute\AsTask` attribute takes three optional
 arguments: `name`, `namespace` and `description` to override the default values:

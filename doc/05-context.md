@@ -1,11 +1,11 @@
 # Context
 
-For every command that Castor run, it uses a `Context` object. This object
+For every task that Castor run, it uses a `Context` object. This object
 contains the default values for the `run` or `watch` function (directory,
 environment variables, pty, tty, etc...).
 
 It also contains custom values that can be set by the user and reused in
-commands.
+tasks.
 
 The context is immutable, which means that every time you change a value, a new
 context is created.
@@ -90,7 +90,7 @@ function foo(): void
 }
 ```
 
-By default the `foo` command will not print anything as the `FOO` environment
+By default the `foo` task will not print anything as the `FOO` environment
 variable is not set. If you want to use your new context you can use
 the `--context` option:
 
@@ -110,7 +110,7 @@ BAR
 
 ## Setting a default context
 
-You may want to set a default context for all your commands. You can do that by
+You may want to set a default context for all your tasks. You can do that by
 setting the `default` argument to `true` in the `AsContext` attribute:
 
 ```php

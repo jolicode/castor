@@ -1,7 +1,7 @@
-# Command arguments
+# Task arguments
 
-When creating a function that will be used as a command, all the parameters of
-the function will be used as arguments or options of the command:
+When creating a function that will be used as a task, all the parameters of
+the function will be used as arguments or options:
 
 ```php
 use Castor\Attribute\AsTask;
@@ -9,7 +9,7 @@ use Castor\Attribute\AsTask;
 use function Castor\run;
 
 #[AsTask]
-function command(
+function task(
     string $firstArg,
     string $secondArg
 ) {
@@ -20,7 +20,7 @@ function command(
 Which can be called like that:
 
 ```bash
-$ castor command foo bar
+$ castor task foo bar
 foo bar
 ```
 
@@ -34,7 +34,7 @@ use Castor\Attribute\AsTask;
 use function Castor\run;
 
 #[AsTask]
-function command(
+function task(
     string $firstArg,
     string $default = 'default'
 ) {
@@ -43,9 +43,9 @@ function command(
 ```
 
 ```bash
-$ castor command foo
+$ castor task foo
 foo default
-$ castor command --default=bar foo
+$ castor task --default=bar foo
 foo bar
 ```
 
