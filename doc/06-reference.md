@@ -54,4 +54,5 @@ Castor provides the following attributes to register tasks, listener, etc:
 - [`AsContext`](05-context.md#creating-a-new-context)
 - [`AsListener`](going-further/events.md#registering-a-listener)
 - [`AsOption`](04-arguments.md#overriding-the-option-name-and-description)
+- [`AsSymfonyTask`](going-further/symfony-task.md)
 - [`AsTask`](02-basic-usage.md)

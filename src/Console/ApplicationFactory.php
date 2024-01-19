@@ -50,7 +50,7 @@ class ApplicationFactory
         // @phpstan-ignore-next-line
         $application = new $class(
             $rootDir,
-            new FunctionFinder(),
+            new FunctionFinder($cache, $rootDir),
             $contextRegistry,
             new EventDispatcher(logger: $logger),
             new ExpressionLanguage($contextRegistry),

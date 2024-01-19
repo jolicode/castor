@@ -2,6 +2,7 @@
 
 namespace Castor\Console;
 
+use Castor\Console\Command\SymfonyTaskCommand;
 use Castor\Console\Command\TaskCommand;
 use Castor\Context;
 use Castor\ContextDescriptor;
@@ -16,6 +17,7 @@ use Castor\ListenerDescriptor;
 use Castor\PlatformUtil;
 use Castor\SectionOutput;
 use Castor\Stub\StubsGenerator;
+use Castor\SymfonyTaskDescriptor;
 use Castor\TaskDescriptor;
 use Castor\VerbosityLevel;
 use Castor\WaitForHelper;
@@ -129,19 +131,26 @@ class Application extends SymfonyApplication
         $this->symfonyStyle = new SymfonyStyle($input, $output);
         $this->logger->pushHandler(new ConsoleHandler($output));
 
-        $tasks = $this->initializeApplication($input);
+        $descriptors = $this->initializeApplication($input);
 
         // Must be done after the initializeApplication() call, to ensure all
         // contexts have been created; but before the adding of task, because we
         // may want to seek in the context to know if the command is enabled
         $this->configureContext($input, $output);
 
-        foreach ($tasks as $task) {
+        foreach ($descriptors->taskDescriptors as $taskDescriptor) {
             $this->add(new TaskCommand(
-                $task->taskAttribute,
-                $task->function,
+                $taskDescriptor->taskAttribute,
+                $taskDescriptor->function,
                 $this->eventDispatcher,
                 $this->expressionLanguage,
+            ));
+        }
+        foreach ($descriptors->symfonyTaskDescriptors as $symfonyTaskDescriptor) {
+            $this->add(new SymfonyTaskCommand(
+                $symfonyTaskDescriptor->taskAttribute,
+                $symfonyTaskDescriptor->function,
+                $symfonyTaskDescriptor->definition,
             ));
         }
 
@@ -160,10 +169,7 @@ class Application extends SymfonyApplication
         return parent::doRunCommand($command, $input, $output);
     }
 
-    /**
-     * @return TaskDescriptor[]
-     */
-    private function initializeApplication(InputInterface $input): array
+    private function initializeApplication(InputInterface $input): Descriptors
     {
         $functionsRootDir = $this->rootDir;
         if (class_exists(\RepackedApplication::class)) {
@@ -172,9 +178,12 @@ class Application extends SymfonyApplication
 
         $functions = $this->functionFinder->findFunctions($functionsRootDir);
         $tasks = [];
+        $symfonyTasks = [];
         foreach ($functions as $function) {
             if ($function instanceof TaskDescriptor) {
                 $tasks[] = $function;
+            } elseif ($function instanceof SymfonyTaskDescriptor) {
+                $symfonyTasks[] = $function;
             } elseif ($function instanceof ContextDescriptor) {
                 $this->contextRegistry->addDescriptor($function);
             } elseif ($function instanceof ListenerDescriptor && null !== $function->reflectionFunction->getClosure()) {
@@ -205,7 +214,7 @@ class Application extends SymfonyApplication
 
         $this->eventDispatcher->dispatch(new AfterApplicationInitializationEvent($this, $tasks));
 
-        return $tasks;
+        return new Descriptors($tasks, $symfonyTasks);
     }
 
     private function configureContext(InputInterface $input, OutputInterface $output): void
@@ -308,5 +317,18 @@ class Application extends SymfonyApplication
         if ($globalComposerPath && str_contains(__FILE__, $globalComposerPath)) {
             $symfonyStyle->block('Run the following command to update Castor: <comment>composer global update jolicode/castor</comment>', escape: false);
         }
+    }
+}
+
+class Descriptors
+{
+    /**
+     * @param TaskDescriptor[]        $taskDescriptors
+     * @param SymfonyTaskDescriptor[] $symfonyTaskDescriptors
+     */
+    public function __construct(
+        public readonly array $taskDescriptors,
+        public readonly array $symfonyTaskDescriptors,
+    ) {
     }
 }

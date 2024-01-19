@@ -13,6 +13,7 @@
 * [Waiting for things](wait-for.md)
 * [Fingerprinting and code execution when something changes](fingerprint.md)
 * [Guard to check the version of castor](version-check.md)
+* [Re-use Symfony Command](symfony-task.md)
 
 ## Interacting with Castor
 
