@@ -142,14 +142,14 @@ function add_test(array $args, string $class, string $cwd = null)
     file_put_contents(__DIR__ . '/../tests/Examples/Generated/' . $class . '.php.output.txt', OutputCleaner::cleanOutput($process->getOutput()));
     $err = OutputCleaner::cleanOutput($process->getErrorOutput());
     if ($err) {
-        file_put_contents(__DIR__ . '/../tests/Examples/Generated/' . $class . '.php.err.txt', $process->getErrorOutput());
+        file_put_contents(__DIR__ . '/../tests/Examples/Generated/' . $class . '.php.err.txt', $err);
     }
 }
 
 __halt_compiler();
 <?php
 
-namespace Castor\Tests\Examples;
+namespace Castor\Tests\Examples\Generated;
 
 use Castor\Tests\TaskTestCase;
 

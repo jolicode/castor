@@ -1,6 +1,6 @@
 <?php
 
-namespace Castor\Tests\Examples;
+namespace Castor\Tests\Examples\Generated;
 
 use Castor\Tests\TaskTestCase;
 
