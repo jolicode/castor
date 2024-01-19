@@ -158,6 +158,21 @@ function run(
         $process = Process::fromShellCommandline($command, $context->currentDirectory, $context->environment, null, $context->timeout);
     }
 
+    // When quiet is set, it means we want to capture the output.
+    // So we disable TTY and PTY because it does not make sens otherwise (and it's buggy).
+    if ($context->quiet) {
+        if ($tty) {
+            throw new \LogicException('The "tty" argument cannot be used with "quiet".');
+        }
+        if ($pty) {
+            throw new \LogicException('The "pty" argument cannot be used with "quiet".');
+        }
+        $context = $context
+            ->withTty(false)
+            ->withPty(false)
+        ;
+    }
+
     if ($context->tty) {
         $process->setTty(true);
         $process->setInput(\STDIN);
