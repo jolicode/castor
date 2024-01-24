@@ -2,7 +2,6 @@
 
 namespace Castor\Console;
 
-use Castor\Console\Command\RepackCommand;
 use Castor\Console\Command\TaskCommand;
 use Castor\Context;
 use Castor\ContextDescriptor;
@@ -91,10 +90,6 @@ class Application extends SymfonyApplication
         AbstractCloner::$defaultCasters[self::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
         AbstractCloner::$defaultCasters[AfterApplicationInitializationEvent::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
 
-        if (!class_exists(\RepackedApplication::class)) {
-            $this->add(new RepackCommand());
-        }
-
         parent::__construct(static::NAME, static::VERSION);
 
         GlobalHelper::setApplication($this);
@@ -139,7 +134,7 @@ class Application extends SymfonyApplication
         // Must be done after the initializeApplication() call, to ensure all
         // contexts have been created; but before the adding of task, because we
         // may want to seek in the context to know if the command is enabled
-        $this->contextRegistry->setCurrentContext($this->createContext($input, $output));
+        $this->configureContext($input, $output);
 
         foreach ($tasks as $task) {
             $this->add(new TaskCommand(
@@ -213,7 +208,7 @@ class Application extends SymfonyApplication
         return $tasks;
     }
 
-    private function createContext(InputInterface $input, OutputInterface $output): Context
+    private function configureContext(InputInterface $input, OutputInterface $output): void
     {
         try {
             $input->bind($this->getDefinition());
@@ -224,7 +219,9 @@ class Application extends SymfonyApplication
 
         // occurs when running `castor -h`, or if no context is defined
         if (!$input->hasOption('context')) {
-            return new Context();
+            $this->contextRegistry->setCurrentContext(new Context(), '');
+
+            return;
         }
 
         $context = $this
@@ -236,7 +233,7 @@ class Application extends SymfonyApplication
             $context = $context->withVerbosityLevel(VerbosityLevel::fromSymfonyOutput($output));
         }
 
-        return $context;
+        $this->contextRegistry->setCurrentContext($context, $input->getOption('context'));
     }
 
     private function displayUpdateWarningIfNeeded(SymfonyStyle $symfonyStyle): void
