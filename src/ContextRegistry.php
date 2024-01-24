@@ -10,6 +10,7 @@ class ContextRegistry
     private ?string $defaultName = null;
 
     private Context $currentContext;
+    private string $currentContextName;
 
     public function addDescriptor(ContextDescriptor $descriptor): void
     {
@@ -71,9 +72,10 @@ class ContextRegistry
         return $this->descriptors[$name]->function->invoke();
     }
 
-    public function setCurrentContext(Context $context): void
+    public function setCurrentContext(Context $context, string $contextName): void
     {
         $this->currentContext = $context;
+        $this->currentContextName = $contextName;
     }
 
     public function getCurrentContext(): Context
@@ -85,6 +87,11 @@ class ContextRegistry
         trigger_deprecation('castor', '0.11.1', 'Calling getCurrentContext() without setCurrentContext() is deprecated. Pass a context instead to the function, or set a Current context before.');
 
         return new Context();
+    }
+
+    public function getCurrentContextName(): string
+    {
+        return $this->currentContextName ?? throw new \LogicException('Current context name not set yet.');
     }
 
     /**

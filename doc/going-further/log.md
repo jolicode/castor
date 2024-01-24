@@ -79,3 +79,19 @@ function preprodContext(): Context
     //return new Context(...);
 }
 ```
+
+## The `debug` task
+
+Castor ships a `debug` task that displays the current context, the root
+directory, the cache directory, and more information. Run with:
+
+```console
+castor debug
+```
+
+If you want to define your own `debug` command, you can still access to the
+castor task with:
+
+```
+castor castor:debug
+```

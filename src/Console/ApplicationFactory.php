@@ -2,6 +2,8 @@
 
 namespace Castor\Console;
 
+use Castor\Console\Command\DebugCommand;
+use Castor\Console\Command\RepackCommand;
 use Castor\ContextRegistry;
 use Castor\EventDispatcher;
 use Castor\ExpressionLanguage;
@@ -40,11 +42,13 @@ class ApplicationFactory
                 'User-Agent' => 'Castor/' . Application::VERSION,
             ],
         ]);
-        $cache = new FilesystemAdapter(directory: PlatformUtil::getCacheDirectory());
+        $cacheDir = PlatformUtil::getCacheDirectory();
+        $cache = new FilesystemAdapter(directory: $cacheDir);
         $logger = new Logger('castor', [], [new ProcessProcessor()]);
 
+        /** @var SymfonyApplication */
         // @phpstan-ignore-next-line
-        return new $class(
+        $application = new $class(
             $rootDir,
             new FunctionFinder(),
             $contextRegistry,
@@ -58,5 +62,13 @@ class ApplicationFactory
             new WaitForHelper($httpClient, $logger),
             new FingerprintHelper($cache),
         );
+
+        $application->add(new DebugCommand($rootDir, $cacheDir, $contextRegistry));
+
+        if (!class_exists(\RepackedApplication::class)) {
+            $application->add(new RepackCommand());
+        }
+
+        return $application;
     }
 }

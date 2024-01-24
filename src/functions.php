@@ -794,6 +794,7 @@ function with(
 ): mixed {
     $contextRegistry = GlobalHelper::getContextRegistry();
     $initialContext = $contextRegistry->getCurrentContext();
+    $initialContextName = $contextRegistry->getCurrentContextName();
     $context ??= $initialContext;
 
     if (\is_string($context)) {
@@ -836,12 +837,12 @@ function with(
         $context = $context->withNotify($notify);
     }
 
-    $contextRegistry->setCurrentContext($context);
+    $contextRegistry->setCurrentContext($context, '__temporary_context');
 
     try {
         return $callback($context);
     } finally {
-        $contextRegistry->setCurrentContext($initialContext);
+        $contextRegistry->setCurrentContext($initialContext, $initialContextName);
     }
 }
 

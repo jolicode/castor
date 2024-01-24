@@ -6,8 +6,10 @@ use JoliCode\PhpOsHelper\OsHelper;
 
 /**
  * Platform helper inspired by Composer's Platform class.
+ *
+ * @internal
  */
-class PlatformUtil
+final class PlatformUtil
 {
     /**
      * getenv() equivalent but reads from the runtime global variables first.
@@ -24,10 +26,22 @@ class PlatformUtil
         return getenv($name);
     }
 
+    public static function getCacheDirectory(): string
+    {
+        try {
+            $home = self::getUserDirectory();
+            $directory = $home ? $home . '/.cache' : sys_get_temp_dir();
+        } catch (\RuntimeException $e) {
+            $directory = sys_get_temp_dir();
+        }
+
+        return $directory . '/castor';
+    }
+
     /**
      * @throws \RuntimeException If the user home could not reliably be determined
      */
-    public static function getUserDirectory(): string
+    private static function getUserDirectory(): string
     {
         if (false !== ($home = self::getEnv('HOME'))) {
             return $home;
@@ -46,17 +60,5 @@ class PlatformUtil
         }
 
         throw new \RuntimeException('Could not determine user directory.');
-    }
-
-    public static function getCacheDirectory(): string
-    {
-        try {
-            $home = self::getUserDirectory();
-            $directory = $home ? $home . '/.cache' : sys_get_temp_dir();
-        } catch (\RuntimeException $e) {
-            $directory = sys_get_temp_dir();
-        }
-
-        return $directory . '/castor';
     }
 }

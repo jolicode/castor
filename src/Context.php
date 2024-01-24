@@ -26,6 +26,22 @@ class Context implements \ArrayAccess
         $this->currentDirectory = $currentDirectory ?? PathHelper::getRoot();
     }
 
+    public function __debugInfo()
+    {
+        return [
+            'data' => $this->data,
+            'environment' => $this->environment,
+            'currentDirectory' => $this->currentDirectory,
+            'tty' => $this->tty,
+            'pty' => $this->pty,
+            'timeout' => $this->timeout,
+            'quiet' => $this->quiet,
+            'allowFailure' => $this->allowFailure,
+            'notify' => $this->notify,
+            'verbosityLevel' => $this->verbosityLevel,
+        ];
+    }
+
     /** @param array<(int|string), mixed> $data */
     public function withData(array $data, bool $keepExisting = true): self
     {
