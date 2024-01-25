@@ -6,7 +6,7 @@ distribute it as a single phar file? Castor can help you with that.
 In your project, install Castor as a dependency:
 
 ```bash
-composer require castor/castor
+composer require jolicode/castor
 ```
 
 You'll also need
