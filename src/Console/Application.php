@@ -19,6 +19,7 @@ use Castor\SectionOutput;
 use Castor\Stub\StubsGenerator;
 use Castor\SymfonyTaskDescriptor;
 use Castor\TaskDescriptor;
+use Castor\TaskDescriptorCollection;
 use Castor\VerbosityLevel;
 use Castor\WaitForHelper;
 use JoliCode\PhpOsHelper\OsHelper;
@@ -138,6 +139,10 @@ class Application extends SymfonyApplication
         // may want to seek in the context to know if the command is enabled
         $this->configureContext($input, $output);
 
+        $event = new AfterApplicationInitializationEvent($this, $descriptors);
+        $this->eventDispatcher->dispatch($event);
+        $descriptors = $event->taskDescriptorCollection;
+
         foreach ($descriptors->taskDescriptors as $taskDescriptor) {
             $this->add(new TaskCommand(
                 $taskDescriptor->taskAttribute,
@@ -169,7 +174,7 @@ class Application extends SymfonyApplication
         return parent::doRunCommand($command, $input, $output);
     }
 
-    private function initializeApplication(InputInterface $input): Descriptors
+    private function initializeApplication(InputInterface $input): TaskDescriptorCollection
     {
         $functionsRootDir = $this->rootDir;
         if (class_exists(\RepackedApplication::class)) {
@@ -212,9 +217,7 @@ class Application extends SymfonyApplication
             ));
         }
 
-        $this->eventDispatcher->dispatch(new AfterApplicationInitializationEvent($this, $tasks));
-
-        return new Descriptors($tasks, $symfonyTasks);
+        return new TaskDescriptorCollection($tasks, $symfonyTasks);
     }
 
     private function configureContext(InputInterface $input, OutputInterface $output): void
@@ -317,18 +320,5 @@ class Application extends SymfonyApplication
         if ($globalComposerPath && str_contains(__FILE__, $globalComposerPath)) {
             $symfonyStyle->block('Run the following command to update Castor: <comment>composer global update jolicode/castor</comment>', escape: false);
         }
-    }
-}
-
-class Descriptors
-{
-    /**
-     * @param TaskDescriptor[]        $taskDescriptors
-     * @param SymfonyTaskDescriptor[] $symfonyTaskDescriptors
-     */
-    public function __construct(
-        public readonly array $taskDescriptors,
-        public readonly array $symfonyTaskDescriptors,
-    ) {
     }
 }
