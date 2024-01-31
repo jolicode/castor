@@ -35,7 +35,7 @@ final class DebugCommand extends Command
             'Application version' => Application::VERSION,
             'Root directory' => $this->rootDir,
             'Cache directory' => $this->cacheDir,
-            'Current context name' => $this->contextRegistry->getCurrentContextName(),
+            'Current context name' => $this->contextRegistry->getCurrentContext()->name,
             'Current context data' => json_encode($this->contextRegistry->getCurrentContext()->__debugInfo(), \JSON_THROW_ON_ERROR | \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES),
         ];
 

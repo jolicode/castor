@@ -22,6 +22,8 @@ class Context implements \ArrayAccess
         public readonly bool $allowFailure = false,
         public readonly bool $notify = false,
         public readonly VerbosityLevel $verbosityLevel = VerbosityLevel::NOT_CONFIGURED,
+        // Do not use this argument, it is only used internally by the application
+        public readonly string $name = '',
     ) {
         $this->currentDirectory = $currentDirectory ?? PathHelper::getRoot();
     }
@@ -29,6 +31,7 @@ class Context implements \ArrayAccess
     public function __debugInfo()
     {
         return [
+            'name' => $this->name,
             'data' => $this->data,
             'environment' => $this->environment,
             'currentDirectory' => $this->currentDirectory,
@@ -56,6 +59,7 @@ class Context implements \ArrayAccess
             $this->allowFailure,
             $this->notify,
             $this->verbosityLevel,
+            $this->name,
         );
     }
 
@@ -73,6 +77,7 @@ class Context implements \ArrayAccess
             $this->allowFailure,
             $this->notify,
             $this->verbosityLevel,
+            $this->name,
         );
     }
 
@@ -89,6 +94,7 @@ class Context implements \ArrayAccess
             $this->allowFailure,
             $this->notify,
             $this->verbosityLevel,
+            $this->name,
         );
     }
 
@@ -105,6 +111,7 @@ class Context implements \ArrayAccess
             $this->allowFailure,
             $this->notify,
             $this->verbosityLevel,
+            $this->name,
         );
     }
 
@@ -121,6 +128,7 @@ class Context implements \ArrayAccess
             $this->allowFailure,
             $this->notify,
             $this->verbosityLevel,
+            $this->name,
         );
     }
 
@@ -137,6 +145,7 @@ class Context implements \ArrayAccess
             $this->allowFailure,
             $this->notify,
             $this->verbosityLevel,
+            $this->name,
         );
     }
 
@@ -153,6 +162,7 @@ class Context implements \ArrayAccess
             $this->allowFailure,
             $this->notify,
             $this->verbosityLevel,
+            $this->name,
         );
     }
 
@@ -169,6 +179,7 @@ class Context implements \ArrayAccess
             $allowFailure,
             $this->notify,
             $this->verbosityLevel,
+            $this->name,
         );
     }
 
@@ -185,6 +196,7 @@ class Context implements \ArrayAccess
             $this->allowFailure,
             $notify,
             $this->verbosityLevel,
+            $this->name,
         );
     }
 
@@ -201,6 +213,24 @@ class Context implements \ArrayAccess
             $this->allowFailure,
             $this->notify,
             $verbosityLevel,
+            $this->name,
+        );
+    }
+
+    public function withName(string $name): self
+    {
+        return new self(
+            $this->data,
+            $this->environment,
+            $this->currentDirectory,
+            $this->tty,
+            $this->pty,
+            $this->timeout,
+            $this->quiet,
+            $this->allowFailure,
+            $this->notify,
+            $this->verbosityLevel,
+            $name,
         );
     }
 
