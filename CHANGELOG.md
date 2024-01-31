@@ -11,6 +11,8 @@
 * Edited the duration of update check from `60 days` to `24 hours`
 * Revise the usage of the terms `command` and `task` for consistency through code and docs.
 * [BC Break] Remove `callable $responseChecker` parameter from `wait_for_http_status()`
+* [BC Break] The event `AfterApplicationInitializationEvent` second arguments is now a
+  `TaskDescriptorCollection`, and the event is emitted after the context configuration
 
 ## 0.11.1 (2024-01-11)
 
