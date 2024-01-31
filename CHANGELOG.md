@@ -8,6 +8,7 @@
 * Add `wait_for_docker_container()` function to wait for a docker container to be ready
 * Add `AsSymfonyTask` attribute to map Symfony Command
 * Add a `debug` command
+* Add `Context->name` property (automatically set by the application)
 * Edited the duration of update check from `60 days` to `24 hours`
 * Revise the usage of the terms `command` and `task` for consistency through code and docs.
 * [BC Break] Remove `callable $responseChecker` parameter from `wait_for_http_status()`

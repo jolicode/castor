@@ -231,7 +231,7 @@ class Application extends SymfonyApplication
 
         // occurs when running `castor -h`, or if no context is defined
         if (!$input->hasOption('context')) {
-            $this->contextRegistry->setCurrentContext(new Context(), '');
+            $this->contextRegistry->setCurrentContext(new Context());
 
             return;
         }
@@ -245,7 +245,7 @@ class Application extends SymfonyApplication
             $context = $context->withVerbosityLevel(VerbosityLevel::fromSymfonyOutput($output));
         }
 
-        $this->contextRegistry->setCurrentContext($context, $input->getOption('context'));
+        $this->contextRegistry->setCurrentContext($context->withName($input->getOption('context')));
     }
 
     private function displayUpdateWarningIfNeeded(SymfonyStyle $symfonyStyle): void
