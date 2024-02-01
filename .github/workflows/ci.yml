@@ -35,12 +35,16 @@ jobs:
           REQUIRE_DEV: true
 
   phpunit:
-    name: PHPUnit on ${{ matrix.php }}
+    name: "PHPUnit on ${{ matrix.php }} ${{ matrix.phar && '(with phar)' || '' }}"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         php: [ "8.1", "8.2", "8.3" ]
+        phar: [ false ]
+        include:
+          - php: "8.1"
+            phar: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -58,6 +62,11 @@ jobs:
         run: composer install --prefer-dist --no-progress --optimize-autoloader --classmap-authoritative
         working-directory: tools/phar
 
+      - name: Compile phar Linux
+        run: bin/castor castor:phar:linux
+        shell: bash
+        if: matrix.phar
+
       - name: Link box
         run: sudo ln -s $GITHUB_WORKSPACE/tools/phar/vendor/bin/box /usr/local/bin/box
 
@@ -66,6 +75,8 @@ jobs:
 
       - name: Run tests
         run: vendor/bin/simple-phpunit
+        env:
+          CASTOR_BIN: ${{ github.workspace }}/${{ matrix.phar && 'tools/phar/build/castor.linux-amd64.phar' || 'bin/castor'}}
 
   phar:
     name: Ensure PHAR is OK
