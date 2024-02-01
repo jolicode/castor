@@ -17,7 +17,7 @@ abstract class TaskTestCase extends TestCase
     {
         $coverage = $this->getTestResultObject()?->getCodeCoverage();
 
-        $bin = __DIR__ . '/../bin/castor';
+        $bin = $_SERVER['CASTOR_BIN'] ?? __DIR__ . '/../bin/castor';
         $extraEnv = [
             'ENDPOINT' => $_SERVER['ENDPOINT'],
         ];
