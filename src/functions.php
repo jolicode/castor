@@ -107,16 +107,16 @@ function parallel(callable ...$callbacks): array
  */
 function run(
     string|array $command,
-    array $environment = null,
-    string $path = null,
-    bool $tty = null,
-    bool $pty = null,
-    float $timeout = null,
-    bool $quiet = null,
-    bool $allowFailure = null,
-    bool $notify = null,
-    callable $callback = null,
-    Context $context = null,
+    ?array $environment = null,
+    ?string $path = null,
+    ?bool $tty = null,
+    ?bool $pty = null,
+    ?float $timeout = null,
+    ?bool $quiet = null,
+    ?bool $allowFailure = null,
+    ?bool $notify = null,
+    ?callable $callback = null,
+    ?Context $context = null,
 ): Process {
     $context ??= GlobalHelper::getContext();
 
@@ -238,12 +238,12 @@ function run(
  */
 function capture(
     string|array $command,
-    array $environment = null,
-    string $path = null,
-    float $timeout = null,
-    bool $allowFailure = null,
-    string $onFailure = null,
-    Context $context = null,
+    ?array $environment = null,
+    ?string $path = null,
+    ?float $timeout = null,
+    ?bool $allowFailure = null,
+    ?string $onFailure = null,
+    ?Context $context = null,
 ): string {
     $hasOnFailure = null !== $onFailure;
     if ($hasOnFailure) {
@@ -276,11 +276,11 @@ function capture(
  */
 function exit_code(
     string|array $command,
-    array $environment = null,
-    string $path = null,
-    float $timeout = null,
-    bool $quiet = null,
-    Context $context = null,
+    ?array $environment = null,
+    ?string $path = null,
+    ?float $timeout = null,
+    ?bool $quiet = null,
+    ?Context $context = null,
 ): int {
     $process = run(
         command: $command,
@@ -320,11 +320,11 @@ function ssh_run(
     string $host,
     string $user,
     array $sshOptions = [],
-    string $path = null,
-    bool $quiet = null,
-    bool $allowFailure = null,
-    bool $notify = null,
-    float $timeout = null,
+    ?string $path = null,
+    ?bool $quiet = null,
+    ?bool $allowFailure = null,
+    ?bool $notify = null,
+    ?float $timeout = null,
 ): Process {
     $ssh = ssh_configuration($host, $user, $sshOptions);
 
@@ -370,10 +370,10 @@ function ssh_upload(
     string $host,
     string $user,
     array $sshOptions = [],
-    bool $quiet = null,
-    bool $allowFailure = null,
-    bool $notify = null,
-    float $timeout = null,
+    ?bool $quiet = null,
+    ?bool $allowFailure = null,
+    ?bool $notify = null,
+    ?float $timeout = null,
 ): Process {
     $ssh = ssh_configuration($host, $user, $sshOptions);
 
@@ -408,10 +408,10 @@ function ssh_download(
     string $host,
     string $user,
     array $sshOptions = [],
-    bool $quiet = null,
-    bool $allowFailure = null,
-    bool $notify = null,
-    float $timeout = null,
+    ?bool $quiet = null,
+    ?bool $allowFailure = null,
+    ?bool $notify = null,
+    ?float $timeout = null,
 ): Process {
     $ssh = ssh_configuration($host, $user, $sshOptions);
 
@@ -485,7 +485,7 @@ function notify(string $message): void
  * @param string|non-empty-array<string>                 $path
  * @param (callable(string, string) : (false|void|null)) $function
  */
-function watch(string|array $path, callable $function, Context $context = null): void
+function watch(string|array $path, callable $function, ?Context $context = null): void
 {
     if (\is_array($path)) {
         $parallelCallbacks = [];
@@ -626,7 +626,7 @@ function add_context(string $name, \Closure $callable, bool $default = false): v
     GlobalHelper::getContextRegistry()->addContext($name, $callable, $default);
 }
 
-function context(string $name = null): Context
+function context(?string $name = null): Context
 {
     return GlobalHelper::getContext($name);
 }
@@ -761,7 +761,7 @@ function fix_exception(\Exception $exception): \Exception
 /**
  * @return array<string, mixed>
  */
-function load_dot_env(string $path = null): array
+function load_dot_env(?string $path = null): array
 {
     $path ??= PathHelper::getRoot() . '/.env';
 
@@ -781,16 +781,16 @@ function load_dot_env(string $path = null): array
  */
 function with(
     callable $callback,
-    array $data = null,
-    array $environment = null,
-    string $path = null,
-    bool $tty = null,
-    bool $pty = null,
-    float $timeout = null,
-    bool $quiet = null,
-    bool $allowFailure = null,
-    bool $notify = null,
-    Context|string $context = null,
+    ?array $data = null,
+    ?array $environment = null,
+    ?string $path = null,
+    ?bool $tty = null,
+    ?bool $pty = null,
+    ?float $timeout = null,
+    ?bool $quiet = null,
+    ?bool $allowFailure = null,
+    ?bool $notify = null,
+    Context|string|null $context = null,
 ): mixed {
     $contextRegistry = GlobalHelper::getContextRegistry();
     $initialContext = $contextRegistry->getCurrentContext();
@@ -906,7 +906,7 @@ function wait_for_port(
     int $timeout = 10,
     bool $quiet = false,
     int $intervalMs = 100,
-    string $message = null,
+    ?string $message = null,
 ): void {
     GlobalHelper::getApplication()->waitForHelper->waitForPort(
         io: io(),
@@ -928,7 +928,7 @@ function wait_for_url(
     int $timeout = 10,
     bool $quiet = false,
     int $intervalMs = 100,
-    string $message = null,
+    ?string $message = null,
 ): void {
     GlobalHelper::getApplication()->waitForHelper->waitForUrl(
         io: io(),
@@ -950,7 +950,7 @@ function wait_for_http_status(
     int $timeout = 10,
     bool $quiet = false,
     int $intervalMs = 100,
-    string $message = null,
+    ?string $message = null,
 ): void {
     GlobalHelper::getApplication()->waitForHelper->waitForHttpStatus(
         io: io(),
@@ -969,11 +969,11 @@ function wait_for_http_status(
  */
 function wait_for_http_response(
     string $url,
-    callable $responseChecker = null,
+    ?callable $responseChecker = null,
     int $timeout = 10,
     bool $quiet = false,
     int $intervalMs = 100,
-    string $message = null,
+    ?string $message = null,
 ): void {
     GlobalHelper::getApplication()->waitForHelper->waitForHttpResponse(
         io: io(),
@@ -994,8 +994,8 @@ function wait_for_docker_container(
     int $timeout = 10,
     bool $quiet = false,
     int $intervalMs = 100,
-    string $message = null,
-    callable $containerChecker = null,
+    ?string $message = null,
+    ?callable $containerChecker = null,
 ): void {
     GlobalHelper::getApplication()->waitForHelper->waitForDockerContainer(
         io: io(),

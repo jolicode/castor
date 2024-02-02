@@ -13,7 +13,7 @@ abstract class TaskTestCase extends TestCase
         WebServerHelper::start();
     }
 
-    public function runTask(array $args, string $cwd = null): Process
+    public function runTask(array $args, ?string $cwd = null): Process
     {
         $coverage = $this->getTestResultObject()?->getCodeCoverage();
 

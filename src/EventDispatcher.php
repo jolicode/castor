@@ -16,7 +16,7 @@ class EventDispatcher implements EventDispatcherInterface
     ) {
     }
 
-    public function dispatch(object $event, string $eventName = null): object
+    public function dispatch(object $event, ?string $eventName = null): object
     {
         $this->logger->debug("Dispatching event {$eventName}", [
             'event' => $event,
@@ -54,7 +54,7 @@ class EventDispatcher implements EventDispatcherInterface
         $this->eventDispatcher->removeSubscriber($subscriber);
     }
 
-    public function getListeners(string $eventName = null): array
+    public function getListeners(?string $eventName = null): array
     {
         return $this->eventDispatcher->getListeners($eventName);
     }
@@ -64,7 +64,7 @@ class EventDispatcher implements EventDispatcherInterface
         return $this->eventDispatcher->getListenerPriority($eventName, $listener);
     }
 
-    public function hasListeners(string $eventName = null): bool
+    public function hasListeners(?string $eventName = null): bool
     {
         return $this->eventDispatcher->hasListeners($eventName);
     }

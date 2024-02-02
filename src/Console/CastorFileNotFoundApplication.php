@@ -16,7 +16,7 @@ class CastorFileNotFoundApplication extends SymfonyApplication
         parent::__construct(Application::NAME, Application::VERSION);
     }
 
-    public function run(InputInterface $input = null, OutputInterface $output = null): int
+    public function run(?InputInterface $input = null, ?OutputInterface $output = null): int
     {
         $this->add(new InitCommand($this->e));
         $this->setDefaultCommand('init');

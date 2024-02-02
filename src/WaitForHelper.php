@@ -92,7 +92,7 @@ class WaitForHelper
         int $timeout = 10,
         bool $quiet = false,
         int $intervalMs = 100,
-        string $message = null,
+        ?string $message = null,
     ): void {
         $this->waitFor(
             io: $io,
@@ -123,7 +123,7 @@ class WaitForHelper
         int $timeout = 10,
         bool $quiet = false,
         int $intervalMs = 100,
-        string $message = null,
+        ?string $message = null,
     ): void {
         $this->waitFor(
             io: $io,
@@ -155,7 +155,7 @@ class WaitForHelper
         int $timeout = 10,
         bool $quiet = false,
         int $intervalMs = 100,
-        string $message = null,
+        ?string $message = null,
     ): void {
         $this->waitForHttpResponse(
             io: $io,
@@ -183,11 +183,11 @@ class WaitForHelper
     public function waitForHttpResponse(
         SymfonyStyle $io,
         string $url,
-        callable $responseChecker = null,
+        ?callable $responseChecker = null,
         int $timeout = 10,
         bool $quiet = false,
         int $intervalMs = 100,
-        string $message = null,
+        ?string $message = null,
     ): void {
         $this->waitFor(
             io: $io,
@@ -225,8 +225,8 @@ class WaitForHelper
         int $timeout = 10,
         bool $quiet = false,
         int $intervalMs = 100,
-        string $message = null,
-        callable $containerChecker = null,
+        ?string $message = null,
+        ?callable $containerChecker = null,
         array $portsToCheck = [],
     ): void {
         if (null === (new ExecutableFinder())->find('docker')) {

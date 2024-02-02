@@ -58,7 +58,7 @@ class ContextRegistry
         return $this->defaultName ?? throw new \LogicException('Default context name not set yet.');
     }
 
-    public function get(string $name = null): Context
+    public function get(?string $name = null): Context
     {
         if (null === $name) {
             return $this->getCurrentContext();
