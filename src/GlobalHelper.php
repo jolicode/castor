@@ -82,7 +82,7 @@ class GlobalHelper
         return self::getApplication()->getCommand();
     }
 
-    public static function getContext(string $name = null): Context
+    public static function getContext(?string $name = null): Context
     {
         return self::getContextRegistry()->get($name);
     }

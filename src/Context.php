@@ -14,7 +14,7 @@ class Context implements \ArrayAccess
     public function __construct(
         public readonly array $data = [],
         public readonly array $environment = [],
-        string $currentDirectory = null,
+        ?string $currentDirectory = null,
         public readonly bool $tty = false,
         public readonly bool $pty = true,
         public readonly float|null $timeout = 60,

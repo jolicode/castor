@@ -115,7 +115,7 @@ add_test(['unknown:task'], 'NoConfigUnknownTest', '/tmp');
 add_test(['unknown:task', 'toto', '--foo', 1], 'NoConfigUnknownWithArgsTest', '/tmp');
 add_test(['completion', 'bash'], 'NoConfigCompletionTest', '/tmp');
 
-function add_test(array $args, string $class, string $cwd = null)
+function add_test(array $args, string $class, ?string $cwd = null)
 {
     $fp = fopen(__FILE__, 'r');
     fseek($fp, __COMPILER_HALT_OFFSET__ + 1);
