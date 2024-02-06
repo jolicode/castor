@@ -2,13 +2,15 @@
 
 ## Not released yet
 
-* Add an error handler, and wire the logger to it so display deprecation notices
+## 0.12.0 (2024-02-06)
+
+* Add a `debug` command
 * Add `guard_min_version()` function to ensure a minimum version of Castor is used
 * Add `wait_for_http_response()` function for a more generic response check
 * Add `wait_for_docker_container()` function to wait for a docker container to be ready
 * Add `AsSymfonyTask` attribute to map Symfony Command
-* Add a `debug` command
 * Add `Context->name` property (automatically set by the application)
+* Add an error handler, and wire the logger to it so display deprecation notices
 * Edited the duration of update check from `60 days` to `24 hours`
 * Revise the usage of the terms `command` and `task` for consistency through code and docs.
 * [BC Break] Remove `callable $responseChecker` parameter from `wait_for_http_status()`
