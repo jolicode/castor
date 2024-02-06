@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+* Ignore some low level env vars in runnable command showed in logs
+
 ## 0.12.1 (2024-02-06)
 
 * Fix issue with symfony console (color doesn't work in tmux or screen)

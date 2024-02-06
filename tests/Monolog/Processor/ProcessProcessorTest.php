@@ -12,7 +12,11 @@ class ProcessProcessorTest extends TestCase
 {
     public function test(): void
     {
-        $process = new Process(['ls', '-alh'], '/tmp', ['foo' => 'b\'"`\ar']);
+        $process = new Process(['ls', '-alh'], '/tmp', [
+            'foo' => 'b\'"`\ar',
+            'argc' => 3,
+            'argv' => ['/home/foo/.local/bin//castor', 'builder', '-vvv'],
+        ]);
         $log = new LogRecord(
             datetime: new \DateTimeImmutable(),
             channel: 'test',
@@ -25,7 +29,11 @@ class ProcessProcessorTest extends TestCase
         $this->assertEquals(
             [
                 'cwd' => '/tmp',
-                'env' => ['foo' => 'b\'"`\ar'],
+                'env' => [
+                    'foo' => 'b\'"`\ar',
+                    'argc' => 3,
+                    'argv' => ['/home/foo/.local/bin//castor', 'builder', '-vvv'],
+                ],
                 'runnable' => <<<'TXT'
                     foo='b'\''"`\ar' 'ls' '-alh'
                     TXT,
