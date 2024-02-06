@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+## 0.12.1 (2024-02-06)
+
+* Fix issue with symfony console (color doesn't work in tmux or screen)
+
 ## 0.12.0 (2024-02-06)
 
 * Add a `debug` command
