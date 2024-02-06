@@ -46,7 +46,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class Application extends SymfonyApplication
 {
     public const NAME = 'castor';
-    public const VERSION = 'v0.11.1';
+    public const VERSION = 'v0.12.0';
 
     // "Current" objects availables at some point of the lifecycle
     private InputInterface $input;
