@@ -33,7 +33,7 @@
         "nikic/php-parser": "^4.18",
         "spatie/ssh": "^1.9.2",
         "symfony/cache": "^6.4.3",
-        "symfony/console": "^6.4.3",
+        "symfony/console": "^6.4.2",
         "symfony/deprecation-contracts": "^3.4",
         "symfony/dotenv": "^6.4.3",
         "symfony/error-handler": "^6.4.3",
@@ -46,6 +46,9 @@
         "symfony/string": "^6.4.3",
         "symfony/translation-contracts": "^3.4.1",
         "symfony/var-dumper": "^6.4.3"
+    },
+    "conflict": {
+        "symfony/console": "6.4.3"
     },
     "bin": [
         "bin/castor"
