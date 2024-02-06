@@ -32,6 +32,9 @@ class ProcessProcessor implements ProcessorInterface
         $runnable = $process->getCommandLine();
 
         foreach ($process->getEnv() as $key => $value) {
+            if ('argv' === $key || 'argc' === $key) {
+                continue;
+            }
             $runnable = sprintf('%s=%s %s ', $key, escapeshellarg($value), $runnable);
         }
 
