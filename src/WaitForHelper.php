@@ -160,12 +160,8 @@ class WaitForHelper
         $this->waitForHttpResponse(
             io: $io,
             url: $url,
-            responseChecker: function (ResponseInterface $response) use ($url, $status) {
-                if ($response->getStatusCode() !== $status) {
-                    throw new ExitedBeforeTimeoutException(sprintf('Response from URL "%s" contained status code "%s". Expected "%s"', $url, $response->getStatusCode(), $status));
-                }
-
-                return true;
+            responseChecker: function (ResponseInterface $response) use ($status) {
+                return $response->getStatusCode() === $status;
             },
             timeout: $timeout,
             quiet: $quiet,
@@ -199,7 +195,12 @@ class WaitForHelper
                         // We return null to break the loop, there is no need to
                         // wait for a timeout, nothing will change at this
                         // point
-                        return $responseChecker($response) ? true : null;
+                        $responseFromChecker = $responseChecker($response);
+                        if (null === $responseFromChecker) {
+                            return null;
+                        }
+
+                        return $responseFromChecker;
                     }
 
                     return true;
