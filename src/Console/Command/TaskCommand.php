@@ -6,6 +6,7 @@ use Castor\Attribute\AsArgument;
 use Castor\Attribute\AsCommandArgument;
 use Castor\Attribute\AsOption;
 use Castor\Attribute\AsTask;
+use Castor\Console\Application;
 use Castor\Event\AfterExecuteTaskEvent;
 use Castor\Event\BeforeExecuteTaskEvent;
 use Castor\EventDispatcher;
@@ -40,6 +41,8 @@ class TaskCommand extends Command implements SignalableCommandInterface
         if ($taskAttribute->namespace) {
             $taskName = $taskAttribute->namespace . ':' . $taskName;
         }
+
+        $this->setProcessTitle(Application::NAME . ':' . $taskName);
 
         parent::__construct($taskName);
     }
