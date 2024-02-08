@@ -69,4 +69,27 @@ object.
 
 Castor provides the `task()` to access the current
 [`Symfony Command`](https://github.com/symfony/symfony/blob/6.3/src/Symfony/Component/Console/Command/Command.php)
-object that powers your current task.
+object that powers the task currently run by the user.
+
+> [!NOTE]
+> The `task()` will reference the Castor task ran by the user, not the one where
+> `task()` may be called.
+
+Considering the example below:
+
+```php
+#[AsTask()]
+function foo(): void
+{
+    io()->title(task()->getName());
+}
+
+#[AsTask()]
+function bar(): void
+{
+    foo();
+}
+```
+
+`castor bar` will output `bar`, not `foo`, even if this is the `foo()` function
+that triggers the call to `task()`.
