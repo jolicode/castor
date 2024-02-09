@@ -25,7 +25,7 @@ class SectionOutput
         $this->mainOutput = null;
         $this->sections = new \SplObjectStorage();
 
-        if ($output instanceof ConsoleOutput && posix_isatty(\STDOUT) && 'true' === getenv('CASTOR_USE_SECTION')) {
+        if ($output instanceof ConsoleOutput && 'true' === getenv('CASTOR_USE_SECTION') && stream_isatty(\STDOUT)) {
             $this->mainOutput = $output;
             $this->consoleOutput = $output->section();
         }

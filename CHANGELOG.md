@@ -4,6 +4,7 @@
 
 * Set the process title according to the current application name and task name
 * Ignore some low level env vars in runnable command showed in logs
+* Fix section output to work on Windows
 
 ## 0.12.1 (2024-02-06)
 
