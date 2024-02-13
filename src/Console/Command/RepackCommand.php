@@ -22,7 +22,7 @@ class RepackCommand extends Command
             ->setName('repack')
             ->addOption('app-name', null, InputOption::VALUE_REQUIRED, 'The name of the phar application', 'my-app')
             ->addOption('app-version', null, InputOption::VALUE_REQUIRED, 'The version of the phar application', '1.0.0')
-            ->addOption('os', null, InputOption::VALUE_REQUIRED, 'The targeted OS', 'linux', ['linux', 'macos', 'windows'])
+            ->addOption('os', null, InputOption::VALUE_REQUIRED, 'The targeted OS', 'linux', ['linux', 'darwin', 'windows'])
             ->setHidden(true)
         ;
     }
@@ -34,8 +34,8 @@ class RepackCommand extends Command
         }
 
         $os = $input->getOption('os');
-        if (!\in_array($os, ['linux', 'macos', 'windows'])) {
-            throw new \RuntimeException('The os option must be one of linux, macos or windows.');
+        if (!\in_array($os, ['linux', 'darwin', 'windows'])) {
+            throw new \InvalidArgumentException('The os option must be one of linux, darwin or windows.');
         }
 
         $finder = new ExecutableFinder();
@@ -89,7 +89,7 @@ class RepackCommand extends Command
                 ),
             ];
         }
-        // add all files from the FunctionFinder, this is usefull if the file
+        // add all files from the FunctionFinder, this is useful if the file
         // are in a hidden directory, because it's not included by default by
         // box
         $boxConfig['files'] = [
@@ -106,7 +106,7 @@ class RepackCommand extends Command
         $process = new Process([$box, 'compile', '--config=.box.json']);
 
         try {
-            $process->mustRun(fn ($type, $buffer) => print ($buffer));
+            $process->mustRun(fn ($type, $buffer) => print $buffer);
         } finally {
             unlink('.box.json');
             unlink('.main.php');

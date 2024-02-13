@@ -2,6 +2,7 @@
 
 namespace Castor\Console;
 
+use Castor\Console\Command\CompileCommand;
 use Castor\Console\Command\DebugCommand;
 use Castor\Console\Command\RepackCommand;
 use Castor\ContextRegistry;
@@ -45,6 +46,7 @@ class ApplicationFactory
         $cacheDir = PlatformUtil::getCacheDirectory();
         $cache = new FilesystemAdapter(directory: $cacheDir);
         $logger = new Logger('castor', [], [new ProcessProcessor()]);
+        $fs = new Filesystem();
 
         /** @var SymfonyApplication */
         // @phpstan-ignore-next-line
@@ -56,7 +58,7 @@ class ApplicationFactory
             new ExpressionLanguage($contextRegistry),
             new StubsGenerator($logger),
             $logger,
-            new Filesystem(),
+            $fs,
             $httpClient,
             $cache,
             new WaitForHelper($httpClient, $logger),
@@ -67,6 +69,7 @@ class ApplicationFactory
 
         if (!class_exists(\RepackedApplication::class)) {
             $application->add(new RepackCommand());
+            $application->add(new CompileCommand($httpClient, $fs));
         }
 
         return $application;

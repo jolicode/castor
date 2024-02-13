@@ -17,13 +17,14 @@ abstract class TaskTestCase extends TestCase
     {
         $coverage = $this->getTestResultObject()?->getCodeCoverage();
 
-        $bin = $_SERVER['CASTOR_BIN'] ?? __DIR__ . '/../bin/castor';
+        $castorBin = $_SERVER['CASTOR_BIN'] ?? __DIR__ . '/../bin/castor';
+
         $extraEnv = [
             'ENDPOINT' => $_SERVER['ENDPOINT'],
         ];
 
         if ($coverage) {
-            $bin = __DIR__ . '/bin/castor';
+            $castorBin = __DIR__ . '/bin/castor';
             $testName = debug_backtrace()[1]['class'] . '::' . debug_backtrace()[1]['function'];
             $outputFilename = stream_get_meta_data(tmpfile())['uri'];
             $extraEnv = [
@@ -33,7 +34,7 @@ abstract class TaskTestCase extends TestCase
         }
 
         $process = new Process(
-            [\PHP_BINARY, $bin, '--no-ansi', ...$args],
+            [$castorBin, '--no-ansi', ...$args],
             cwd: $cwd ?? __DIR__ . '/..',
             env: [
                 'COLUMNS' => 120,

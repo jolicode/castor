@@ -63,6 +63,7 @@ $taskFilterList = [
     'log:with-context',
     'parallel:sleep',
     'repack',
+    'compile',
     'run:ls',
     'run:run-parallel',
 ];

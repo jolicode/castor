@@ -3,6 +3,8 @@
 You have created a Castor application, with many tasks, and you want to
 distribute it as a single phar file? Castor can help you with that.
 
+## Pre-requisites
+
 In your project, install Castor as a dependency:
 
 ```bash
@@ -17,6 +19,8 @@ You'll also need to ensure the phar creation is allowed by your PHP
 configuration. See the [PHP
 documentation](https://www.php.net/manual/en/phar.configuration.php#ini.phar.readonly) to disabled
 `phar.readonly`.
+
+## Running the Repack Command
 
 Then, run the repack command to create the new phar:
 
@@ -34,3 +38,9 @@ vendor/bin/castor repack --help
 > Castor will automatically import all files in the current directly.
 > So ensure to have the less files possible in the directory where you run the
 > repack task to avoid including useless files in the phar.
+
+## Going further
+
+Packaging your Castor app as a phar simplifies distribution but requires PHP setup on target systems. 
+
+[Castor's `compile` command](compile.md) streamlines this by embedding the phar in a PHP binary, creating a standalone executable for diverse environments.

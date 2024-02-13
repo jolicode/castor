@@ -35,16 +35,33 @@ jobs:
           REQUIRE_DEV: true
 
   phpunit:
-    name: "PHPUnit on ${{ matrix.php }} ${{ matrix.phar && '(with phar)' || '' }}"
+    name: "PHPUnit on ${{ matrix.php }} | Castor from ${{ matrix.castor.method }}"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        php: [ "8.1", "8.2", "8.3" ]
-        phar: [ false ]
         include:
           - php: "8.1"
-            phar: true
+            castor:
+              bin: 'bin/castor'
+              method: 'bin/castor'
+          - php: "8.1"
+            castor:
+              bin: 'tools/phar/build/castor.linux-amd64.phar'
+              method: 'phar'
+          - php: "8.1"
+            castor:
+              bin: 'castor'
+              method: 'binary'
+          - php: "8.2"
+            castor:
+              bin: 'bin/castor'
+              method: 'bin/castor'
+          - php: "8.3"
+            castor:
+              bin: 'bin/castor'
+              method: 'bin/castor'
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -62,10 +79,25 @@ jobs:
         run: composer install --prefer-dist --no-progress --optimize-autoloader --classmap-authoritative
         working-directory: tools/phar
 
-      - name: Compile phar Linux
+      - name: Build Castor phar for Linux
         run: bin/castor castor:phar:linux
         shell: bash
-        if: matrix.phar
+        if: matrix.castor.method == 'phar' || matrix.castor.method == 'binary'
+
+      - name: Restore PHP static building artifacts cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            /home/runner/.cache/castor/castor-php-static-compiler
+          # https://github.com/actions/cache/blob/main/tips-and-workarounds.md#update-a-cache
+          key: dynamic-key-${{ github.run_id }}
+          restore-keys: |
+            php-static-building-artifacts-cache-
+
+      - name: Compile Custom Built PHP along Castor phar for Linux
+        run: bin/castor compile tools/phar/build/castor.linux-amd64.phar --php-extensions=mbstring,phar,posix,tokenizer,pcntl
+        shell: bash
+        if: matrix.castor.method == 'binary'
 
       - name: Link box
         run: sudo ln -s $GITHUB_WORKSPACE/tools/phar/vendor/bin/box /usr/local/bin/box
@@ -76,10 +108,23 @@ jobs:
       - name: Run tests
         run: vendor/bin/simple-phpunit
         env:
-          CASTOR_BIN: ${{ github.workspace }}/${{ matrix.phar && 'tools/phar/build/castor.linux-amd64.phar' || 'bin/castor'}}
+          CASTOR_BIN: ${{ github.workspace }}/${{ matrix.castor.bin }}
+
+      # Workaround because hashFiles() can only include files inside the GITHUB_WORKSPACE
+      - name: Generate PHP static building artifacts cache key
+        run: echo "php_build_artifact_cache_key=$(find /home/runner/.cache/castor/castor-php-static-compiler -type f -exec md5sum {} + | sort -k 2 | md5sum | awk '{print $1}')" >> $GITHUB_ENV
+
+      - name: Save PHP static building artifacts cache
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            /home/runner/.cache/castor/castor-php-static-compiler
+          key: php-static-building-artifacts-cache-${{ env.php_build_artifact_cache_key }}
+        # Cache outputs from the "binary" job specifically, as it generates an additional PHP build not produced by other jobs
+        if: matrix.castor.method == 'binary'
 
   phar:
-    name: Ensure PHAR is OK
+    name: Ensure phar is OK
     runs-on: ubuntu-latest
 
     steps:

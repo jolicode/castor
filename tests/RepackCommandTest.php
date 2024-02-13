@@ -10,12 +10,36 @@ class RepackCommandTest extends TestCase
 {
     public function test()
     {
-        $tmp = sys_get_temp_dir() . '/castor-test-repack';
+        $castorAppDirPath = self::setupRepackedCastorApp('castor-test-repack');
+
+        (new Process([
+            'vendor/jolicode/castor/bin/castor',
+            'repack',
+            '--os', 'linux',
+        ], cwd: $castorAppDirPath))->mustRun();
+
+        $phar = $castorAppDirPath . '/my-app.linux.phar';
+        $this->assertFileExists($phar);
+
+        (new Process([$phar], cwd: $castorAppDirPath))->mustRun();
+
+        $p = (new Process([$phar, 'hello'], cwd: $castorAppDirPath))->mustRun();
+        $this->assertSame('hello', $p->getOutput());
+
+        // Twice, because we want to be sure the phar is not corrupted after a
+        // run
+        $p = (new Process([$phar, 'hello'], cwd: $castorAppDirPath))->mustRun();
+        $this->assertSame('hello', $p->getOutput());
+    }
+
+    public static function setupRepackedCastorApp(string $castorAppDirName): string
+    {
+        $castorAppDirPath = sys_get_temp_dir() . '/' . $castorAppDirName;
 
         $fs = new Filesystem();
-        $fs->remove($tmp);
-        $fs->mkdir($tmp);
-        $fs->dumpFile($tmp . '/castor.php', <<<'PHP'
+        $fs->remove($castorAppDirPath);
+        $fs->mkdir($castorAppDirPath);
+        $fs->dumpFile($castorAppDirPath . '/castor.php', <<<'PHP'
             <?php
 
             use Castor\Attribute\AsTask;
@@ -28,7 +52,7 @@ class RepackCommandTest extends TestCase
             PHP
         );
 
-        $fs->dumpFile($tmp . '/composer.json', json_encode([
+        $fs->dumpFile($castorAppDirPath . '/composer.json', json_encode([
             'repositories' => [
                 [
                     'type' => 'path',
@@ -41,27 +65,10 @@ class RepackCommandTest extends TestCase
         ]));
 
         (new Process(['composer', 'install'],
-            cwd: $tmp,
+            cwd: $castorAppDirPath,
             env: ['COMPOSER_MIRROR_PATH_REPOS' => '1'],
         ))->mustRun();
 
-        (new Process([
-            'vendor/jolicode/castor/bin/castor',
-            'repack',
-            '--os', 'linux',
-        ], cwd: $tmp))->mustRun();
-
-        $phar = $tmp . '/my-app.linux.phar';
-        $this->assertFileExists($phar);
-
-        (new Process([$phar], cwd: $tmp))->mustRun();
-
-        $p = (new Process([$phar, 'hello'], cwd: $tmp))->mustRun();
-        $this->assertSame('hello', $p->getOutput());
-
-        // Twice, because we want to be sure the phar is not corrupted after a
-        // run
-        $p = (new Process([$phar, 'hello'], cwd: $tmp))->mustRun();
-        $this->assertSame('hello', $p->getOutput());
+        return $castorAppDirPath;
     }
 }
