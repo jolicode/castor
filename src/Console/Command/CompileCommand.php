@@ -204,19 +204,18 @@ class CompileCommand extends Command
 
     private function generatePHPBuildCacheKey(InputInterface $input): string
     {
-        $keyComponents = [];
+        $c = hash_init('sha256');
 
         foreach (['os', 'arch', 'php-version'] as $phpBuildOption) {
-            $keyComponents[$phpBuildOption] = $input->getOption($phpBuildOption);
+            hash_update($c, $input->getOption($phpBuildOption));
         }
 
         $phpExtensions = explode(',', $input->getOption('php-extensions'));
         sort($phpExtensions);
+        hash_update($c, implode(',', $phpExtensions));
 
-        $keyComponents['php-extensions'] = $phpExtensions;
+        hash_update_file($c, __FILE__);
 
-        $keyComponents['compile-command'] = hash_file('md5', __FILE__);
-
-        return md5(serialize($keyComponents));
+        return hash_final($c);
     }
 }

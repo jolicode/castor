@@ -1,7 +1,9 @@
 /.castor.stub.php
 /.php-cs-fixer.cache
 /.phpunit.cache
+# rename me to my-app.linux
+/castor
 /my-app.linux.phar
 /var/
 /vendor/
-/.idea
+
