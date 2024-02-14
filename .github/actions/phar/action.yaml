@@ -18,19 +18,19 @@ runs:
       shell: bash
       working-directory: tools/phar
 
-    - name: Compile phar Linux
+    - name: Build Castor phar for Linux
       run: bin/castor castor:phar:linux
       shell: bash
 
-    - name: Compile phar Darwin
+    - name: Build Castor phar for Darwin
       run: bin/castor castor:phar:darwin
       shell: bash
 
-    - name: Compile phar Windows
+    - name: Build Castor phar for Windows
       run: bin/castor castor:phar:windows
       shell: bash
 
-    - name: Ensure PHAR is OK
+    - name: Ensure phar is OK
       run: build/castor.linux-amd64.phar --version
       shell: bash
       working-directory: tools/phar
