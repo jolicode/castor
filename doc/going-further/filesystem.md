@@ -15,7 +15,7 @@ use Symfony\Component\Filesystem\Path;
 
 use function Castor\fs;
 
-#[AsTask]
+#[AsTask()]
 function foo()
 {
     $dir = '/tmp/foo';
@@ -51,7 +51,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\finder;
 
-#[AsTask]
+#[AsTask()]
 function foo()
 {
     echo 'Number of PHP files: ', finder()->name('*.php')->in(__DIR__)->count(), \PHP_EOL;

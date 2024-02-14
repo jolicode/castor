@@ -9,12 +9,12 @@ use Castor\Attribute\AsTask;
 
 use function Castor\run;
 
-#[AsTask]
+#[AsTask()]
 function foo(): void
 {
     run('echo "bar"');
     run(['echo', 'bar']);
-}AsTaskArgument
+}
 ```
 
 You can pass a string or an array of string for this function. When passing a
@@ -32,7 +32,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\run;
 
-#[AsTask]
+#[AsTask()]
 function foo(): void
 {
     $process = run('echo "bar"');
@@ -53,7 +53,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\run;
 
-#[AsTask]
+#[AsTask()]
 function foo(): void
 {
     run('a_command_that_does_not_exist', allowFailure: true);
@@ -74,7 +74,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\run;
 
-#[AsTask]
+#[AsTask()]
 function foo(): void
 {
     run('pwd', path: '../'); // run the process in the parent directory of the castor.php file
@@ -96,7 +96,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\run;
 
-#[AsTask]
+#[AsTask()]
 function foo(): void
 {
     run('echo $FOO', environment: ['FOO' => 'bar']); // will print "bar"
@@ -117,7 +117,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\run;
 
-#[AsTask]
+#[AsTask()]
 function foo(): void
 {
     run('echo "bar"', quiet: true); // will not print anything
@@ -132,7 +132,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\run;
 
-#[AsTask]
+#[AsTask()]
 function foo(): void
 {
     $process = run('echo "bar"', quiet: true); // will not print anything
@@ -196,7 +196,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\run;
 
-#[AsTask]
+#[AsTask()]
 function foo(): void
 {
     run('echo "bar"', timeout: 120);
@@ -211,7 +211,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\run;
 
-#[AsTask]
+#[AsTask()]
 function foo(): void
 {
     run('echo "bar"', timeout: 0);
@@ -233,7 +233,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\run;
 
-#[AsTask]
+#[AsTask()]
 function foo(): void
 {
     run('echo "bar"', tty: true);
@@ -253,7 +253,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\run;
 
-#[AsTask]
+#[AsTask()]
 function foo(): void
 {
     run('echo "bar"', pty: false);

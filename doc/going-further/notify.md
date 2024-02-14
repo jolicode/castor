@@ -12,7 +12,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\notify;
 
-#[AsTask]
+#[AsTask()]
 function notify()
 {
     notify('Hello world!');
@@ -29,7 +29,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\run;
 
-#[AsTask]
+#[AsTask()]
 function notify()
 {
     run(['echo', 'notify'], notify: true); // will display a success notification

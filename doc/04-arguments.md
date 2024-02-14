@@ -8,7 +8,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\run;
 
-#[AsTask]
+#[AsTask()]
 function task(
     string $firstArg,
     string $secondArg
@@ -33,7 +33,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\run;
 
-#[AsTask]
+#[AsTask()]
 function task(
     string $firstArg,
     string $default = 'default'
@@ -63,7 +63,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\run;
 
-#[AsTask]
+#[AsTask()]
 function command(
     #[AsArgument(name: 'foo', description: 'This is the foo argument')]
     string $arg = 'bar',
@@ -91,7 +91,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\run;
 
-#[AsTask]
+#[AsTask()]
 function command(
     #[AsOption(name: 'foo', description: 'This is the foo option')]
     string $arg = 'bar',
@@ -114,7 +114,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\run;
 
-#[AsTask]
+#[AsTask()]
 function command(
     #[AsOption(description: 'This is the foo option', mode: InputOption::VALUE_NONE)]
     bool $force,

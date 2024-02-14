@@ -19,7 +19,7 @@ use Castor\Attribute\AsTask;
 use Castor\Context;
 use function Castor\load_dot_env;
 
-#[AsTask]
+#[AsTask()]
 function show_database_url(): void
 {
     $env = load_dot_env();
@@ -41,7 +41,7 @@ use Castor\Attribute\AsContext;
 use Castor\Context;
 use function Castor\load_dot_env;
 
-#[AsContext]
+#[AsContext()]
 function my_context(): Context
 {
     return new Context(load_dot_env());

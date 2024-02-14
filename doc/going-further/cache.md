@@ -10,7 +10,7 @@ use Psr\Cache\CacheItemInterface;
 
 use function Castor\cache;
 
-#[AsTask]
+#[AsTask()]
 function foo()
 {
     echo cache('a-key', expansive_call(...));
@@ -44,7 +44,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\get_cache;
 
-#[AsTask]
+#[AsTask()]
 function foo()
 {
     $cache = get_cache();
