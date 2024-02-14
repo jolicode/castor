@@ -16,7 +16,7 @@ namespace hello;
 
 use Castor\Attribute\AsTask;
 
-#[AsTask]
+#[AsTask()]
 function castor(): void
 {
     echo 'Hello castor';
@@ -26,7 +26,7 @@ namespace foo;
 
 use Castor\Attribute\AsTask;
 
-#[AsTask]
+#[AsTask()]
 function bar(): void
 {
     echo 'Foo bar';

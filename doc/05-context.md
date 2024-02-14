@@ -22,7 +22,7 @@ use Castor\Attribute\AsTask;
 use function Castor\context;
 use function Castor\run;
 
-#[AsTask]
+#[AsTask()]
 function foo(): void
 {
     $context = context();
@@ -48,7 +48,7 @@ use Castor\Attribute\AsTask;
 use function Castor\context;
 use function Castor\variable;
 
-#[AsTask]
+#[AsTask()]
 function foo(): void
 {
     $foobar = variable('foobar', 'default value');
@@ -77,13 +77,13 @@ use Castor\Context;
 
 use function Castor\run;
 
-#[AsContext]
+#[AsContext()]
 function my_context(): Context
 {
     return new Context(environment: ['FOO' => 'BAR']);
 }
 
-#[AsTask]
+#[AsTask()]
 function foo(): void
 {
     run('echo $FOO');
@@ -125,7 +125,7 @@ function create_default_context(): Context
     return new Context(['foo' => 'bar'], currentDirectory: '/tmp');
 }
 
-#[AsTask]
+#[AsTask()]
 function foo(Context $context): void
 {
     run(['echo', $context['foo']]); // will print bar even if you do not use the --context option

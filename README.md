@@ -29,7 +29,7 @@ It comes with many features to make your life easier:
 
 ## Usage
 
-In Castor, tasks are set up as typical PHP functions marked with the `#[AsTask]` attribute in a `castor.php` file. 
+In Castor, tasks are set up as typical PHP functions marked with the `#[AsTask()]` attribute in a `castor.php` file.
 
 These tasks can run any PHP code but also make use of various [functions for standard operations](doc/06-reference.md) that come pre-packaged with Castor.
 
@@ -43,7 +43,7 @@ namespace greetings;
 use Castor\Attribute\AsTask;
 use function Castor\run;
 
-#[AsTask]
+#[AsTask()]
 function hello(): void
 {
     run('echo "Hello from castor"');

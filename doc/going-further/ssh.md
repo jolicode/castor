@@ -40,7 +40,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\ssh_run;
 
-#[AsTask]
+#[AsTask()]
 function ls(): void
 {
     // List content of /var/www directory on the remote server
@@ -63,7 +63,7 @@ between localhost and a remote server:
 ```php
 use function Castor\ssh_upload;
 
-#[AsTask]
+#[AsTask()]
 function upload_file(): void
 {
     ssh_upload('/tmp/test.html', '/var/www/index.html', host: 'server-1.example.com', user: 'debian');
@@ -75,7 +75,7 @@ function upload_file(): void
 ```php
 use function Castor\ssh_download;
 
-#[AsTask]
+#[AsTask()]
 function download_file(): void
 {
     ssh_download('/tmp/test.html', '/var/www/index.html', host: 'server-1.example.com', user: 'debian');

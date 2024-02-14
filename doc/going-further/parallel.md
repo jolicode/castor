@@ -10,7 +10,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\parallel;
 
-#[AsTask]
+#[AsTask()]
 function foo(): void
 {
     [$foo, $bar] = parallel(
@@ -44,7 +44,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\parallel;
 
-#[AsTask]
+#[AsTask()]
 function parallel_change()
 {
     parallel(

@@ -11,7 +11,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\request;
 
-#[AsTask]
+#[AsTask()]
 function foo()
 {
     echo request('GET', 'https://example.org')->getContent(), \PHP_EOL;
@@ -28,7 +28,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\http_client;
 
-#[AsTask]
+#[AsTask()]
 function foo()
 {
     $client = http_client()

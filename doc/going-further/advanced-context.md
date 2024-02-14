@@ -42,7 +42,7 @@ function create_my_context(): Context
     return new Context(['foo' => 'bar'], currentDirectory: '/tmp');
 }
 
-#[AsTask]
+#[AsTask()]
 function foo(): void
 {
     $context = context('my_context');
@@ -71,7 +71,7 @@ function create_my_context(): Context
     return new Context(['foo' => 'bar'], currentDirectory: '/tmp');
 }
 
-#[AsTask]
+#[AsTask()]
 function foo(): void
 {
     with(function (Context $context) {

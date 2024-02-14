@@ -26,7 +26,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\log;
 
-#[AsTask]
+#[AsTask()]
 function log()
 {
     log('Error!, this is an "error" log message.', 'error');
@@ -40,7 +40,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\log;
 
-#[AsTask]
+#[AsTask()]
 function log()
 {
     log('Hello, I\'have a context!', 'error', context: [

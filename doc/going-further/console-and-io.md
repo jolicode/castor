@@ -15,7 +15,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\io;
 
-#[AsTask]
+#[AsTask()]
 function foo(): void
 {
     io()->title('This is a title');

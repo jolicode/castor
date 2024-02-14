@@ -8,7 +8,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\watch;
 
-#[AsTask]
+#[AsTask()]
 function watch(): void
 {
     watch('src/', function (string $file, string $action) {
@@ -30,7 +30,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\watch;
 
-#[AsTask]
+#[AsTask()]
 function watch(): void
 {
     // watch recursively inside the src folder
@@ -50,7 +50,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\watch;
 
-#[AsTask]
+#[AsTask()]
 function watch(): void
 {
     // watch recursively inside the src folder
@@ -71,7 +71,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\watch;
 
-#[AsTask]
+#[AsTask()]
 function watch(): void
 {
     // watch recursively inside the src and tests folders
