@@ -50,7 +50,7 @@ function foo(): void
 ## The `input()` function
 
 Castor provides the `input()` to access the current
-[`Input`](https://github.com/symfony/symfony/blob/6.3/src/Symfony/Component/Console/Input/InputInterface.php
+[`Input`](https://github.com/symfony/symfony/blob/6.3/src/Symfony/Component/Console/Input/InputInterface.php)
 object.
 
 ## The `output()` function
