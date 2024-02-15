@@ -7,9 +7,6 @@ use Symfony\Component\Process\Process;
 
 class CompileCommandTest extends TestCase
 {
-    /**
-     * @group test
-     */
     public function test()
     {
         $castorAppDirPath = RepackCommandTest::setupRepackedCastorApp('castor-test-compile');
@@ -25,6 +22,7 @@ class CompileCommandTest extends TestCase
 
         $binary = $castorAppDirPath . '/castor';
 
+        // If you update this command, you must also update the command in .github/workflows/ci.yml
         (new Process(
             [
                 'vendor/jolicode/castor/bin/castor',
