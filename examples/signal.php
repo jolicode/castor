@@ -4,6 +4,10 @@ namespace signal;
 
 use Castor\Attribute\AsTask;
 
+if (!\defined('SIGUSR2')) {
+    \define('SIGUSR2', 12);
+}
+
 #[AsTask(description: 'Captures SIGUSR2 signal', onSignals: [\SIGUSR2 => 'signal\onSigUsr2'])]
 function sigusr2(): void
 {

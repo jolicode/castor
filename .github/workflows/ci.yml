@@ -52,7 +52,7 @@ jobs:
           - php: "8.1"
             castor:
               bin: 'castor'
-              method: 'binary'
+              method: 'static'
           - php: "8.2"
             castor:
               bin: 'bin/castor'
@@ -100,7 +100,7 @@ jobs:
         with:
           path: ${{ env.cache_dirname_main }}
           key: php-static-${{ env.cache_key_main }}
-        if: matrix.castor.method == 'binary'
+        if: matrix.castor.method == 'static'
 
       - name: Restore PHP static building artifacts cache for test job
         uses: actions/cache@v4
@@ -111,12 +111,12 @@ jobs:
       - name: Build Castor phar for Linux
         run: bin/castor castor:phar:linux
         shell: bash
-        if: matrix.castor.method == 'phar' || matrix.castor.method == 'binary'
+        if: matrix.castor.method == 'phar' || matrix.castor.method == 'static'
 
       - name: Compile Custom Built PHP along Castor phar for Linux
-        run: bin/castor compile tools/phar/build/castor.linux-amd64.phar --php-extensions=mbstring,phar,posix,tokenizer,pcntl
+        run: bin/castor compile tools/phar/build/castor.linux-amd64.phar --php-extensions=mbstring,phar,posix,tokenizer,pcntl --binary-path=$(pwd)/castor
         shell: bash
-        if: matrix.castor.method == 'binary'
+        if: matrix.castor.method == 'static'
 
       - name: Link box
         run: sudo ln -s $GITHUB_WORKSPACE/tools/phar/vendor/bin/box /usr/local/bin/box

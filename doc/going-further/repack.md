@@ -41,6 +41,8 @@ vendor/bin/castor repack --help
 
 ## Going further
 
-Packaging your Castor app as a phar simplifies distribution but requires PHP setup on target systems. 
+Packaging your Castor app as a phar simplifies distribution but requires PHP
+setup on target systems.
 
-[Castor's `compile` command](compile.md) streamlines this by embedding the phar in a PHP binary, creating a standalone executable for diverse environments.
+[Castor's `compile` command](compile.md) streamlines this by embedding the phar
+in a PHP binary, creating a static executable for diverse environments.
