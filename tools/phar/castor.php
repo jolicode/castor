@@ -17,6 +17,7 @@ function linux()
 function darwin()
 {
     compile(fn () => run('vendor/bin/box compile -c box.darwin-amd64.json', path: __DIR__));
+    compile(fn () => run('vendor/bin/box compile -c box.darwin-arm64.json', path: __DIR__));
 }
 
 #[AsTask(description: 'Build phar for Windows system')]

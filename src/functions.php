@@ -502,7 +502,10 @@ function watch(string|array $path, callable $function, ?Context $context = null)
     $context ??= GlobalHelper::getContext();
 
     $binary = match (true) {
-        OsHelper::isMacOS() => 'watcher-darwin',
+        OsHelper::isMacOS() => match (php_uname('m')) {
+            'arm64' => 'watcher-darwin-arm64',
+            default => 'watcher-darwin-amd64',
+        },
         OsHelper::isWindows() => 'watcher-windows.exe',
         default => 'watcher-linux',
     };
