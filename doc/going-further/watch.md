@@ -9,7 +9,7 @@ use Castor\Attribute\AsTask;
 use function Castor\watch;
 
 #[AsTask()]
-function watch(): void
+function watcher(): void
 {
     watch('src/', function (string $file, string $action) {
         echo "File {$file} has been {$action}\n";
@@ -31,7 +31,7 @@ use Castor\Attribute\AsTask;
 use function Castor\watch;
 
 #[AsTask()]
-function watch(): void
+function watcher(): void
 {
     // watch recursively inside the src folder
     watch('src/...', function (string $file, string $action) {
@@ -51,7 +51,7 @@ use Castor\Attribute\AsTask;
 use function Castor\watch;
 
 #[AsTask()]
-function watch(): void
+function watcher(): void
 {
     // watch recursively inside the src folder
     watch('src/...', function (string $file, string $action) {
@@ -72,7 +72,7 @@ use Castor\Attribute\AsTask;
 use function Castor\watch;
 
 #[AsTask()]
-function watch(): void
+function watcher(): void
 {
     // watch recursively inside the src and tests folders
     watch(['src/...', 'tests/...'], function (string $file, string $action) {
