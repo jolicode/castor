@@ -22,6 +22,7 @@ jobs:
         run: |
           gh release upload ${{ github.ref_name }} ./tools/phar/build/castor.linux-amd64.phar
           gh release upload ${{ github.ref_name }} ./tools/phar/build/castor.darwin-amd64.phar
+          gh release upload ${{ github.ref_name }} ./tools/phar/build/castor.darwin-arm64.phar
           gh release upload ${{ github.ref_name }} ./tools/phar/build/castor.windows-amd64.phar
         env:
           GH_TOKEN: ${{ github.token }}

@@ -1,7 +1,7 @@
 {
   "base-path": "../../",
   "files-bin": [
-    "tools/watcher/bin/watcher-darwin-amd64"
+    "tools/watcher/bin/watcher-darwin-arm64"
   ],
   "blacklist": [
     "castor",
@@ -19,5 +19,5 @@
   "compression": "GZ",
   "check-requirements": false,
   "main": "bin/castor",
-  "output": "tools/phar/build/castor.darwin-amd64.phar"
+  "output": "tools/phar/build/castor.darwin-arm64.phar"
 }
