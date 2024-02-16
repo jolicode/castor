@@ -11,6 +11,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Process\Process;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -29,9 +30,10 @@ class CompileCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setName('compile')
+            ->setName('castor:compile')
+            ->setAliases(['compile'])
             ->addArgument('phar-path', InputArgument::REQUIRED, 'Path to phar to compile along PHP')
-            ->addOption('output', null, InputOption::VALUE_REQUIRED, 'Compiled standalone binary output filepath', PathHelper::getRoot() . '/castor')
+            ->addOption('binary-path', null, InputOption::VALUE_REQUIRED, 'Path to compiled static binary. It can be the parent dirname too', PathHelper::getRoot())
             ->addOption('os', null, InputOption::VALUE_REQUIRED, 'Target OS for PHP compilation', 'linux', ['linux', 'macos'])
             ->addOption('arch', null, InputOption::VALUE_REQUIRED, 'Target architecture for PHP compilation', 'x86_64', ['x86_64', 'aarch64'])
             ->addOption('php-version', null, InputOption::VALUE_REQUIRED, 'PHP version in major.minor format', '8.3')
@@ -43,18 +45,9 @@ class CompileCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $os = $input->getOption('os');
-        if (!\in_array($os, ['linux', 'macos'])) {
-            throw new \InvalidArgumentException('Currently supported target OS are one of "linux" or "macos"');
-        }
-
-        $arch = $input->getOption('arch');
-        if (!\in_array($arch, ['x86_64', 'aarch64'])) {
-            throw new \InvalidArgumentException('Target architecture must be one of "x86_64" or "aarch64"');
-        }
-
+        $this->validateInput($input);
         $io = new SymfonyStyle($input, $output);
-        $io->section('Compiling PHP and your Castor app phar into a standalone binary');
+        $io->section('Compiling PHP and your Castor app phar into a static binary');
 
         $phpBuildCacheKey = $this->generatePHPBuildCacheKey($input);
 
@@ -65,9 +58,8 @@ class CompileCommand extends Command
             $spcBinaryDir,
             $spcBinaryPath,
             $io,
-            $os,
-            $arch,
-            $output
+            $input->getOption('os'),
+            $input->getOption('arch'),
         );
 
         if (!$this->fs->exists($spcBinaryDir . '/buildroot/bin/micro.sfx') || $input->getOption('php-rebuild')) {
@@ -86,21 +78,44 @@ class CompileCommand extends Command
             $this->buildPHP(
                 $spcBinaryPath,
                 $phpExtensions,
-                $arch,
+                $input->getOption('arch'),
                 $spcBinaryDir,
                 $io
             );
         }
 
+        $binaryPath = $this->getBinaryPath($input);
+
         $this->mergePHPandPHARIntoSingleExecutable(
             $spcBinaryPath,
             $input->getArgument('phar-path'),
-            $input->getOption('output'),
+            $binaryPath,
             $spcBinaryDir,
             $io
         );
 
+        $io->success(sprintf('Your Castor app has been compiled into a static binary in "%s"', $binaryPath));
+
         return Command::SUCCESS;
+    }
+
+    private function validateInput(InputInterface $input): void
+    {
+        $os = $input->getOption('os');
+        if (!\in_array($os, ['linux', 'macos'])) {
+            throw new \InvalidArgumentException('Currently supported target OS are one of "linux" or "macos"');
+        }
+
+        $arch = $input->getOption('arch');
+        if (!\in_array($arch, ['x86_64', 'aarch64'])) {
+            throw new \InvalidArgumentException('Target architecture must be one of "x86_64" or "aarch64"');
+        }
+
+        if (!is_file($input->getArgument('phar-path'))) {
+            throw new \InvalidArgumentException(sprintf('The phar file "%s" does not exist.', $input->getArgument('phar-path')));
+        }
+
+        $input->setArgument('phar-path', Path::makeAbsolute($input->getArgument('phar-path'), getcwd() ?: PathHelper::getRoot()));
     }
 
     private function downloadSPC(string $spcSourceUrl, string $spcBinaryDestination, SymfonyStyle $io): void
@@ -188,7 +203,7 @@ class CompileCommand extends Command
         $mergePHPandPHARProcess->mustRun(fn ($type, $buffer) => print $buffer);
     }
 
-    private function setupSPC(string $spcBinaryDir, string $spcBinaryPath, SymfonyStyle $io, mixed $os, mixed $arch, OutputInterface $output): void
+    private function setupSPC(string $spcBinaryDir, string $spcBinaryPath, SymfonyStyle $io, mixed $os, mixed $arch): void
     {
         $this->fs->mkdir($spcBinaryDir, 0o755);
 
@@ -200,6 +215,29 @@ class CompileCommand extends Command
             $this->downloadSPC($spcSourceUrl, $spcBinaryPath, $io);
             $io->newLine(2);
         }
+    }
+
+    private function getBinaryPath(InputInterface $input): string
+    {
+        $binaryPath = $input->getOption('binary-path');
+        if (!Path::isAbsolute($binaryPath)) {
+            $binaryPath = Path::makeAbsolute($binaryPath, getcwd() ?: PathHelper::getRoot());
+        }
+
+        if (!is_dir($binaryPath)) {
+            return $binaryPath;
+        }
+
+        $p = new Process([\PHP_BINARY, $input->getArgument('phar-path'), 'list', '--format', 'json']);
+        $p->mustRun();
+        $appName = json_decode($p->getOutput(), true)['application']['name'];
+
+        return sprintf(
+            '%s/%s.%s',
+            $binaryPath,
+            $appName,
+            $input->getOption('os'),
+        );
     }
 
     private function generatePHPBuildCacheKey(InputInterface $input): string

@@ -25,7 +25,7 @@
 
 * [Listening to events](events.md)
 * [Repacking your application in a new phar](repack.md)
-* [Compiling your application in a standalone binary](compile.md)
+* [Compiling your application in a static binary](compile.md)
 
 ## Examples
 

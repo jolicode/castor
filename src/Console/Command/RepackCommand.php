@@ -19,7 +19,8 @@ class RepackCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setName('repack')
+            ->setName('castor:repack')
+            ->setAliases(['repack'])
             ->addOption('app-name', null, InputOption::VALUE_REQUIRED, 'The name of the phar application', 'my-app')
             ->addOption('app-version', null, InputOption::VALUE_REQUIRED, 'The version of the phar application', '1.0.0')
             ->addOption('os', null, InputOption::VALUE_REQUIRED, 'The targeted OS', 'linux', ['linux', 'darwin', 'windows'])

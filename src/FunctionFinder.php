@@ -69,6 +69,11 @@ class FunctionFinder
             yield from $this->resolveListeners($reflectionFunction);
         }
 
+        // Symfony task in repacked application are not supported
+        if (class_exists(\RepackedApplication::class)) {
+            return;
+        }
+
         $newClasses = array_diff(get_declared_classes(), $initialClasses);
         foreach ($newClasses as $className) {
             $reflectionClass = new \ReflectionClass($className);
@@ -87,7 +92,11 @@ class FunctionFinder
             return;
         }
 
-        $taskAttribute = $attributes[0]->newInstance();
+        try {
+            $taskAttribute = $attributes[0]->newInstance();
+        } catch (\Throwable $th) {
+            throw new \InvalidArgumentException(sprintf('Could not instantiate the attribute "%s" on function "%s".', AsTask::class, $reflectionFunction->getName()), 0, $th);
+        }
 
         if ('' === $taskAttribute->name) {
             $taskAttribute->name = SluggerHelper::slug($reflectionFunction->getShortName());
@@ -101,7 +110,7 @@ class FunctionFinder
 
         foreach ($taskAttribute->onSignals as $signal => $callable) {
             if (!\is_callable($callable)) {
-                throw new \LogicException(sprintf('The callable for signal "%s" is not callable.', $signal));
+                throw new \InvalidArgumentException(sprintf('The callable for signal "%s" is not callable on function "%s".', $signal, $reflectionFunction->getName()));
             }
         }
 

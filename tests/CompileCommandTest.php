@@ -28,7 +28,7 @@ class CompileCommandTest extends TestCase
                 'vendor/jolicode/castor/bin/castor',
                 'compile', $castorAppDirPath . '/my-app.linux.phar',
                 '--os', 'linux',
-                '--output', $binary,
+                '--binary-path', $binary,
                 '--php-extensions', 'mbstring,phar,posix,tokenizer',
                 '-vvv',
             ],
