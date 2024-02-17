@@ -2,11 +2,14 @@
 
 ## Not released yet
 
+* Add a `compile` command that puts together a customizable PHP binary with a
+  repacked castor app into one executable file
 * Set the process title according to the current application name and task name
+* Compile watcher and phar for `ARM64` on macOS
+* Deprecates `add_context()` function, use  `AsContextGenerator` attribute
+  instead
 * Ignore some low level env vars in runnable command showed in logs
 * Fix section output to work on Windows
-* Add a `compile` command that puts together a customizable PHP binary with a repacked castor app into one executable file
-* Compile watcher and phar for `ARM64` on macOS
 
 ## 0.12.1 (2024-02-06)
 

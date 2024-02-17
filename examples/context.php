@@ -3,10 +3,10 @@
 namespace context;
 
 use Castor\Attribute\AsContext;
+use Castor\Attribute\AsContextGenerator;
 use Castor\Attribute\AsTask;
 use Castor\Context;
 
-use function Castor\add_context;
 use function Castor\context;
 use function Castor\io;
 use function Castor\load_dot_env;
@@ -85,11 +85,18 @@ function contextInfo(): void
     echo 'context: ' . variable('foo', 'N/A') . "\n";
 }
 
-add_context('dynamic', fn () => new Context([
-    'name' => 'dynamic',
-    'production' => false,
-    'foo' => 'baz',
-]));
+/**
+ * @return iterable<string, \Closure(): Context>
+ */
+#[AsContextGenerator()]
+function context_generator(): iterable
+{
+    yield 'dynamic' => fn () => new Context([
+        'name' => 'dynamic',
+        'production' => false,
+        'foo' => 'baz',
+    ]);
+}
 
 #[AsTask(description: 'Displays information about the context')]
 function contextInfoForced(): void

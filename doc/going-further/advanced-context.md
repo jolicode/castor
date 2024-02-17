@@ -81,24 +81,25 @@ function foo(): void
 }
 ```
 
-## The `add_context()` function
+## The `AsContextGenerator()` attribute
 
 In some case, you may want to programmatically define contexts. You can use the
-`add_context()` to do so:
+`AsContextGenerator()` attribute:
 
 ```php
+use Castor\Attribute\AsContextGenerator;
 use Castor\Context;
 
-use function Castor\add_context;
-
-add_context('dynamic', fn () => new Context([
-    'name' => 'dynamic',
-    'production' => false,
-    'foo' => 'baz',
-]));
+/**
+ * @return iterable<string, \Closure(): Context>
+ */
+#[AsContextGenerator()]
+function context_generator(): iterable
+{
+    yield 'dynamic' => fn () => new Context([
+        'name' => 'dynamic',
+        'production' => false,
+        'foo' => 'baz',
+    ]);
+}
 ```
-
-> [!NOTE]
-> You should use the `add_context()` function at the top level of your Castor
-> files (not in a task function), in order to make these contexts available to
-> all tasks.
