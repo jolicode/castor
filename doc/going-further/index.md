@@ -1,35 +1,11 @@
-# Going further with Castor
+# Going further
 
-## Helpers
+This section contains more advanced topics about Castor.
 
-* [Manipulating the input and output and interacting with the Console](console-and-io.md)
-* [Filesystem](filesystem.md)
-* [HTTP requests](http-request.md)
-* [Cache](cache.md)
-* [Notification](notify.md)
-* [Parallel execution](parallel.md)
-* [Watching files changes](watch.md)
-* [SSH and remote servers](ssh.md)
-* [Waiting for things](wait-for.md)
-* [Fingerprinting and code execution when something changes](fingerprint.md)
-* [Guard to check the version of castor](version-check.md)
-* [Re-use Symfony Command](symfony-task.md)
-
-## Interacting with Castor
-
-* [Log and Debug](log.md)
-* [Handling signals](signals.md)
-* [Using .env files](dot-env.md)
-
-## Extending Castor
-
-* [Listening to events](events.md)
-* [Repacking your application in a new phar](repack.md)
-* [Compiling your application in a static binary](compile.md)
-
-## Examples
-
-This project provides a bunch of usage examples in the
-[examples directory](../../examples). These examples are useful to show
-different Castor features in action, do not hesitate to browse them. They also
-act as a full test suite for Castor to ensure each feature works as expected.
+* [Helpers](helpers/console-and-io.md): all builtin features that Castor provides to
+help you write your tasks.
+* [Interacting with Castor](interacting-with-castor/advanced-context.md): how to
+interact with Castor's output, context, logs, etc.
+* [Extending Castor](extending-castor/events.md): how to wire some logic
+inside Castor, how to redistribute your project as your own phar or static
+binary.

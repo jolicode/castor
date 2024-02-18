@@ -55,7 +55,7 @@ You may wonder when to use the `log()` or `io()` functions or even `echo` to
 output something. Here is a small guide:
 
 * Don't use PHP's native `echo` instruction, it's not a good practice;
-* Use the [`io()` function](console-and-io.md#the-io-function) to display
+* Use the [`io()` function](../helpers/console-and-io.md#the-io-function) to display
 something to the user thanks to Symfony's `SymfonyStyle` class;
 * Use the `log()` function when you want to add some **debug** information.
 

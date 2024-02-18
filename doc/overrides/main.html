@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block htmltitle %}
+    {% if page.meta and page.meta.title %}
+    <title>{{ page.meta.title }} - Castor</title>
+    {% elif page.title and not page.is_homepage %}
+    <title>{{ page.title | striptags }} - Castor</title>
+    {% else %}
+    <title>Castor - {{ config.site_name }}</title>
+    {% endif %}
+{% endblock %}

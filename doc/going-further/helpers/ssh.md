@@ -8,7 +8,7 @@ or upload/download files through SCP.
 
 ### Common parameters
 
-The following parameters are common to all of the `ssh_x()` functions:
+The following parameters are common to all of the `ssh_*()` functions:
 
 - `$host` (string): Host to connect to.
 - `$user` (string): User to connect with.
