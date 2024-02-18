@@ -28,7 +28,10 @@ class ContextRegistry
         }
     }
 
-    public function addContext(string $name, \Closure $callable, bool $default = false): void
+    /**
+     * @param \Closure(): Context $callable
+     */
+    public function addContext(string $name, callable $callable, bool $default = false): void
     {
         $this->addDescriptor(new ContextDescriptor(
             new Attribute\AsContext(name: $name, default: $default),
@@ -68,7 +71,12 @@ class ContextRegistry
             throw new \RuntimeException(sprintf('Context "%s" not found.', $name));
         }
 
-        return $this->descriptors[$name]->function->invoke();
+        $context = $this->descriptors[$name]->function->invoke();
+        if (!$context instanceof Context) {
+            throw new \LogicException(sprintf('The context generator "%s", defined at "%s:%s" must return an instance of "%s", "%s" returned', $name, $this->descriptors[$name]->function->getFileName(), $this->descriptors[$name]->function->getStartLine(), Context::class, get_debug_type($context)));
+        }
+
+        return $context;
     }
 
     public function setCurrentContext(Context $context): void

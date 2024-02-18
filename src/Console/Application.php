@@ -6,6 +6,7 @@ use Castor\Console\Command\SymfonyTaskCommand;
 use Castor\Console\Command\TaskCommand;
 use Castor\Context;
 use Castor\ContextDescriptor;
+use Castor\ContextGeneratorDescriptor;
 use Castor\ContextRegistry;
 use Castor\Event\AfterApplicationInitializationEvent;
 use Castor\EventDispatcher;
@@ -181,21 +182,25 @@ class Application extends SymfonyApplication
             $functionsRootDir = \RepackedApplication::ROOT_DIR;
         }
 
-        $functions = $this->functionFinder->findFunctions($functionsRootDir);
+        $descriptors = $this->functionFinder->findFunctions($functionsRootDir);
         $tasks = [];
         $symfonyTasks = [];
-        foreach ($functions as $function) {
-            if ($function instanceof TaskDescriptor) {
-                $tasks[] = $function;
-            } elseif ($function instanceof SymfonyTaskDescriptor) {
-                $symfonyTasks[] = $function;
-            } elseif ($function instanceof ContextDescriptor) {
-                $this->contextRegistry->addDescriptor($function);
-            } elseif ($function instanceof ListenerDescriptor && null !== $function->reflectionFunction->getClosure()) {
+        foreach ($descriptors as $descriptor) {
+            if ($descriptor instanceof TaskDescriptor) {
+                $tasks[] = $descriptor;
+            } elseif ($descriptor instanceof SymfonyTaskDescriptor) {
+                $symfonyTasks[] = $descriptor;
+            } elseif ($descriptor instanceof ContextDescriptor) {
+                $this->contextRegistry->addDescriptor($descriptor);
+            } elseif ($descriptor instanceof ContextGeneratorDescriptor) {
+                foreach ($descriptor->generators as $name => $generator) {
+                    $this->contextRegistry->addContext($name, $generator);
+                }
+            } elseif ($descriptor instanceof ListenerDescriptor && null !== $descriptor->reflectionFunction->getClosure()) {
                 $this->eventDispatcher->addListener(
-                    $function->asListener->event,
-                    $function->reflectionFunction->getClosure(),
-                    $function->asListener->priority
+                    $descriptor->asListener->event,
+                    $descriptor->reflectionFunction->getClosure(),
+                    $descriptor->asListener->priority
                 );
             }
         }

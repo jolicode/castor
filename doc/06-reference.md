@@ -6,7 +6,6 @@ Here is a reference of all the functions and attributes provided by Castor.
 
 Castor provides the following built-in functions:
 
-- [`add_context`](going-further/advanced-context.md#the-add_context-function)
 - [`app`](going-further/console-and-io.md#the-app-function)
 - [`cache`](going-further/cache.md#the-cache-function)
 - [`capture`](03-run.md#the-capture-function)
@@ -52,6 +51,7 @@ Castor provides the following attributes to register tasks, listener, etc:
 
 - [`AsArgument`](04-arguments.md#overriding-the-argument-name-and-description)
 - [`AsContext`](05-context.md#creating-a-new-context)
+- [`AsContextGenerator`](06-advanded-context.md#the-ascontextgenerator-attribute)
 - [`AsListener`](going-further/events.md#registering-a-listener)
 - [`AsOption`](04-arguments.md#overriding-the-option-name-and-description)
 - [`AsSymfonyTask`](going-further/symfony-task.md)

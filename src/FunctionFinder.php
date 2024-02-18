@@ -3,6 +3,7 @@
 namespace Castor;
 
 use Castor\Attribute\AsContext;
+use Castor\Attribute\AsContextGenerator;
 use Castor\Attribute\AsListener;
 use Castor\Attribute\AsSymfonyTask;
 use Castor\Attribute\AsTask;
@@ -26,7 +27,7 @@ class FunctionFinder
     ) {
     }
 
-    /** @return iterable<TaskDescriptor|ContextDescriptor|ListenerDescriptor|SymfonyTaskDescriptor> */
+    /** @return iterable<TaskDescriptor|ContextDescriptor|ContextGeneratorDescriptor|ListenerDescriptor|SymfonyTaskDescriptor> */
     public function findFunctions(string $path): iterable
     {
         yield from self::doFindFunctions([new \SplFileInfo($path . '/castor.php')]);
@@ -47,7 +48,7 @@ class FunctionFinder
     /**
      * @param iterable<\SplFileInfo> $files
      *
-     * @return iterable<TaskDescriptor|ContextDescriptor|ListenerDescriptor|SymfonyTaskDescriptor>
+     * @return iterable<TaskDescriptor|ContextDescriptor|ContextGeneratorDescriptor|ListenerDescriptor|SymfonyTaskDescriptor>
      *
      * @throws \ReflectionException
      */
@@ -66,6 +67,7 @@ class FunctionFinder
 
             yield from $this->resolveTasks($reflectionFunction);
             yield from $this->resolveContexts($reflectionFunction);
+            yield from $this->resolveContextGenerators($reflectionFunction);
             yield from $this->resolveListeners($reflectionFunction);
         }
 
@@ -195,6 +197,36 @@ class FunctionFinder
     }
 
     /**
+     * @return iterable<ContextGeneratorDescriptor>
+     */
+    private function resolveContextGenerators(\ReflectionFunction $reflectionFunction): iterable
+    {
+        $attributes = $reflectionFunction->getAttributes(AsContextGenerator::class, \ReflectionAttribute::IS_INSTANCEOF);
+        if (!\count($attributes)) {
+            return;
+        }
+
+        $contextAttribute = $attributes[0]->newInstance();
+
+        if ($reflectionFunction->getParameters()) {
+            throw new \InvalidArgumentException(sprintf('The contexts generator "%s()" must not have arguments.', $reflectionFunction->getName()));
+        }
+        $generators = [];
+        foreach ($reflectionFunction->invoke() as $name => $generator) {
+            if (!$generator instanceof \Closure) {
+                throw new \InvalidArgumentException(sprintf('The context generator "%s" is not callable in function "%s()".', $name, $reflectionFunction->getName()));
+            }
+            $r = new \ReflectionFunction($generator);
+            if ($r->getParameters()) {
+                throw new \InvalidArgumentException(sprintf('The context generator "%s()::%s" must not have arguments.', $reflectionFunction->getName(), $name));
+            }
+            $generators[$name] = $generator;
+        }
+
+        yield new ContextGeneratorDescriptor($contextAttribute, $reflectionFunction, $generators);
+    }
+
+    /**
      * @return iterable<ListenerDescriptor>
      */
     private function resolveListeners(\ReflectionFunction $reflectionFunction): iterable
@@ -206,7 +238,7 @@ class FunctionFinder
             $listenerAttribute = $attribute->newInstance();
 
             if (u($listenerAttribute->event)->endsWith('::class') && !class_exists($listenerAttribute->event)) {
-                throw new \LogicException(sprintf('The event "%s" does not exist.', $listenerAttribute->event));
+                throw new \InvalidArgumentException(sprintf('The event "%s" does not exist.', $listenerAttribute->event));
             }
 
             yield new ListenerDescriptor($listenerAttribute, $reflectionFunction);

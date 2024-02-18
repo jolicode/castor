@@ -2,6 +2,7 @@
 
 namespace Castor;
 
+use Castor\Attribute\AsContextGenerator;
 use Castor\Console\Application;
 use Castor\Exception\MinimumVersionRequirementNotMetException;
 use Castor\Exception\WaitFor\ExitedBeforeTimeoutException;
@@ -626,6 +627,8 @@ function io(): SymfonyStyle
 
 function add_context(string $name, \Closure $callable, bool $default = false): void
 {
+    trigger_deprecation('jolicode/castor', '0.13', 'The "%s()" function is deprecated, use "Castor\Attributes\%s()" instead.', __FUNCTION__, AsContextGenerator::class);
+
     GlobalHelper::getContextRegistry()->addContext($name, $callable, $default);
 }
 
