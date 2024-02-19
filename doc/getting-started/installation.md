@@ -17,7 +17,8 @@ selecting the last build.
 We provide different phar for Linux / MacOS / Windows architectures to offer lighter phar
 files. Download the correct one and make it available in your shell:
 
-Example for Linux:
+#### Linux
+
 ```bash
 curl "https://github.com/jolicode/castor/releases/latest/download/castor.linux-amd64.phar" -Lfso $HOME/.local/bin/castor && \
     chmod u+x $HOME/.local/bin/castor && \
@@ -25,7 +26,21 @@ curl "https://github.com/jolicode/castor/releases/latest/download/castor.linux-a
     (echo "Could not install castor. Is the target directory writeable?" && (exit 1))
 ```
 
-Example for MacOS:
+#### MacOS with Apple Silicon
+
+For Mac with Apple Silicon processors (M1, M2, M3, etc).
+
+```bash
+curl "https://github.com/jolicode/castor/releases/latest/download/castor.darwin-arm64.phar" -Lfso /usr/local/bin/castor && \
+    chmod u+x /usr/local/bin/castor && \
+    castor --version || \
+    (echo "Could not install castor. Is the target directory writeable?" && (exit 1))
+```
+
+#### MacOS with Intel
+
+For Mac with old Intel processors.
+
 ```bash
 curl "https://github.com/jolicode/castor/releases/latest/download/castor.darwin-amd64.phar" -Lfso /usr/local/bin/castor && \
     chmod u+x /usr/local/bin/castor && \
@@ -33,7 +48,8 @@ curl "https://github.com/jolicode/castor/releases/latest/download/castor.darwin-
     (echo "Could not install castor. Is the target directory writeable?" && (exit 1))
 ```
 
-Example for Windows:
+#### Windows
+
 ```bash
 curl.exe "https://github.com/jolicode/castor/releases/latest/download/castor.windows-amd64.phar" -Lso C:\<a directory in your PATH>\castor
 ```
