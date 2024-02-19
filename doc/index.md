@@ -26,7 +26,7 @@ It comes with many features to make your life easier:
 
 > [!NOTE]
 > Castor is still in early development, and the API is not stable yet. Even if
-> it not likely to change, it is still possible that it will change in the
+> it is unlikely to change, it is still possible that it will change in the
 > future.
 
 ## Usage
