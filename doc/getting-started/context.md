@@ -135,5 +135,5 @@ function foo(Context $context): void
 
 ## Advanced usage
 
-See [this documentation](going-further/advanced-context.md) for more usage about
+See [this documentation](../going-further/interacting-with-castor/advanced-context.md) for more usage about
 contexts.

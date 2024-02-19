@@ -1,0 +1,21 @@
+- [Home](index.md)
+- [Getting started](getting-started/index.md)
+    - [Installation and Autocomplete](getting-started/installation.md)
+    - [Basic Usage](getting-started/basic-usage.md)
+    - [Executing Processes with `run()`](getting-started/run.md)
+    - [Task Arguments](getting-started/arguments.md)
+    - [Using the Context](getting-started/context.md)
+- [Going further](going-further/index.md)
+    - Helpers
+        - [Manipulating the input and output and interacting with the Console](going-further/helpers/console-and-io.md)
+        - going-further/helpers/*.md
+    - Interacting with Castor
+        - [Advanced Context usage](going-further/interacting-with-castor/advanced-context.md)
+        - going-further/interacting-with-castor/*.md
+    - Extending Castor
+        - [Listening to events](going-further/extending-castor/events.md)
+        - going-further/extending-castor/*.md
+- [Reference](reference.md)
+- [Examples](examples.md)
+- [FAQ](faq.md)
+- [Changelog](changelog.md)

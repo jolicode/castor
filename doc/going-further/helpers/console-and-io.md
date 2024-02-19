@@ -4,7 +4,7 @@ Castor is heavily based on
 [Symfony's Console component](https://symfony.com/doc/current/console.html).
 This means that some powers of this component are available to you.
 
-### The `io()` function
+## The `io()` function
 
 The `io()` returns an object that provides methods to interact with the user and
 to display information. It returns an instance of

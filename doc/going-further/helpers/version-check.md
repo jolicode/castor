@@ -1,6 +1,6 @@
 # Guard to check the version of castor
 
-### The `guard_min_version()` function
+## The `guard_min_version()` function
 
 ```php
 use function Castor\guard_min_version;
@@ -25,4 +25,4 @@ ensure that the user has the right version of Castor.
 > before running a specific task, you can put it in the task function directly and 
 > check will be done only when the task is called.
 
-You can go further with [Events and Listeners](events.md#listening-to-events) to check certain conditions by checking a pattern task name.
+You can go further with [Events and Listeners](../extending-castor/events.md#listening-to-events) to check certain conditions by checking a pattern task name.

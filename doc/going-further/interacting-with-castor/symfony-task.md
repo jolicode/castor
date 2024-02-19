@@ -1,4 +1,4 @@
-# Symfony Task
+# Re-use Symfony Command
 
 If your Castor project lives near a Symfony application, you may want to use
 some of its commands directly as Castor tasks.
