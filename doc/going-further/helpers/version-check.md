@@ -1,6 +1,6 @@
 # Guard to check the version of castor
 
-### The `guard_min_version()` function
+## The `guard_min_version()` function
 
 ```php
 use function Castor\guard_min_version;

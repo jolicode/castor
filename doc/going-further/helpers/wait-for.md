@@ -4,7 +4,7 @@
 various case where waiting is necessary (e.g. waiting for a condition to be
 satisfied, for a port to be accessible, etc.).
 
-### Common parameters
+## Common parameters
 
 The following parameters are common to most of the functions:
 

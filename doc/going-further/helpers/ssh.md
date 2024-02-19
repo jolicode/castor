@@ -6,7 +6,7 @@ or upload/download files through SCP.
 > [!NOTE]
 > These functions are marked as experimental and may change in the future.
 
-### Common parameters
+## Common parameters
 
 The following parameters are common to all of the `ssh_*()` functions:
 
