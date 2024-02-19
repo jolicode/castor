@@ -16,11 +16,11 @@ It comes with many features to make your life easier:
 * Seamless parsing of **arguments and options**, simplifying input handling
 * **Autocomplete** support for faster and error-free typing
 * A built-in list of useful functions:
-    * [`run()`](doc/getting-started/run.md#the-run-function): Runs external processes, enabling seamless integration with external tools
-    * [`parallel()`](doc/going-further/helpers/parallel.md#the-parallel-function): Parallelizes process execution to maximize resource utilization
-    * [`watch()`](doc/going-further/helpers/watch.md): Watches files and automatically triggers actions on file modifications
-    * [`log()`](doc/going-further/interacting-with-castor/log.md#the-log-function): Captures and analyzes essential information
-    * [And even more advanced functions](doc/reference.md)
+    * [`run()`](https://castor.jolicode.com/getting-started/run/#the-run-function): Runs external processes, enabling seamless integration with external tools
+    * [`parallel()`](https://castor.jolicode.com/going-further/helpers/parallel/#the-parallel-function): Parallelizes process execution to maximize resource utilization
+    * [`watch()`](https://castor.jolicode.com/going-further/helpers/watch/): Watches files and automatically triggers actions on file modifications
+    * [`log()`](https://castor.jolicode.com/going-further/interacting-with-castor/log/#the-log-function): Captures and analyzes essential information
+    * [And even more advanced functions](https://castor.jolicode.com/reference/)
 
 > [!NOTE]
 > Castor is still in early development, and the API is not stable yet. Even if
@@ -31,7 +31,7 @@ It comes with many features to make your life easier:
 
 In Castor, tasks are set up as typical PHP functions marked with the `#[AsTask()]` attribute in a `castor.php` file.
 
-These tasks can run any PHP code but also make use of various [functions for standard operations](doc/reference.md) that come pre-packaged with Castor.
+These tasks can run any PHP code but also make use of various [functions for standard operations](https://castor.jolicode.com/reference/) that come pre-packaged with Castor.
 
 For example:
 
@@ -80,9 +80,9 @@ function destroy(bool $force = false)
 }
 ```
 
-If you want to read more about usage, you can read the [basic
-usage](doc/getting-started/basic-usage.md) documentation, or browse the [examples](examples)
-directory.
+If you want to read more about usage, you can read the
+[basic usage](https://castor.jolicode.com/getting-started/) documentation, or
+watch [some examples](https://castor.jolicode.com/examples/).
 
 ## Installation
 
@@ -106,20 +106,20 @@ curl "https://github.com/jolicode/castor/releases/latest/download/castor.linux-a
 ```
 
 There are other ways to install Castor, please refer to the
-[documentation](doc/getting-started/installation.md).
+[documentation](https://castor.jolicode.com/getting-started/installation/).
 
 ## Further documentation
 
 Discover more by reading the docs:
 
-* [Getting started with Castor](doc/getting-started)
-  * [Installation and Autocomplete](doc/getting-started/installation.md)
-  * [Basic Usage](doc/getting-started/basic-usage.md)
-  * [Executing Processes with `run()`](doc/getting-started/run.md)
-  * [Task Arguments](doc/getting-started/arguments.md)
-  * [Using the Context](doc/getting-started/context.md)
-* [Going further with Castor](doc/going-further)
-* [Castor reference](doc/reference.md)
-* [Examples](doc/examples.md)
-* [Frequently asked questions](doc/faq.md)
+* [Getting started with Castor](https://castor.jolicode.com/getting-started/)
+  * [Installation and Autocomplete](https://castor.jolicode.com/getting-started/installation/)
+  * [Basic Usage](https://castor.jolicode.com/getting-started/basic-usage/)
+  * [Executing Processes with `run()`](https://castor.jolicode.com/getting-started/run/)
+  * [Task Arguments](https://castor.jolicode.com/getting-started/arguments)
+  * [Using the Context](https://castor.jolicode.com/getting-started/context)
+* [Going further with Castor](https://castor.jolicode.com/going-further/)
+* [Castor reference](https://castor.jolicode.com/reference/)
+* [Examples](https://castor.jolicode.com/examples/)
+* [Frequently asked questions](https://castor.jolicode.com/faq/)
 
