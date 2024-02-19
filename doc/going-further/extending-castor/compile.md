@@ -26,7 +26,8 @@ To compile your Castor application, navigate to your project directory and run:
 vendor/bin/castor compile my-custom-castor-app.phar
 ```
 
-> [!WARNING] Compiling is not supported yet on Windows.
+> [!WARNING]
+> Compiling is not supported yet on Windows.
 
 ### Options
 
