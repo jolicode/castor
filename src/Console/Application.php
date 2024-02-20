@@ -90,7 +90,6 @@ class Application extends SymfonyApplication
         ]);
 
         $this->setCatchErrors(true);
-        $this->setDispatcher($eventDispatcher);
 
         AbstractCloner::$defaultCasters[self::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
         AbstractCloner::$defaultCasters[AfterApplicationInitializationEvent::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
