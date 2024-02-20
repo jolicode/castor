@@ -6,15 +6,18 @@ use Castor\Attribute\AsListener;
 use Castor\Attribute\AsTask;
 use Castor\Event\AfterExecuteTaskEvent;
 use Castor\Event\BeforeExecuteTaskEvent;
-
+use Castor\Event\ProcessStartEvent;
+use Castor\Event\ProcessTerminateEvent;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleTerminateEvent;
+
 use function Castor\io;
+use function Castor\run;
 
 #[AsTask(description: 'An dummy task with event listeners attached')]
 function my_task(): void
 {
-    io()->writeln('Hello from task!');
+    run('echo "Hello from task!"');
 }
 
 #[AsListener(event: BeforeExecuteTaskEvent::class, priority: 1)]
@@ -52,10 +55,30 @@ function my_listener_that_has_higher_priority_for_multiple_events(BeforeExecuteT
     }
 }
 
-#[AsListener(event: ConsoleEvents::TERMINATE, priority: 10)]
+#[AsListener(event: ConsoleEvents::TERMINATE)]
 function console_terminate_event(ConsoleTerminateEvent $event): void
 {
-    if ($event->getCommand()->getName() === 'event-listener:my-task') {
+    if ('event-listener:my-task' === $event->getCommand()?->getName()) {
         io()->writeln('Hello from console terminate event listener!');
     }
+}
+
+#[AsListener(event: ProcessTerminateEvent::class)]
+function process_terminate_event(ProcessTerminateEvent $event): void
+{
+    if ('event-listener:my-task' !== $event->command->getName()) {
+        return;
+    }
+
+    io()->writeln('Hello after process stop!');
+}
+
+#[AsListener(event: ProcessStartEvent::class)]
+function process_start_event(ProcessStartEvent $event): void
+{
+    if ('event-listener:my-task' !== $event->command->getName()) {
+        return;
+    }
+
+    io()->writeln('Hello after process start!');
 }

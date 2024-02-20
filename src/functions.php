@@ -200,6 +200,9 @@ function run(
         }
     });
 
+    $command = GlobalHelper::getCommand();
+    GlobalHelper::getApplication()->eventDispatcher->dispatch(new Event\ProcessStartEvent($process, $command));
+
     if (\Fiber::getCurrent()) {
         while ($process->isRunning()) {
             GlobalHelper::getSectionOutput()->tickProcess($process);
@@ -208,8 +211,12 @@ function run(
         }
     }
 
-    $exitCode = $process->wait();
-    GlobalHelper::getSectionOutput()->finishProcess($process);
+    try {
+        $exitCode = $process->wait();
+    } finally {
+        GlobalHelper::getSectionOutput()->finishProcess($process);
+        GlobalHelper::getApplication()->eventDispatcher->dispatch(new Event\ProcessTerminateEvent($process, $command));
+    }
 
     if ($context->notify) {
         notify(sprintf('The command "%s" has been finished %s.', $process->getCommandLine(), 0 === $exitCode ? 'successfully' : 'with an error'));
