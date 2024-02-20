@@ -6,9 +6,10 @@ use function Castor\import;
 
 import(__DIR__ . '/examples');
 import(__DIR__ . '/tools/phar/castor.php');
-import(__DIR__ . '/tools/watcher/castor.php');
 import(__DIR__ . '/tools/php-cs-fixer/castor.php');
 import(__DIR__ . '/tools/phpstan/castor.php');
+import(__DIR__ . '/tools/static/castor.php');
+import(__DIR__ . '/tools/watcher/castor.php');
 
 #[AsTask(description: 'hello')]
 function hello(): void

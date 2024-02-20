@@ -42,12 +42,16 @@ $taskFilterList = [
     'watch:parallel-change',
     'watch:stop',
     // Not examples
+    'castor:compile',
     'castor:phar:build',
     'castor:phar:darwin',
     'castor:phar:linux',
     'castor:phar:windows',
     'castor:qa:cs',
     'castor:qa:phpstan',
+    'castor:repack',
+    'castor:static:build',
+    'castor:static:linux',
     'castor:watcher:build',
     'castor:watcher:darwin',
     'castor:watcher:linux',
@@ -62,8 +66,6 @@ $taskFilterList = [
     'log:info',
     'log:with-context',
     'parallel:sleep',
-    'repack',
-    'compile',
     'run:ls',
     'run:run-parallel',
 ];
@@ -129,6 +131,7 @@ function add_test(array $args, string $class, ?string $cwd = null)
             'COLUMNS' => 120,
             'ENDPOINT' => $_SERVER['ENDPOINT'],
         ],
+        timeout: null,
     );
     $process->run();
 
