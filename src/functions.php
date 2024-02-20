@@ -200,8 +200,7 @@ function run(
         }
     });
 
-    $command = GlobalHelper::getCommand();
-    GlobalHelper::getApplication()->eventDispatcher->dispatch(new Event\ProcessStartEvent($process, $command));
+    GlobalHelper::getApplication()->eventDispatcher->dispatch(new Event\ProcessStartEvent($process));
 
     if (\Fiber::getCurrent()) {
         while ($process->isRunning()) {
@@ -215,7 +214,7 @@ function run(
         $exitCode = $process->wait();
     } finally {
         GlobalHelper::getSectionOutput()->finishProcess($process);
-        GlobalHelper::getApplication()->eventDispatcher->dispatch(new Event\ProcessTerminateEvent($process, $command));
+        GlobalHelper::getApplication()->eventDispatcher->dispatch(new Event\ProcessTerminateEvent($process));
     }
 
     if ($context->notify) {
@@ -665,9 +664,12 @@ function variable(string $key, mixed $default = null): mixed
     return GlobalHelper::getVariable($key, $default);
 }
 
-function task(): Command
+/**
+ * @return ($allowNull is true ? ?Command : Command)
+ */
+function task(bool $allowNull = false): ?Command
 {
-    return GlobalHelper::getCommand();
+    return GlobalHelper::getCommand($allowNull);
 }
 
 function get_command(): Command

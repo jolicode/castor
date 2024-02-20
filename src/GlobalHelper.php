@@ -77,9 +77,12 @@ class GlobalHelper
         return self::getApplication()->getSymfonyStyle();
     }
 
-    public static function getCommand(): Command
+    /**
+     * @return ($allowNull is true ? ?Command : Command)
+     */
+    public static function getCommand(bool $allowNull = false): ?Command
     {
-        return self::getApplication()->getCommand();
+        return self::getApplication()->getCommand($allowNull);
     }
 
     public static function getContext(?string $name = null): Context

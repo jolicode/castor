@@ -120,9 +120,12 @@ class Application extends SymfonyApplication
         return $this->symfonyStyle ?? throw new \LogicException('SymfonyStyle not available yet.');
     }
 
-    public function getCommand(): Command
+    /**
+     * @return ($allowNull is true ? ?Command : Command)
+     */
+    public function getCommand(bool $allowNull = false): ?Command
     {
-        return $this->command ?? throw new \LogicException('Command not available yet.');
+        return $this->command ?? ($allowNull ? null : throw new \LogicException('Command not available yet.'));
     }
 
     // We do all the logic as late as possible to ensure the exception handler

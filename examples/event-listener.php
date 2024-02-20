@@ -13,6 +13,7 @@ use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 
 use function Castor\io;
 use function Castor\run;
+use function Castor\task;
 
 #[AsTask(description: 'An dummy task with event listeners attached')]
 function my_task(): void
@@ -66,7 +67,9 @@ function console_terminate_event(ConsoleTerminateEvent $event): void
 #[AsListener(event: ProcessTerminateEvent::class)]
 function process_terminate_event(ProcessTerminateEvent $event): void
 {
-    if ('event-listener:my-task' !== $event->command->getName()) {
+    $command = task(true);
+
+    if ('event-listener:my-task' !== $command?->getName()) {
         return;
     }
 
@@ -76,7 +79,9 @@ function process_terminate_event(ProcessTerminateEvent $event): void
 #[AsListener(event: ProcessStartEvent::class)]
 function process_start_event(ProcessStartEvent $event): void
 {
-    if ('event-listener:my-task' !== $event->command->getName()) {
+    $command = task(true);
+
+    if ('event-listener:my-task' !== $command?->getName()) {
         return;
     }
 
