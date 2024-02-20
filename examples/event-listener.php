@@ -7,6 +7,8 @@ use Castor\Attribute\AsTask;
 use Castor\Event\AfterExecuteTaskEvent;
 use Castor\Event\BeforeExecuteTaskEvent;
 
+use Symfony\Component\Console\ConsoleEvents;
+use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use function Castor\io;
 
 #[AsTask(description: 'An dummy task with event listeners attached')]
@@ -47,5 +49,13 @@ function my_listener_that_has_higher_priority_for_multiple_events(BeforeExecuteT
 
     if ('event-listener:my-task' === $taskName && $event instanceof AfterExecuteTaskEvent) {
         io()->writeln('Ola from listener! I am listening to multiple events but only showing only for AfterExecuteTaskEvent');
+    }
+}
+
+#[AsListener(event: ConsoleEvents::TERMINATE, priority: 10)]
+function console_terminate_event(ConsoleTerminateEvent $event): void
+{
+    if ($event->getCommand()->getName() === 'event-listener:my-task') {
+        io()->writeln('Hello from console terminate event listener!');
     }
 }
