@@ -1,13 +1,41 @@
 name: 'Build static binaries'
 description: 'Builds static binaries for all systems'
 
+inputs:
+  os:
+    description: 'The operating system to build for'
+    required: true
+    default: 'linux'
+
 runs:
   using: "composite"
   steps:
     - name: Build Castor static binary for Linux
       run: bin/castor castor:static:linux
       shell: bash
+      if: ${{ inputs.os == 'linux' }}
 
-    - name: Ensure binary is OK
-      run: ./castor.linux.x86_64 --version
+    - name: Ensure Linux binary is OK
+      run: ./castor.linux-amd64 --version
       shell: bash
+      if: ${{ inputs.os == 'linux' }}
+
+    - name: Build Castor static binary for MacOS - amd64
+      run: bin/castor castor:static:darwin-amd64
+      shell: bash
+      if: ${{ inputs.os == 'darwin-amd64' }}
+
+    - name: Ensure MacOs - amd64 binary is OK
+      run: ./castor.darwin-amd64 --version
+      shell: bash
+      if: ${{ inputs.os == 'darwin-amd64' }}
+
+    - name: Build Castor static binary for MacOS - arm64
+      run: bin/castor castor:static:darwin-arm64
+      shell: bash
+      if: ${{ inputs.os == 'darwin-arm64' }}
+
+    - name: Ensure MacOs - arm64 binary is OK
+      run: ./castor.darwin-arm64 --version
+      shell: bash
+      if: ${{ inputs.os == 'darwin-arm64' }}
