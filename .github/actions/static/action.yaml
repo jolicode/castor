@@ -1,0 +1,13 @@
+name: 'Build static binaries'
+description: 'Builds static binaries for all systems'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Build Castor static binary for Linux
+      run: bin/castor castor:static:linux
+      shell: bash
+
+    - name: Ensure binary is OK
+      run: ./castor.linux.x86_64 --version
+      shell: bash

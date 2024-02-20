@@ -233,10 +233,11 @@ class CompileCommand extends Command
         $appName = json_decode($p->getOutput(), true)['application']['name'];
 
         return sprintf(
-            '%s/%s.%s',
+            '%s/%s.%s.%s',
             $binaryPath,
             $appName,
             $input->getOption('os'),
+            $input->getOption('arch'),
         );
     }
 

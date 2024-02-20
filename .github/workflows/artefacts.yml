@@ -1,0 +1,77 @@
+name: Build phars
+
+on:
+  push:
+    branches: [ "main" ]
+  release:
+      types: [ "created" ]
+
+permissions:
+  contents: write
+
+jobs:
+  phar:
+    name: Create phar and upload them as an artifact
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/install
+        with:
+          composer-flags: "--no-dev"
+
+      - uses: ./.github/actions/phar
+
+      - name: Upload the Linux phar
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'castor.linux-amd64.phar'
+          path: tools/phar/build/castor.linux-amd64.phar
+          if-no-files-found: error
+
+      - name: Upload the Darwin AMD64 phar
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'castor.darwin-amd64.phar'
+          path: tools/phar/build/castor.darwin-amd64.phar
+          if-no-files-found: error
+
+      - name: Upload the Darwin ARM64 phar
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'castor.darwin-arm64.phar'
+          path: tools/phar/build/castor.darwin-arm64.phar
+          if-no-files-found: error
+
+      - name: Upload the Windows phar
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'castor-windows-amd64.phar'
+          path: tools/phar/build/castor.windows-amd64.phar
+          if-no-files-found: error
+
+  release:
+    name: Upload phars to the release
+    if: github.event_name == 'release'
+    needs: [phar]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: retrieve artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: build
+          merge-multiple: true
+
+      - name: Upload files
+        run: |
+          gh release upload ${{ github.ref_name }} ./build/castor.darwin-amd64.phar
+          gh release upload ${{ github.ref_name }} ./build/castor.darwin-arm64.phar
+          gh release upload ${{ github.ref_name }} ./build/castor.linux-amd64.phar
+          gh release upload ${{ github.ref_name }} ./build/castor.windows-amd64.phar
+        env:
+          GH_TOKEN: ${{ github.token }}

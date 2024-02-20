@@ -15,6 +15,8 @@ castor:phar:linux                                                 Build phar for
 castor:phar:windows                                               Build phar for Windows system
 castor:qa:cs                                                      Fix CS
 castor:qa:phpstan                                                 Run PHPStan
+castor:static:build                                               Build phar for all systems
+castor:static:linux                                               Build phar for Linux system
 castor:watcher:build                                              Build watcher for all systems
 castor:watcher:darwin                                             Build watcher for MacOS system
 castor:watcher:linux                                              Build watcher for Linux system

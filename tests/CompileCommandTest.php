@@ -22,7 +22,7 @@ class CompileCommandTest extends TestCase
 
         $binary = $castorAppDirPath . '/castor';
 
-        // If you update this command, you must also update the command in .github/workflows/ci.yml
+        // If you update this command, you must also update the command in .github/actions/cache/action.yaml
         (new Process(
             [
                 'vendor/jolicode/castor/bin/castor',

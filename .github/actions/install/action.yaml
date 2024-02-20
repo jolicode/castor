@@ -1,0 +1,29 @@
+name: 'Install dependencies'
+description: 'Install dependencies for the project and the phar builder'
+
+inputs:
+  php-version:
+    description: 'The PHP version to use'
+    required: true
+    default: '8.1'
+  composer-flags:
+    description: 'Install dev dependencies'
+    required: false
+    default: ''
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '${{ inputs.php-version }}'
+
+    - name: Install dependencies (project)
+      run: composer install --prefer-dist --no-progress --optimize-autoloader --classmap-authoritative ${{ inputs.composer-flags }}
+      shell: bash
+
+    - name: Install dependencies (phar builder)
+      run: composer install --prefer-dist --no-progress --optimize-autoloader --classmap-authoritative
+      shell: bash
+      working-directory: tools/phar
