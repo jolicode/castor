@@ -67,7 +67,7 @@ object.
 
 ## The `task()` function
 
-Castor provides the `task()` to access the current
+Castor provides the `task(bool $allowNull = false)` to access the current
 [`Symfony Command`](https://github.com/symfony/symfony/blob/6.3/src/Symfony/Component/Console/Command/Command.php)
 object that powers the task currently run by the user.
 
@@ -93,3 +93,8 @@ function bar(): void
 
 `castor bar` will output `bar`, not `foo`, even if this is the `foo()` function
 that triggers the call to `task()`.
+
+In some cases there may be no task to return, if an event listener is triggered
+before the task  or during a context initialization for example. In this case,
+`task()` will throw an exception. You can use the optional parameter to allow
+`task(true)` to return `null` in this case.

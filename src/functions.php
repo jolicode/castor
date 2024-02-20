@@ -200,6 +200,8 @@ function run(
         }
     });
 
+    GlobalHelper::getApplication()->eventDispatcher->dispatch(new Event\ProcessStartEvent($process));
+
     if (\Fiber::getCurrent()) {
         while ($process->isRunning()) {
             GlobalHelper::getSectionOutput()->tickProcess($process);
@@ -208,8 +210,12 @@ function run(
         }
     }
 
-    $exitCode = $process->wait();
-    GlobalHelper::getSectionOutput()->finishProcess($process);
+    try {
+        $exitCode = $process->wait();
+    } finally {
+        GlobalHelper::getSectionOutput()->finishProcess($process);
+        GlobalHelper::getApplication()->eventDispatcher->dispatch(new Event\ProcessTerminateEvent($process));
+    }
 
     if ($context->notify) {
         notify(sprintf('The command "%s" has been finished %s.', $process->getCommandLine(), 0 === $exitCode ? 'successfully' : 'with an error'));
@@ -658,9 +664,12 @@ function variable(string $key, mixed $default = null): mixed
     return GlobalHelper::getVariable($key, $default);
 }
 
-function task(): Command
+/**
+ * @return ($allowNull is true ? ?Command : Command)
+ */
+function task(bool $allowNull = false): ?Command
 {
-    return GlobalHelper::getCommand();
+    return GlobalHelper::getCommand($allowNull);
 }
 
 function get_command(): Command

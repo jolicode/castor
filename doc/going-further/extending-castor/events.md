@@ -39,3 +39,17 @@ Here is the built-in events triggered by Castor:
 
 * `Castor\Event\AfterExecuteTaskEvent`: This event is triggered after executing
   a task. It provides access to the `TaskCommand` instance.
+
+* `Castor\Event\ProcessStartEvent`: This event is triggered after a process has
+  been started by the `run` function. It provides access to the `Process`
+  instance.
+
+* `Castor\Event\ProcessTerminateEvent`: This event is triggered after a process has
+  been terminated and launched inside the `run` function. It provides access to
+  the `Process` instance.
+
+## Console events
+
+Castor also provides a set of events related to the symfony console application,
+which can be used to listen to the console lifecycle, see the [symfony documentation
+to learn more about the console events](https://symfony.com/doc/current/components/console/events.html).

@@ -47,6 +47,7 @@ class ApplicationFactory
         $cache = new FilesystemAdapter(directory: $cacheDir);
         $logger = new Logger('castor', [], [new ProcessProcessor()]);
         $fs = new Filesystem();
+        $eventDispatcher = new EventDispatcher(logger: $logger);
 
         /** @var SymfonyApplication */
         // @phpstan-ignore-next-line
@@ -54,7 +55,7 @@ class ApplicationFactory
             $rootDir,
             new FunctionFinder($cache, $rootDir),
             $contextRegistry,
-            new EventDispatcher(logger: $logger),
+            $eventDispatcher,
             new ExpressionLanguage($contextRegistry),
             new StubsGenerator($logger),
             $logger,
@@ -65,6 +66,7 @@ class ApplicationFactory
             new FingerprintHelper($cache),
         );
 
+        $application->setDispatcher($eventDispatcher);
         $application->add(new DebugCommand($rootDir, $cacheDir, $contextRegistry));
 
         if (!class_exists(\RepackedApplication::class)) {
