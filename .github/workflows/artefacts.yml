@@ -1,4 +1,4 @@
-name: Build phars
+name: Build phars and static binaries
 
 on:
   push:
@@ -52,10 +52,37 @@ jobs:
           path: tools/phar/build/castor.windows-amd64.phar
           if-no-files-found: error
 
+  static:
+    needs: phar
+    name: Create static binaries and upload them as an artifact
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/install
+
+      - uses: ./.github/actions/cache
+
+      - name: retrieve phar artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: tools/phar/build
+          merge-multiple: true
+
+      - uses: ./.github/actions/static
+
+      - name: Upload the Linux static binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'castor.linux-amd64'
+          path: ./castor.linux.x86_64
+          if-no-files-found: error
+
   release:
-    name: Upload phars to the release
+    name: Upload phars and static binaries to the release
     if: github.event_name == 'release'
-    needs: [phar]
+    needs: [phar, static]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -69,8 +96,14 @@ jobs:
 
       - name: Upload files
         run: |
+          # Weird, in the artefacts, the binary is ./build/castor.linux-amd64, but
+          # when we download it, it's ./castor.linux.x86_64 (the old name)
+          if [ -f ./build/castor.linux.x86_64 ]; then
+            mv ./build/castor.linux.x86_64 ./build/castor.linux-amd64
+          fi
           gh release upload ${{ github.ref_name }} ./build/castor.darwin-amd64.phar
           gh release upload ${{ github.ref_name }} ./build/castor.darwin-arm64.phar
+          gh release upload ${{ github.ref_name }} ./build/castor.linux-amd64
           gh release upload ${{ github.ref_name }} ./build/castor.linux-amd64.phar
           gh release upload ${{ github.ref_name }} ./build/castor.windows-amd64.phar
         env:
