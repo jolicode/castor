@@ -2,6 +2,9 @@
 
 ## Not released yet
 
+* Allow to get null instead of throwing an exception when calling `task(true)` without a current task
+* Add `ProcessStartEvent` and `ProcessTerminateEvent` events
+* Allow to listen to the symfony console events
 * Add a `compile` command that puts together a customizable PHP binary with a
   repacked castor app into one executable file
 * Set the process title according to the current application name and task name
