@@ -42,11 +42,11 @@ Here is the built-in events triggered by Castor:
 
 * `Castor\Event\ProcessStartEvent`: This event is triggered after a process has
   been started by the `run` function. It provides access to the `Process`
-  instance and the current `Command`.
+  instance.
 
 * `Castor\Event\ProcessTerminateEvent`: This event is triggered after a process has
   been terminated and launched inside the `run` function. It provides access to
-  the `Process` instance and the current `Command`.
+  the `Process` instance.
 
 ## Console events
 
