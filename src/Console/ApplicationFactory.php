@@ -10,6 +10,7 @@ use Castor\EventDispatcher;
 use Castor\ExpressionLanguage;
 use Castor\Fingerprint\FingerprintHelper;
 use Castor\FunctionFinder;
+use Castor\HttpHelper;
 use Castor\Monolog\Processor\ProcessProcessor;
 use Castor\PathHelper;
 use Castor\PlatformUtil;
@@ -63,6 +64,7 @@ class ApplicationFactory
             $httpClient,
             $cache,
             new WaitForHelper($httpClient, $logger),
+            new HttpHelper($httpClient, $fs, $logger),
             new FingerprintHelper($cache),
         );
 

@@ -14,6 +14,7 @@ use Castor\ExpressionLanguage;
 use Castor\Fingerprint\FingerprintHelper;
 use Castor\FunctionFinder;
 use Castor\GlobalHelper;
+use Castor\HttpHelper;
 use Castor\ListenerDescriptor;
 use Castor\PlatformUtil;
 use Castor\SectionOutput;
@@ -67,6 +68,7 @@ class Application extends SymfonyApplication
         public HttpClientInterface $httpClient,
         public CacheItemPoolInterface&CacheInterface $cache,
         public WaitForHelper $waitForHelper,
+        public HttpHelper $httpHelper,
         public FingerprintHelper $fingerprintHelper,
     ) {
         $handler = ErrorHandler::register();
