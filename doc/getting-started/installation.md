@@ -11,7 +11,7 @@ You can download the latest release of Castor as a phar file from the [releases
 page](https://github.com/jolicode/castor/releases).
 
 You can also download the latest version by browsing [the build
-page](https://github.com/jolicode/castor/actions/workflows/artifacts.yml) and
+page](https://castor.jolicode.com/install/latest) and
 selecting the last build.
 
 We provide different phar for Linux / MacOS / Windows architectures to offer lighter phar
