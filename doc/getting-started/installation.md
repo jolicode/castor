@@ -54,7 +54,7 @@ curl "https://github.com/jolicode/castor/releases/latest/download/castor.darwin-
 curl.exe "https://github.com/jolicode/castor/releases/latest/download/castor.windows-amd64.phar" -Lso C:\<a directory in your PATH>\castor
 ```
 
-### Globally with Composer
+### Globally with Composer - not recommended way
 
 You can install Castor globally with Composer:
 
@@ -99,42 +99,6 @@ git clone git@github.com:jolicode/castor.git
 cd castor
 composer install
 ln -s $PWD/bin/castor $HOME/.local/bin/castor
-```
-
-### With Docker
-
-If you don't have PHP >= 8.1 installed on your host, you can use Docker to run castor.
-However, some features like notifications will not work.
-
-We ship a `Dockerfile` that you can use to build a Docker image with castor:
-
-```
-docker build -t castor .
-```
-
-Then you can run castor with:
-
-```
-docker run -it --rm -v `pwd`:/project castor
-```
-
-If you want to use Docker commands in your tasks, you must enable Docker
-support when building the image:
-
-```
-docker build -t castor --build-arg WITH_DOCKER=1  .
-```
-
-Then you can run castor with:
-
-```
-docker run -it --rm -v `pwd`:/project -v "/var/run/docker.sock:/var/run/docker.sock:rw" castor
-```
-
-We suggest you to create an alias for it:
-
-```
-alias castor='docker run -it --rm -v `pwd`:/project -v "/var/run/docker.sock:/var/run/docker.sock:rw" castor'
 ```
 
 ### In a Github Action
