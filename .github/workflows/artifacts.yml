@@ -1,4 +1,4 @@
-name: Build phars
+name: Artifacts
 
 on:
   push:
@@ -10,8 +10,8 @@ permissions:
   contents: write
 
 jobs:
-  phar:
-    name: Create phar and upload them as an artifact
+  phars:
+    name: Create phars and upload
     runs-on: ubuntu-latest
 
     steps:
@@ -52,10 +52,72 @@ jobs:
           path: tools/phar/build/castor.windows-amd64.phar
           if-no-files-found: error
 
+  static-linux:
+    needs: phars
+    name: Create Linux static binary and upload
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/install
+
+      - uses: ./.github/actions/cache
+        with:
+          os: 'linux'
+
+      - name: retrieve phar artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: tools/phar/build
+          merge-multiple: true
+
+      - uses: ./.github/actions/static
+        with:
+          os: 'linux'
+
+      - name: Upload the Linux static binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'castor.linux-amd64'
+          path: ./castor.linux-amd64
+          if-no-files-found: error
+
+  static-darwin-amd64:
+    needs: phars
+    name: Create MacOs amd64 static binary and upload
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/install
+
+      - uses: ./.github/actions/cache
+        with:
+          os: 'darwin'
+
+      - name: retrieve phar artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: tools/phar/build
+          merge-multiple: true
+
+      - uses: ./.github/actions/static
+        with:
+          os: 'darwin-amd64'
+
+      - name: Upload the MacOs amd64 static binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'castor.darwin-amd64'
+          path: ./castor.darwin-amd64
+          if-no-files-found: error
+
   release:
-    name: Upload phars to the release
+    name: Upload artifacts to the release
     if: github.event_name == 'release'
-    needs: [phar]
+    needs: [phars, static-linux, static-darwin-amd64]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -69,8 +131,10 @@ jobs:
 
       - name: Upload files
         run: |
+          gh release upload ${{ github.ref_name }} ./build/castor.darwin-amd64
           gh release upload ${{ github.ref_name }} ./build/castor.darwin-amd64.phar
           gh release upload ${{ github.ref_name }} ./build/castor.darwin-arm64.phar
+          gh release upload ${{ github.ref_name }} ./build/castor.linux-amd64
           gh release upload ${{ github.ref_name }} ./build/castor.linux-amd64.phar
           gh release upload ${{ github.ref_name }} ./build/castor.windows-amd64.phar
         env:

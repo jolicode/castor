@@ -4,17 +4,22 @@ namespace castor\static;
 
 use Castor\Attribute\AsTask;
 
-use function Castor\parallel;
 use function Castor\run;
 
-#[AsTask(description: 'Build phar for Linux system')]
+#[AsTask(description: 'Build static binary for Linux system')]
 function linux()
 {
-    run('bin/castor compile ./tools/phar/build/castor.linux-amd64.phar --os=linux --arch=x86_64', timeout: 0);
+    run('bin/castor compile tools/phar/build/castor.linux-amd64.phar --os=linux --arch=x86_64 --binary-path=castor.linux-amd64 --php-extensions=mbstring,phar,posix,tokenizer,pcntl', timeout: 0);
 }
 
-#[AsTask(description: 'Build phar for all systems')]
-function build()
+#[AsTask(description: 'Build static binary for MacOS (amd64) system')]
+function darwinAmd64()
 {
-    parallel(linux(...));
+    run('bin/castor compile tools/phar/build/castor.darwin-amd64.phar --os=macos --arch=x86_64 --binary-path=castor.darwin-amd64 --php-extensions=mbstring,phar,posix,tokenizer,pcntl', timeout: 0);
+}
+
+#[AsTask(description: 'Build static binary for MacOS (arm64) system')]
+function darwinArm64()
+{
+    run('bin/castor compile tools/phar/build/castor.darwin-arm64.phar --os=macos --arch=aarch64 --binary-path=castor.darwin-arm64 --php-extensions=mbstring,phar,posix,tokenizer,pcntl', timeout: 0);
 }

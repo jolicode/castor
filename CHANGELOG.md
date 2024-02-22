@@ -7,6 +7,7 @@
 * Allow to listen to the symfony console events
 * Add a `compile` command that puts together a customizable PHP binary with a
   repacked castor app into one executable file
+* Distribute `castor.linux.amd64` automatically with the release
 * Set the process title according to the current application name and task name
 * Compile watcher and phar for `ARM64` on macOS
 * Deprecates `add_context()` function, use  `AsContextGenerator` attribute
