@@ -93,8 +93,8 @@ jobs:
         env:
           CASTOR_BIN: ${{ github.workspace }}/${{ matrix.castor.bin }}
 
-  artefacts:
-    name: Ensure artefacts are OK
+  artifacts:
+    name: Ensure artifacts are OK
     runs-on: ubuntu-latest
 
     steps:
