@@ -2,16 +2,21 @@
 
 ## Not released yet
 
-* Allow to get null instead of throwing an exception when calling `task(true)` without a current task
+## 0.13.0 (2024-02-23)
+
+* Add a `compile` command that puts together a customizable PHP binary with a
+  repacked castor app into a static binary
+* Distribute static binaries `castor.linux.amd64` and `castor.darwin.amd64`
+  automatically with the release
+* Compile watcher and phar for arm64 on macOS, and distribute them with the
+  release
 * Add `ProcessStartEvent` and `ProcessTerminateEvent` events
 * Allow to listen to the symfony console events
-* Add a `compile` command that puts together a customizable PHP binary with a
-  repacked castor app into one executable file
-* Distribute `castor.linux.amd64` automatically with the release
 * Set the process title according to the current application name and task name
-* Compile watcher and phar for `ARM64` on macOS
 * Deprecates `add_context()` function, use  `AsContextGenerator` attribute
   instead
+* Allow to get null instead of throwing an exception when calling `task(true)`
+  without a current task
 * Ignore some low level env vars in runnable command showed in logs
 * Fix section output to work on Windows
 
