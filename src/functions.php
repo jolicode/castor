@@ -808,11 +808,15 @@ function with(
     Context|string|null $context = null,
 ): mixed {
     $contextRegistry = GlobalHelper::getContextRegistry();
-    $initialContext = $contextRegistry->getCurrentContext();
-    $context ??= $initialContext;
 
+    $initialContext = null;
+    if ($contextRegistry->hasCurrentContext()) {
+        $initialContext = $contextRegistry->getCurrentContext();
+    }
+
+    $context ??= new Context();
     if (\is_string($context)) {
-        $context = context($context);
+        $context = $contextRegistry->get($context);
     }
 
     if (null !== $data) {
@@ -856,7 +860,9 @@ function with(
     try {
         return $callback($context);
     } finally {
-        $contextRegistry->setCurrentContext($initialContext);
+        if ($initialContext) {
+            $contextRegistry->setCurrentContext($initialContext);
+        }
     }
 }
 
