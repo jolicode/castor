@@ -11,7 +11,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class GlobalHelper
 {
@@ -42,9 +41,9 @@ class GlobalHelper
         return self::getApplication()->fs;
     }
 
-    public static function getHttpClient(): HttpClientInterface
+    public static function getHttpHelper(): HttpHelper
     {
-        return self::getApplication()->httpClient;
+        return self::getApplication()->httpHelper;
     }
 
     public static function getCache(): CacheItemPoolInterface&CacheInterface

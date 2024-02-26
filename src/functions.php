@@ -720,14 +720,35 @@ function get_cache(): CacheItemPoolInterface&CacheInterface
  *
  * @see HttpClientInterface::OPTIONS_DEFAULTS
  */
-function request(string $method, string $url, array $options = []): ResponseInterface
+function http_request(string $method, string $url, array $options = []): ResponseInterface
 {
-    return http_client()->request($method, $url, $options);
+    return GlobalHelper::getHttpHelper()->http_request($method, $url, $options);
 }
 
 function http_client(): HttpClientInterface
 {
-    return GlobalHelper::getHttpClient();
+    return GlobalHelper::getHttpHelper()->http_client();
+}
+
+function http_download(string $url, ?string $filePath = null, string $method = 'GET', array $options = [], bool $stream = true): ResponseInterface
+{
+    return GlobalHelper::getHttpHelper()->http_download(
+        $url,
+        $filePath,
+        $method,
+        $options,
+        $stream
+    );
+}
+
+function http_upload(string $url, string $filePath, string $method = 'POST', array $options = []): ResponseInterface
+{
+    return GlobalHelper::getHttpHelper()->http_upload(
+        $url,
+        $filePath,
+        $method,
+        $options,
+    );
 }
 
 function import(string $path): void
