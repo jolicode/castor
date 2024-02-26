@@ -73,6 +73,10 @@ import(__DIR__ . '/my-app/castor');
 > You cannot dynamically import tasks. The `import()` function must be called
 > at the top level of the file.
 
+> [!NOTE]
+> You can also import functions from a remote resource. See the
+> [related documentation](../going-further/extending-castor/remote-imports.md).
+
 ## Overriding task name, namespace or description
 
 The `Castor\Attribute\AsTask` attribute takes three optional

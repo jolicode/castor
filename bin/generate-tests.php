@@ -28,7 +28,13 @@ $application->setAutoExit(false);
 $application
     ->run(new ArrayInput(['command' => 'list', '--format' => 'json']), $o = new BufferedOutput())
 ;
-$applicationDescription = json_decode($o->fetch(), true);
+$json = $o->fetch();
+
+try {
+    $applicationDescription = json_decode($json, true, flags: \JSON_THROW_ON_ERROR);
+} catch (JsonException $e) {
+    throw new RuntimeException('Could not get the list of commands: ' . $json, previous: $e);
+}
 
 $taskFilterList = [
     '_complete',
@@ -69,10 +75,14 @@ $taskFilterList = [
     'log:info',
     'log:with-context',
     'parallel:sleep',
+    'remote-import:remote-tasks',
     'run:ls',
     'run:run-parallel',
+    // Imported tasks
+    'pyrech:hello-example',
+    'pyrech:foobar',
 ];
-$optionFilterList = array_flip(['help', 'quiet', 'verbose', 'version', 'ansi', 'no-ansi', 'no-interaction', 'context']);
+$optionFilterList = array_flip(['help', 'quiet', 'verbose', 'version', 'ansi', 'no-ansi', 'no-interaction', 'context', 'no-remote', 'update-remotes']);
 foreach ($applicationDescription['commands'] as $task) {
     if (in_array($task['name'], $taskFilterList, true)) {
         continue;
@@ -144,6 +154,7 @@ function add_test(array $args, string $class, ?string $cwd = null)
         env: [
             'COLUMNS' => 120,
             'ENDPOINT' => $_SERVER['ENDPOINT'],
+            'CASTOR_NO_REMOTE' => 1,
         ],
         timeout: null,
     );

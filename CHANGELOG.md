@@ -2,6 +2,7 @@
 
 ## Not released yet
 
+* Add support for importing remote functions and tasks
 * Add a option `ignoreValidationErrors` on `AsTask` attribute to ignore
   parameters & options validation errors
 * Add a way to merge an application `box.json` config file used by `castor:repack`command
