@@ -79,6 +79,11 @@ class ContextRegistry
         return $context;
     }
 
+    public function hasCurrentContext(): bool
+    {
+        return isset($this->currentContext);
+    }
+
     public function setCurrentContext(Context $context): void
     {
         $this->currentContext = $context;
