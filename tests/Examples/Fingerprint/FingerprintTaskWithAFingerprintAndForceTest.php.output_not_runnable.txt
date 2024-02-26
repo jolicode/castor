@@ -1,2 +1,5 @@
+hh:ii:ss WARNING   [castor] Remote imports are disabled, skipping import of "pyrech/castor-example".
+hh:ii:ss WARNING   [castor] Remote imports are disabled, skipping import of "pyrech/castor-example-package-not-published".
+hh:ii:ss WARNING   [castor] Remote imports are disabled, skipping import of "pyrech/foobar".
 Hello Task with Fingerprint!
 Cool! I finished!

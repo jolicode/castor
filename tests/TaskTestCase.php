@@ -14,7 +14,7 @@ abstract class TaskTestCase extends TestCase
         WebServerHelper::start();
     }
 
-    public function runTask(array $args, ?string $cwd = null): Process
+    public function runTask(array $args, ?string $cwd = null, bool $needRemote = false): Process
     {
         $coverage = $this->getTestResultObject()?->getCodeCoverage();
 
@@ -23,6 +23,10 @@ abstract class TaskTestCase extends TestCase
         $extraEnv = [
             'ENDPOINT' => $_SERVER['ENDPOINT'],
         ];
+
+        if (!$needRemote) {
+            $extraEnv['CASTOR_NO_REMOTE'] = 1;
+        }
 
         if ($coverage) {
             $castorBin = __DIR__ . '/bin/castor';

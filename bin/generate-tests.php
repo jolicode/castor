@@ -75,10 +75,14 @@ $taskFilterList = [
     'log:info',
     'log:with-context',
     'parallel:sleep',
+    'remote-import:remote-tasks',
     'run:ls',
     'run:run-parallel',
+    // Imported tasks
+    'pyrech:hello-example',
+    'pyrech:foobar',
 ];
-$optionFilterList = array_flip(['help', 'quiet', 'verbose', 'version', 'ansi', 'no-ansi', 'no-interaction', 'context']);
+$optionFilterList = array_flip(['help', 'quiet', 'verbose', 'version', 'ansi', 'no-ansi', 'no-interaction', 'context', 'no-remote', 'update-remotes']);
 foreach ($applicationDescription['commands'] as $task) {
     if (in_array($task['name'], $taskFilterList, true)) {
         continue;
@@ -152,6 +156,7 @@ function add_test(array $args, string $class, ?string $cwd = null)
         env: [
             'COLUMNS' => 1000,
             'ENDPOINT' => $_SERVER['ENDPOINT'],
+            'CASTOR_NO_REMOTE' => 1,
         ],
         timeout: null,
     );

@@ -8,6 +8,8 @@ use Castor\Exception\ExecutableNotFoundException;
 use Castor\Exception\MinimumVersionRequirementNotMetException;
 use Castor\Exception\WaitFor\ExitedBeforeTimeoutException;
 use Castor\Exception\WaitFor\TimeoutReachedException;
+use Castor\Remote\Exception\ImportError;
+use Castor\Remote\Exception\InvalidImportFormat;
 use Joli\JoliNotif\Notification;
 use Joli\JoliNotif\NotifierFactory;
 use JoliCode\PhpOsHelper\OsHelper;
@@ -765,8 +767,40 @@ function http_client(): HttpClientInterface
     return GlobalHelper::getHttpClient();
 }
 
-function import(string $path): void
+/**
+ * @param ?array{
+ *     url?: string,
+ *     type?: "git" | "svn",
+ *     reference?: string,
+ * } $source
+ */
+function import(string $path, ?string $file = null, ?string $version = null, ?string $vcs = null, ?array $source = null): void
 {
+    $scheme = parse_url($path, \PHP_URL_SCHEME);
+
+    if ($scheme) {
+        try {
+            GlobalHelper::getApplication()->importer->importFunctionsFrom(
+                $scheme,
+                mb_substr($path, mb_strlen($scheme) + 3),
+                $file,
+                $version,
+                $vcs,
+                $source,
+            );
+
+            return;
+        } catch (InvalidImportFormat $e) {
+            throw fix_exception(new \InvalidArgumentException($e->getMessage(), 0, $e));
+        } catch (ImportError $e) {
+            log($e->getMessage(), 'warning');
+
+            return;
+        }
+    } elseif (null !== $file || null !== $version || null !== $vcs || null !== $source) {
+        throw fix_exception(new \InvalidArgumentException('The "file", "version", "vcs" and "source" arguments can only be used with a remote import.'));
+    }
+
     if (!file_exists($path)) {
         throw fix_exception(new \InvalidArgumentException(sprintf('The file "%s" does not exist.', $path)));
     }

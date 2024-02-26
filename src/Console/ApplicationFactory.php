@@ -10,11 +10,15 @@ use Castor\EventDispatcher;
 use Castor\ExpressionLanguage;
 use Castor\Fingerprint\FingerprintHelper;
 use Castor\FunctionFinder;
+use Castor\HasherHelper;
 use Castor\Listener\GenerateStubsListener;
 use Castor\Listener\UpdateCastorListener;
 use Castor\Monolog\Processor\ProcessProcessor;
 use Castor\PathHelper;
 use Castor\PlatformHelper;
+use Castor\Remote\Composer;
+use Castor\Remote\Importer;
+use Castor\Remote\Listener\RemoteImportListener;
 use Castor\Stub\StubsGenerator;
 use Castor\WaitForHelper;
 use Monolog\Logger;
@@ -49,6 +53,8 @@ class ApplicationFactory
         $cache = new FilesystemAdapter(directory: $cacheDir);
         $logger = new Logger('castor', [], [new ProcessProcessor()]);
         $fs = new Filesystem();
+        $fingerprintHelper = new FingerprintHelper($cache);
+        $importer = new Importer($logger, new Composer($fs, $logger, $fingerprintHelper));
         $eventDispatcher = new EventDispatcher(logger: $logger);
         $eventDispatcher->addSubscriber(new UpdateCastorListener(
             $cache,
@@ -58,6 +64,7 @@ class ApplicationFactory
         $eventDispatcher->addSubscriber(new GenerateStubsListener(
             new StubsGenerator($rootDir, $logger),
         ));
+        $eventDispatcher->addSubscriber(new RemoteImportListener($importer));
 
         /** @var SymfonyApplication */
         // @phpstan-ignore-next-line
@@ -69,11 +76,15 @@ class ApplicationFactory
             new ExpressionLanguage($contextRegistry),
             $logger,
             $fs,
+            new WaitForHelper($httpClient, $logger),
+            $fingerprintHelper,
+            $importer,
             $httpClient,
             $cache,
-            new WaitForHelper($httpClient, $logger),
-            new FingerprintHelper($cache),
         );
+
+        // Avoid dependency cycle
+        $importer->setApplication($application);
 
         $application->setDispatcher($eventDispatcher);
         $application->add(new DebugCommand($rootDir, $cacheDir, $contextRegistry));

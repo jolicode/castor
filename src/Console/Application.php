@@ -15,12 +15,14 @@ use Castor\Descriptor\SymfonyTaskDescriptor;
 use Castor\Descriptor\TaskDescriptor;
 use Castor\Descriptor\TaskDescriptorCollection;
 use Castor\Event\AfterApplicationInitializationEvent;
+use Castor\Event\BeforeApplicationInitializationEvent;
 use Castor\EventDispatcher;
 use Castor\ExpressionLanguage;
 use Castor\Fingerprint\FingerprintHelper;
 use Castor\FunctionFinder;
 use Castor\GlobalHelper;
 use Castor\PlatformHelper;
+use Castor\Remote\Importer;
 use Castor\WaitForHelper;
 use Monolog\Logger;
 use Psr\Cache\CacheItemPoolInterface;
@@ -59,10 +61,11 @@ class Application extends SymfonyApplication
         public readonly ExpressionLanguage $expressionLanguage,
         public readonly Logger $logger,
         public readonly Filesystem $fs,
+        public readonly WaitForHelper $waitForHelper,
+        public readonly FingerprintHelper $fingerprintHelper,
+        public readonly Importer $importer,
         public HttpClientInterface $httpClient,
         public CacheItemPoolInterface&CacheInterface $cache,
-        public WaitForHelper $waitForHelper,
-        public FingerprintHelper $fingerprintHelper,
     ) {
         $handler = ErrorHandler::register();
         $handler->setDefaultLogger($logger, [
@@ -130,6 +133,9 @@ class Application extends SymfonyApplication
         $this->sectionOutput = new SectionOutput($output);
         $this->symfonyStyle = new SymfonyStyle($input, $output);
         $this->logger->pushHandler(new ConsoleHandler($output));
+
+        $event = new BeforeApplicationInitializationEvent($this);
+        $this->eventDispatcher->dispatch($event);
 
         $descriptors = $this->initializeApplication($input);
 
@@ -214,6 +220,24 @@ class Application extends SymfonyApplication
                 $contextNames,
             ));
         }
+
+        $this->getDefinition()->addOption(
+            new InputOption(
+                'no-remote',
+                null,
+                InputOption::VALUE_NONE,
+                'Skip the import of all remote remote packages',
+            )
+        );
+
+        $this->getDefinition()->addOption(
+            new InputOption(
+                'update-remotes',
+                null,
+                InputOption::VALUE_NONE,
+                'Force the update of remote packages',
+            )
+        );
 
         return new TaskDescriptorCollection($tasks, $symfonyTasks);
     }

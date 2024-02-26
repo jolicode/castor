@@ -80,6 +80,10 @@ use function Castor\import;
 import(__DIR__);
 ```
 
+> [!NOTE]
+> You can also import functions from a remote resource. See the
+> [related documentation](../going-further/extending-castor/remote-imports.md).
+
 ## Overriding task name, namespace or description
 
 The `Castor\Attribute\AsTask` attribute takes three optional

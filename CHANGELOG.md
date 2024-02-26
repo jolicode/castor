@@ -7,7 +7,8 @@
 * Add support for running Castor on Linux arm64 and distribute the binary
   `castor.linux-arm64.phar` automatically with the release
 * Add a bash installer to ease installation
-* Add a option `ignoreValidationErrors` on `AsTask` attribute to ignore
+* Add support for importing remote functions and tasks
+* Add an option `ignoreValidationErrors` on `AsTask` attribute to ignore
   parameters & options validation errors
 * Add support for dynamic autocomplete task arguments/options
 * Add support for merging an application `box.json` config file used by
