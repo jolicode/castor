@@ -16,13 +16,13 @@ runs:
         set -e
 
         # Should be the same command as the one in tools/static/castor.php
-        cache_dirname_linux_amd64=$(tests/bin/compile-get-cache-key phar-location-is-not-used-in-cache-key --os=linux --arch=x86_64 --php-extensions=mbstring,phar,posix,tokenizer,pcntl)
+        cache_dirname_linux_amd64=$(tests/bin/compile-get-cache-key phar-location-is-not-used-in-cache-key --os=linux --arch=x86_64 --php-extensions=mbstring,phar,posix,tokenizer,pcntl,curl)
         cache_key_linux_amd64=$(basename $cache_dirname_linux_amd64)
         echo cache_dirname_linux_amd64=$cache_dirname_linux_amd64 >> $GITHUB_ENV
         echo cache_key_linux_amd64=$cache_key_linux_amd64 >> $GITHUB_ENV
 
         # Should be the same command as the one in tools/static/castor.php
-        cache_dirname_darwin_amd64=$(tests/bin/compile-get-cache-key phar-location-is-not-used-in-cache-key --os=macos --arch=x86_64 --php-extensions=mbstring,phar,posix,tokenizer,pcntl)
+        cache_dirname_darwin_amd64=$(tests/bin/compile-get-cache-key phar-location-is-not-used-in-cache-key --os=macos --arch=x86_64 --php-extensions=mbstring,phar,posix,tokenizer,pcntl,curl)
         cache_key_darwin_amd64=$(basename $cache_dirname_darwin_amd64)
         echo cache_dirname_darwin_amd64=$cache_dirname_darwin_amd64 >> $GITHUB_ENV
         echo cache_key_darwin_amd64=$cache_key_darwin_amd64 >> $GITHUB_ENV

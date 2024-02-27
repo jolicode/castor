@@ -20,6 +20,10 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 class CompileCommand extends Command
 {
+    // When something **important** related to the compilation changed, increase
+    // this version to invalide the cache
+    private const CACHE_VERSION = '1';
+
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly Filesystem $fs
@@ -37,7 +41,7 @@ class CompileCommand extends Command
             ->addOption('os', null, InputOption::VALUE_REQUIRED, 'Target OS for PHP compilation', 'linux', ['linux', 'macos'])
             ->addOption('arch', null, InputOption::VALUE_REQUIRED, 'Target architecture for PHP compilation', 'x86_64', ['x86_64', 'aarch64'])
             ->addOption('php-version', null, InputOption::VALUE_REQUIRED, 'PHP version in major.minor format', '8.3')
-            ->addOption('php-extensions', null, InputOption::VALUE_REQUIRED, 'PHP extensions required, in a comma-separated format. Defaults are the minimum required to run a basic "Hello World" task in Castor.', 'mbstring,phar,posix,tokenizer')
+            ->addOption('php-extensions', null, InputOption::VALUE_REQUIRED, 'PHP extensions required, in a comma-separated format. Defaults are the minimum required to run a basic "Hello World" task in Castor.', 'mbstring,phar,posix,tokenizer,curl')
             ->addOption('php-rebuild', null, InputOption::VALUE_NONE, 'Ignore cache and force PHP build compilation.')
             ->setHidden(true)
         ;
@@ -253,7 +257,7 @@ class CompileCommand extends Command
         sort($phpExtensions);
         hash_update($c, implode(',', $phpExtensions));
 
-        hash_update_file($c, __FILE__);
+        hash_update($c, self::CACHE_VERSION);
 
         return hash_final($c);
     }

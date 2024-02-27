@@ -10,6 +10,8 @@ use Castor\EventDispatcher;
 use Castor\ExpressionLanguage;
 use Castor\Fingerprint\FingerprintHelper;
 use Castor\FunctionFinder;
+use Castor\Listener\GenerateStubsListener;
+use Castor\Listener\UpdateCastorListener;
 use Castor\Monolog\Processor\ProcessProcessor;
 use Castor\PathHelper;
 use Castor\PlatformUtil;
@@ -48,6 +50,15 @@ class ApplicationFactory
         $logger = new Logger('castor', [], [new ProcessProcessor()]);
         $fs = new Filesystem();
         $eventDispatcher = new EventDispatcher(logger: $logger);
+        $eventDispatcher->addSubscriber(new UpdateCastorListener(
+            $cache,
+            $httpClient,
+            $logger,
+        ));
+        $eventDispatcher->addSubscriber(new GenerateStubsListener(
+            new StubsGenerator($logger),
+            $rootDir,
+        ));
 
         /** @var SymfonyApplication */
         // @phpstan-ignore-next-line
@@ -57,7 +68,6 @@ class ApplicationFactory
             $contextRegistry,
             $eventDispatcher,
             new ExpressionLanguage($contextRegistry),
-            new StubsGenerator($logger),
             $logger,
             $fs,
             $httpClient,

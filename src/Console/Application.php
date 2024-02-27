@@ -17,13 +17,11 @@ use Castor\GlobalHelper;
 use Castor\ListenerDescriptor;
 use Castor\PlatformUtil;
 use Castor\SectionOutput;
-use Castor\Stub\StubsGenerator;
 use Castor\SymfonyTaskDescriptor;
 use Castor\TaskDescriptor;
 use Castor\TaskDescriptorCollection;
 use Castor\VerbosityLevel;
 use Castor\WaitForHelper;
-use JoliCode\PhpOsHelper\OsHelper;
 use Monolog\Logger;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LogLevel;
@@ -37,10 +35,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\ErrorHandler\ErrorHandler;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Process\Process;
 use Symfony\Component\VarDumper\Cloner\AbstractCloner;
 use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /** @internal */
@@ -61,7 +57,6 @@ class Application extends SymfonyApplication
         public readonly ContextRegistry $contextRegistry,
         public readonly EventDispatcher $eventDispatcher,
         public readonly ExpressionLanguage $expressionLanguage,
-        public readonly StubsGenerator $stubsGenerator,
         public readonly Logger $logger,
         public readonly Filesystem $fs,
         public HttpClientInterface $httpClient,
@@ -170,11 +165,6 @@ class Application extends SymfonyApplication
     {
         $this->command = $command;
 
-        if ('_complete' !== $command->getName() && !class_exists(\RepackedApplication::class)) {
-            $this->stubsGenerator->generateStubsIfNeeded($this->rootDir . '/.castor.stub.php');
-            $this->displayUpdateWarningIfNeeded(new SymfonyStyle($input, $output));
-        }
-
         return parent::doRunCommand($command, $input, $output);
     }
 
@@ -254,79 +244,5 @@ class Application extends SymfonyApplication
         }
 
         $this->contextRegistry->setCurrentContext($context->withName($input->getOption('context')));
-    }
-
-    private function displayUpdateWarningIfNeeded(SymfonyStyle $symfonyStyle): void
-    {
-        $item = $this->cache->getItem('last-update-warning');
-        if ($item->isHit()) {
-            return;
-        }
-
-        // We save it right now, even if there are some failures later. We don't
-        // want to waste bandwidth or CPU usage, nor log too much information.
-        $item->expiresAfter(60 * 60 * 24);
-        $item->set(true);
-        $this->cache->save($item);
-
-        $response = $this->httpClient->request('GET', 'https://api.github.com/repos/jolicode/castor/releases/latest', [
-            'timeout' => 1,
-        ]);
-
-        try {
-            $latestVersion = $response->toArray();
-        } catch (HttpExceptionInterface) {
-            $this->logger->info('Failed to fetch latest Castor version from GitHub.');
-
-            return;
-        }
-
-        if (version_compare($latestVersion['tag_name'], self::VERSION, '<=')) {
-            return;
-        }
-
-        $symfonyStyle->block(sprintf('<info>A new Castor version is available</info> (<comment>%s</comment>, currently running <comment>%s</comment>).', $latestVersion['tag_name'], self::VERSION), escape: false);
-
-        if ($pharPath = \Phar::running(false)) {
-            $assets = match (true) {
-                OsHelper::isWindows() || OsHelper::isWindowsSubsystemForLinux() => array_filter($latestVersion['assets'], fn (array $asset) => str_contains($asset['name'], 'windows')),
-                OsHelper::isMacOS() => array_filter($latestVersion['assets'], fn (array $asset) => str_contains($asset['name'], 'darwin')),
-                OsHelper::isUnix() => array_filter($latestVersion['assets'], fn (array $asset) => str_contains($asset['name'], 'linux')),
-                default => [],
-            };
-
-            if (!$assets) {
-                $this->logger->info('Failed to detect the correct release url adapted to your system.');
-
-                return;
-            }
-
-            $latestReleaseUrl = reset($assets)['browser_download_url'] ?? null;
-
-            if (!$latestReleaseUrl) {
-                $this->logger->info('Failed to fetch latest phar url.');
-
-                return;
-            }
-
-            if (OsHelper::isUnix()) {
-                $symfonyStyle->block('Run the following command to update Castor:');
-                $symfonyStyle->block(sprintf('<comment>curl "%s" -Lfso castor && chmod u+x castor && mv castor %s</comment>', $latestReleaseUrl, $pharPath), escape: false);
-            } else {
-                $symfonyStyle->block(sprintf('Download the latest version at <comment>%s</comment>', $latestReleaseUrl), escape: false);
-            }
-
-            $symfonyStyle->newLine();
-
-            return;
-        }
-
-        $process = new Process(['composer', 'global', 'config', 'home', '--quiet']);
-        $process->run();
-        $globalComposerPath = trim($process->getOutput());
-
-        if ($globalComposerPath && str_contains(__FILE__, $globalComposerPath)) {
-            $symfonyStyle->block('Run the following command to update Castor: <comment>composer global update jolicode/castor</comment>', escape: false);
-        }
     }
 }
