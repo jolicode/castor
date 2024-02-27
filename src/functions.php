@@ -24,6 +24,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Yaml\Yaml;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\CallbackInterface;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -1027,6 +1028,22 @@ function wait_for_docker_container(
         message: $message,
         containerChecker: $containerChecker,
     );
+}
+
+/**
+ * @see Yaml::parse()
+ */
+function yaml_parse(string $content, int $flags = 0): mixed
+{
+    return Yaml::parse($content, $flags);
+}
+
+/**
+ * @see Yaml::dump()
+ */
+function yaml_dump(mixed $input, int $inline = 2, int $indent = 4, int $flags = 0): string
+{
+    return Yaml::dump($input, $inline, $indent, $flags);
 }
 
 function guard_min_version(string $minVersion): void

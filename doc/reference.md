@@ -44,6 +44,8 @@ Castor provides the following built-in functions:
 - [`wait_for_url`](going-further/helpers/wait-for.md#the-wait_for_url-function)
 - [`watch`](going-further/helpers/watch.md)
 - [`with`](going-further/interacting-with-castor/advanced-context.md#the-with-function)
+- [`yaml_dump`](going-further/helpers/yaml.md)
+- [`yaml_parse`](going-further/helpers/yaml.md)
 
 ## Attributes
 
