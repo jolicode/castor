@@ -2,6 +2,9 @@
 
 ## Not released yet
 
+* Add a `yaml_dump()` function to dump any PHP value to a YAML string
+* Add a `yaml_parse()` function to parse a YAML string to a PHP value
+
 ## 0.13.1 (2024-02-27)
 
 * Fix instruction for downloading new castor version as a phar

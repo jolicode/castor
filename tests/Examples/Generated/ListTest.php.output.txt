@@ -72,3 +72,5 @@ wait-for:wait-for-url-with-status-code-only                       Wait for an UR
 watch:fs-change                                                   Watches on filesystem changes
 watch:parallel-change                                             Watches on filesystem changes with 2 watchers in parallel
 watch:stop                                                        Watches on filesystem changes and stop after first change
+yaml:dump                                                         Dump a YAML content
+yaml:parse                                                        Parse a YAML content
