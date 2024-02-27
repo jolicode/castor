@@ -28,5 +28,6 @@
     <php>
         <server name="SYMFONY_PHPUNIT_REQUIRE" value="nikic/php-parser:^4" />
         <server name="ENDPOINT" value="http://127.0.0.1:9955" />
+        <server name="DISABLE_VERSION_CHECK" value="true" />
     </php>
 </phpunit>

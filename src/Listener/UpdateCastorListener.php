@@ -3,6 +3,7 @@
 namespace Castor\Listener;
 
 use Castor\Console\Application;
+use Castor\PlatformUtil;
 use JoliCode\PhpOsHelper\OsHelper;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
@@ -30,6 +31,9 @@ class UpdateCastorListener implements EventSubscriberInterface
     public function checkUpdate(ConsoleCommandEvent $event): void
     {
         if (class_exists(\RepackedApplication::class)) {
+            return;
+        }
+        if (PlatformUtil::getEnv('DISABLE_VERSION_CHECK')) {
             return;
         }
 
