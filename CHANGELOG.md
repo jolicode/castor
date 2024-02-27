@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+## 0.13.1 (2024-02-27)
+
+* Fix instruction for downloading new castor version as a phar
+
 ## 0.13.0 (2024-02-23)
 
 * Add a `compile` command that puts together a customizable PHP binary with a
