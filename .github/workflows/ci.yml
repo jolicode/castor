@@ -77,8 +77,10 @@ jobs:
         if: matrix.castor.method == 'phar' || matrix.castor.method == 'static'
 
       - name: Compile Custom Built PHP along Castor phar for Linux
-        # Should be the same command as the one in tools/static/castor.php
-        run: bin/castor compile tools/phar/build/castor.linux-amd64.phar --php-extensions=mbstring,phar,posix,tokenizer,pcntl --binary-path=${{ github.workspace }}/${{ matrix.castor.bin }}
+        run: |
+          set -e
+          bin/castor castor:static:linux
+          mv castor.linux-amd64 ${{ github.workspace }}/${{ matrix.castor.bin }}
         if: matrix.castor.method == 'static'
 
       # We use box in a test, so we need to make it available everywhere
