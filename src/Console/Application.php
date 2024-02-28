@@ -2,6 +2,9 @@
 
 namespace Castor\Console;
 
+use Castor\Console\Command\CompileCommand;
+use Castor\Console\Command\DebugCommand;
+use Castor\Console\Command\RepackCommand;
 use Castor\Console\Command\SymfonyTaskCommand;
 use Castor\Console\Command\TaskCommand;
 use Castor\Context;
@@ -9,6 +12,7 @@ use Castor\ContextDescriptor;
 use Castor\ContextGeneratorDescriptor;
 use Castor\ContextRegistry;
 use Castor\Event\AfterApplicationInitializationEvent;
+use Castor\Event\RegisterTaskEvent;
 use Castor\EventDispatcher;
 use Castor\ExpressionLanguage;
 use Castor\Fingerprint\FingerprintHelper;
@@ -63,6 +67,7 @@ class Application extends SymfonyApplication
         public CacheItemPoolInterface&CacheInterface $cache,
         public WaitForHelper $waitForHelper,
         public FingerprintHelper $fingerprintHelper,
+        private readonly string $cacheDir,
     ) {
         $handler = ErrorHandler::register();
         $handler->setDefaultLogger($logger, [
@@ -122,6 +127,18 @@ class Application extends SymfonyApplication
         return $this->command ?? ($allowNull ? null : throw new \LogicException('Command not available yet.'));
     }
 
+    public function add(Command $command): ?Command
+    {
+        $event = new RegisterTaskEvent($command);
+        $this->eventDispatcher->dispatch($event);
+
+        if ($event->register) {
+            return parent::add($command);
+        }
+
+        return null;
+    }
+
     // We do all the logic as late as possible to ensure the exception handler
     // is registered
     public function doRun(InputInterface $input, OutputInterface $output): int
@@ -140,6 +157,14 @@ class Application extends SymfonyApplication
 
         $event = new AfterApplicationInitializationEvent($this, $descriptors);
         $this->eventDispatcher->dispatch($event);
+
+        $this->add(new DebugCommand($this->rootDir, $this->cacheDir, $this->contextRegistry));
+
+        if (!class_exists(\RepackedApplication::class)) {
+            $this->add(new RepackCommand());
+            $this->add(new CompileCommand($this->httpClient, $this->fs));
+        }
+
         $descriptors = $event->taskDescriptorCollection;
 
         foreach ($descriptors->taskDescriptors as $taskDescriptor) {

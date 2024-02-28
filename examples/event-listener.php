@@ -4,10 +4,12 @@ namespace event_listener;
 
 use Castor\Attribute\AsListener;
 use Castor\Attribute\AsTask;
+use Castor\Console\Command\TaskCommand;
 use Castor\Event\AfterExecuteTaskEvent;
 use Castor\Event\BeforeExecuteTaskEvent;
 use Castor\Event\ProcessStartEvent;
 use Castor\Event\ProcessTerminateEvent;
+use Castor\Event\RegisterTaskEvent;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 
@@ -17,6 +19,12 @@ use function Castor\task;
 
 #[AsTask(description: 'An dummy task with event listeners attached')]
 function my_task(): void
+{
+    run('echo "Hello from task!"');
+}
+
+#[AsTask(description: 'I should not be seen')]
+function a_command_that_should_not_exist(): void
 {
     run('echo "Hello from task!"');
 }
@@ -86,4 +94,16 @@ function process_start_event(ProcessStartEvent $event): void
     }
 
     io()->writeln('Hello after process start!');
+}
+
+#[AsListener(event: RegisterTaskEvent::class)]
+function process_register_task(RegisterTaskEvent $event): void
+{
+    if ($event->task instanceof TaskCommand) {
+        $function = $event->task->function;
+
+        if ('event_listener\\a_command_that_should_not_exist' === $function->getName()) {
+            $event->register = false;
+        }
+    }
 }

@@ -2,9 +2,6 @@
 
 namespace Castor\Console;
 
-use Castor\Console\Command\CompileCommand;
-use Castor\Console\Command\DebugCommand;
-use Castor\Console\Command\RepackCommand;
 use Castor\ContextRegistry;
 use Castor\EventDispatcher;
 use Castor\ExpressionLanguage;
@@ -74,15 +71,10 @@ class ApplicationFactory
             $cache,
             new WaitForHelper($httpClient, $logger),
             new FingerprintHelper($cache),
+            $cacheDir,
         );
 
         $application->setDispatcher($eventDispatcher);
-        $application->add(new DebugCommand($rootDir, $cacheDir, $contextRegistry));
-
-        if (!class_exists(\RepackedApplication::class)) {
-            $application->add(new RepackCommand());
-            $application->add(new CompileCommand($httpClient, $fs));
-        }
 
         return $application;
     }
