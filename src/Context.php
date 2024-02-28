@@ -17,7 +17,7 @@ class Context implements \ArrayAccess
         ?string $currentDirectory = null,
         public readonly bool $tty = false,
         public readonly bool $pty = true,
-        public readonly float|null $timeout = 60,
+        public readonly float|null $timeout = null,
         public readonly bool $quiet = false,
         public readonly bool $allowFailure = false,
         public readonly bool $notify = false,
