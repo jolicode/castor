@@ -188,7 +188,8 @@ function cs(): int
 
 ## Timeout
 
-By default, Castor will use a 60 seconds timeout on all your `run()` calls.
+By default, Castor allow your `run()` calls to go indefinitly.
+
 If you want to tweak that you need to set the `timeout` argument.
 
 ```php
@@ -203,20 +204,7 @@ function foo(): void
 }
 ```
 
-This process will have a 2 minutes timeout. If you want to disable that feature,
-you need to set the timeout to `0`.
-
-```php
-use Castor\Attribute\AsTask;
-
-use function Castor\run;
-
-#[AsTask()]
-function foo(): void
-{
-    run('echo "bar"', timeout: 0);
-}
-```
+This process will have a 2 minutes timeout.
 
 > [!TIP]
 > Related example: [wait_for.php](https://github.com/jolicode/castor/blob/main/examples/wait_for.php)
