@@ -21,6 +21,9 @@ function defaultContext(): Context
         'name' => 'my_default',
         'production' => false,
         'foo' => 'bar',
+        'nested' => [
+            'key' => 'nested_value',
+        ],
     ]);
 }
 
@@ -83,6 +86,7 @@ function contextInfo(): void
     echo 'Production? ' . (variable('production', false) ? 'yes' : 'no') . "\n";
     echo "verbosity: {$context->verbosityLevel->value}\n";
     echo 'context: ' . variable('foo', 'N/A') . "\n";
+    echo 'nested key: ' . variable('[nested][key]', 'N/A') . "\n";
 }
 
 /**

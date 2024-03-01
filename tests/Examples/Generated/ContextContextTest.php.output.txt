@@ -2,3 +2,4 @@ context name: my_default
 Production? no
 verbosity: 1
 context: bar
+nested key: nested_value

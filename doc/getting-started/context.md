@@ -53,13 +53,15 @@ function foo(): void
 {
     $foobar = variable('foobar', 'default value');
 
-    // Same as:
     $context = context();
-    try {
-        $foobar = $context['foobar'];
-    } catch (\OutOfBoundsException) {
-        $foobar = 'default value;
-    }
+    // Same as:
+    $foobar = $context['foobar'] ?? 'default value';
+    
+    // Getting nested values
+    $foobar = variable('[foo][bar][baz]', 'default value');
+    
+    // Same as:
+    $foobar = $context['foo']['bar']['baz'] ?? 'default value';
 }
 ```
 

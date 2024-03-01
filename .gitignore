@@ -5,3 +5,4 @@
 /my-app.*
 /var/
 /vendor/
+.idea/

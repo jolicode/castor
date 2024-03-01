@@ -2,4 +2,5 @@ context name: dynamic
 Production? no
 verbosity: -1
 context: bar
+nested key: N/A
 bar

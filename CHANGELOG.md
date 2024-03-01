@@ -5,6 +5,7 @@
 * Add a `yaml_dump()` function to dump any PHP value to a YAML string
 * Add a `yaml_parse()` function to parse a YAML string to a PHP value
 * Remove the default timeout of 60 seconds from the Context
+* Add possibility to use [Property Access Component](https://symfony.com/doc/current/components/property_access.html) syntax for getting variable from context.
 
 ## 0.13.1 (2024-02-27)
 

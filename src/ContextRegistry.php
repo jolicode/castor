@@ -2,6 +2,8 @@
 
 namespace Castor;
 
+use Symfony\Component\PropertyAccess\PropertyAccess;
+
 /** @internal */
 class ContextRegistry
 {
@@ -113,11 +115,11 @@ class ContextRegistry
     {
         $context = $this->getCurrentContext();
 
-        if (!isset($context[$key])) {
-            return $default;
+        if (str_starts_with($key, '[')) {
+            return PropertyAccess::createPropertyAccessor()->getValue($context, $key) ?? $default;
         }
 
-        return $context[$key];
+        return $context[$key] ?? $default;
     }
 
     /**
