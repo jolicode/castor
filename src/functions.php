@@ -885,16 +885,16 @@ function fingerprint_save(string $fingerprint): void
     GlobalHelper::getApplication()->fingerprintHelper->postProcessFingerprintForHash($fingerprint);
 }
 
-function fingerprint(callable $callback, string $fingerprint, bool $force = false): void
+function fingerprint(callable $callback, string $fingerprint, bool $force = false): bool
 {
-    if (!fingerprint_exists($fingerprint) || $force) {
-        try {
-            $callback();
-            fingerprint_save($fingerprint);
-        } catch (\Throwable $e) {
-            throw $e;
-        }
+    if ($force || !fingerprint_exists($fingerprint)) {
+        $callback();
+        fingerprint_save($fingerprint);
+
+        return true;
     }
+
+    return false;
 }
 
 /**
