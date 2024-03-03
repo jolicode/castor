@@ -6,6 +6,7 @@
 * Add a `yaml_parse()` function to parse a YAML string to a PHP value
 * Remove the default timeout of 60 seconds from the Context
 * Add `bool` return type to `fingerprint()` function to indicate if the callable was run
+* Add a `recursive` parameter to the `withData()` method of `Context` to allow recursive merging for nested arrays
 
 ## 0.13.1 (2024-02-27)
 

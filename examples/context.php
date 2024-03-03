@@ -21,6 +21,16 @@ function defaultContext(): Context
         'name' => 'my_default',
         'production' => false,
         'foo' => 'bar',
+        'nested' => [
+            'merge' => [
+                'key' => [
+                    'value' => 'should keep this',
+                    'replaced' => 'should be replaced',
+                ],
+                'another' => 'should keep',
+            ],
+            'another' => 'should keep',
+        ],
     ]);
 }
 
@@ -28,10 +38,21 @@ function defaultContext(): Context
 function productionContext(): Context
 {
     return defaultContext()
-        ->withData([
-            'name' => 'production',
-            'production' => true,
-        ])
+        ->withData(
+            [
+                'name' => 'production',
+                'production' => true,
+                'nested' => [
+                    'merge' => [
+                        'key' => [
+                            'replaced' => 'replaced value',
+                            'new' => 'new value',
+                        ],
+                    ],
+                ],
+            ],
+            recursive: true
+        )
     ;
 }
 
@@ -83,6 +104,7 @@ function contextInfo(): void
     echo 'Production? ' . (variable('production', false) ? 'yes' : 'no') . "\n";
     echo "verbosity: {$context->verbosityLevel->value}\n";
     echo 'context: ' . variable('foo', 'N/A') . "\n";
+    echo 'nested merge recursive: ' . json_encode(variable('nested', []), \JSON_THROW_ON_ERROR) . "\n";
 }
 
 /**
