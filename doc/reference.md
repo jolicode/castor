@@ -10,6 +10,7 @@ Castor provides the following built-in functions:
 - [`cache`](going-further/helpers/cache.md#the-cache-function)
 - [`capture`](getting-started/run.md#the-capture-function)
 - [`context`](getting-started/context.md#the-context-function)
+- [`context_path`](getting-started/context.md#the-castor_path-function)
 - [`exit_code`](getting-started/run.md#the-exit_code-function)
 - [`finder`](going-further/helpers/filesystem.md#the-finder-function)
 - [`fingerprint`](going-further/helpers/fingerprint.md#the-fingerprint-function)

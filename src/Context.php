@@ -17,7 +17,7 @@ class Context implements \ArrayAccess
         ?string $currentDirectory = null,
         public readonly bool $tty = false,
         public readonly bool $pty = true,
-        public readonly float|null $timeout = null,
+        public readonly ?float $timeout = null,
         public readonly bool $quiet = false,
         public readonly bool $allowFailure = false,
         public readonly bool $notify = false,
@@ -132,7 +132,7 @@ class Context implements \ArrayAccess
         );
     }
 
-    public function withTimeout(float|null $timeout): self
+    public function withTimeout(?float $timeout): self
     {
         return new self(
             $this->data,
@@ -232,6 +232,21 @@ class Context implements \ArrayAccess
             $this->verbosityLevel,
             $name,
         );
+    }
+
+    public function getPath(?string $path = null): string
+    {
+        $currentDirectory = $this->currentDirectory;
+
+        if (null === $path) {
+            return $currentDirectory;
+        }
+
+        if (str_starts_with($path, '/')) {
+            return "{$currentDirectory}{$path}";
+        }
+
+        return "{$currentDirectory}/{$path}";
     }
 
     public function offsetExists(mixed $offset): bool

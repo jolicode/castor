@@ -1055,3 +1055,10 @@ function guard_min_version(string $minVersion): void
         throw new MinimumVersionRequirementNotMetException($minVersion, $currentVersion);
     }
 }
+
+function context_path(?string $path = null, ?Context $context = null): string
+{
+    $context ??= context();
+
+    return $context->getPath($path);
+}

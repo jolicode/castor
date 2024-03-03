@@ -66,6 +66,42 @@ function foo(): void
 > [!TIP]
 > Related example: [context.php](https://github.com/jolicode/castor/blob/main/examples/context.php)
 
+### The `castor_path()` function
+
+You can get the path of current context using the `castor_path()` function:
+
+> [!NOTE]
+> 
+> This function accept a optional `string` argument to append to the current directory.
+>
+> It also accept a optional `context` argument to use a specific context instead of the current one.
+
+```php
+use Castor\Attribute\AsTask;
+    
+use function Castor\castor_path;
+
+#[AsTask()]
+function foo(): void
+{
+    // Normally you generally use the `context()` function to get the current directory
+    $currentDirectory = context()->currentDirectory; // output: "/home/user/project"
+    
+    // But a proper way to get a computed path is to use the `castor_path()` function
+    $currentDirectory = castor_path(); // output: "/home/user/project"
+    $computedPath = castor_path('foo/bar'); // output: "/home/user/project/foo/bar"
+    
+    // You can also provide a context to the `castor_path()` function
+    $computedPath = castor_path('foo/bar', context: my_tmp_context()); // output: "/tmp/foo/bar"
+    
+    // Same as:
+    $computedPath = my_tmp_context()->getPath('foo/bar');
+}
+```
+
+> [!NOTE]
+> The `castor_path()` function is a shortcut to `context()->getPath()`.
+
 ## Creating a new context
 
 You can create a new context by declaring a function with
