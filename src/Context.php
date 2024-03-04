@@ -45,11 +45,29 @@ class Context implements \ArrayAccess
         ];
     }
 
-    /** @param array<(int|string), mixed> $data */
-    public function withData(array $data, bool $keepExisting = true): self
+    /**
+     * @param array<(int|string), mixed> $data
+     *
+     * @throws \Exception
+     */
+    public function withData(array $data, bool $keepExisting = true, bool $recursive = true): self
     {
+        if (false === $keepExisting && true === $recursive) {
+            throw new \Exception('You cannot use the recursive option without keeping the existing data');
+        }
+
+        if ($keepExisting) {
+            if ($recursive) {
+                /* @var array<(int|string), mixed> */
+                $data = $this->arrayMergeRecursiveDistinct($this->data, $data);
+            } else {
+                /* @var array<(int|string), mixed> */
+                $data = array_merge($this->data, $data);
+            }
+        }
+
         return new self(
-            $keepExisting ? array_merge($this->data, $data) : $data,
+            $data,
             $this->environment,
             $this->currentDirectory,
             $this->tty,
@@ -256,5 +274,26 @@ class Context implements \ArrayAccess
     public function offsetUnset(mixed $offset): void
     {
         throw new \LogicException('Context is immutable');
+    }
+
+    /**
+     * @param array<(int|string), mixed> $array1
+     * @param array<(int|string), mixed> $array2
+     *
+     * @return array<(int|string), mixed>
+     */
+    private function arrayMergeRecursiveDistinct(array $array1, array $array2): array
+    {
+        /** @var array<(int|string), mixed> $merged */
+        $merged = $array1;
+        foreach ($array2 as $key => $value) {
+            if (\is_array($value) && isset($merged[$key]) && \is_array($merged[$key])) {
+                $merged[$key] = $this->arrayMergeRecursiveDistinct($merged[$key], $value);
+            } else {
+                $merged[$key] = $value;
+            }
+        }
+
+        return $merged;
     }
 }

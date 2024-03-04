@@ -2,3 +2,4 @@ context name: production
 Production? yes
 verbosity: 1
 context: bar
+nested merge recursive: {"merge":{"key":{"value":"should keep this","replaced":"replaced value","new":"new value"},"another":"should keep"},"another":"should keep"}

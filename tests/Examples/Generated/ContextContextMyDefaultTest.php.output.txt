@@ -2,3 +2,4 @@ context name: my_default
 Production? no
 verbosity: 2
 context: bar
+nested merge recursive: {"merge":{"key":{"value":"should keep this","replaced":"should be replaced"},"another":"should keep"},"another":"should keep"}
