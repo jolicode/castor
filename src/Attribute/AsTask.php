@@ -11,7 +11,7 @@ class AsTask
      */
     public function __construct(
         public string $name = '',
-        public string|null $namespace = null,
+        public ?string $namespace = null,
         public string $description = '',
         public array $aliases = [],
         public array $onSignals = [],

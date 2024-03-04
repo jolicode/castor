@@ -14,7 +14,7 @@ class SectionOutput
 
     private OutputInterface|ConsoleSectionOutput $consoleOutput;
 
-    private ConsoleOutput|null $mainOutput;
+    private ?ConsoleOutput $mainOutput;
 
     /** @var \SplObjectStorage<Process, SectionDetails> */
     private \SplObjectStorage $sections;
