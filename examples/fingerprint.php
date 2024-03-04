@@ -47,13 +47,17 @@ function task_with_a_fingerprint_and_force(
 ): void {
     run('echo "Hello Task with Fingerprint!"');
 
-    fingerprint(
+    $hasRun = fingerprint(
         callback: function () {
             run('echo "Cool, no fingerprint! Executing..."');
         },
         fingerprint: my_fingerprint_check(),
         force: $force // This option will force the task to run even if the fingerprint has not changed
     );
+
+    if ($hasRun) {
+        run('echo "Fingerprint has been executed!"');
+    }
 
     run('echo "Cool! I finished!"');
 }
