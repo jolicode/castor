@@ -12,7 +12,7 @@ class AsOption extends AsCommandArgument
     public function __construct(
         ?string $name = null,
         public readonly string|array|null $shortcut = null,
-        public readonly int|null $mode = null,
+        public readonly ?int $mode = null,
         public readonly string $description = '',
         public readonly array $suggestedValues = [],
     ) {
