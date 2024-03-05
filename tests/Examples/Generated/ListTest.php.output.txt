@@ -44,6 +44,8 @@ log:with-context                                                  Logs an "error
 not-rename:renamed                                                Task that was renamed
 notify:notify-on-finish                                           Sends a notification when the task finishes
 notify:send-notify                                                Sends a notification
+open:documentation                                                Open Castor documentation in the default browser
+open:multiple                                                     Open an URL and a file in the default applications
 output:output                                                     Plays with Symfony Style
 parallel:exception                                                Sleep and throw an exception
 parallel:sleep                                                    Sleeps for 5, 7, and 10 seconds in parallel

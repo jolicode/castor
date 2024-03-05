@@ -4,6 +4,7 @@ namespace Castor;
 
 use Castor\Attribute\AsContextGenerator;
 use Castor\Console\Application;
+use Castor\Exception\ExecutableNotFoundException;
 use Castor\Exception\MinimumVersionRequirementNotMetException;
 use Castor\Exception\WaitFor\ExitedBeforeTimeoutException;
 use Castor\Exception\WaitFor\TimeoutReachedException;
@@ -23,6 +24,7 @@ use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -1054,4 +1056,25 @@ function guard_min_version(string $minVersion): void
     if (version_compare($currentVersion, $minVersion, '<')) {
         throw new MinimumVersionRequirementNotMetException($minVersion, $currentVersion);
     }
+}
+
+function open(string ...$urls): void
+{
+    $command = match (true) {
+        OsHelper::isMacOS() => 'open',
+        OsHelper::isWindows() => 'start',
+        default => 'xdg-open',
+    };
+
+    if (null === (new ExecutableFinder())->find($command)) {
+        throw new ExecutableNotFoundException($command);
+    }
+
+    $parallelCallbacks = [];
+
+    foreach ($urls as $url) {
+        $parallelCallbacks[] = fn () => run([$command, $url], quiet: true);
+    }
+
+    parallel(...$parallelCallbacks);
 }
