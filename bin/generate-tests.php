@@ -41,6 +41,8 @@ $taskFilterList = [
     'watch:fs-change',
     'watch:parallel-change',
     'watch:stop',
+    'open:documentation',
+    'open:multiple',
     // Not examples
     'castor:compile',
     'castor:phar:build',
