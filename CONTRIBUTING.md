@@ -90,7 +90,7 @@ And run the tool to make your code compliant with
 castor's static analysis checks:
 
 ```shell
-tools/phpstan/vendor/bin/phpstan fix --config=phpstan.neon
+tools/phpstan/vendor/bin/phpstan --configuration=phpstan.neon
 ```
 
 ## Update the Documentation

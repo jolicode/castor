@@ -27,6 +27,7 @@ Castor provides the following built-in functions:
 - [`log`](going-further/interacting-with-castor/log.md#the-log-function)
 - [`logger`](going-further/interacting-with-castor/log.md#the-logger-function)
 - [`notify`](going-further/helpers/notify.md#the-notify-function)
+- [`open`](going-further/helpers/open.md)
 - [`output`](going-further/helpers/console-and-io.md#the-output-function)
 - [`parallel`](going-further/helpers/parallel.md#the-parallel-function)
 - [`request`](going-further/helpers/http-request.md#the-request-function)

@@ -7,6 +7,6 @@ class ExecutableNotFoundException extends \RuntimeException
     public function __construct(
         readonly string $executableName,
     ) {
-        parent::__construct("Executable {$executableName} not found. Please install it to use this feature.");
+        parent::__construct(sprintf('Executable "%s" not found. Please install it to use this feature.', $executableName));
     }
 }
