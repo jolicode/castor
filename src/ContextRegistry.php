@@ -19,7 +19,7 @@ class ContextRegistry
         if (\array_key_exists($name, $this->descriptors)) {
             $alreadyDefined = $this->descriptors[$name]->function;
 
-            throw new FunctionConfigurationException(sprintf('You cannot defined two contexts with the same name "%s". There is one already defined in "%s:%d".', $name, PathHelper::makeRelative((string) $alreadyDefined->getFileName()), $alreadyDefined->getStartLine()), $descriptor->function);
+            throw new FunctionConfigurationException(sprintf('You cannot define two contexts with the same name "%s". There is one already defined in "%s:%d".', $name, PathHelper::makeRelative((string) $alreadyDefined->getFileName()), $alreadyDefined->getStartLine()), $descriptor->function);
         }
 
         $this->descriptors[$name] = $descriptor;

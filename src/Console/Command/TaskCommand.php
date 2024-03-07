@@ -108,6 +108,10 @@ class TaskCommand extends Command implements SignalableCommandInterface
                         $taskArgumentAttribute->suggestedValues,
                     );
                 } elseif ($taskArgumentAttribute instanceof AsOption) {
+                    if ('verbose' === $name) {
+                        throw new FunctionConfigurationException('You cannot re-define a "verbose" option. But you can use "output()->isVerbose()" in your code instead.', $this->function);
+                    }
+
                     $mode = $taskArgumentAttribute->mode;
                     $defaultValue = $parameter->isOptional() ? $parameter->getDefaultValue() : null;
 
