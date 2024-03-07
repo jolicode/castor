@@ -7,13 +7,12 @@ use Castor\Attribute\AsContextGenerator;
 use Castor\Attribute\AsListener;
 use Castor\Attribute\AsSymfonyTask;
 use Castor\Attribute\AsTask;
+use Castor\Exception\FunctionConfigurationException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
-
-use function Symfony\Component\String\u;
 
 /** @internal */
 class FunctionFinder
@@ -49,8 +48,6 @@ class FunctionFinder
      * @param iterable<\SplFileInfo> $files
      *
      * @return iterable<TaskDescriptor|ContextDescriptor|ContextGeneratorDescriptor|ListenerDescriptor|SymfonyTaskDescriptor>
-     *
-     * @throws \ReflectionException
      */
     private function doFindFunctions(iterable $files): iterable
     {
@@ -96,8 +93,8 @@ class FunctionFinder
 
         try {
             $taskAttribute = $attributes[0]->newInstance();
-        } catch (\Throwable $th) {
-            throw new \InvalidArgumentException(sprintf('Could not instantiate the attribute "%s" on function "%s".', AsTask::class, $reflectionFunction->getName()), 0, $th);
+        } catch (\Throwable $e) {
+            throw new FunctionConfigurationException(sprintf('Could not instantiate the attribute "%s".', AsTask::class), $reflectionFunction, $e);
         }
 
         if ('' === $taskAttribute->name) {
@@ -112,7 +109,7 @@ class FunctionFinder
 
         foreach ($taskAttribute->onSignals as $signal => $callable) {
             if (!\is_callable($callable)) {
-                throw new \InvalidArgumentException(sprintf('The callable for signal "%s" is not callable on function "%s".', $signal, $reflectionFunction->getName()));
+                throw new FunctionConfigurationException(sprintf('The callable for signal "%s" is not callable.', $signal), $reflectionFunction);
             }
         }
 
@@ -155,7 +152,7 @@ class FunctionFinder
         }
 
         if (!$taskAttribute->name) {
-            throw new \RuntimeException('The task command must have a name.');
+            throw new FunctionConfigurationException('The task command must have a name.', $reflectionClass);
         }
 
         $definition = null;
@@ -167,7 +164,7 @@ class FunctionFinder
             break;
         }
         if ($definition['name'] !== $taskAttribute->originalName) {
-            throw new \RuntimeException(sprintf('Could not find a command named "%s" in the Symfony application', $taskAttribute->name));
+            throw new FunctionConfigurationException(sprintf('Could not find a command named "%s" in the Symfony application', $taskAttribute->name), $reflectionClass);
         }
 
         yield new SymfonyTaskDescriptor($taskAttribute, $reflectionClass, $definition);
@@ -209,16 +206,16 @@ class FunctionFinder
         $contextAttribute = $attributes[0]->newInstance();
 
         if ($reflectionFunction->getParameters()) {
-            throw new \InvalidArgumentException(sprintf('The contexts generator "%s()" must not have arguments.', $reflectionFunction->getName()));
+            throw new FunctionConfigurationException('The contexts generator must not have arguments.', $reflectionFunction);
         }
         $generators = [];
         foreach ($reflectionFunction->invoke() as $name => $generator) {
             if (!$generator instanceof \Closure) {
-                throw new \InvalidArgumentException(sprintf('The context generator "%s" is not callable in function "%s()".', $name, $reflectionFunction->getName()));
+                throw new FunctionConfigurationException(sprintf('The context generator "%s" is not callable.', $name), $reflectionFunction);
             }
             $r = new \ReflectionFunction($generator);
             if ($r->getParameters()) {
-                throw new \InvalidArgumentException(sprintf('The context generator "%s()::%s" must not have arguments.', $reflectionFunction->getName(), $name));
+                throw new FunctionConfigurationException(sprintf('The context generator "%s" must not have arguments.', $name), $reflectionFunction);
             }
             $generators[$name] = $generator;
         }
@@ -236,10 +233,6 @@ class FunctionFinder
         foreach ($attributes as $attribute) {
             /** @var AsListener $listenerAttribute */
             $listenerAttribute = $attribute->newInstance();
-
-            if (u($listenerAttribute->event)->endsWith('::class') && !class_exists($listenerAttribute->event)) {
-                throw new \InvalidArgumentException(sprintf('The event "%s" does not exist.', $listenerAttribute->event));
-            }
 
             yield new ListenerDescriptor($listenerAttribute, $reflectionFunction);
         }

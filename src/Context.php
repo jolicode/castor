@@ -250,11 +250,11 @@ class Context implements \ArrayAccess
 
     public function offsetSet(mixed $offset, mixed $value): void
     {
-        throw new \LogicException('Context is immutable');
+        throw new \LogicException('Context is immutable.');
     }
 
     public function offsetUnset(mixed $offset): void
     {
-        throw new \LogicException('Context is immutable');
+        throw new \LogicException('Context is immutable.');
     }
 }

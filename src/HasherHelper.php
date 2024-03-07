@@ -39,11 +39,11 @@ class HasherHelper
         }
 
         if (!is_file($path)) {
-            throw new \InvalidArgumentException(sprintf('The path "%s" is not a file', $path));
+            throw new \InvalidArgumentException(sprintf('The path "%s" is not a file.', $path));
         }
 
         if (!is_readable($path)) {
-            throw new \InvalidArgumentException(sprintf('The file "%s" is not readable', $path));
+            throw new \InvalidArgumentException(sprintf('The file "%s" is not readable.', $path));
         }
 
         $this->logger->debug('Hashing file "{path}" with strategy "{strategy}".', [
@@ -97,7 +97,7 @@ class HasherHelper
         $files = glob($pattern);
 
         if (false === $files) {
-            throw new \InvalidArgumentException(sprintf('The pattern "%s" is invalid', $pattern));
+            throw new \InvalidArgumentException(sprintf('The pattern "%s" is invalid.', $pattern));
         }
 
         foreach ($files as $file) {

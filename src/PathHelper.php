@@ -41,4 +41,13 @@ class PathHelper
 
         return $realpath;
     }
+
+    public static function makeRelative(string $path): string
+    {
+        if (!Path::isAbsolute($path)) {
+            throw new \RuntimeException(sprintf('Path "%s" is not absolute.', $path));
+        }
+
+        return Path::makeRelative($path, self::getRoot());
+    }
 }
