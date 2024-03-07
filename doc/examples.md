@@ -15,7 +15,8 @@ ensure each feature works as expected.
 Here is a partial list of real-world projects using Castor:
 
 - [Castor itself](https://github.com/jolicode/castor/blob/main/castor.php)
-- [Docker starter](https://github.com/jolicode/docker-starter/blob/main/castor.php)
+- [jolicode/docker-starter](https://github.com/jolicode/docker-starter/blob/main/castor.php)
+- [lyrixx/twig-include-syntax](https://github.com/lyrixx/twig-include-syntax/blob/main/castor.php)
 
 Using Castor in one of your public projects? Feel free to contact us, we might
 add it to this list.
