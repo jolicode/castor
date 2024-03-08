@@ -2,6 +2,8 @@
 
 namespace Castor;
 
+use Castor\Exception\FunctionConfigurationException;
+
 /** @internal */
 class ContextRegistry
 {
@@ -15,14 +17,18 @@ class ContextRegistry
     {
         $name = $descriptor->contextAttribute->name;
         if (\array_key_exists($name, $this->descriptors)) {
-            throw new \RuntimeException(sprintf('You cannot defined two context with the same name "%s". There is one defined in "%s" and another in "%s".', $name, $this->describeFunction($this->descriptors[$name]->function), $this->describeFunction($descriptor->function)));
+            $alreadyDefined = $this->descriptors[$name]->function;
+
+            throw new FunctionConfigurationException(sprintf('You cannot define two contexts with the same name "%s". There is one already defined in "%s:%d".', $name, PathHelper::makeRelative((string) $alreadyDefined->getFileName()), $alreadyDefined->getStartLine()), $descriptor->function);
         }
 
         $this->descriptors[$name] = $descriptor;
 
         if ($descriptor->contextAttribute->default) {
             if ($this->defaultName) {
-                throw new \RuntimeException(sprintf('You cannot set multiple "default: true" context. There is one defined in "%s" and another in "%s".', $this->defaultName, $this->describeFunction($descriptor->function)));
+                $alreadyDefined = $this->descriptors[$this->defaultName]->function;
+
+                throw new FunctionConfigurationException(sprintf('You cannot set multiple "default: true" context. There is one already defined in "%s:%d".', PathHelper::makeRelative((string) $alreadyDefined->getFileName()), $alreadyDefined->getStartLine()), $descriptor->function);
             }
             $this->defaultName = $name;
         }
@@ -73,7 +79,7 @@ class ContextRegistry
 
         $context = $this->descriptors[$name]->function->invoke();
         if (!$context instanceof Context) {
-            throw new \LogicException(sprintf('The context generator "%s", defined at "%s:%s" must return an instance of "%s", "%s" returned', $name, $this->descriptors[$name]->function->getFileName(), $this->descriptors[$name]->function->getStartLine(), Context::class, get_debug_type($context)));
+            throw new FunctionConfigurationException(sprintf('The context generator must return an instance of "%s", "%s" returned.', Context::class, get_debug_type($context)), $this->descriptors[$name]->function);
         }
 
         return $context;
@@ -129,18 +135,5 @@ class ContextRegistry
         sort($names);
 
         return $names;
-    }
-
-    private function describeFunction(\ReflectionFunction $function): string
-    {
-        $name = $function->getName();
-        $shortFilename = str_replace(PathHelper::getRoot() . '/', '', (string) $function->getFileName());
-        $location = sprintf('%s:%d', $shortFilename, $function->getStartLine());
-
-        if (str_contains($name, '{closure}')) {
-            return $location;
-        }
-
-        return sprintf('%s@%s', $name, $location);
     }
 }

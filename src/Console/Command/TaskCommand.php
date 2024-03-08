@@ -10,6 +10,7 @@ use Castor\Console\Application;
 use Castor\Event\AfterExecuteTaskEvent;
 use Castor\Event\BeforeExecuteTaskEvent;
 use Castor\EventDispatcher;
+use Castor\Exception\FunctionConfigurationException;
 use Castor\ExpressionLanguage;
 use Castor\SluggerHelper;
 use Symfony\Component\Console\Command\Command;
@@ -107,6 +108,10 @@ class TaskCommand extends Command implements SignalableCommandInterface
                         $taskArgumentAttribute->suggestedValues,
                     );
                 } elseif ($taskArgumentAttribute instanceof AsOption) {
+                    if ('verbose' === $name) {
+                        throw new FunctionConfigurationException('You cannot re-define a "verbose" option. But you can use "output()->isVerbose()" in your code instead.', $this->function);
+                    }
+
                     $mode = $taskArgumentAttribute->mode;
                     $defaultValue = $parameter->isOptional() ? $parameter->getDefaultValue() : null;
 
@@ -130,7 +135,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
                     );
                 }
             } catch (LogicException $e) {
-                throw new \LogicException(sprintf('The argument "%s" for task "%s" cannot be configured: "%s".', $parameter->getName(), $this->getName(), $e->getMessage()));
+                throw new FunctionConfigurationException(sprintf('The argument "%s" cannot be configured: "%s".', $parameter->getName(), $e->getMessage()), $this->function, $e);
             }
         }
     }
