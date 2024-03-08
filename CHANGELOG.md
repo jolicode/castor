@@ -2,12 +2,16 @@
 
 ## Not released yet
 
+## 0.14.0 (2024-03-08)
+
 * Add a `yaml_dump()` function to dump any PHP value to a YAML string
 * Add a `yaml_parse()` function to parse a YAML string to a PHP value
 * Remove the default timeout of 60 seconds from the Context
-* Add `bool` return type to `fingerprint()` function to indicate if the callable was run
-* Add a `recursive` parameter to the `withData()` method of `Context` to allow recursive merging for nested arrays
+* Add a `recursive` parameter to the `withData()` method of `Context` to allow
+  recursive merging for nested arrays
 * Add an `open()` function to open a file or URL in the default application
+* Add `bool` return type to `fingerprint()` function to indicate if the callable
+  was run
 
 ## 0.13.1 (2024-02-27)
 
