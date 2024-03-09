@@ -29,7 +29,7 @@ function foo(): void
 
     echo $context->currentDirectory; // will print the directory of the castor.php file
 
-    $context = $context->withPath('/tmp'); // will create a new context where the current directory is /tmp
+    $context = $context->withCurrentDirectory('/tmp'); // will create a new context where the current directory is /tmp
     run('pwd', context: $context); // will print "/tmp"
 }
 ```

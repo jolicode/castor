@@ -75,7 +75,14 @@ class Context implements \ArrayAccess
 
     public function withPath(string $path): self
     {
-        return $this->with(currentDirectory: str_starts_with($path, '/') ? $path : PathHelper::realpath($this->currentDirectory . '/' . $path));
+        trigger_deprecation('castor', '0.15', 'The method "%s()" is deprecated, use "%s::withCurrentDirectory()" instead.', __METHOD__, __CLASS__);
+
+        return $this->withCurrentDirectory($path);
+    }
+
+    public function withCurrentDirectory(string $currentDirectory): self
+    {
+        return $this->with(currentDirectory: str_starts_with($currentDirectory, '/') ? $currentDirectory : PathHelper::realpath($this->currentDirectory . '/' . $currentDirectory));
     }
 
     public function withTty(bool $tty = true): self
