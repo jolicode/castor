@@ -112,7 +112,7 @@ function parallel(callable ...$callbacks): array
 function run(
     string|array $command,
     ?array $environment = null,
-    ?string $path = null,
+    ?string $currentDirectory = null,
     ?bool $tty = null,
     ?bool $pty = null,
     ?float $timeout = null,
@@ -121,6 +121,7 @@ function run(
     ?bool $notify = null,
     ?callable $callback = null,
     ?Context $context = null,
+    ?string $path = null,
 ): Process {
     $context ??= GlobalHelper::getContext();
 
@@ -128,8 +129,16 @@ function run(
         $context = $context->withEnvironment($environment);
     }
 
+    if ($currentDirectory) {
+        $context = $context->withCurrentDirectory($currentDirectory);
+        if ($path) {
+            throw new \LogicException('You cannot use both the "path" and "currentDirectory" arguments at the same time.');
+        }
+    }
     if ($path) {
-        $context = $context->withPath($path);
+        trigger_deprecation('castor', '0.15', 'The "path" argument is deprecated, use "currentDirectory" instead.');
+
+        $context = $context->withCurrentDirectory($path);
     }
 
     if (null !== $tty) {
@@ -249,11 +258,12 @@ function run(
 function capture(
     string|array $command,
     ?array $environment = null,
-    ?string $path = null,
+    ?string $currentDirectory = null,
     ?float $timeout = null,
     ?bool $allowFailure = null,
     ?string $onFailure = null,
     ?Context $context = null,
+    ?string $path = null,
 ): string {
     $hasOnFailure = null !== $onFailure;
     if ($hasOnFailure) {
@@ -263,10 +273,19 @@ function capture(
         $allowFailure = true;
     }
 
+    if ($currentDirectory && $path) {
+        throw new \LogicException('You cannot use both the "path" and "currentDirectory" arguments at the same time.');
+    }
+    if ($path) {
+        trigger_deprecation('castor', '0.15', 'The "path" argument is deprecated, use "currentDirectory" instead.');
+
+        $currentDirectory = $path;
+    }
+
     $process = run(
         command: $command,
         environment: $environment,
-        path: $path,
+        currentDirectory: $currentDirectory,
         timeout: $timeout,
         allowFailure: $allowFailure,
         context: $context,
@@ -287,15 +306,25 @@ function capture(
 function exit_code(
     string|array $command,
     ?array $environment = null,
-    ?string $path = null,
+    ?string $currentDirectory = null,
     ?float $timeout = null,
     ?bool $quiet = null,
     ?Context $context = null,
+    ?string $path = null,
 ): int {
+    if ($currentDirectory && $path) {
+        throw new \LogicException('You cannot use both the "path" and "currentDirectory" arguments at the same time.');
+    }
+    if ($path) {
+        trigger_deprecation('castor', '0.15', 'The "path" argument is deprecated, use "currentDirectory" instead.');
+
+        $currentDirectory = $path;
+    }
+
     $process = run(
         command: $command,
         environment: $environment,
-        path: $path,
+        currentDirectory: $currentDirectory,
         timeout: $timeout,
         allowFailure: true,
         context: $context,
@@ -801,7 +830,7 @@ function with(
     callable $callback,
     ?array $data = null,
     ?array $environment = null,
-    ?string $path = null,
+    ?string $currentDirectory = null,
     ?bool $tty = null,
     ?bool $pty = null,
     ?float $timeout = null,
@@ -809,6 +838,7 @@ function with(
     ?bool $allowFailure = null,
     ?bool $notify = null,
     Context|string|null $context = null,
+    ?string $path = null,
 ): mixed {
     $contextRegistry = GlobalHelper::getContextRegistry();
 
@@ -830,8 +860,16 @@ function with(
         $context = $context->withEnvironment($environment);
     }
 
+    if ($currentDirectory) {
+        $context = $context->withCurrentDirectory($currentDirectory);
+        if ($path) {
+            throw new \LogicException('You cannot use both the "path" and "currentDirectory" arguments at the same time.');
+        }
+    }
     if ($path) {
-        $context = $context->withPath($path);
+        trigger_deprecation('castor', '0.15', 'The "path" argument is deprecated, use "currentDirectory" instead.');
+
+        $context = $context->withCurrentDirectory($path);
     }
 
     if (null !== $tty) {

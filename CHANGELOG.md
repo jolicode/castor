@@ -2,6 +2,9 @@
 
 ## Not released yet
 
+* Deprecate `Context::withPath()` in favor of `Context::withCurrentDirectory()`
+* Deprecate `path` argument in `capture()`, `exit_code()`, `run()`, `with()` in favor of `currentDirectory`
+
 ## 0.14.0 (2024-03-08)
 
 * Add a `yaml_dump()` function to dump any PHP value to a YAML string
