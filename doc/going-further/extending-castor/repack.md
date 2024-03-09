@@ -39,6 +39,11 @@ vendor/bin/castor repack --help
 > So ensure to have the less files possible in the directory where you run the
 > repack task to avoid including useless files in the phar.
 
+> [!NOTE]
+> If a `box.json` file exists in your application directory, 
+> it will be merged with the config file used by Castor.  
+> None of this keys `base-path`, `main`, `alias` or `output` keys can be defined in your application box config.
+
 ## Going further
 
 Packaging your Castor app as a phar simplifies distribution but requires PHP
