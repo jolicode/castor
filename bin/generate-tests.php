@@ -5,11 +5,12 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use Castor\Console\ApplicationFactory;
 use Castor\PlatformUtil;
+use Castor\Tests\Helper\OutputCleaner;
 use Castor\Tests\Helper\WebServerHelper;
-use Castor\Tests\OutputCleaner;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 
 use function Symfony\Component\String\u;
@@ -60,7 +61,6 @@ $taskFilterList = [
     'castor:watcher:linux',
     'castor:watcher:windows',
     // Customized tests
-    'cd:directory',
     'fingerprint:task-with-a-fingerprint-and-force',
     'fingerprint:task-with-a-fingerprint',
     'fingerprint:task-with-complete-fingerprint-check',
@@ -107,6 +107,15 @@ foreach ($applicationDescription['commands'] as $task) {
     add_test($args, $class);
 }
 
+$dirs = (new Finder())
+    ->in($basePath = __DIR__ . '/../tests/Examples/fixtures/broken')
+    ->depth(1)
+;
+foreach ($dirs as $dir) {
+    $class = u($dir->getRelativePath())->camel()->title()->append('Test')->toString();
+    add_test([], $class, '{{ base }}/tests/Examples/fixtures/broken/' . $dir->getRelativePath());
+}
+
 add_test(['parallel:sleep', '--sleep5', '0', '--sleep7', '0', '--sleep10', '0'], 'ParallelSleepTest');
 add_test(['context:context', '--context', 'run'], 'ContextContextRunTest');
 add_test(['context:context', '--context', 'my_default', '-v'], 'ContextContextMyDefaultTest');
@@ -129,7 +138,7 @@ function add_test(array $args, string $class, ?string $cwd = null)
 
     $process = new Process(
         [\PHP_BINARY,  __DIR__ . '/castor', '--no-ansi', ...$args],
-        cwd: $cwd ?: __DIR__ . '/../',
+        cwd: $cwd ? str_replace('{{ base }}', __DIR__ . '/..', $cwd) : __DIR__ . '/..',
         env: [
             'COLUMNS' => 120,
             'ENDPOINT' => $_SERVER['ENDPOINT'],

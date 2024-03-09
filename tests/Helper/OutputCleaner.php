@@ -1,6 +1,6 @@
 <?php
 
-namespace Castor\Tests;
+namespace Castor\Tests\Helper;
 
 final class OutputCleaner
 {
@@ -16,6 +16,6 @@ final class OutputCleaner
         $string = preg_replace('{you are using v\d+.\d+.\d+.}m', 'you are using vX.Y.Z.', $string);
         $string = preg_replace('{you are using v\d+.\d+.\d+.}m', 'you are using vX.Y.Z.', $string);
 
-        return str_replace(\dirname(__DIR__, 1), '...', $string);
+        return str_replace(\dirname(__DIR__, 2), '...', $string);
     }
 }

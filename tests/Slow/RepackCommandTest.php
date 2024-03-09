@@ -1,6 +1,6 @@
 <?php
 
-namespace Castor\Tests;
+namespace Castor\Tests\Slow;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
