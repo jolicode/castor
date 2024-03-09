@@ -60,7 +60,6 @@ $taskFilterList = [
     'castor:watcher:linux',
     'castor:watcher:windows',
     // Customized tests
-    'cd:directory',
     'fingerprint:task-with-a-fingerprint-and-force',
     'fingerprint:task-with-a-fingerprint',
     'fingerprint:task-with-complete-fingerprint-check',
