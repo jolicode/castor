@@ -2,6 +2,7 @@
 
 namespace Castor\Tests;
 
+use Castor\Tests\Helper\OutputCleaner;
 use Castor\Tests\Helper\WebServerHelper;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\Process;
