@@ -101,6 +101,24 @@ class RepackCommand extends Command
             ...$boxConfig['files'] ?? [],
         ];
 
+        if (file_exists($appBoxConfigFile = PathHelper::getRoot() . '/box.json')) {
+            $appBoxConfig = json_decode((string) file_get_contents($appBoxConfigFile), true, 512, \JSON_THROW_ON_ERROR);
+
+            if (
+                \array_key_exists('base-path', $appBoxConfig)
+                || \array_key_exists('main', $appBoxConfig)
+                || \array_key_exists('alias', $appBoxConfig)
+                || \array_key_exists('output', $appBoxConfig)
+            ) {
+                throw new \RuntimeException('Application box config could not contains one of this keys: base-path, main, alias or output.');
+            }
+
+            $boxConfig = array_merge_recursive(
+                $boxConfig,
+                $appBoxConfig,
+            );
+        }
+
         file_put_contents('.box.json', json_encode($boxConfig, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES));
         file_put_contents('.main.php', $main);
 
