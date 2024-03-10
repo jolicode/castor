@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "16e5f7934a962f8c5ad979ca1c6cc176",
+    "content-hash": "f70459a71db521523c0b9a12ed2ee14d",
     "packages": [
         {
             "name": "jolicode/jolinotif",
