@@ -6,6 +6,7 @@ list                                                              List commands
 no-namespace                                                      Task without a namespace
 args:another-args                                                 Dumps all arguments and options, without configuration
 args:args                                                         Dumps all arguments and options, with custom configuration
+args:passthru                                                     Dumps all arguments and options, without configuration nor validation
 bar:bar                                                           Prints bar, but also executes foo
 cache:complex                                                     Cache with usage of CacheItemInterface
 cache:simple                                                      Cache a simple call

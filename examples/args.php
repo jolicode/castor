@@ -4,6 +4,7 @@ namespace args;
 
 use Castor\Attribute\AsArgument;
 use Castor\Attribute\AsOption;
+use Castor\Attribute\AsRawTokens;
 use Castor\Attribute\AsTask;
 
 use function Castor\run;
@@ -31,4 +32,13 @@ function another_args(
     int $test2 = 1
 ): void {
     run(['echo', $required, $test2]);
+}
+
+/**
+ * @param string[] $rawTokens
+ */
+#[AsTask(description: 'Dumps all arguments and options, without configuration nor validation', ignoreValidationErrors: true)]
+function passthru(#[AsRawTokens] array $rawTokens): void
+{
+    var_dump($rawTokens);
 }

@@ -1,0 +1,14 @@
+array(6) {
+  [0]=>
+  string(1) "a"
+  [1]=>
+  string(1) "b"
+  [2]=>
+  string(4) "--no"
+  [3]=>
+  string(5) "--foo"
+  [4]=>
+  string(3) "bar"
+  [5]=>
+  string(2) "-x"
+}

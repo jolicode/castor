@@ -3,6 +3,7 @@
 namespace Castor\Console\Command;
 
 use Castor\Attribute\AsSymfonyTask;
+use Castor\Console\Input\Input;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -67,10 +68,12 @@ class SymfonyTaskCommand extends Command
         }
     }
 
+    /**
+     * @param Input $input
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $r = new \ReflectionProperty($input, 'tokens');
-        $extra = array_filter($r->getValue($input), fn ($item) => $item !== $this->taskAttribute->name);
+        $extra = array_filter($input->getRawTokens(), fn ($item) => $item !== $this->taskAttribute->name);
 
         $p = new Process([...$this->taskAttribute->console, $this->taskAttribute->originalName, ...$extra]);
         $p->run(fn ($type, $bytes) => print ($bytes));

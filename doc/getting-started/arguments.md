@@ -49,6 +49,25 @@ $ castor task --default=bar foo
 foo bar
 ```
 
+## Arguments without configuration nor validation
+
+Castor supports the use of arguments without any configuration nor validation.
+For example, when you want to call a sub-process:
+
+```php
+#[AsTask(ignoreValidationErrors: true)]
+function phpunit(#[AsRawTokens] array $rawTokens): void
+{
+    run(['phpunit', ...$rawTokens]);
+}
+```
+
+Then, you can use it like that:
+
+```bash
+$ castor phpunit --filter=testName --debug --verbose
+```
+
 > [!TIP]
 > Related example: [args.php](https://github.com/jolicode/castor/blob/main/examples/args.php)
 
