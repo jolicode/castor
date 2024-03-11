@@ -5,8 +5,10 @@ namespace Castor\Console\Command;
 use Castor\Attribute\AsArgument;
 use Castor\Attribute\AsCommandArgument;
 use Castor\Attribute\AsOption;
+use Castor\Attribute\AsRawTokens;
 use Castor\Attribute\AsTask;
 use Castor\Console\Application;
+use Castor\Console\Input\Input;
 use Castor\Event\AfterExecuteTaskEvent;
 use Castor\Event\BeforeExecuteTaskEvent;
 use Castor\EventDispatcher;
@@ -76,7 +78,15 @@ class TaskCommand extends Command implements SignalableCommandInterface
 
     protected function configure(): void
     {
+        if ($this->taskAttribute->ignoreValidationErrors) {
+            $this->ignoreValidationErrors();
+        }
+
         foreach ($this->function->getParameters() as $parameter) {
+            if ($parameter->getAttributes(AsRawTokens::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null) {
+                continue;
+            }
+
             $taskArgumentAttribute = $parameter->getAttributes(AsCommandArgument::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null;
 
             if ($taskArgumentAttribute) {
@@ -140,11 +150,33 @@ class TaskCommand extends Command implements SignalableCommandInterface
         }
     }
 
+    /**
+     * @param Input $input
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $args = [];
 
         foreach ($this->function->getParameters() as $parameter) {
+            if ($parameter->getAttributes(AsRawTokens::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null) {
+                $parameters = [];
+                $keep = false;
+                foreach ($input->getRawTokens() as $value) {
+                    if ($value === $input->getFirstArgument()) {
+                        $keep = true;
+
+                        continue;
+                    }
+                    if ($keep) {
+                        $parameters[] = $value;
+                    }
+                }
+
+                $args[] = $parameters;
+
+                continue;
+            }
+
             $name = $this->getParameterName($parameter);
             if ($input->hasArgument($name)) {
                 $args[] = $input->getArgument($name);

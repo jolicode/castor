@@ -4,6 +4,7 @@ namespace Castor;
 
 use Castor\Attribute\AsContextGenerator;
 use Castor\Console\Application;
+use Castor\Console\Input\Input;
 use Castor\Exception\ExecutableNotFoundException;
 use Castor\Exception\MinimumVersionRequirementNotMetException;
 use Castor\Exception\WaitFor\ExitedBeforeTimeoutException;
@@ -631,7 +632,7 @@ function get_application(): Application
     return app();
 }
 
-function input(): InputInterface
+function input(): Input
 {
     return GlobalHelper::getInput();
 }

@@ -4,6 +4,7 @@ namespace Castor\Console;
 
 use Castor\Console\Command\SymfonyTaskCommand;
 use Castor\Console\Command\TaskCommand;
+use Castor\Console\Input\Input;
 use Castor\Context;
 use Castor\ContextDescriptor;
 use Castor\ContextGeneratorDescriptor;
@@ -46,7 +47,7 @@ class Application extends SymfonyApplication
     public const VERSION = 'v0.14.0';
 
     // "Current" objects availables at some point of the lifecycle
-    private InputInterface $input;
+    private Input $input;
     private SectionOutput $sectionOutput;
     private SymfonyStyle $symfonyStyle;
     private Command $command;
@@ -94,7 +95,7 @@ class Application extends SymfonyApplication
         GlobalHelper::setApplication($this);
     }
 
-    public function getInput(): InputInterface
+    public function getInput(): Input
     {
         return $this->input ?? throw new \LogicException('Input not available yet.');
     }
@@ -126,7 +127,9 @@ class Application extends SymfonyApplication
     // is registered
     public function doRun(InputInterface $input, OutputInterface $output): int
     {
-        $this->input = $input;
+        if ($input instanceof Input) {
+            $this->input = $input;
+        }
         $this->sectionOutput = new SectionOutput($output);
         $this->symfonyStyle = new SymfonyStyle($input, $output);
         $this->logger->pushHandler(new ConsoleHandler($output));

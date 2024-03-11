@@ -116,19 +116,21 @@ foreach ($dirs as $dir) {
     add_test([], $class, '{{ base }}/tests/Examples/fixtures/broken/' . $dir->getRelativePath());
 }
 
-add_test(['parallel:sleep', '--sleep5', '0', '--sleep7', '0', '--sleep10', '0'], 'ParallelSleepTest');
-add_test(['context:context', '--context', 'run'], 'ContextContextRunTest');
+add_test(['args:passthru', 'a', 'b', '--no', '--foo', 'bar', '-x'], 'ArgPassthruExpanded');
+add_test(['context:context', '--context', 'dynamic'], 'ContextContextDynamicTest');
 add_test(['context:context', '--context', 'my_default', '-v'], 'ContextContextMyDefaultTest');
 add_test(['context:context', '--context', 'no_no_exist'], 'ContextContextDoNotExistTest');
-add_test(['context:context', '--context', 'production'], 'ContextContextProductionTest');
 add_test(['context:context', '--context', 'path'], 'ContextContextPathTest');
-add_test(['context:context', '--context', 'dynamic'], 'ContextContextDynamicTest');
+add_test(['context:context', '--context', 'production'], 'ContextContextProductionTest');
+add_test(['context:context', '--context', 'run'], 'ContextContextRunTest');
 add_test(['enabled:hello', '--context', 'production'], 'EnabledInProduction');
-add_test([], 'NewProjectTest', '/tmp');
-add_test(['init'], 'NewProjectInitTest', '/tmp');
-add_test(['unknown:task'], 'NoConfigUnknownTest', '/tmp');
-add_test(['unknown:task', 'toto', '--foo', 1], 'NoConfigUnknownWithArgsTest', '/tmp');
+add_test(['parallel:sleep', '--sleep5', '0', '--sleep7', '0', '--sleep10', '0'], 'ParallelSleepTest');
+// In /tmp
 add_test(['completion', 'bash'], 'NoConfigCompletionTest', '/tmp');
+add_test(['init'], 'NewProjectInitTest', '/tmp');
+add_test(['unknown:task', 'toto', '--foo', 1], 'NoConfigUnknownWithArgsTest', '/tmp');
+add_test(['unknown:task'], 'NoConfigUnknownTest', '/tmp');
+add_test([], 'NewProjectTest', '/tmp');
 
 function add_test(array $args, string $class, ?string $cwd = null)
 {

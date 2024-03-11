@@ -2,9 +2,11 @@
 
 ## Not released yet
 
+* Add a option `ignoreValidationErrors` on `AsTask` attribute to ignore
+  parameters & options validation errors
+* Add a way to merge an application `box.json` config file used by `castor:repack`command
 * Deprecate `Context::withPath()` in favor of `Context::withCurrentDirectory()`
 * Deprecate `path` argument in `capture()`, `exit_code()`, `run()`, `with()` in favor of `currentDirectory`
-* Add a way to merge an application `box.json` config file used by `castor:repack`command
 
 ## 0.14.0 (2024-03-08)
 
