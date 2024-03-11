@@ -10,6 +10,18 @@ permissions:
   contents: read
 
 jobs:
+  check-composer-validation:
+    name: Composer validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Composer Validate
+        uses: docker://composer:2.7.1
+        with:
+          args: validate
+
   check-cs:
     name: Coding Standards
     runs-on: ubuntu-latest
