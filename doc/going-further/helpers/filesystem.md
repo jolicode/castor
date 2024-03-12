@@ -14,23 +14,24 @@ use Castor\Attribute\AsTask;
 use Symfony\Component\Filesystem\Path;
 
 use function Castor\fs;
+use function Castor\io;
 
 #[AsTask()]
 function foo()
 {
     $dir = '/tmp/foo';
 
-    echo $dir, ' directory exist: ', fs()->exists($dir) ? 'yes' : 'no', \PHP_EOL;
+    io()->writeln($dir . ' directory exist: ' . (fs()->exists($dir) ? 'yes' : 'no'));
 
     fs()->mkdir($dir);
     fs()->touch($dir . '/bar.md');
 
-    echo $dir, ' is an absolute path: ', Path::isAbsolute($dir) ? 'yes' : 'no', \PHP_EOL;
-    echo '../ is an absolute path: ', Path::isAbsolute('../') ? 'yes' : 'no', \PHP_EOL;
+    io()->writeln($dir, ' is an absolute path: ' . (Path::isAbsolute($dir) ? 'yes' : 'no'));
+    io()->writeln('../ is an absolute path: ' . (Path::isAbsolute('../') ? 'yes' : 'no'));
 
     fs()->remove($dir);
 
-    echo 'Absolute path: ', Path::makeAbsolute('../', $dir), \PHP_EOL;
+    io()->writeln('Absolute path: ' . Path::makeAbsolute('../', $dir));
 }
 ```
 
@@ -50,11 +51,12 @@ intuitive fluent interface. It returns an instance of
 use Castor\Attribute\AsTask;
 
 use function Castor\finder;
+use function Castor\io;
 
 #[AsTask()]
 function foo()
 {
-    echo 'Number of PHP files: ', finder()->name('*.php')->in(__DIR__)->count(), \PHP_EOL;
+    io()->writeln('Number of PHP files: ' . finder()->name('*.php')->in(__DIR__)->count());
 }
 ```
 

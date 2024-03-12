@@ -6,6 +6,8 @@ stop a task when the user presses `CTRL+C` or to handle other signals:
 ```php
 use Castor\Attribute\AsTask;
 
+use function Castor\io;
+
 #[AsTask(onSignals: [\SIGUSR2 => 'onSigUsr2'])]
 function foo(): void
 {
@@ -14,7 +16,7 @@ function foo(): void
 
 function onSigUsr2(int $signal): int|false
 {
-    echo "SIGUSR2 received\n";
+    io()->writeln("SIGUSR2 received\n");
 
     return false;
 }
@@ -38,7 +40,7 @@ function foo(): void
 
 function onSigUsr2(int $signal): int|false
 {
-    echo "SIGUSR2 received\n";
+    io()->writeln('SIGUSR2 received');
 
     return false;
 }

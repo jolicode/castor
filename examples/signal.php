@@ -4,6 +4,8 @@ namespace signal;
 
 use Castor\Attribute\AsTask;
 
+use function Castor\io;
+
 if (!\defined('SIGUSR2')) {
     \define('SIGUSR2', 12);
 }
@@ -20,7 +22,7 @@ function sigusr2(): void
  */
 function onSigUsr2(int $signal): bool
 {
-    echo "SIGUSR2 received\n";
+    io()->writeln('SIGUSR2 received');
 
     return false;
 }

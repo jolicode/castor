@@ -24,7 +24,7 @@ function show_database_url(): void
 {
     $env = load_dot_env();
 
-    echo $env['DATABASE_URL'] ?? throw new \RuntimeException('DATABASE_URL is not defined');
+    io()->writeln($env['DATABASE_URL']) ?? throw new \RuntimeException('DATABASE_URL is not defined'));
 }
 ```
 

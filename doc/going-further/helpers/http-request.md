@@ -9,12 +9,13 @@ request and returns an instance of
 ```php
 use Castor\Attribute\AsTask;
 
+use function Castor\io;
 use function Castor\request;
 
 #[AsTask()]
 function foo()
 {
-    echo request('GET', 'https://example.org')->getContent(), \PHP_EOL;
+    io()->writeln(request('GET', 'https://example.org')->getContent());
 }
 ```
 

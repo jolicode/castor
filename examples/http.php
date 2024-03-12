@@ -2,6 +2,7 @@
 
 use Castor\Attribute\AsTask;
 
+use function Castor\io;
 use function Castor\request;
 
 #[AsTask(description: 'Make HTTP request')]
@@ -11,5 +12,5 @@ function httpRequest(): void
 
     $response = request('GET', $url);
 
-    echo $response->getContent();
+    io()->writeln($response->getContent());
 }

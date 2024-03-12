@@ -4,6 +4,7 @@ namespace parallel;
 
 use Castor\Attribute\AsTask;
 
+use function Castor\io;
 use function Castor\parallel;
 use function Castor\run;
 
@@ -53,15 +54,15 @@ function sleep(int $sleep5 = 5, int $sleep7 = 7, int $sleep10 = 10): void
         fn () => embed_sleep($sleep5, $sleep7)
     );
 
-    echo "\n";
+    io()->writeln('');
     $duration = (int) (microtime(true) - $start);
-    echo "Duration: {$duration}s\n";
+    io()->writeln("Duration: {$duration}s");
 
-    echo "\n";
+    io()->writeln('');
 
-    echo "\$foo = '{$foo}';\n";
-    echo "\$bar = '{$bar}';\n";
-    echo "\$baz = '{$baz}';\n";
+    io()->writeln("\$foo = '{$foo}';");
+    io()->writeln("\$bar = '{$bar}';");
+    io()->writeln("\$baz = '{$baz}';");
 }
 
 #[AsTask(description: 'Sleep and throw an exception')]

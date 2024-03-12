@@ -8,6 +8,7 @@ use Symfony\Component\Console\Helper\ProcessHelper;
 use function Castor\app;
 use function Castor\capture;
 use function Castor\exit_code;
+use function Castor\io;
 use function Castor\output;
 use function Castor\run;
 
@@ -16,10 +17,9 @@ function ls(): void
 {
     $process = run('ls -alh && echo $foo', quiet: true, environment: ['foo' => 'ba\'"`r']);
 
-    echo "Output: \n" . $process->getOutput();
-    echo "\nError output: \n" . $process->getErrorOutput();
-    echo "\nExit code: " . $process->getExitCode();
-    echo "\n";
+    io()->writeln('Output:' . $process->getOutput());
+    io()->writeln('Error output: ' . $process->getErrorOutput());
+    io()->writeln('Exit code: ' . $process->getExitCode());
 }
 
 #[AsTask(description: 'Run a sub-process with environment variables and display information about it')]
@@ -27,10 +27,9 @@ function variables(): void
 {
     $process = run('echo $foo', quiet: true, environment: ['foo' => 'ba\'"`r']);
 
-    echo "Output: \n" . $process->getOutput();
-    echo "\nError output: \n" . $process->getErrorOutput();
-    echo "\nExit code: " . $process->getExitCode();
-    echo "\n";
+    io()->writeln('Output: ' . $process->getOutput());
+    io()->writeln('Error output: ' . $process->getErrorOutput());
+    io()->writeln('Exit code: ' . $process->getExitCode());
 }
 
 #[AsTask(description: 'Run a sub-process and display information about it, with capture() function')]
@@ -40,7 +39,7 @@ function whoami(): void
     // for each different users
     $whoami = capture('echo whoami');
 
-    echo "Hello: {$whoami}\n";
+    io()->writeln("Hello: {$whoami}");
 }
 
 #[AsTask(description: 'Run a sub-process and return its exit code, with get_exit_code() function')]

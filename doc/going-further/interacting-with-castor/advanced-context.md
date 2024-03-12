@@ -8,10 +8,12 @@ You can disable a task according to the context by using the
 ```php
 use Castor\Attribute\AsTask;
 
+use function Castor\io;
+
 #[AsTask(description: 'Say hello, but only in production', enabled: "var('production') == true")]
 function hello(): void
 {
-    echo "Hello world!\n";
+    io()->writeln('Hello world!');
 }
 ```
 
@@ -34,6 +36,7 @@ You can get a specific context by its name using the `context()` function:
 use Castor\Attribute\AsContext;
 use Castor\Context;
 
+use function Castor\io;
 use function Castor\run;
 
 #[AsContext(name: 'my_context')]
@@ -47,7 +50,7 @@ function foo(): void
 {
     $context = context('my_context');
 
-    run(['echo', $context['foo']]); // will print bar even if you do not use the --context option
+    io()->writeln($context['foo']); // will print bar even if you do not use the --context option
     run('pwd', context: $context); // will print /tmp
 }
 ```
@@ -75,7 +78,7 @@ function create_my_context(): Context
 function foo(): void
 {
     with(function (Context $context) {
-        run(['echo', $context['foo']]); // will print bar even if you do not use the --context option
+        io()->writeln($context['foo']); // will print bar even if you do not use the --context option
         run('pwd'); // will print /tmp
     }, context: 'my_context');
 }

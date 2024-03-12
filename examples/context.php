@@ -100,11 +100,11 @@ function contextFromPath(): Context
 function contextInfo(): void
 {
     $context = context();
-    echo 'context name: ' . variable('name', 'N/A') . "\n";
-    echo 'Production? ' . (variable('production', false) ? 'yes' : 'no') . "\n";
-    echo "verbosity: {$context->verbosityLevel->value}\n";
-    echo 'context: ' . variable('foo', 'N/A') . "\n";
-    echo 'nested merge recursive: ' . json_encode(variable('nested', []), \JSON_THROW_ON_ERROR) . "\n";
+    io()->writeln('context name: ' . variable('name', 'N/A'));
+    io()->writeln('Production? ' . (variable('production', false) ? 'yes' : 'no'));
+    io()->writeln("verbosity: {$context->verbosityLevel->value}");
+    io()->writeln('context: ' . variable('foo', 'N/A'));
+    io()->writeln('nested merge recursive: ' . json_encode(variable('nested', []), \JSON_THROW_ON_ERROR));
 }
 
 /**
@@ -124,7 +124,7 @@ function context_generator(): iterable
 function contextInfoForced(): void
 {
     $context = context('dynamic');
-    echo 'context name: ' . $context->data['name'] . "\n";
+    io()->writeln('context name: ' . $context->data['name']);
 }
 
 #[AsTask(description: 'Displays information about the context, using a specific context')]
@@ -136,5 +136,5 @@ function contextWith(): void
         return $context->data['foo'] ?? 'N/A';
     }, data: ['foo' => 'bar'], context: 'dynamic');
 
-    echo $result;
+    io()->writeln($result);
 }

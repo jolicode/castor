@@ -16,20 +16,24 @@ namespace hello;
 
 use Castor\Attribute\AsTask;
 
+use function Castor\io;
+
 #[AsTask()]
 function castor(): void
 {
-    echo 'Hello castor';
+    io()->writeln('Hello castor');
 }
 
 namespace foo;
+
+use function Castor\io;
 
 use Castor\Attribute\AsTask;
 
 #[AsTask()]
 function bar(): void
 {
-    echo 'Foo bar';
+    io()->writeln('Foo bar');
 }
 ```
 
@@ -77,10 +81,12 @@ arguments: `name`, `namespace` and `description` to override the default values:
 ```php
 use Castor\Attribute\AsTask;
 
-#[AsTask(name: 'bar', namespace: 'foo', description: 'Echo foo bar')]
+use function Castor\io;
+
+#[AsTask(name: 'bar', namespace: 'foo', description: 'Output foo bar')]
 function a_very_long_function_name_that_is_very_painful_to_write(): void
 {
-    echo 'Foo bar';
+    io()->writeln('Foo bar');
 }
 ```
 

@@ -8,6 +8,7 @@ so you do not have to wait for a function to finish before starting another one:
 ```php
 use Castor\Attribute\AsTask;
 
+use function Castor\io;
 use function Castor\parallel;
 
 #[AsTask()]
@@ -22,8 +23,8 @@ function foo(): void
         }
     );
 
-    echo $foo->getOutput(); // will print foo
-    echo $bar->getOutput(); // will print bar
+    io()->writeln($foo->getOutput()); // will print foo
+    io()->writeln($bar->getOutput()); // will print bar
 }
 ```
 

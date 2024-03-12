@@ -13,14 +13,14 @@ the given fingerprint has changed.
 ```php
 use Castor\Attribute\AsTask;
 use function Castor\fingerprint;
-use function Castor\run;
+use function Castor\io;
 
 #[AsTask(description: 'Execute a callback only if the fingerprint has changed')]
 function task_with_a_fingerprint(): void
 {
     fingerprint(
         callback: function () {
-            run('echo "Cool, no fingerprint! Executing..."');
+            io()->writeln('Cool, no fingerprint! Executing...');
         },
         fingerprint: "my fingerprint",
     );
@@ -69,7 +69,7 @@ function task_with_a_fingerprint(): void
 {
     fingerprint(
         callback: function () {
-            run('echo "Executing the callback because my-file.json has changed."');
+            io()->writeln('Executing the callback because my-file.json has changed.');
         },
         fingerprint: hasher()->writeFile('my-file.json', FileHashStrategy::Content)->finish(),
     );
@@ -94,7 +94,7 @@ use function Castor\hasher;
 function task_with_some_fingerprint(): void
 {
     if (!fingerprint_exists(my_fingerprint_check())) {
-        run('echo "Executing some code because fingerprint has changed."');
+        io()->writeln('Executing some code because fingerprint has changed.');
         fingerprint_save(my_fingerprint_check());
     }
 }

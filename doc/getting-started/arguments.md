@@ -6,14 +6,14 @@ the function will be used as arguments or options:
 ```php
 use Castor\Attribute\AsTask;
 
-use function Castor\run;
+use function Castor\io;
 
 #[AsTask()]
 function task(
     string $firstArg,
     string $secondArg
 ) {
-    run(['echo', $firstArg, $secondArg]);
+    io()->writeln($firstArg . ' ' . $secondArg);
 }
 ```
 
@@ -31,14 +31,14 @@ You can make an argument optional by giving it a default value:
 ```php
 use Castor\Attribute\AsTask;
 
-use function Castor\run;
+use function Castor\io;
 
 #[AsTask()]
 function task(
     string $firstArg,
-    string $default = 'default'
+    string $secondArg = 'default'
 ) {
-    run(['echo', $firstArg, $secondArg]);
+    io()->writeln($firstArg . ' ' . $secondArg);
 }
 ```
 
@@ -80,14 +80,14 @@ the `Castor\Attribute\AsArgument` attribute:
 use Castor\Attribute\AsArgument;
 use Castor\Attribute\AsTask;
 
-use function Castor\run;
+use function Castor\io;
 
 #[AsTask()]
 function command(
     #[AsArgument(name: 'foo', description: 'This is the foo argument')]
     string $arg = 'bar',
 ) {
-    run(['echo', $arg]);
+    io()->writeln($arg);
 }
 ```
 
@@ -108,14 +108,14 @@ If you prefer, you can force an argument to be an option by using the
 use Castor\Attribute\AsOption;
 use Castor\Attribute\AsTask;
 
-use function Castor\run;
+use function Castor\io;
 
 #[AsTask()]
 function command(
     #[AsOption(name: 'foo', description: 'This is the foo option')]
     string $arg = 'bar',
 ) {
-    run(['echo', $arg]);
+    io()->writeln($arg);
 }
 ```
 
@@ -139,7 +139,7 @@ function command(
     bool $force,
 ) {
     if ($force) {
-        echo "command has been forced\n";
+        io()->writeln('command has been forced');
     }
 }
 ```

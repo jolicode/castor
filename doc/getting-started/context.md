@@ -20,6 +20,7 @@ You can get the initial context thanks to the `context()` function:
 use Castor\Attribute\AsTask;
 
 use function Castor\context;
+use function Castor\io;
 use function Castor\run;
 
 #[AsTask()]
@@ -27,7 +28,7 @@ function foo(): void
 {
     $context = context();
 
-    echo $context->currentDirectory; // will print the directory of the castor.php file
+    io()->writeln($context->currentDirectory); // will print the directory of the castor.php file
 
     $context = $context->withCurrentDirectory('/tmp'); // will create a new context where the current directory is /tmp
     run('pwd', context: $context); // will print "/tmp"
@@ -117,6 +118,7 @@ setting the `default` argument to `true` in the `AsContext` attribute:
 use Castor\Attribute\AsContext;
 use Castor\Context;
 
+use function Castor\io;
 use function Castor\run;
 
 #[AsContext(default: true, name: 'my_context')]
@@ -128,7 +130,7 @@ function create_default_context(): Context
 #[AsTask()]
 function foo(Context $context): void
 {
-    run(['echo', $context['foo']]); // will print bar even if you do not use the --context option
+    io()->writeln($context['foo']); // will print bar even if you do not use the --context option
     run('pwd'); // will print /tmp
 }
 ```

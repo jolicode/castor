@@ -9,19 +9,22 @@ use Castor\Attribute\AsTask;
 use Psr\Cache\CacheItemInterface;
 
 use function Castor\cache;
+use function Castor\io;
 
 #[AsTask()]
 function foo()
 {
-    echo cache('a-key', expansive_call(...));
+    $result = cache('a-key', expansive_call(...));
 
     // Or if you want to set a TTL
 
-    echo cache('another-key', function (CacheItemInterface $item) => {
+    $result = cache('another-key', function (CacheItemInterface $item) => {
         $item->expiresAfter(3600);
 
         return expansive_call();
     });
+
+    io()->writeln($result);
 }
 ```
 
@@ -43,6 +46,7 @@ If you need to have a full control on the cache, you can access the
 use Castor\Attribute\AsTask;
 
 use function Castor\get_cache;
+use function Castor\io;
 
 #[AsTask()]
 function foo()
@@ -56,6 +60,6 @@ function foo()
       $cache->save($item);
     }
 
-    echo $item->get();
+    io()->writeln($item->get());
 }
 ```

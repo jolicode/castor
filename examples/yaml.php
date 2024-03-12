@@ -4,6 +4,7 @@ namespace yaml;
 
 use Castor\Attribute\AsTask;
 
+use function Castor\io;
 use function Castor\yaml_dump;
 use function Castor\yaml_parse;
 
@@ -13,12 +14,12 @@ function parse(): void
     $data = yaml_parse(<<<'YAML'
 foo: bar
 YAML);
-    echo $data['foo'] . "\n";
+    io()->writeln($data['foo']);
 }
 
 #[AsTask(description: 'Dump a YAML content')]
 function dump(): void
 {
     $data = ['foo' => 'bar'];
-    echo yaml_dump($data) . "\n";
+    io()->writeln(yaml_dump($data));
 }
