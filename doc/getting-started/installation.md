@@ -2,22 +2,24 @@
 
 ## Installation
 
-> [!NOTE]
-> Castor requires PHP >= 8.1 to run.
+### As a phar
 
-### As a phar - recommended way
+> [!TIP]
+> This is the recommended way to install Castor. It requires PHP >= 8.1.
 
 You can download the latest release of Castor as a phar file from the [releases
 page](https://github.com/jolicode/castor/releases).
 
-You can also download the latest version by browsing [the build
-page](https://castor.jolicode.com/install/latest) and
-selecting the last build.
+> [!NOTE]
+> You can also download the latest version by browsing [the build
+> page](https://castor.jolicode.com/install/latest) and
+> selecting the last build.
 
-We provide different phar for Linux / MacOS / Windows architectures to offer lighter phar
-files. Download the correct one and make it available in your shell:
+We provide different phar for Linux / MacOS / Windows architectures to offer
+lighter phar files. Download the correct one and make it available in your
+shell:
 
-#### Linux
+#### Phar for Linux
 
 ```bash
 curl "https://github.com/jolicode/castor/releases/latest/download/castor.linux-amd64.phar" -Lfso $HOME/.local/bin/castor && \
@@ -26,7 +28,7 @@ curl "https://github.com/jolicode/castor/releases/latest/download/castor.linux-a
     (echo "Could not install castor. Is the target directory writeable?" && (exit 1))
 ```
 
-#### MacOS with Apple Silicon
+#### Phar for MacOS with Apple Silicon
 
 For Mac with Apple Silicon processors (M1, M2, M3, etc).
 
@@ -37,7 +39,7 @@ curl "https://github.com/jolicode/castor/releases/latest/download/castor.darwin-
     (echo "Could not install castor. Is the target directory writeable?" && (exit 1))
 ```
 
-#### MacOS with Intel
+#### Phar for MacOS with Intel
 
 For Mac with old Intel processors.
 
@@ -48,13 +50,45 @@ curl "https://github.com/jolicode/castor/releases/latest/download/castor.darwin-
     (echo "Could not install castor. Is the target directory writeable?" && (exit 1))
 ```
 
-#### Windows
+#### Phar for Windows
 
 ```bash
 curl.exe "https://github.com/jolicode/castor/releases/latest/download/castor.windows-amd64.phar" -Lso C:\<a directory in your PATH>\castor
 ```
 
-### Globally with Composer - not recommended way
+### Without PHP
+
+If you don't have PHP installed on your system, Castor can also be installed
+with a static binary that embeds PHP, so it can be run anywhere. The static
+binaries are available for Linux and MacOS AMD64 architectures only.
+
+You can download the binaries in the [releases
+page](https://github.com/jolicode/castor/releases):
+
+#### Binary for Linux
+
+```bash
+curl "https://github.com/jolicode/castor/releases/latest/download/castor.linux-amd64" -Lfso $HOME/.local/bin/castor && \
+    chmod u+x $HOME/.local/bin/castor && \
+    castor --version || \
+    (echo "Could not install castor. Is the target directory writeable?" && (exit 1))
+```
+
+#### Binary for MacOS with Intel
+
+```bash
+curl "https://github.com/jolicode/castor/releases/latest/download/castor.darwin-amd64" -Lfso /usr/local/bin/castor && \
+    chmod u+x /usr/local/bin/castor && \
+    castor --version || \
+    (echo "Could not install castor. Is the target directory writeable?" && (exit 1))
+```
+
+### Globally with Composer
+
+> [!WARNING]
+> Installing Castor globally with Composer is not recommended. Installing CLI
+> tools globally with Composer may easily lead to conflicts in the "global"
+> project.
 
 You can install Castor globally with Composer:
 
@@ -88,7 +122,7 @@ export PATH="$HOME/.config/composer/vendor/bin:$PATH"
 
 Any binary globally installed with Composer will now work everywhere.
 
-### Manually
+### Manually with git
 
 You'll need to clone the repository and run `composer install` to
 install the project. Then create a symlink to the `castor` file in your `PATH`.
