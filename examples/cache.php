@@ -6,13 +6,14 @@ use Castor\Attribute\AsTask;
 use Psr\Cache\CacheItemInterface;
 
 use function Castor\cache;
+use function Castor\io;
 
 #[AsTask(description: 'Cache a simple call')]
 function simple(): void
 {
-    echo cache('my-key', fn () => "SALUT\n");
+    io()->writeln(cache('my-key', fn () => 'SALUT'));
     // Should returns the same things
-    echo cache('my-key', fn () => "HELLO\n");
+    io()->writeln(cache('my-key', fn () => 'HELLO'));
 }
 
 #[AsTask(description: 'Cache with usage of CacheItemInterface')]
@@ -25,7 +26,7 @@ function complex(): void
 
         return true;
     });
-    echo sprintf("First call: %s\n", $hasBeenCalled ? 'yes' : 'no');
+    io()->writeln(sprintf('First call: %s', $hasBeenCalled ? 'yes' : 'no'));
 
     $hasBeenCalled = false;
     cache('another-key', function (CacheItemInterface $item) use (&$hasBeenCalled) {
@@ -34,5 +35,5 @@ function complex(): void
 
         return true;
     });
-    echo sprintf("Second call: %s\n", $hasBeenCalled ? 'yes' : 'no');
+    io()->writeln(sprintf('Second call: %s', $hasBeenCalled ? 'yes' : 'no'));
 }

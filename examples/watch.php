@@ -4,15 +4,16 @@ namespace watch;
 
 use Castor\Attribute\AsTask;
 
+use function Castor\io;
 use function Castor\parallel;
 use function Castor\watch;
 
 #[AsTask(description: 'Watches on filesystem changes')]
 function fs_change(): void
 {
-    echo "Try editing a file\n";
+    io()->writeln('Try editing a file');
     watch(\dirname(__DIR__) . '/...', function (string $name, string $type) {
-        echo "File {$name} has been {$type}\n";
+        io()->writeln("File {$name} has been {$type}");
     });
 }
 
@@ -20,11 +21,11 @@ function fs_change(): void
 function stop(): void
 {
     watch(\dirname(__DIR__) . '/...', function (string $name, string $type) {
-        echo "File {$name} has been {$type}\n";
+        io()->writeln("File {$name} has been {$type}");
 
         return false;
     });
-    echo "Stop watching\n";
+    io()->writeln('Stop watching');
 }
 
 #[AsTask(description: 'Watches on filesystem changes with 2 watchers in parallel')]
@@ -33,9 +34,9 @@ function parallel_change(): void
     parallel(
         function () {
             for ($i = 1; $i <= 10; ++$i) {
-                echo "[app] Writing hello-{$i}.txt\n";
+                io()->writeln("[app] Writing hello-{$i}.txt");
                 file_put_contents("hello-{$i}.txt", "Hello {$i}\n", \FILE_APPEND);
-                echo "[app] Deleting hello-{$i}.txt\n";
+                io()->writeln("[app] Deleting hello-{$i}.txt");
                 unlink("hello-{$i}.txt");
                 if (\Fiber::getCurrent()) {
                     \Fiber::suspend();
@@ -45,12 +46,12 @@ function parallel_change(): void
         },
         function () {
             watch(\dirname(__DIR__) . '/...', function ($name, $type) {
-                echo "[watcher:A] File {$name} has been {$type}\n";
+                io()->writeln("[watcher:A] File {$name} has been {$type}");
             });
         },
         function () {
             watch(\dirname(__DIR__) . '/...', function ($name, $type) {
-                echo "[watcher:B] Second : File {$name} has been {$type}\n";
+                io()->writeln("[watcher:B] Second : File {$name} has been {$type}");
             });
         },
     );

@@ -6,13 +6,14 @@ call a callback function when the file or directory changes:
 ```php
 use Castor\Attribute\AsTask;
 
+use function Castor\io;
 use function Castor\watch;
 
 #[AsTask()]
 function watcher(): void
 {
     watch('src/', function (string $file, string $action) {
-        echo "File {$file} has been {$action}\n";
+        io()->writeln("File {$file} has been {$action}");
     });
 }
 ```
@@ -28,6 +29,7 @@ that by passing a path suffixed by `/...`:
 ```php
 use Castor\Attribute\AsTask;
 
+use function Castor\io;
 use function Castor\watch;
 
 #[AsTask()]
@@ -35,7 +37,7 @@ function watcher(): void
 {
     // watch recursively inside the src folder
     watch('src/...', function (string $file, string $action) {
-        echo "File {$file} has been {$action}\n";
+        io()->writeln("File {$file} has been {$action}");
     });
 }
 ```
@@ -48,6 +50,7 @@ the callback function returns `false` the watch will stop:
 ```php
 use Castor\Attribute\AsTask;
 
+use function Castor\io;
 use function Castor\watch;
 
 #[AsTask()]
@@ -55,10 +58,11 @@ function watcher(): void
 {
     // watch recursively inside the src folder
     watch('src/...', function (string $file, string $action) {
-        echo "File {$file} has been {$action}\n";
+        io()->writeln("File {$file} has been {$action}");
+
         return false;
     });
-    echo 'stopped watching'; // will print "stopped watching" once a file has been modified in the src folder
+    io()->writeln('stopped watching'); // will print "stopped watching" once a file has been modified in the src folder
 }
 ```
 
@@ -69,6 +73,7 @@ The `watch()` function can watch multiple paths at the same time:
 ```php
 use Castor\Attribute\AsTask;
 
+use function Castor\io;
 use function Castor\watch;
 
 #[AsTask()]
@@ -76,7 +81,7 @@ function watcher(): void
 {
     // watch recursively inside the src and tests folders
     watch(['src/...', 'tests/...'], function (string $file, string $action) {
-        echo "File {$file} has been {$action}\n";
+        io()->writeln("File {$file} has been {$action}");
     });
 }
 ```

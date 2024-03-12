@@ -1,6 +1,4 @@
-Output: 
-ba'"`r
+Output: ba'"`r
 
 Error output: 
-
 Exit code: 0

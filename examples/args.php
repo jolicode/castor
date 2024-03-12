@@ -7,7 +7,7 @@ use Castor\Attribute\AsOption;
 use Castor\Attribute\AsRawTokens;
 use Castor\Attribute\AsTask;
 
-use function Castor\run;
+use function Castor\io;
 
 /**
  * @param string[] $argument2
@@ -31,7 +31,7 @@ function another_args(
     string $required,
     int $test2 = 1
 ): void {
-    run(['echo', $required, $test2]);
+    io()->writeln($required . ' ' . $test2);
 }
 
 /**

@@ -41,12 +41,12 @@ For example:
 namespace greetings;
 
 use Castor\Attribute\AsTask;
-use function Castor\run;
+use function Castor\io;
 
 #[AsTask()]
 function hello(): void
 {
-    run('echo "Hello from castor"');
+    io()->writeln('Hello from castor');
 }
 ```
 

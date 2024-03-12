@@ -12,8 +12,8 @@ use function Castor\run;
 #[AsTask()]
 function foo(): void
 {
-    run('echo "bar"');
-    run(['echo', 'bar']);
+    run('my-script.sh');
+    run(['php', 'vendor/bin/phpunit', '--filter', 'MyTest']);
 }
 ```
 
@@ -35,8 +35,8 @@ use function Castor\run;
 #[AsTask()]
 function foo(): void
 {
-    $process = run('echo "bar"');
-    $process->isSuccessful(); // will return true
+    $process = run('my-script.sh');
+    $process->isSuccessful(); // will return true if the process exited with code 0.
 }
 ```
 
@@ -152,13 +152,14 @@ trims the output, then returns it:
 use Castor\Attribute\AsTask;
 
 use function Castor\capture;
+use function Castor\io;
 
 #[AsTask()]
 function whoami()
 {
     $whoami = capture('whoami');
 
-    echo "Hello: $whoami\n";
+    io()->writeln("Hello: $whoami");
 }
 ```
 
@@ -200,7 +201,7 @@ use function Castor\run;
 #[AsTask()]
 function foo(): void
 {
-    run('echo "bar"', timeout: 120);
+    run('my-script.sh', timeout: 120);
 }
 ```
 
