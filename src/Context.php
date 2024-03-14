@@ -64,13 +64,37 @@ class Context implements \ArrayAccess
             }
         }
 
-        return $this->with(data: $data);
+        return new self(
+            $data,
+            $this->environment,
+            $this->currentDirectory,
+            $this->tty,
+            $this->pty,
+            $this->timeout,
+            $this->quiet,
+            $this->allowFailure,
+            $this->notify,
+            $this->verbosityLevel,
+            $this->name,
+        );
     }
 
     /** @param array<string, string|\Stringable|int> $environment */
     public function withEnvironment(array $environment, bool $keepExisting = true): self
     {
-        return $this->with(environment: $keepExisting ? [...$this->environment, ...$environment] : $environment);
+        return new self(
+            $this->data,
+            $keepExisting ? [...$this->environment, ...$environment] : $environment,
+            $this->currentDirectory,
+            $this->tty,
+            $this->pty,
+            $this->timeout,
+            $this->quiet,
+            $this->allowFailure,
+            $this->notify,
+            $this->verbosityLevel,
+            $this->name,
+        );
     }
 
     public function withPath(string $path): self
@@ -82,47 +106,155 @@ class Context implements \ArrayAccess
 
     public function withCurrentDirectory(string $currentDirectory): self
     {
-        return $this->with(currentDirectory: str_starts_with($currentDirectory, '/') ? $currentDirectory : PathHelper::realpath($this->currentDirectory . '/' . $currentDirectory));
+        return new self(
+            $this->data,
+            $this->environment,
+            str_starts_with($currentDirectory, '/') ? $currentDirectory : PathHelper::realpath($this->currentDirectory . '/' . $currentDirectory),
+            $this->tty,
+            $this->pty,
+            $this->timeout,
+            $this->quiet,
+            $this->allowFailure,
+            $this->notify,
+            $this->verbosityLevel,
+            $this->name,
+        );
     }
 
     public function withTty(bool $tty = true): self
     {
-        return $this->with(tty: $tty);
+        return new self(
+            $this->data,
+            $this->environment,
+            $this->currentDirectory,
+            $tty,
+            $this->pty,
+            $this->timeout,
+            $this->quiet,
+            $this->allowFailure,
+            $this->notify,
+            $this->verbosityLevel,
+            $this->name,
+        );
     }
 
     public function withPty(bool $pty = true): self
     {
-        return $this->with(pty: $pty);
+        return new self(
+            $this->data,
+            $this->environment,
+            $this->currentDirectory,
+            $this->tty,
+            $pty,
+            $this->timeout,
+            $this->quiet,
+            $this->allowFailure,
+            $this->notify,
+            $this->verbosityLevel,
+            $this->name,
+        );
     }
 
     public function withTimeout(?float $timeout): self
     {
-        return $this->with(timeout: $timeout);
+        return new self(
+            $this->data,
+            $this->environment,
+            $this->currentDirectory,
+            $this->tty,
+            $this->pty,
+            $timeout,
+            $this->quiet,
+            $this->allowFailure,
+            $this->notify,
+            $this->verbosityLevel,
+            $this->name,
+        );
     }
 
     public function withQuiet(bool $quiet = true): self
     {
-        return $this->with(quiet: $quiet);
+        return new self(
+            $this->data,
+            $this->environment,
+            $this->currentDirectory,
+            $this->tty,
+            $this->pty,
+            $this->timeout,
+            $quiet,
+            $this->allowFailure,
+            $this->notify,
+            $this->verbosityLevel,
+            $this->name,
+        );
     }
 
     public function withAllowFailure(bool $allowFailure = true): self
     {
-        return $this->with(allowFailure: $allowFailure);
+        return new self(
+            $this->data,
+            $this->environment,
+            $this->currentDirectory,
+            $this->tty,
+            $this->pty,
+            $this->timeout,
+            $this->quiet,
+            $allowFailure,
+            $this->notify,
+            $this->verbosityLevel,
+            $this->name,
+        );
     }
 
     public function withNotify(bool $notify = true): self
     {
-        return $this->with(notify: $notify);
+        return new self(
+            $this->data,
+            $this->environment,
+            $this->currentDirectory,
+            $this->tty,
+            $this->pty,
+            $this->timeout,
+            $this->quiet,
+            $this->allowFailure,
+            $notify,
+            $this->verbosityLevel,
+            $this->name,
+        );
     }
 
     public function withVerbosityLevel(VerbosityLevel $verbosityLevel): self
     {
-        return $this->with(verbosityLevel: $verbosityLevel);
+        return new self(
+            $this->data,
+            $this->environment,
+            $this->currentDirectory,
+            $this->tty,
+            $this->pty,
+            $this->timeout,
+            $this->quiet,
+            $this->allowFailure,
+            $this->notify,
+            $verbosityLevel,
+            $this->name,
+        );
     }
 
     public function withName(string $name): self
     {
-        return $this->with(name: $name);
+        return new self(
+            $this->data,
+            $this->environment,
+            $this->currentDirectory,
+            $this->tty,
+            $this->pty,
+            $this->timeout,
+            $this->quiet,
+            $this->allowFailure,
+            $this->notify,
+            $this->verbosityLevel,
+            $name,
+        );
     }
 
     public function offsetExists(mixed $offset): bool
@@ -147,23 +279,6 @@ class Context implements \ArrayAccess
     public function offsetUnset(mixed $offset): void
     {
         throw new \LogicException('Context is immutable.');
-    }
-
-    private function with(mixed ...$args): self
-    {
-        return new self(
-            $args['data'] ?? $this->data,
-            $args['environment'] ?? $this->environment,
-            $args['currentDirectory'] ?? $this->currentDirectory,
-            $args['tty'] ?? $this->tty,
-            $args['pty'] ?? $this->pty,
-            $args['timeout'] ?? $this->timeout,
-            $args['quiet'] ?? $this->quiet,
-            $args['allowFailure'] ?? $this->allowFailure,
-            $args['notify'] ?? $this->notify,
-            $args['verbosityLevel'] ?? $this->verbosityLevel,
-            $args['name'] ?? $this->name,
-        );
     }
 
     /**
