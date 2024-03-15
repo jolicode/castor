@@ -73,6 +73,9 @@ final class StubsGenerator
             \Symfony\Component\Process\Exception\ExceptionInterface::class,
             \Symfony\Component\Process\ExecutableFinder::class,
             \Symfony\Component\Process\Process::class,
+            \Symfony\Contracts\HttpClient\Exception\ExceptionInterface::class,
+            \Symfony\Contracts\HttpClient\HttpClientInterface::class,
+            \Symfony\Contracts\HttpClient\ResponseInterface::class,
         ];
 
         foreach ($frequentlyUsedClasses as $class) {
