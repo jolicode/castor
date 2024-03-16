@@ -3,6 +3,7 @@
 ## The `load_dot_env()` function
 
 You can load a `.env` file with the `load_dot_env()` function. This will:
+
 - load the `.env` file
 - populate the env variables for the current process
 - return the env variables as key/value array.
