@@ -9,7 +9,7 @@ use function Castor\run;
 #[AsTask(description: 'A failing task not authorized to fail')]
 function failure(): void
 {
-    run('i_do_not_exist', currentDirectory: '/tmp', pty: false);
+    run('i_do_not_exist', workingDirectory: '/tmp', pty: false);
 }
 
 #[AsTask(description: 'A failing task authorized to fail')]

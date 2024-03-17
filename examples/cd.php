@@ -10,6 +10,6 @@ use function Castor\run;
 function directory(): void
 {
     run(['pwd']);
-    run(['pwd'], currentDirectory: 'src/Attribute');
+    run(['pwd'], workingDirectory: 'src/Attribute');
     run(['pwd']);
 }

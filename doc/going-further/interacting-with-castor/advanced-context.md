@@ -42,7 +42,7 @@ use function Castor\run;
 #[AsContext(name: 'my_context')]
 function create_my_context(): Context
 {
-    return new Context(['foo' => 'bar'], currentDirectory: '/tmp');
+    return new Context(['foo' => 'bar'], workingDirectory: '/tmp');
 }
 
 #[AsTask()]
@@ -71,7 +71,7 @@ use function Castor\with;
 #[AsContext(name: 'my_context')]
 function create_my_context(): Context
 {
-    return new Context(['foo' => 'bar'], currentDirectory: '/tmp');
+    return new Context(['foo' => 'bar'], workingDirectory: '/tmp');
 }
 
 #[AsTask()]
