@@ -28,9 +28,9 @@ function foo(): void
 {
     $context = context();
 
-    io()->writeln($context->currentDirectory); // will print the directory of the castor.php file
+    io()->writeln($context->workingDirectory); // will print the directory of the castor.php file
 
-    $context = $context->withCurrentDirectory('/tmp'); // will create a new context where the current directory is /tmp
+    $context = $context->withWorkingDirectory('/tmp'); // will create a new context where the current directory is /tmp
     run('pwd', context: $context); // will print "/tmp"
 }
 ```
@@ -124,7 +124,7 @@ use function Castor\run;
 #[AsContext(default: true, name: 'my_context')]
 function create_default_context(): Context
 {
-    return new Context(['foo' => 'bar'], currentDirectory: '/tmp');
+    return new Context(['foo' => 'bar'], workingDirectory: '/tmp');
 }
 
 #[AsTask()]

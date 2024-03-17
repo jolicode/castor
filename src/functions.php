@@ -113,7 +113,7 @@ function parallel(callable ...$callbacks): array
 function run(
     string|array $command,
     ?array $environment = null,
-    ?string $currentDirectory = null,
+    ?string $workingDirectory = null,
     ?bool $tty = null,
     ?bool $pty = null,
     ?float $timeout = null,
@@ -130,16 +130,16 @@ function run(
         $context = $context->withEnvironment($environment);
     }
 
-    if ($currentDirectory) {
-        $context = $context->withCurrentDirectory($currentDirectory);
+    if ($workingDirectory) {
+        $context = $context->withWorkingDirectory($workingDirectory);
         if ($path) {
-            throw new \LogicException('You cannot use both the "path" and "currentDirectory" arguments at the same time.');
+            throw new \LogicException('You cannot use both the "path" and "workingDirectory" arguments at the same time.');
         }
     }
     if ($path) {
-        trigger_deprecation('castor', '0.15', 'The "path" argument is deprecated, use "currentDirectory" instead.');
+        trigger_deprecation('castor', '0.15', 'The "path" argument is deprecated, use "workingDirectory" instead.');
 
-        $context = $context->withCurrentDirectory($path);
+        $context = $context->withWorkingDirectory($path);
     }
 
     if (null !== $tty) {
@@ -167,9 +167,9 @@ function run(
     }
 
     if (\is_array($command)) {
-        $process = new Process($command, $context->currentDirectory, $context->environment, null, $context->timeout);
+        $process = new Process($command, $context->workingDirectory, $context->environment, null, $context->timeout);
     } else {
-        $process = Process::fromShellCommandline($command, $context->currentDirectory, $context->environment, null, $context->timeout);
+        $process = Process::fromShellCommandline($command, $context->workingDirectory, $context->environment, null, $context->timeout);
     }
 
     // When quiet is set, it means we want to capture the output.
@@ -259,7 +259,7 @@ function run(
 function capture(
     string|array $command,
     ?array $environment = null,
-    ?string $currentDirectory = null,
+    ?string $workingDirectory = null,
     ?float $timeout = null,
     ?bool $allowFailure = null,
     ?string $onFailure = null,
@@ -274,19 +274,19 @@ function capture(
         $allowFailure = true;
     }
 
-    if ($currentDirectory && $path) {
-        throw new \LogicException('You cannot use both the "path" and "currentDirectory" arguments at the same time.');
+    if ($workingDirectory && $path) {
+        throw new \LogicException('You cannot use both the "path" and "workingDirectory" arguments at the same time.');
     }
     if ($path) {
-        trigger_deprecation('castor', '0.15', 'The "path" argument is deprecated, use "currentDirectory" instead.');
+        trigger_deprecation('castor', '0.15', 'The "path" argument is deprecated, use "workingDirectory" instead.');
 
-        $currentDirectory = $path;
+        $workingDirectory = $path;
     }
 
     $process = run(
         command: $command,
         environment: $environment,
-        currentDirectory: $currentDirectory,
+        workingDirectory: $workingDirectory,
         timeout: $timeout,
         allowFailure: $allowFailure,
         context: $context,
@@ -307,25 +307,25 @@ function capture(
 function exit_code(
     string|array $command,
     ?array $environment = null,
-    ?string $currentDirectory = null,
+    ?string $workingDirectory = null,
     ?float $timeout = null,
     ?bool $quiet = null,
     ?Context $context = null,
     ?string $path = null,
 ): int {
-    if ($currentDirectory && $path) {
-        throw new \LogicException('You cannot use both the "path" and "currentDirectory" arguments at the same time.');
+    if ($workingDirectory && $path) {
+        throw new \LogicException('You cannot use both the "path" and "workingDirectory" arguments at the same time.');
     }
     if ($path) {
-        trigger_deprecation('castor', '0.15', 'The "path" argument is deprecated, use "currentDirectory" instead.');
+        trigger_deprecation('castor', '0.15', 'The "path" argument is deprecated, use "workingDirectory" instead.');
 
-        $currentDirectory = $path;
+        $workingDirectory = $path;
     }
 
     $process = run(
         command: $command,
         environment: $environment,
-        currentDirectory: $currentDirectory,
+        workingDirectory: $workingDirectory,
         timeout: $timeout,
         allowFailure: true,
         context: $context,
@@ -831,7 +831,7 @@ function with(
     callable $callback,
     ?array $data = null,
     ?array $environment = null,
-    ?string $currentDirectory = null,
+    ?string $workingDirectory = null,
     ?bool $tty = null,
     ?bool $pty = null,
     ?float $timeout = null,
@@ -861,16 +861,16 @@ function with(
         $context = $context->withEnvironment($environment);
     }
 
-    if ($currentDirectory) {
-        $context = $context->withCurrentDirectory($currentDirectory);
+    if ($workingDirectory) {
+        $context = $context->withWorkingDirectory($workingDirectory);
         if ($path) {
-            throw new \LogicException('You cannot use both the "path" and "currentDirectory" arguments at the same time.');
+            throw new \LogicException('You cannot use both the "path" and "workingDirectory" arguments at the same time.');
         }
     }
     if ($path) {
-        trigger_deprecation('castor', '0.15', 'The "path" argument is deprecated, use "currentDirectory" instead.');
+        trigger_deprecation('castor', '0.15', 'The "path" argument is deprecated, use "workingDirectory" instead.');
 
-        $context = $context->withCurrentDirectory($path);
+        $context = $context->withWorkingDirectory($path);
     }
 
     if (null !== $tty) {

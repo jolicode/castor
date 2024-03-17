@@ -66,7 +66,7 @@ function foo(): void
 ## Working directory
 
 By default, Castor will execute the process in the same directory as
-the `castor.php` file. You can change that by setting the `currentDirectory`
+the `castor.php` file. You can change that by setting the `workingDirectory`
 argument. It can be either a relative or an absolute path:
 
 ```php
@@ -77,8 +77,8 @@ use function Castor\run;
 #[AsTask()]
 function foo(): void
 {
-    run('pwd', currentDirectory: '../'); // run the process in the parent directory of the castor.php file
-    run('pwd', currentDirectory: '/tmp'); // run the process in the /tmp directory
+    run('pwd', workingDirectory: '../'); // run the process in the parent directory of the castor.php file
+    run('pwd', workingDirectory: '/tmp'); // run the process in the /tmp directory
 }
 ```
 

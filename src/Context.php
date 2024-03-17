@@ -4,7 +4,7 @@ namespace Castor;
 
 class Context implements \ArrayAccess
 {
-    public readonly string $currentDirectory;
+    public readonly string $workingDirectory;
 
     /**
      * @phpstan-param ContextData $data The input parameter accepts an array or an Object
@@ -14,7 +14,7 @@ class Context implements \ArrayAccess
     public function __construct(
         public readonly array $data = [],
         public readonly array $environment = [],
-        ?string $currentDirectory = null,
+        ?string $workingDirectory = null,
         public readonly bool $tty = false,
         public readonly bool $pty = true,
         public readonly ?float $timeout = null,
@@ -25,7 +25,7 @@ class Context implements \ArrayAccess
         // Do not use this argument, it is only used internally by the application
         public readonly string $name = '',
     ) {
-        $this->currentDirectory = $currentDirectory ?? PathHelper::getRoot();
+        $this->workingDirectory = $workingDirectory ?? PathHelper::getRoot();
     }
 
     public function __debugInfo()
@@ -34,7 +34,7 @@ class Context implements \ArrayAccess
             'name' => $this->name,
             'data' => $this->data,
             'environment' => $this->environment,
-            'currentDirectory' => $this->currentDirectory,
+            'workingDirectory' => $this->workingDirectory,
             'tty' => $this->tty,
             'pty' => $this->pty,
             'timeout' => $this->timeout,
@@ -67,7 +67,7 @@ class Context implements \ArrayAccess
         return new self(
             $data,
             $this->environment,
-            $this->currentDirectory,
+            $this->workingDirectory,
             $this->tty,
             $this->pty,
             $this->timeout,
@@ -85,7 +85,7 @@ class Context implements \ArrayAccess
         return new self(
             $this->data,
             $keepExisting ? [...$this->environment, ...$environment] : $environment,
-            $this->currentDirectory,
+            $this->workingDirectory,
             $this->tty,
             $this->pty,
             $this->timeout,
@@ -101,15 +101,15 @@ class Context implements \ArrayAccess
     {
         trigger_deprecation('castor', '0.15', 'The method "%s()" is deprecated, use "%s::withCurrentDirectory()" instead.', __METHOD__, __CLASS__);
 
-        return $this->withCurrentDirectory($path);
+        return $this->withWorkingDirectory($path);
     }
 
-    public function withCurrentDirectory(string $currentDirectory): self
+    public function withWorkingDirectory(string $workingDirectory): self
     {
         return new self(
             $this->data,
             $this->environment,
-            str_starts_with($currentDirectory, '/') ? $currentDirectory : PathHelper::realpath($this->currentDirectory . '/' . $currentDirectory),
+            str_starts_with($workingDirectory, '/') ? $workingDirectory : PathHelper::realpath($this->workingDirectory . '/' . $workingDirectory),
             $this->tty,
             $this->pty,
             $this->timeout,
@@ -126,7 +126,7 @@ class Context implements \ArrayAccess
         return new self(
             $this->data,
             $this->environment,
-            $this->currentDirectory,
+            $this->workingDirectory,
             $tty,
             $this->pty,
             $this->timeout,
@@ -143,7 +143,7 @@ class Context implements \ArrayAccess
         return new self(
             $this->data,
             $this->environment,
-            $this->currentDirectory,
+            $this->workingDirectory,
             $this->tty,
             $pty,
             $this->timeout,
@@ -160,7 +160,7 @@ class Context implements \ArrayAccess
         return new self(
             $this->data,
             $this->environment,
-            $this->currentDirectory,
+            $this->workingDirectory,
             $this->tty,
             $this->pty,
             $timeout,
@@ -177,7 +177,7 @@ class Context implements \ArrayAccess
         return new self(
             $this->data,
             $this->environment,
-            $this->currentDirectory,
+            $this->workingDirectory,
             $this->tty,
             $this->pty,
             $this->timeout,
@@ -194,7 +194,7 @@ class Context implements \ArrayAccess
         return new self(
             $this->data,
             $this->environment,
-            $this->currentDirectory,
+            $this->workingDirectory,
             $this->tty,
             $this->pty,
             $this->timeout,
@@ -211,7 +211,7 @@ class Context implements \ArrayAccess
         return new self(
             $this->data,
             $this->environment,
-            $this->currentDirectory,
+            $this->workingDirectory,
             $this->tty,
             $this->pty,
             $this->timeout,
@@ -228,7 +228,7 @@ class Context implements \ArrayAccess
         return new self(
             $this->data,
             $this->environment,
-            $this->currentDirectory,
+            $this->workingDirectory,
             $this->tty,
             $this->pty,
             $this->timeout,
@@ -245,7 +245,7 @@ class Context implements \ArrayAccess
         return new self(
             $this->data,
             $this->environment,
-            $this->currentDirectory,
+            $this->workingDirectory,
             $this->tty,
             $this->pty,
             $this->timeout,
