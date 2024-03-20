@@ -3,7 +3,7 @@
 namespace Castor\Event;
 
 use Castor\Console\Application;
-use Castor\TaskDescriptorCollection;
+use Castor\Descriptor\TaskDescriptorCollection;
 
 class AfterApplicationInitializationEvent
 {

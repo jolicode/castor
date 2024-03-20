@@ -5,6 +5,7 @@ namespace Castor\Fingerprint;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 
+/** @internal */
 class FingerprintHelper
 {
     private const SUFFIX = '.fingerprint';

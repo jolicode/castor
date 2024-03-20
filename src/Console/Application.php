@@ -4,23 +4,23 @@ namespace Castor\Console;
 
 use Castor\Console\Command\SymfonyTaskCommand;
 use Castor\Console\Command\TaskCommand;
+use Castor\Console\Output\SectionOutput;
+use Castor\Console\Output\VerbosityLevel;
 use Castor\Context;
-use Castor\ContextDescriptor;
-use Castor\ContextGeneratorDescriptor;
 use Castor\ContextRegistry;
+use Castor\Descriptor\ContextDescriptor;
+use Castor\Descriptor\ContextGeneratorDescriptor;
+use Castor\Descriptor\ListenerDescriptor;
+use Castor\Descriptor\SymfonyTaskDescriptor;
+use Castor\Descriptor\TaskDescriptor;
+use Castor\Descriptor\TaskDescriptorCollection;
 use Castor\Event\AfterApplicationInitializationEvent;
 use Castor\EventDispatcher;
 use Castor\ExpressionLanguage;
 use Castor\Fingerprint\FingerprintHelper;
 use Castor\FunctionFinder;
 use Castor\GlobalHelper;
-use Castor\ListenerDescriptor;
-use Castor\PlatformUtil;
-use Castor\SectionOutput;
-use Castor\SymfonyTaskDescriptor;
-use Castor\TaskDescriptor;
-use Castor\TaskDescriptorCollection;
-use Castor\VerbosityLevel;
+use Castor\PlatformHelper;
 use Castor\WaitForHelper;
 use Monolog\Logger;
 use Psr\Cache\CacheItemPoolInterface;
@@ -203,7 +203,7 @@ class Application extends SymfonyApplication
         $contextNames = $this->contextRegistry->getNames();
 
         if ($contextNames) {
-            $defaultContext = PlatformUtil::getEnv('CASTOR_CONTEXT') ?: $this->contextRegistry->getDefaultName();
+            $defaultContext = PlatformHelper::getEnv('CASTOR_CONTEXT') ?: $this->contextRegistry->getDefaultName();
 
             $this->getDefinition()->addOption(new InputOption(
                 'context',

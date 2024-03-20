@@ -3,6 +3,7 @@
 namespace Castor;
 
 use Castor\Console\Application;
+use Castor\Console\Output\SectionOutput;
 use Monolog\Logger;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Console\Command\Command;

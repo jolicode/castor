@@ -2,6 +2,7 @@
 
 namespace Castor;
 
+use Castor\Descriptor\ContextDescriptor;
 use Castor\Exception\FunctionConfigurationException;
 
 /** @internal */

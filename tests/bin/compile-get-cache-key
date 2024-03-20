@@ -4,7 +4,7 @@
 require __DIR__ . '/../../vendor/autoload.php';
 
 use Castor\Console\Command\CompileCommand;
-use Castor\PlatformUtil;
+use Castor\PlatformHelper;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 
@@ -14,7 +14,7 @@ $command = (new class() extends CompileCommand {
         }}
     )
     ->setCode(Closure::bind(
-        fn($input) => (print PlatformUtil::getCacheDirectory() . '/castor-php-static-compiler/' . $this->generatePHPBuildCacheKey($input)) && 0,
+        fn($input) => (print PlatformHelper::getCacheDirectory() . '/castor-php-static-compiler/' . $this->generatePHPBuildCacheKey($input)) && 0,
         null,
         CompileCommand::class
     ))

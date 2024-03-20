@@ -14,7 +14,7 @@ use Castor\Listener\GenerateStubsListener;
 use Castor\Listener\UpdateCastorListener;
 use Castor\Monolog\Processor\ProcessProcessor;
 use Castor\PathHelper;
-use Castor\PlatformUtil;
+use Castor\PlatformHelper;
 use Castor\Stub\StubsGenerator;
 use Castor\WaitForHelper;
 use Monolog\Logger;
@@ -45,7 +45,7 @@ class ApplicationFactory
                 'User-Agent' => 'Castor/' . Application::VERSION,
             ],
         ]);
-        $cacheDir = PlatformUtil::getCacheDirectory();
+        $cacheDir = PlatformHelper::getCacheDirectory();
         $cache = new FilesystemAdapter(directory: $cacheDir);
         $logger = new Logger('castor', [], [new ProcessProcessor()]);
         $fs = new Filesystem();
