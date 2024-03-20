@@ -4,6 +4,7 @@ namespace Castor\Console;
 
 use Castor\Console\Command\SymfonyTaskCommand;
 use Castor\Console\Command\TaskCommand;
+use Castor\Console\Output\SectionOutput;
 use Castor\Context;
 use Castor\ContextRegistry;
 use Castor\Descriptor\ContextDescriptor;
@@ -18,7 +19,6 @@ use Castor\Fingerprint\FingerprintHelper;
 use Castor\FunctionFinder;
 use Castor\GlobalHelper;
 use Castor\PlatformUtil;
-use Castor\SectionOutput;
 use Castor\TaskDescriptorCollection;
 use Castor\VerbosityLevel;
 use Castor\WaitForHelper;
