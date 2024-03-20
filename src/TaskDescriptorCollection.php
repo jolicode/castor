@@ -2,6 +2,9 @@
 
 namespace Castor;
 
+use Castor\Descriptor\SymfonyTaskDescriptor;
+use Castor\Descriptor\TaskDescriptor;
+
 class TaskDescriptorCollection
 {
     /**

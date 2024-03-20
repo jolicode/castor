@@ -1,6 +1,6 @@
 <?php
 
-namespace Castor;
+namespace Castor\Descriptor;
 
 use Castor\Attribute\AsContext;
 

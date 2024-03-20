@@ -1,8 +1,9 @@
 <?php
 
-namespace Castor;
+namespace Castor\Descriptor;
 
 use Castor\Attribute\AsContextGenerator;
+use Castor\Context;
 
 /** @internal */
 class ContextGeneratorDescriptor
