@@ -20,7 +20,7 @@ use Castor\ExpressionLanguage;
 use Castor\Fingerprint\FingerprintHelper;
 use Castor\FunctionFinder;
 use Castor\GlobalHelper;
-use Castor\PlatformUtil;
+use Castor\PlatformHelper;
 use Castor\WaitForHelper;
 use Monolog\Logger;
 use Psr\Cache\CacheItemPoolInterface;
@@ -203,7 +203,7 @@ class Application extends SymfonyApplication
         $contextNames = $this->contextRegistry->getNames();
 
         if ($contextNames) {
-            $defaultContext = PlatformUtil::getEnv('CASTOR_CONTEXT') ?: $this->contextRegistry->getDefaultName();
+            $defaultContext = PlatformHelper::getEnv('CASTOR_CONTEXT') ?: $this->contextRegistry->getDefaultName();
 
             $this->getDefinition()->addOption(new InputOption(
                 'context',

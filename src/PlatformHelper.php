@@ -9,7 +9,7 @@ use JoliCode\PhpOsHelper\OsHelper;
  *
  * @internal
  */
-final class PlatformUtil
+final class PlatformHelper
 {
     /**
      * getenv() equivalent but reads from the runtime global variables first.

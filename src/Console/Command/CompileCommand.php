@@ -3,7 +3,7 @@
 namespace Castor\Console\Command;
 
 use Castor\PathHelper;
-use Castor\PlatformUtil;
+use Castor\PlatformHelper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -55,7 +55,7 @@ class CompileCommand extends Command
 
         $phpBuildCacheKey = $this->generatePHPBuildCacheKey($input);
 
-        $spcBinaryPath = PlatformUtil::getCacheDirectory() . '/castor-php-static-compiler/' . $phpBuildCacheKey . '/spc';
+        $spcBinaryPath = PlatformHelper::getCacheDirectory() . '/castor-php-static-compiler/' . $phpBuildCacheKey . '/spc';
         $spcBinaryDir = \dirname($spcBinaryPath);
 
         $this->setupSPC(
