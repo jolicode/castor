@@ -28,6 +28,10 @@ curl "https://github.com/jolicode/castor/releases/latest/download/castor.linux-a
     (echo "Could not install castor. Is the target directory writeable?" && (exit 1))
 ```
 
+> [!CAUTION]
+> When using Windows Subsystem for Linux (WSL), you should still use the
+> Windows phar instead of the Linux phar.
+
 #### Phar for MacOS with Apple Silicon
 
 For Mac with Apple Silicon processors (M1, M2, M3, etc).
