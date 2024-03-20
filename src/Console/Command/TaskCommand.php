@@ -8,7 +8,7 @@ use Castor\Attribute\AsOption;
 use Castor\Attribute\AsRawTokens;
 use Castor\Attribute\AsTask;
 use Castor\Console\Application;
-use Castor\Console\Input\Input;
+use Castor\Console\Input\GetRawTokenTrait;
 use Castor\Event\AfterExecuteTaskEvent;
 use Castor\Event\BeforeExecuteTaskEvent;
 use Castor\EventDispatcher;
@@ -26,6 +26,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 /** @internal */
 class TaskCommand extends Command implements SignalableCommandInterface
 {
+    use GetRawTokenTrait;
+
     /**
      * @var array<string, string>
      */
@@ -150,29 +152,13 @@ class TaskCommand extends Command implements SignalableCommandInterface
         }
     }
 
-    /**
-     * @param Input $input
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $args = [];
 
         foreach ($this->function->getParameters() as $parameter) {
             if ($parameter->getAttributes(AsRawTokens::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null) {
-                $parameters = [];
-                $keep = false;
-                foreach ($input->getRawTokens() as $value) {
-                    if ($value === $input->getFirstArgument()) {
-                        $keep = true;
-
-                        continue;
-                    }
-                    if ($keep) {
-                        $parameters[] = $value;
-                    }
-                }
-
-                $args[] = $parameters;
+                $args[] = $this->getRawTokens($input);
 
                 continue;
             }

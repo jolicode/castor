@@ -3,10 +3,10 @@
 namespace Castor;
 
 use Castor\Console\Application;
-use Castor\Console\Input\Input;
 use Monolog\Logger;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
@@ -57,7 +57,7 @@ class GlobalHelper
         return self::getApplication()->logger;
     }
 
-    public static function getInput(): Input
+    public static function getInput(): InputInterface
     {
         return self::getApplication()->getInput();
     }
