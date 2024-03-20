@@ -52,6 +52,7 @@ The methods `writeFile()`, `writeWithFinder()` and `writeGlob()` accept a second
 parameter `$strategy` to specify on with criteria the hash should be based on.
 This parameter is a `Castor\Fingerprint\FileHashStrategy` enum that contains two
 values:
+
 - `Content` will make the hash dependent on the file's content
 - `MTimes` will make the hash depend on the file's last modification time. This
 is the default strategy.
