@@ -2,6 +2,8 @@
 
 namespace Castor;
 
+use Castor\Console\Output\VerbosityLevel;
+
 class Context implements \ArrayAccess
 {
     public readonly string $workingDirectory;

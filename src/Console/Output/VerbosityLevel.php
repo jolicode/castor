@@ -1,6 +1,6 @@
 <?php
 
-namespace Castor;
+namespace Castor\Console\Output;
 
 use Symfony\Component\Console\Output\OutputInterface;
 
