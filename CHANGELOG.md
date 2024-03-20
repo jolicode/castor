@@ -5,6 +5,7 @@
 * Add a option `ignoreValidationErrors` on `AsTask` attribute to ignore
   parameters & options validation errors
 * Add a way to merge an application `box.json` config file used by `castor:repack`command
+* Add support for PHP 8.4
 * Deprecate `Context::withPath()` in favor of `Context::withWorkingDirectory()`
 * Deprecate `path` argument in `capture()`, `exit_code()`, `run()`, `with()` in favor of `workingDirectory`
 
