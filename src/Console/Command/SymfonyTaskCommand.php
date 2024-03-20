@@ -3,7 +3,7 @@
 namespace Castor\Console\Command;
 
 use Castor\Attribute\AsSymfonyTask;
-use Castor\Console\Input\Input;
+use Castor\Console\Input\GetRawTokenTrait;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,6 +14,8 @@ use Symfony\Component\Process\Process;
 /** @internal */
 class SymfonyTaskCommand extends Command
 {
+    use GetRawTokenTrait;
+
     private const OPTIONS_FILTERS = [
         '--help',
         '--quiet',
@@ -68,14 +70,9 @@ class SymfonyTaskCommand extends Command
         }
     }
 
-    /**
-     * @param Input $input
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $extra = array_filter($input->getRawTokens(), fn ($item) => $item !== $this->taskAttribute->name);
-
-        $p = new Process([...$this->taskAttribute->console, $this->taskAttribute->originalName, ...$extra]);
+        $p = new Process([...$this->taskAttribute->console, $this->taskAttribute->originalName, ...$this->getRawTokens($input)]);
         $p->run(fn ($type, $bytes) => print ($bytes));
 
         return $p->getExitCode() ?? 0;

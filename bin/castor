@@ -2,7 +2,6 @@
 <?php
 
 use Castor\Console\ApplicationFactory;
-use Castor\Console\Input\Input;
 
 if (file_exists($file = __DIR__ . '/../vendor/autoload.php')) {
     require $file;
@@ -12,4 +11,4 @@ if (file_exists($file = __DIR__ . '/../vendor/autoload.php')) {
     throw new \RuntimeException('Unable to find autoloader.');
 }
 
-ApplicationFactory::create()->run(new Input());
+ApplicationFactory::create()->run();
