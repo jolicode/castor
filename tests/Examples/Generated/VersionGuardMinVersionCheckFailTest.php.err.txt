@@ -1,5 +1,5 @@
 
-In functions.php line XXXX:
+In version-guard.php line 18:
                                                                                                                   
   This project requires Castor in version v999.0.0 or greater, you are using vX.Y.Z. Please consider upgrading.  
                                                                                                                   
