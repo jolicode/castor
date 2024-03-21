@@ -1,8 +1,8 @@
 
 In functions.php line XXXX:
-                                                                                                
-  Castor requires at least version v999.0.0, you are using vX.Y.Z. Please consider upgrading.  
-                                                                                                
+                                                                                                                  
+  This project requires Castor in version v999.0.0 or greater, you are using vX.Y.Z. Please consider upgrading.  
+                                                                                                                  
 
 version-guard:min-version-check-fail
 
