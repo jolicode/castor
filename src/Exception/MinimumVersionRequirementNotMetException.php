@@ -8,6 +8,6 @@ class MinimumVersionRequirementNotMetException extends \RuntimeException
         readonly string $requiredVersion,
         readonly string $currentVersion,
     ) {
-        parent::__construct("Castor requires at least version {$requiredVersion}, you are using {$currentVersion}. Please consider upgrading.");
+        parent::__construct("This project requires Castor in version {$requiredVersion} or greater, you are using {$currentVersion}. Please consider upgrading.");
     }
 }
