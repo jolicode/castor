@@ -3,6 +3,7 @@
 namespace Castor;
 
 use Castor\Console\Output\VerbosityLevel;
+use Castor\VerbosityLevel as LegacyVerbosityLevel;
 
 class Context implements \ArrayAccess
 {
@@ -23,7 +24,7 @@ class Context implements \ArrayAccess
         public readonly bool $quiet = false,
         public readonly bool $allowFailure = false,
         public readonly bool $notify = false,
-        public readonly VerbosityLevel $verbosityLevel = VerbosityLevel::NOT_CONFIGURED,
+        public readonly VerbosityLevel|LegacyVerbosityLevel $verbosityLevel = VerbosityLevel::NOT_CONFIGURED,
         // Do not use this argument, it is only used internally by the application
         public readonly string $name = '',
     ) {
@@ -225,7 +226,7 @@ class Context implements \ArrayAccess
         );
     }
 
-    public function withVerbosityLevel(VerbosityLevel $verbosityLevel): self
+    public function withVerbosityLevel(VerbosityLevel|LegacyVerbosityLevel $verbosityLevel): self
     {
         return new self(
             $this->data,
