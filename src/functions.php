@@ -1092,7 +1092,7 @@ function guard_min_version(string $minVersion): void
 
     $minVersion = u($minVersion)->ensureStart('v')->toString();
     if (version_compare($currentVersion, $minVersion, '<')) {
-        throw new MinimumVersionRequirementNotMetException($minVersion, $currentVersion);
+        throw fix_exception(new MinimumVersionRequirementNotMetException($minVersion, $currentVersion));
     }
 }
 
