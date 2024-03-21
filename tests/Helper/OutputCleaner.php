@@ -15,6 +15,7 @@ final class OutputCleaner
         $string = preg_replace('{In ContextRegistry.php line \d+:}m', 'In ContextRegistry.php line XXXX:', $string);
         $string = preg_replace('{you are using v\d+.\d+.\d+.}m', 'you are using vX.Y.Z.', $string);
         $string = preg_replace('{you are using v\d+.\d+.\d+.}m', 'you are using vX.Y.Z.', $string);
+        $string = preg_replace("{\d{2}:\d{2}:\d{2} WARNING   \[castor\] Remote imports are disabled, skipping import of \".*\".\n}m", '', $string);
 
         return str_replace(\dirname(__DIR__, 2), '...', $string);
     }
