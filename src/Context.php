@@ -7,6 +7,7 @@ use Castor\VerbosityLevel as LegacyVerbosityLevel;
 
 class Context implements \ArrayAccess
 {
+    public readonly bool $pty;
     public readonly string $workingDirectory;
 
     /**
@@ -19,7 +20,7 @@ class Context implements \ArrayAccess
         public readonly array $environment = [],
         ?string $workingDirectory = null,
         public readonly bool $tty = false,
-        public readonly bool $pty = true,
+        ?bool $pty = null,
         public readonly ?float $timeout = null,
         public readonly bool $quiet = false,
         public readonly bool $allowFailure = false,
@@ -28,6 +29,7 @@ class Context implements \ArrayAccess
         // Do not use this argument, it is only used internally by the application
         public readonly string $name = '',
     ) {
+        $this->pty = $pty ?? (PHP_OS_FAMILY != "Windows");
         $this->workingDirectory = $workingDirectory ?? PathHelper::getRoot();
     }
 
