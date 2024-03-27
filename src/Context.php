@@ -29,7 +29,7 @@ class Context implements \ArrayAccess
         // Do not use this argument, it is only used internally by the application
         public readonly string $name = '',
     ) {
-        $this->pty = $pty ?? (PHP_OS_FAMILY != "Windows");
+        $this->pty = $pty ?? (\PHP_OS_FAMILY != "Windows");
         $this->workingDirectory = $workingDirectory ?? PathHelper::getRoot();
     }
 
