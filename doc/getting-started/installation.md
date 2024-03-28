@@ -165,21 +165,10 @@ jobs:
 
 ## Autocomplete
 
-If you use bash, you can enable autocomplete for castor by running the
-following task:
+Castor provides a built-in autocomplete to ease its usage in shell.
 
-```
-castor completion | sudo tee /etc/bash_completion.d/castor
-```
-
-Then reload your shell.
-
-Others shells are also supported (zsh, fish, etc). To get the list of supported
-shells and their dedicated instructions, run:
-
-```
-castor completion --help
-```
+See [the dedicated documentation](../going-further/interacting-with-castor/autocomplete.md)
+to see how to install it, and also how to autocomplete your arguments.
 
 ## Stubs
 
