@@ -16,7 +16,7 @@ etc., but it leverages PHP's scripting capabilities and its extensive library ec
 It comes with many features to make your life easier:
 
 * Seamless parsing of **arguments and options**, simplifying input handling
-* **Autocomplete** support for faster and error-free typing
+* **[Autocomplete](going-further/interacting-with-castor/autocomplete.md)** support for faster and error-free typing
 * A built-in list of useful functions:
     * [`run()`](getting-started/run.md#the-run-function): Runs external processes, enabling seamless integration with external tools
     * [`parallel()`](going-further/helpers/parallel.md#the-parallel-function): Parallelizes process execution to maximize resource utilization

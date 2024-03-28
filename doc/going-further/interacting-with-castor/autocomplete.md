@@ -20,7 +20,7 @@ castor completion --help
 
 ## Autocomplete arguments
 
-You have to options to make your arguments autocompleted.
+You have two options to make your arguments autocompleted.
 
 ### Static suggestions
 
@@ -78,6 +78,7 @@ function get_argument_autocompletion(CompletionInput $input): array
 >[!NOTE]
 > Because the syntax `my_callback(...)` is not allowed on attribute, you need to
 > specify the `autocomplete` callback with either:
+>
 > - the string syntax (`my_namespace\my_function` or `'MyNamespace\MyClass::myFunction'`)
 > - the array syntax (`['MyNamespace\MyClass', 'myFunction']`).
 
