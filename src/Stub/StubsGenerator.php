@@ -61,6 +61,7 @@ final class StubsGenerator
         // Add some very frequently used classes
         $frequentlyUsedClasses = [
             \Symfony\Component\Console\Application::class,
+            \Symfony\Component\Console\Completion\CompletionInput::class,
             \Symfony\Component\Console\Input\InputArgument::class,
             \Symfony\Component\Console\Input\InputInterface::class,
             \Symfony\Component\Console\Input\InputOption::class,

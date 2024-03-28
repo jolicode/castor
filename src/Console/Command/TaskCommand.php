@@ -117,7 +117,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
                         $mode,
                         $taskArgumentAttribute->description,
                         $parameter->isOptional() ? $parameter->getDefaultValue() : null,
-                        $taskArgumentAttribute->suggestedValues,
+                        $this->getSuggestedValues($taskArgumentAttribute),
                     );
                 } elseif ($taskArgumentAttribute instanceof AsOption) {
                     if ('verbose' === $name) {
@@ -143,7 +143,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
                         $mode,
                         $taskArgumentAttribute->description,
                         $defaultValue,
-                        $taskArgumentAttribute->suggestedValues,
+                        $this->getSuggestedValues($taskArgumentAttribute),
                     );
                 }
             } catch (LogicException $e) {
@@ -219,5 +219,25 @@ class TaskCommand extends Command implements SignalableCommandInterface
     private function getParameterName(\ReflectionParameter $parameter): string
     {
         return $this->argumentsMap[$parameter->getName()];
+    }
+
+    /**
+     * @return array<string>|\Closure
+     */
+    private function getSuggestedValues(AsArgument|AsOption $attribute): array|\Closure
+    {
+        if ($attribute->suggestedValues && null !== $attribute->autocomplete) {
+            throw new FunctionConfigurationException(sprintf('You cannot define both "suggestedValues" and "autocomplete" option on parameter "%s".', $attribute->name), $this->function);
+        }
+
+        if (null === $attribute->autocomplete) {
+            return $attribute->suggestedValues;
+        }
+
+        if (!\is_callable($attribute->autocomplete)) {
+            throw new FunctionConfigurationException(sprintf('The value provided in the "autocomplete" option on parameter "%s" is not callable.', $attribute->name), $this->function);
+        }
+
+        return \Closure::fromCallable($attribute->autocomplete);
     }
 }

@@ -6,6 +6,7 @@ use Castor\Attribute\AsArgument;
 use Castor\Attribute\AsOption;
 use Castor\Attribute\AsRawTokens;
 use Castor\Attribute\AsTask;
+use Symfony\Component\Console\Completion\CompletionInput;
 
 use function Castor\io;
 
@@ -41,4 +42,24 @@ function another_args(
 function passthru(#[AsRawTokens] array $rawTokens): void
 {
     var_dump($rawTokens);
+}
+
+#[AsTask(description: 'Provides autocomplete for an argument')]
+function autocomplete_argument(
+    #[AsArgument(name: 'argument', description: 'This is an argument with autocompletion', autocomplete: 'args\get_argument_autocompletion')]
+    string $argument,
+): void {
+    var_dump(\func_get_args());
+}
+
+/** @return string[] */
+function get_argument_autocompletion(CompletionInput $input): array
+{
+    // You can search for a file on the filesystem, make a network call, etc.
+
+    return [
+        'foo',
+        'bar',
+        'baz',
+    ];
 }
