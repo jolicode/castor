@@ -60,7 +60,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
         return array_keys($this->taskAttribute->onSignals);
     }
 
-    public function handleSignal(int $signal): int|false
+    public function handleSignal(int $signal, int|false $previousExitCode = 0): int|false
     {
         if (!\array_key_exists($signal, $this->taskAttribute->onSignals)) {
             return false;
