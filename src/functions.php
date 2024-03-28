@@ -8,8 +8,6 @@ use Castor\Exception\ExecutableNotFoundException;
 use Castor\Exception\MinimumVersionRequirementNotMetException;
 use Castor\Exception\WaitFor\ExitedBeforeTimeoutException;
 use Castor\Exception\WaitFor\TimeoutReachedException;
-use Castor\Remote\Exception\ImportError;
-use Castor\Remote\Exception\InvalidImportFormat;
 use Joli\JoliNotif\Notification;
 use Joli\JoliNotif\NotifierFactory;
 use JoliCode\PhpOsHelper\OsHelper;
@@ -776,70 +774,7 @@ function http_client(): HttpClientInterface
  */
 function import(string $path, ?string $file = null, ?string $version = null, ?string $vcs = null, ?array $source = null): void
 {
-    $scheme = parse_url($path, \PHP_URL_SCHEME);
-
-    if ($scheme) {
-        try {
-            GlobalHelper::getApplication()->importer->importFunctionsFrom(
-                $scheme,
-                mb_substr($path, mb_strlen($scheme) + 3),
-                $file,
-                $version,
-                $vcs,
-                $source,
-            );
-
-            return;
-        } catch (InvalidImportFormat $e) {
-            throw fix_exception(new \InvalidArgumentException($e->getMessage(), 0, $e));
-        } catch (ImportError $e) {
-            log($e->getMessage(), 'warning');
-
-            return;
-        }
-    } elseif (null !== $file || null !== $version || null !== $vcs || null !== $source) {
-        throw fix_exception(new \InvalidArgumentException('The "file", "version", "vcs" and "source" arguments can only be used with a remote import.'));
-    }
-
-    if (!file_exists($path)) {
-        throw fix_exception(new \InvalidArgumentException(sprintf('The file "%s" does not exist.', $path)));
-    }
-
-    if (is_file($path)) {
-        castor_require($path);
-    }
-
-    if (is_dir($path)) {
-        $files = Finder::create()
-            ->files()
-            ->name('*.php')
-            ->in($path)
-        ;
-
-        foreach ($files as $file) {
-            castor_require($file->getPathname());
-        }
-    }
-}
-
-/**
- * Remove the last frame (the call to run() to display a nice message to the end user.
- *
- * @internal
- */
-function fix_exception(\Exception $exception): \Exception
-{
-    $lastFrame = $exception->getTrace()[0];
-    foreach (['file', 'line'] as $key) {
-        if (!\array_key_exists($key, $lastFrame)) {
-            continue;
-        }
-        $r = new \ReflectionProperty(\Exception::class, $key);
-        $r->setAccessible(true);
-        $r->setValue($exception, $lastFrame[$key]);
-    }
-
-    return $exception;
+    GlobalHelper::getApplication()->importer->import($path, $file, $version, $vcs, $source);
 }
 
 /**

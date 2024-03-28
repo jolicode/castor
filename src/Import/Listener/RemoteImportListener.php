@@ -1,16 +1,16 @@
 <?php
 
-namespace Castor\Remote\Listener;
+namespace Castor\Import\Listener;
 
 use Castor\Event\AfterApplicationInitializationEvent;
-use Castor\Remote\Importer;
+use Castor\Import\Remote\PackageImporter;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /** @internal */
 class RemoteImportListener implements EventSubscriberInterface
 {
     public function __construct(
-        private readonly Importer $importer,
+        private readonly PackageImporter $packageImporter,
     ) {
     }
 
@@ -23,6 +23,6 @@ class RemoteImportListener implements EventSubscriberInterface
 
     public function afterInitialize(AfterApplicationInitializationEvent $event): void
     {
-        $this->importer->fetchPackages($event->application->getInput());
+        $this->packageImporter->fetchPackages($event->application->getInput());
     }
 }

@@ -75,7 +75,7 @@ import('composer://vendor-name/project-name', source: [
 ```
 
 > [!NOTE]
-> The "vendor-name/project-name" name can be whatever you want and we only be
+> The "vendor-name/project-name" name can be whatever you want, and will only be
 > used internally by Castor and Composer to make the repository behave like a
 > normal Composer package.
 

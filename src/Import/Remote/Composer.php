@@ -1,19 +1,17 @@
 <?php
 
-namespace Castor\Remote;
+namespace Castor\Import\Remote;
 
 use Castor\Console\Application;
 use Castor\Fingerprint\FingerprintHelper;
 use Castor\GlobalHelper;
+use Castor\Import\Exception\ComposerError;
 use Castor\PathHelper;
-use Castor\Remote\Exception\ComposerError;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Helper\ProgressIndicator;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
-
-use function Castor\fingerprint;
 
 /** @internal */
 class Composer

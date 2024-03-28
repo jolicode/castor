@@ -16,7 +16,9 @@ final class OutputCleaner
         $string = preg_replace('{In ContextRegistry.php line \d+:}m', 'In ContextRegistry.php line XXXX:', $string);
         $string = preg_replace('{you are using v\d+.\d+.\d+.}m', 'you are using vX.Y.Z.', $string);
         $string = preg_replace('{^\d\d:\d\d:\d\d }m', 'hh:mm:ss ', $string);
-        $string = preg_replace("{\d{2}:\d{2}:\d{2} WARNING   \[castor\] Remote imports are disabled, skipping import of \".*\".\n}m", '', $string);
+
+        // Clean the warning on tasks when remote imports are disabled
+        $string = preg_replace('{\d{2}:\d{2}:\d{2} WARNING   \[castor\] Could not import "[\w:/\.-]*" in "[\w:/\.-]*" on line \d+. Reason: Remote imports are disabled\.}m', '', $string);
 
         // Avoid spacing issues
         $string = ltrim($string, "\n"); // Trim output start to avoid empty lines

@@ -1,20 +1,19 @@
 <?php
 
-namespace Castor\Remote;
+namespace Castor\Import\Remote;
 
 use Castor\Console\Application;
+use Castor\Import\Exception\ImportError;
+use Castor\Import\Exception\InvalidImportFormat;
+use Castor\Import\Exception\RemoteNotAllowed;
 use Castor\PathHelper;
-use Castor\Remote\Exception\ImportError;
-use Castor\Remote\Exception\InvalidImportFormat;
 use Psr\Log\LoggerInterface;
-
 use Symfony\Component\Console\Input\InputInterface;
-use function Castor\import;
 
 /** @internal */
-class Importer
+class PackageImporter
 {
-    private readonly Application $application;
+    private ?Application $application = null;
 
     public function __construct(
         private readonly LoggerInterface $logger,
@@ -24,22 +23,16 @@ class Importer
     ) {
     }
 
-    public function setApplication(Application $application)
+    public function setApplication(Application $application): void
     {
         $this->application = $application;
     }
 
-    /**
-     * @param ?array{
-     *     url?: string,
-     *     type?: "git" | "svn",
-     *     reference?: string,
-     * } $source
-     */
-    public function importFunctionsFrom(string $scheme, string $package, ?string $file = null, ?string $version = null, ?string $vcs = null, ?array $source = null): void
+    /** @phpstan-param ImportSource $source */
+    public function importPackage(string $scheme, string $package, ?string $file = null, ?string $version = null, ?string $vcs = null, ?array $source = null): void
     {
         if (!$this->allowsRemote()) {
-            throw new ImportError(sprintf('Remote imports are disabled, skipping import of "%s".', $package));
+            throw new RemoteNotAllowed('Remote imports are disabled.');
         }
 
         if (isset($this->imports[$package]) && $this->imports[$package]->version !== $version) {
@@ -78,6 +71,10 @@ class Importer
 
     public function fetchPackages(InputInterface $input): void
     {
+        if (!$this->application) {
+            throw new \RuntimeException('The application must be set before calling fetchPackages()');
+        }
+
         if (!$this->imports) {
             $this->composer->remove();
 
@@ -100,7 +97,7 @@ class Importer
 
         foreach ($this->imports as $package => $import) {
             foreach ($import->getFiles() as $file) {
-                import(PathHelper::getRoot() . Composer::VENDOR_DIR . $package . '/' . ($file ?? ''));
+                $this->application->importer->import(PathHelper::getRoot() . Composer::VENDOR_DIR . $package . '/' . ($file ?? ''));
             }
         }
     }
@@ -157,6 +154,10 @@ class Importer
             return false;
         }
 
+        if (!$this->application) {
+            throw new \RuntimeException('The application must be set before calling allowsRemote()');
+        }
+
         $input = $this->application->getInput();
 
         // Need to look for the raw options as the input is not yet parsed
@@ -166,7 +167,7 @@ class Importer
 
 class Import
 {
-    /** @var string[] */
+    /** @var array<string|null> */
     private array $files;
 
     public function __construct(
@@ -174,11 +175,12 @@ class Import
     ) {
     }
 
-    public function addFile(?string $file = null)
+    public function addFile(?string $file = null): void
     {
         $this->files[] = $file;
     }
 
+    /** @return array<string|null> */
     public function getFiles(): array
     {
         return array_unique($this->files);

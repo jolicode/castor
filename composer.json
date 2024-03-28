@@ -18,7 +18,10 @@
         "psr-4": {
             "Castor\\": "src/"
         },
-        "files": ["src/functions.php"]
+        "files": [
+            "src/functions.php",
+            "src/functions-internal.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

@@ -9,7 +9,7 @@ class AutocompleteInvalidTest extends TaskTestCase
     // no task
     public function test(): void
     {
-        $process = $this->runTask([], '{{ base }}/tests/Examples/fixtures/broken/autocomplete-invalid');
+        $process = $this->runTask([], '{{ base }}/tests/Examples/fixtures/broken/autocomplete-invalid', needRemote: true);
 
         $this->assertSame(1, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());

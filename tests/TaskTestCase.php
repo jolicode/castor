@@ -32,10 +32,8 @@ abstract class TaskTestCase extends TestCase
             $castorBin = __DIR__ . '/bin/castor';
             $testName = debug_backtrace()[1]['class'] . '::' . debug_backtrace()[1]['function'];
             $outputFilename = stream_get_meta_data(tmpfile())['uri'];
-            $extraEnv = [
-                'CC_OUTPUT_FILENAME' => $outputFilename,
-                'CC_TEST_NAME' => $testName,
-            ];
+            $extraEnv['CC_OUTPUT_FILENAME'] = $outputFilename;
+            $extraEnv['CC_TEST_NAME'] = $testName;
         }
 
         $process = new Process(

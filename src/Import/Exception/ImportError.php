@@ -1,6 +1,6 @@
 <?php
 
-namespace Castor\Remote\Exception;
+namespace Castor\Import\Exception;
 
 class ImportError extends \RuntimeException
 {

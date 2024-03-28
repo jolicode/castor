@@ -10,15 +10,15 @@ use Castor\EventDispatcher;
 use Castor\ExpressionLanguage;
 use Castor\Fingerprint\FingerprintHelper;
 use Castor\FunctionFinder;
-use Castor\HasherHelper;
+use Castor\Import\Importer;
+use Castor\Import\Listener\RemoteImportListener;
+use Castor\Import\Remote\Composer;
+use Castor\Import\Remote\PackageImporter;
 use Castor\Listener\GenerateStubsListener;
 use Castor\Listener\UpdateCastorListener;
 use Castor\Monolog\Processor\ProcessProcessor;
 use Castor\PathHelper;
 use Castor\PlatformHelper;
-use Castor\Remote\Composer;
-use Castor\Remote\Importer;
-use Castor\Remote\Listener\RemoteImportListener;
 use Castor\Stub\StubsGenerator;
 use Castor\WaitForHelper;
 use Monolog\Logger;
@@ -54,7 +54,8 @@ class ApplicationFactory
         $logger = new Logger('castor', [], [new ProcessProcessor()]);
         $fs = new Filesystem();
         $fingerprintHelper = new FingerprintHelper($cache);
-        $importer = new Importer($logger, new Composer($fs, $logger, $fingerprintHelper));
+        $packageImporter = new PackageImporter($logger, new Composer($fs, $logger, $fingerprintHelper));
+        $importer = new Importer($packageImporter, $logger);
         $eventDispatcher = new EventDispatcher(logger: $logger);
         $eventDispatcher->addSubscriber(new UpdateCastorListener(
             $cache,
@@ -64,9 +65,9 @@ class ApplicationFactory
         $eventDispatcher->addSubscriber(new GenerateStubsListener(
             new StubsGenerator($rootDir, $logger),
         ));
-        $eventDispatcher->addSubscriber(new RemoteImportListener($importer));
+        $eventDispatcher->addSubscriber(new RemoteImportListener($packageImporter));
 
-        /** @var SymfonyApplication */
+        /** @var Application */
         // @phpstan-ignore-next-line
         $application = new $class(
             $rootDir,
@@ -84,7 +85,7 @@ class ApplicationFactory
         );
 
         // Avoid dependency cycle
-        $importer->setApplication($application);
+        $packageImporter->setApplication($application);
 
         $application->setDispatcher($eventDispatcher);
         $application->add(new DebugCommand($rootDir, $cacheDir, $contextRegistry));
