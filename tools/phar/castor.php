@@ -11,6 +11,7 @@ use function Castor\run;
 function linux()
 {
     compile(fn () => run('vendor/bin/box compile -c box.linux-amd64.json', path: __DIR__));
+    compile(fn () => run('vendor/bin/box compile -c box.linux-arm64.json', path: __DIR__));
 }
 
 #[AsTask(description: 'Build phar for MacOS system')]
