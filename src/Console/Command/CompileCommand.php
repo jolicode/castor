@@ -58,12 +58,15 @@ class CompileCommand extends Command
         $spcBinaryPath = PlatformHelper::getCacheDirectory() . '/castor-php-static-compiler/' . $phpBuildCacheKey . '/spc';
         $spcBinaryDir = \dirname($spcBinaryPath);
 
+        $os = $input->getOption('os');
+        $arch = $input->getOption('arch');
+
         $this->setupSPC(
             $spcBinaryDir,
             $spcBinaryPath,
             $io,
-            $input->getOption('os'),
-            $input->getOption('arch'),
+            $os,
+            $arch,
         );
 
         if (!$this->fs->exists($spcBinaryDir . '/buildroot/bin/micro.sfx') || $input->getOption('php-rebuild')) {
@@ -82,7 +85,7 @@ class CompileCommand extends Command
             $this->buildPHP(
                 $spcBinaryPath,
                 $phpExtensions,
-                $input->getOption('arch'),
+                ('macos' === $os && 'aarch64' === $arch) ? 'arm64' : $arch,
                 $spcBinaryDir,
                 $io
             );

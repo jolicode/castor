@@ -2,7 +2,10 @@
 
 ## Not released yet
 
-* Add support for running Castor on Linux ARM64
+* Distribute static binaries `castor.darwin-arm64` automatically with the
+  release
+* Add support for running Castor on Linux arm64 and distribute the binary
+  `castor.linux-arm64.phar` automatically with the release
 * Add a bash installer to ease installation
 * Add a option `ignoreValidationErrors` on `AsTask` attribute to ignore
   parameters & options validation errors
