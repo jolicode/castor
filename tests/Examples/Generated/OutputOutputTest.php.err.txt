@@ -1,7 +1,6 @@
 
-            
-  Aborted.  
-            
+  Aborted.
+
 
 output:output
 

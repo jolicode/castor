@@ -1,9 +1,9 @@
 sh: 1: i_do_not_exist: not found
 
 In failure.php line 12:
-                                        
-  The command "i_do_not_exist" failed.  
-                                        
+
+  The command "i_do_not_exist" failed.
+
 
 failure:failure
 
