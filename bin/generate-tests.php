@@ -28,7 +28,13 @@ $application->setAutoExit(false);
 $application
     ->run(new ArrayInput(['command' => 'list', '--format' => 'json']), $o = new BufferedOutput())
 ;
-$applicationDescription = json_decode($o->fetch(), true);
+$json = $o->fetch();
+
+try {
+    $applicationDescription = json_decode($json, true, flags: \JSON_THROW_ON_ERROR);
+} catch (JsonException $e) {
+    throw new RuntimeException('Could not get the list of commands. You probably break something:' . $json, previous: $e);
+}
 
 $taskFilterList = [
     '_complete',
