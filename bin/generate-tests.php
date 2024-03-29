@@ -142,7 +142,7 @@ function add_test(array $args, string $class, ?string $cwd = null)
         [\PHP_BINARY,  __DIR__ . '/castor', '--no-ansi', ...$args],
         cwd: $cwd ? str_replace('{{ base }}', __DIR__ . '/..', $cwd) : __DIR__ . '/..',
         env: [
-            'COLUMNS' => 120,
+            'COLUMNS' => 1000,
             'ENDPOINT' => $_SERVER['ENDPOINT'],
         ],
         timeout: null,

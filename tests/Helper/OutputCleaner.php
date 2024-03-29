@@ -16,6 +16,10 @@ final class OutputCleaner
         $string = preg_replace('{you are using v\d+.\d+.\d+.}m', 'you are using vX.Y.Z.', $string);
         $string = preg_replace('{you are using v\d+.\d+.\d+.}m', 'you are using vX.Y.Z.', $string);
 
+        // Avoid spacing issues
+        $string = ltrim($string, "\n"); // Trim output start to avoid empty lines
+        $string = preg_replace('/ +$/m', '', $string); // Remove trailing space
+
         return str_replace(\dirname(__DIR__, 2), '...', $string);
     }
 }

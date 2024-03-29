@@ -1,24 +1,23 @@
-
 In parallel.php line 74:
-                        
-  This is an exception  
-                        
+
+  This is an exception
+
 
 parallel:exception
 
 
 In parallel.php line 72:
-                                
-  The command "exit 1" failed.  
-                                
+
+  The command "exit 1" failed.
+
 
 parallel:exception
 
 
 In functions.php line XXXX:
-                                                   
-  One or more exceptions were thrown in parallel.  
-                                                   
+
+  One or more exceptions were thrown in parallel.
+
 
 parallel:exception
 

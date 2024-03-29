@@ -1,3 +1,2 @@
-
- [ERROR] Could not find root "castor.php" file. Did you run castor in the right directory?                              
+ [ERROR] Could not find root "castor.php" file. Did you run castor in the right directory?
 

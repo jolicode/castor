@@ -1,8 +1,7 @@
-
 In TaskCommand.php line 238:
-                                                                                            
-  Function "autocomplete_argument()" is not properly configured:                            
-  The value provided in the "autocomplete" option on parameter "argument" is not callable.  
-  Defined in "castor.php" line 8.                                                           
-                                                                                            
+
+  Function "autocomplete_argument()" is not properly configured:
+  The value provided in the "autocomplete" option on parameter "argument" is not callable.
+  Defined in "castor.php" line 8.
+
 
