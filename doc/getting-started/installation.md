@@ -28,6 +28,9 @@ curl "https://github.com/jolicode/castor/releases/latest/download/castor.linux-a
     (echo "Could not install castor. Is the target directory writeable?" && (exit 1))
 ```
 
+> **Note:** Castor is also released for Linux running on ARM64 architectures.
+> In such case, replace `linux-amd64` with `linux-arm64` in the URL.
+
 > [!CAUTION]
 > When using Windows Subsystem for Linux (WSL), you should still use the
 > Windows phar instead of the Linux phar.

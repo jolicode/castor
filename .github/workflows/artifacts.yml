@@ -31,6 +31,13 @@ jobs:
           path: tools/phar/build/castor.linux-amd64.phar
           if-no-files-found: error
 
+      - name: Upload the Linux ARM64 phar
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'castor.linux-amd64.phar'
+          path: tools/phar/build/castor.linux-arm64.phar
+          if-no-files-found: error
+
       - name: Upload the Darwin AMD64 phar
         uses: actions/upload-artifact@v4
         with:
@@ -136,6 +143,7 @@ jobs:
           gh release upload ${{ github.ref_name }} ./build/castor.darwin-arm64.phar
           gh release upload ${{ github.ref_name }} ./build/castor.linux-amd64
           gh release upload ${{ github.ref_name }} ./build/castor.linux-amd64.phar
+          gh release upload ${{ github.ref_name }} ./build/castor.linux-arm64.phar
           gh release upload ${{ github.ref_name }} ./build/castor.windows-amd64.phar
         env:
           GH_TOKEN: ${{ github.token }}
