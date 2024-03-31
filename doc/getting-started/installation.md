@@ -5,7 +5,7 @@
 ### With the installer
 
 > [!TIP]
-> This is the recommended way to install Castor. It requires PHP >= 8.1.
+> This is the recommended way to install Castor on Linux and macOS. It requires PHP >= 8.1.
 
 ```bash
 curl "https://raw.githubusercontent.com/jolicode/castor/main/installer/bash-installer" | bash
