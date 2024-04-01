@@ -83,8 +83,6 @@ class UpdateCastorListener implements EventSubscriberInterface
                 $this->logger->info('Failed to fetch latest Castor version from GitHub.');
 
                 $item->expiresAfter(60 * 10);
-
-                return;
             }
 
             $this->cache->save($item->set($latestVersion));
