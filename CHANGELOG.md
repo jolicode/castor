@@ -2,6 +2,7 @@
 
 ## Not released yet
 
+* Add support for running Castor on Linux ARM64
 * Add a option `ignoreValidationErrors` on `AsTask` attribute to ignore
   parameters & options validation errors
 * Add a way to dynamically autocomplete task arguments/options

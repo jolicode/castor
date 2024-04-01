@@ -546,7 +546,10 @@ function watch(string|array $path, callable $function, ?Context $context = null)
             default => 'watcher-darwin-amd64',
         },
         OsHelper::isWindows() => 'watcher-windows.exe',
-        default => 'watcher-linux',
+        default => match (php_uname('m')) {
+            'arm64' => 'watcher-linux-arm64',
+            default => 'watcher-linux-amd64',
+        },
     };
 
     $binaryPath = __DIR__ . '/../tools/watcher/bin/' . $binary;
