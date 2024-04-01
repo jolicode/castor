@@ -34,7 +34,7 @@ jobs:
       - name: Upload the Linux ARM64 phar
         uses: actions/upload-artifact@v4
         with:
-          name: 'castor.linux-amd64.phar'
+          name: 'castor.linux-arm64.phar'
           path: tools/phar/build/castor.linux-arm64.phar
           if-no-files-found: error
 
