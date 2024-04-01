@@ -73,7 +73,7 @@ curl.exe "https://github.com/jolicode/castor/releases/latest/download/castor.win
 
 If you don't have PHP installed on your system, Castor can also be installed
 with a static binary that embeds PHP, so it can be run anywhere. The static
-binaries are available for Linux and MacOS AMD64 architectures only.
+binaries are available for Linux and MacOS amd64 architectures only.
 
 You can download the binaries in the [releases
 page](https://github.com/jolicode/castor/releases):
