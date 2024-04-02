@@ -8,7 +8,7 @@
 > This is the recommended way to install Castor on Linux and macOS. It requires PHP >= 8.1.
 
 ```bash
-curl "https://raw.githubusercontent.com/jolicode/castor/main/installer/bash-installer" | bash
+curl "https://castor.jolicode.com/install" | bash
 ```
 
 ### As a phar
@@ -25,7 +25,17 @@ We provide different phar for Linux / MacOS / Windows architectures to offer
 lighter phar files. Download the correct one and make it available in your
 shell:
 
+#### Phar for Windows
+
+```bash
+curl.exe "https://github.com/jolicode/castor/releases/latest/download/castor.windows-amd64.phar" -Lso C:\<a directory in your PATH>\castor
+```
+
 #### Phar for Linux
+
+> [!TIP]
+> It's better to install the phar with the [installer](#with-the-installer) as
+> it handles everything for you
 
 ```bash
 curl "https://github.com/jolicode/castor/releases/latest/download/castor.linux-amd64.phar" -Lfso $HOME/.local/bin/castor && \
@@ -34,14 +44,19 @@ curl "https://github.com/jolicode/castor/releases/latest/download/castor.linux-a
     (echo "Could not install castor. Is the target directory writeable?" && (exit 1))
 ```
 
-> **Note:** Castor is also released for Linux running on ARM64 architectures.
-> In such case, replace `linux-amd64` with `linux-arm64` in the URL.
+> [!NOTE]
+> Castor is also released for Linux running on ARM64 architectures. In such
+> case, replace `linux-amd64` with `linux-arm64` in the URL.
 
 > [!CAUTION]
 > When using Windows Subsystem for Linux (WSL), you should still use the
 > Windows phar instead of the Linux phar.
 
 #### Phar for MacOS with Apple Silicon
+
+> [!TIP]
+> It's better to install the phar with the [installer](#with-the-installer) as
+> it handles everything for you
 
 For Mac with Apple Silicon processors (M1, M2, M3, etc).
 
@@ -54,6 +69,10 @@ curl "https://github.com/jolicode/castor/releases/latest/download/castor.darwin-
 
 #### Phar for MacOS with Intel
 
+> [!TIP]
+> It's better to install the phar with the [installer](#with-the-installer) as
+> it handles everything for you
+
 For Mac with old Intel processors.
 
 ```bash
@@ -63,17 +82,11 @@ curl "https://github.com/jolicode/castor/releases/latest/download/castor.darwin-
     (echo "Could not install castor. Is the target directory writeable?" && (exit 1))
 ```
 
-#### Phar for Windows
-
-```bash
-curl.exe "https://github.com/jolicode/castor/releases/latest/download/castor.windows-amd64.phar" -Lso C:\<a directory in your PATH>\castor
-```
-
 ### Without PHP
 
 If you don't have PHP installed on your system, Castor can also be installed
 with a static binary that embeds PHP, so it can be run anywhere. The static
-binaries are available for Linux and MacOS AMD64 architectures only.
+binaries are available for Linux and MacOS amd64 architectures only.
 
 You can download the binaries in the [releases
 page](https://github.com/jolicode/castor/releases):

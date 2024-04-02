@@ -41,6 +41,8 @@ jobs:
         uses: actions/configure-pages@v4
       - name: Build with mkdocs
         run: mkdocs build
+      - name: copy the installer
+        run: cp installer/bash-installer site/install
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

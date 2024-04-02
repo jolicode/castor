@@ -86,20 +86,13 @@ watch [some examples](https://castor.jolicode.com/examples/).
 
 ## Installation
 
-> [!NOTE]
-> Castor requires PHP >= 8.1 to run.
+### With the installer
 
-### As a phar - recommended way
+> [!TIP]
+> This is the recommended way to install Castor on Linux and macOS. It requires PHP >= 8.1.
 
-You can download the latest release of Castor as a phar file from the [releases
-page](https://github.com/jolicode/castor/releases).
-
-We provide different phar for Unix/Windows architectures to offer lighter phar
-files. Download the correct one and make it available in your shell:
-
-Example for Linux or macOS:
 ```bash
-curl "https://raw.githubusercontent.com/jolicode/castor/main/installer/bash-installer" | bash
+curl "https://castor.jolicode.com/install" | bash
 ```
 
 There are other ways to install Castor, please refer to the
