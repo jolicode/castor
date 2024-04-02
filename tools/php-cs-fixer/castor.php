@@ -5,7 +5,7 @@ namespace castor\qa;
 use Castor\Attribute\AsOption;
 use Castor\Attribute\AsTask;
 
-use function Castor\run;
+use function Castor\exit_code;
 
 #[AsTask(description: 'Fix CS', aliases: ['cs'])]
 function cs(
@@ -18,5 +18,5 @@ function cs(
         $command[] = '--dry-run';
     }
 
-    return run($command, allowFailure: true)->getExitCode();
+    return exit_code($command);
 }

@@ -146,10 +146,10 @@ class Application extends SymfonyApplication
 
         foreach ($descriptors->taskDescriptors as $taskDescriptor) {
             $this->add(new TaskCommand(
-                $taskDescriptor->taskAttribute,
-                $taskDescriptor->function,
+                $taskDescriptor,
                 $this->eventDispatcher,
                 $this->expressionLanguage,
+                $this->contextRegistry,
             ));
         }
         foreach ($descriptors->symfonyTaskDescriptors as $symfonyTaskDescriptor) {
