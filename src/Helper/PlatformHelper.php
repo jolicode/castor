@@ -1,6 +1,6 @@
 <?php
 
-namespace Castor;
+namespace Castor\Helper;
 
 use JoliCode\PhpOsHelper\OsHelper;
 

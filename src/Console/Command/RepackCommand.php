@@ -3,7 +3,7 @@
 namespace Castor\Console\Command;
 
 use Castor\FunctionFinder;
-use Castor\PathHelper;
+use Castor\Helper\PathHelper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -11,9 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
-/**
- * @internal
- */
+/** @internal */
 class RepackCommand extends Command
 {
     protected function configure(): void

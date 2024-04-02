@@ -3,10 +3,10 @@
 namespace Castor\Import\Remote;
 
 use Castor\Console\Application;
+use Castor\Helper\PathHelper;
 use Castor\Import\Exception\ImportError;
 use Castor\Import\Exception\InvalidImportFormat;
 use Castor\Import\Exception\RemoteNotAllowed;
-use Castor\PathHelper;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 
@@ -111,7 +111,7 @@ class PackageImporter
      */
     private function importPackageWithComposer(string $package, string $version, ?string $repositoryUrl = null, ?array $source = null, ?string $file = null): void
     {
-        $this->logger->notice('Importing remote package with Composer.', [
+        $this->logger->info('Importing remote package with Composer.', [
             'package' => $package,
             'version' => $version,
         ]);

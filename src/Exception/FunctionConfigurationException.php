@@ -2,7 +2,7 @@
 
 namespace Castor\Exception;
 
-use Castor\PathHelper;
+use Castor\Helper\PathHelper;
 
 class FunctionConfigurationException extends \InvalidArgumentException
 {

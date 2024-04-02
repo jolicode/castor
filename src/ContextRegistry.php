@@ -4,6 +4,7 @@ namespace Castor;
 
 use Castor\Descriptor\ContextDescriptor;
 use Castor\Exception\FunctionConfigurationException;
+use Castor\Helper\PathHelper;
 
 /** @internal */
 class ContextRegistry

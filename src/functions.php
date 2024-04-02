@@ -8,6 +8,10 @@ use Castor\Exception\ExecutableNotFoundException;
 use Castor\Exception\MinimumVersionRequirementNotMetException;
 use Castor\Exception\WaitFor\ExitedBeforeTimeoutException;
 use Castor\Exception\WaitFor\TimeoutReachedException;
+use Castor\Helper\HasherHelper;
+use Castor\Helper\ParallelHelper;
+use Castor\Helper\PathHelper;
+use Castor\Helper\WatchHelper;
 use Joli\JoliNotif\Notification;
 use Joli\JoliNotif\NotifierFactory;
 use JoliCode\PhpOsHelper\OsHelper;
@@ -17,7 +21,6 @@ use Psr\Cache\CacheItemPoolInterface;
 use Spatie\Ssh\Ssh;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Dotenv\Dotenv;
@@ -40,68 +43,7 @@ use function Symfony\Component\String\u;
  */
 function parallel(callable ...$callbacks): array
 {
-    /** @var \Fiber[] $fibers */
-    $fibers = [];
-    $exceptions = [];
-
-    foreach ($callbacks as $callback) {
-        $fiber = new \Fiber($callback);
-
-        try {
-            $fiber->start();
-        } catch (\Throwable $e) {
-            $app = app();
-            $output = output();
-
-            if ($output instanceof ConsoleOutput) {
-                $output = $output->getErrorOutput();
-            }
-
-            $app->renderThrowable($e, $output);
-
-            $exceptions[] = $e;
-        }
-
-        $fibers[] = $fiber;
-    }
-
-    $isRunning = true;
-
-    while ($isRunning) {
-        $isRunning = false;
-
-        foreach ($fibers as $fiber) {
-            $isRunning = $isRunning || !$fiber->isTerminated();
-
-            if (!$fiber->isTerminated() && $fiber->isSuspended()) {
-                try {
-                    $fiber->resume();
-                } catch (\Throwable $e) {
-                    $app = app();
-                    $output = output();
-
-                    if ($output instanceof ConsoleOutput) {
-                        $output = $output->getErrorOutput();
-                    }
-
-                    $app->renderThrowable($e, $output);
-
-                    $exceptions[] = $e;
-                }
-            }
-        }
-
-        if (\Fiber::getCurrent()) {
-            \Fiber::suspend();
-            usleep(1_000);
-        }
-    }
-
-    if ($exceptions) {
-        throw new \RuntimeException('One or more exceptions were thrown in parallel.');
-    }
-
-    return array_map(fn ($fiber) => $fiber->getReturn(), $fibers);
+    return ParallelHelper::parallel(GlobalHelper::getApplication(), GlobalHelper::getOutput(), ...$callbacks);
 }
 
 /**
@@ -526,85 +468,9 @@ function notify(string $message): void
  */
 function watch(string|array $path, callable $function, ?Context $context = null): void
 {
-    if (\is_array($path)) {
-        $parallelCallbacks = [];
-
-        foreach ($path as $p) {
-            $parallelCallbacks[] = fn () => watch($p, $function, $context);
-        }
-
-        parallel(...$parallelCallbacks);
-
-        return;
-    }
-
     $context ??= GlobalHelper::getContext();
 
-    $binary = match (true) {
-        OsHelper::isMacOS() => match (php_uname('m')) {
-            'arm64' => 'watcher-darwin-arm64',
-            default => 'watcher-darwin-amd64',
-        },
-        OsHelper::isWindows() => 'watcher-windows.exe',
-        default => match (php_uname('m')) {
-            'arm64' => 'watcher-linux-arm64',
-            default => 'watcher-linux-amd64',
-        },
-    };
-
-    $binaryPath = __DIR__ . '/../tools/watcher/bin/' . $binary;
-
-    if (str_starts_with(__FILE__, 'phar:')) {
-        static $tmpPath;
-
-        if (null === $tmpPath) {
-            $tmpPath = sys_get_temp_dir() . '/' . $binary;
-            copy($binaryPath, $tmpPath);
-            chmod($tmpPath, 0o755);
-        }
-
-        $binaryPath = $tmpPath;
-    }
-
-    $watchContext = $context->withTty(false)->withPty(false)->withTimeout(null);
-
-    $command = [$binaryPath, $path];
-    $buffer = '';
-
-    run($command, callback: static function ($type, $bytes, $process) use ($function, &$buffer) {
-        if (Process::OUT === $type) {
-            $data = $buffer . $bytes;
-            $lines = explode("\n", $data);
-
-            while (!empty($lines)) {
-                $line = trim($lines[0]);
-
-                if ('' === $line) {
-                    array_shift($lines);
-
-                    continue;
-                }
-
-                try {
-                    $eventLine = json_decode($line, true, 512, \JSON_THROW_ON_ERROR);
-                } catch (\JsonException) {
-                    $buffer = implode("\n", $lines);
-
-                    break;
-                }
-
-                $result = $function($eventLine['name'], $eventLine['operation']);
-
-                if (false === $result) {
-                    $process->stop();
-                }
-
-                array_shift($lines);
-            }
-        } else {
-            GlobalHelper::getSectionOutput()->writeProcessOutput($type, $bytes, $process);
-        }
-    }, context: $watchContext);
+    WatchHelper::watch(GlobalHelper::getApplication(), GlobalHelper::getSectionOutput(), $path, $function, $context);
 }
 
 /**

@@ -3,6 +3,7 @@
 namespace Castor;
 
 use Castor\Console\Output\VerbosityLevel;
+use Castor\Helper\PathHelper;
 use Castor\VerbosityLevel as LegacyVerbosityLevel;
 
 class Context implements \ArrayAccess

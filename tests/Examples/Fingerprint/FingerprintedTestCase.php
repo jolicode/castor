@@ -2,7 +2,7 @@
 
 namespace Castor\Tests\Examples\Fingerprint;
 
-use Castor\PlatformHelper;
+use Castor\Helper\PlatformHelper;
 use Castor\Tests\TaskTestCase;
 use Symfony\Component\Finder\Finder;
 

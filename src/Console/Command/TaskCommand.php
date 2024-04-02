@@ -14,7 +14,7 @@ use Castor\Event\BeforeExecuteTaskEvent;
 use Castor\EventDispatcher;
 use Castor\Exception\FunctionConfigurationException;
 use Castor\ExpressionLanguage;
-use Castor\SluggerHelper;
+use Castor\Helper\SluggerHelper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\SignalableCommandInterface;
 use Symfony\Component\Console\Exception\LogicException;

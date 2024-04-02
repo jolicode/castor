@@ -2,12 +2,12 @@
 
 ## Not released yet
 
+* Add support for importing remote functions and tasks
+* Add a bash installer to ease installation
 * Distribute static binaries `castor.darwin-arm64` automatically with the
   release
 * Add support for running Castor on Linux arm64 and distribute the binary
   `castor.linux-arm64.phar` automatically with the release
-* Add a bash installer to ease installation
-* Add support for importing remote functions and tasks
 * Add an option `ignoreValidationErrors` on `AsTask` attribute to ignore
   parameters & options validation errors
 * Add support for dynamic autocomplete task arguments/options
@@ -15,12 +15,15 @@
   `castor:repack` command
 * Find root directory by looking for a `.castor/castor.php` file
 * Allow stub file to be in `.castor/.castor.stub.php`
+
 * Deprecate loading all PHP files from `[ROOT_DIR]/castor`
 * Deprecate `Context::withPath()` in favor of `Context::withWorkingDirectory()`
 * Deprecate `path` argument in `capture()`, `exit_code()`, `run()`, `with()` in
   favor of `workingDirectory`
 * Deprecate `Castor\TaskDescriptorCollection` in favor of
   `Castor\Descriptor\TaskDescriptorCollection`
+* Deprecate `Castor\HasherHelper` in favor of `Castor\Castor\HasherHelper`
+* Deprecate `Castor\PathHelper` in favor of `Castor\Castor\PathHelper`
 
 ## 0.14.0 (2024-03-08)
 

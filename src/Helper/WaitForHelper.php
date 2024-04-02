@@ -1,6 +1,6 @@
 <?php
 
-namespace Castor;
+namespace Castor\Helper;
 
 use Castor\Exception\ExecutableNotFoundException;
 use Castor\Exception\WaitFor\DockerContainerStateException;
@@ -14,8 +14,10 @@ use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
+use function Castor\capture;
+
 /** @internal */
-class WaitForHelper
+final class WaitForHelper
 {
     public function __construct(
         private readonly HttpClientInterface $httpClient,
