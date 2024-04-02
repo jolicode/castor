@@ -11,7 +11,6 @@ class GenerateStubsListener implements EventSubscriberInterface
 {
     public function __construct(
         private readonly StubsGenerator $stubsGenerator,
-        private readonly string $rootDir,
     ) {
     }
 
@@ -29,7 +28,7 @@ class GenerateStubsListener implements EventSubscriberInterface
             return;
         }
 
-        $this->stubsGenerator->generateStubsIfNeeded($this->rootDir . '/.castor.stub.php');
+        $this->stubsGenerator->generateStubsIfNeeded();
     }
 
     public static function getSubscribedEvents(): array

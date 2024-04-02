@@ -13,6 +13,7 @@
 * Add support for merging an application `box.json` config file used by
   `castor:repack` command
 * Find root directory by looking for a `.castor/castor.php` file
+* Allow stub file to be in `.castor/.castor.stub.php`
 * Deprecate loading all PHP files from `[ROOT_DIR]/castor`
 * Deprecate `Context::withPath()` in favor of `Context::withWorkingDirectory()`
 * Deprecate `path` argument in `capture()`, `exit_code()`, `run()`, `with()` in
