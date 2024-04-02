@@ -4,7 +4,7 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use Castor\Console\ApplicationFactory;
-use Castor\PlatformHelper;
+use Castor\Helper\PlatformHelper;
 use Castor\Tests\Helper\OutputCleaner;
 use Castor\Tests\Helper\WebServerHelper;
 use Symfony\Component\Console\Input\ArrayInput;

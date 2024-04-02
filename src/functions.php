@@ -8,6 +8,8 @@ use Castor\Exception\ExecutableNotFoundException;
 use Castor\Exception\MinimumVersionRequirementNotMetException;
 use Castor\Exception\WaitFor\ExitedBeforeTimeoutException;
 use Castor\Exception\WaitFor\TimeoutReachedException;
+use Castor\Helper\HasherHelper;
+use Castor\Helper\PathHelper;
 use Joli\JoliNotif\Notification;
 use Joli\JoliNotif\NotifierFactory;
 use JoliCode\PhpOsHelper\OsHelper;

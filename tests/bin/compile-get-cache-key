@@ -4,7 +4,7 @@
 require __DIR__ . '/../../vendor/autoload.php';
 
 use Castor\Console\Command\CompileCommand;
-use Castor\PlatformHelper;
+use Castor\Helper\PlatformHelper;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 

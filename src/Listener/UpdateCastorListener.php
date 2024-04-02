@@ -3,7 +3,7 @@
 namespace Castor\Listener;
 
 use Castor\Console\Application;
-use Castor\PlatformHelper;
+use Castor\Helper\PlatformHelper;
 use JoliCode\PhpOsHelper\OsHelper;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;

@@ -3,10 +3,10 @@
 namespace Castor\Import\Remote;
 
 use Castor\Console\Application;
+use Castor\Helper\PathHelper;
 use Castor\Import\Exception\ImportError;
 use Castor\Import\Exception\InvalidImportFormat;
 use Castor\Import\Exception\RemoteNotAllowed;
-use Castor\PathHelper;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 

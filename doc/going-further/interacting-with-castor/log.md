@@ -67,7 +67,7 @@ If you need to access the raw logger instance, you can get it with the
 ```php
 use Castor\Attribute\AsContext;
 use Castor\Context;
-use Castor\PathHelper;
+use Castor\Helper\PathHelper;
 use Monolog\Handler\StreamHandler;
 
 use function Castor\logger;

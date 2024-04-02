@@ -36,7 +36,7 @@ function task_with_a_fingerprint(): void
 Most of the time, you will want your fingerprint hash to be based on the content
 of a file, to scope it to a specific task or something else. To help you compute
 this hash, Castor provides a `hasher()` function. It returns an instance of
-`Castor\HasherHelper` with various helper methods:
+`Castor\Helper\HasherHelper` with various helper methods:
 
 - `write()`: Writes a hash of a specific (string) value.
 - `writeFile()`: Writes a hash of a file content or its modification time.

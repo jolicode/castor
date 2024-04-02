@@ -6,11 +6,6 @@ parameters:
 			path: examples/args.php
 
 		-
-			message: "#^Function pyrech\\\\.* not found\\.$#"
-			count: 2
-			path: examples/
-
-		-
 			message: "#^Default value of the parameter \\#1 \\$data \\(array\\{\\}\\) of method Castor\\\\Context\\:\\:__construct\\(\\) is incompatible with type array\\{name\\: string, production\\: bool, foo\\?\\: string\\}\\.$#"
 			count: 1
 			path: src/Context.php
@@ -19,6 +14,16 @@ parameters:
 			message: "#^Parameter \\#1 \\$data of class Castor\\\\Context constructor expects array\\{name\\: string, production\\: bool, foo\\?\\: string\\}, array\\<int\\|string, mixed\\> given\\.$#"
 			count: 1
 			path: src/Context.php
+
+		-
+			message: "#^Class Castor\\\\HasherHelper extends @final class Castor\\\\Helper\\\\HasherHelper\\.$#"
+			count: 1
+			path: src/HasherHelper.php
+
+		-
+			message: "#^Class Castor\\\\PathHelper extends @final class Castor\\\\Helper\\\\PathHelper\\.$#"
+			count: 1
+			path: src/PathHelper.php
 
 		-
 			message: "#^Function Castor\\\\get_exit_code\\(\\) has parameter \\$args with no type specified\\.$#"

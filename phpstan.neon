@@ -26,3 +26,8 @@ parameters:
                 reference?: string,
             }
         '''
+    ignoreErrors:
+        -
+            message: "#^Function pyrech\\\\.* not found\\.$#"
+            count: 2
+            path: examples/

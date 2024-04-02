@@ -1,13 +1,13 @@
 <?php
 
-namespace Castor;
+namespace Castor\Helper;
 
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
 use function Symfony\Component\String\u;
 
 /** @internal */
-class SluggerHelper
+final class SluggerHelper
 {
     private static AsciiSlugger $slugger;
 

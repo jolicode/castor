@@ -2,8 +2,8 @@
 
 namespace Castor\Console\Command;
 
-use Castor\PathHelper;
-use Castor\PlatformHelper;
+use Castor\Helper\PathHelper;
+use Castor\Helper\PlatformHelper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,9 +15,7 @@ use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Process\Process;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-/**
- * @internal
- */
+/** @internal */
 class CompileCommand extends Command
 {
     // When something **important** related to the compilation changed, increase
