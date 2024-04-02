@@ -132,6 +132,7 @@ automatically update the packages once a new version of your dependency is
 available.
 
 To update your dependencies, you will either need to:
+
 - change the required version yourself (thus every one using your Castor project
 will profit of the update once they run your project);
 - force the update on your side only by either using the `--update-remotes`
