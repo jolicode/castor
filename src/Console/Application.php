@@ -15,7 +15,6 @@ use Castor\Descriptor\SymfonyTaskDescriptor;
 use Castor\Descriptor\TaskDescriptor;
 use Castor\Descriptor\TaskDescriptorCollection;
 use Castor\Event\AfterApplicationInitializationEvent;
-use Castor\Event\BeforeApplicationInitializationEvent;
 use Castor\EventDispatcher;
 use Castor\ExpressionLanguage;
 use Castor\Fingerprint\FingerprintHelper;
@@ -133,9 +132,6 @@ class Application extends SymfonyApplication
         $this->sectionOutput = new SectionOutput($output);
         $this->symfonyStyle = new SymfonyStyle($input, $output);
         $this->logger->pushHandler(new ConsoleHandler($output));
-
-        $event = new BeforeApplicationInitializationEvent($this);
-        $this->eventDispatcher->dispatch($event);
 
         $descriptors = $this->initializeApplication($input);
 

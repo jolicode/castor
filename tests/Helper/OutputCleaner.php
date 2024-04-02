@@ -18,7 +18,7 @@ final class OutputCleaner
         $string = preg_replace('{^\d\d:\d\d:\d\d }m', 'hh:mm:ss ', $string);
 
         // Clean the warning on tasks when remote imports are disabled
-        $string = preg_replace('{\d{2}:\d{2}:\d{2} WARNING   \[castor\] Could not import "[\w:/\.-]*" in "[\w:/\.-]*" on line \d+. Reason: Remote imports are disabled\.}m', '', $string);
+        $string = preg_replace('{hh:mm:ss WARNING   \[castor\] Could not import "[\w:/\.-]*" in "[\w:/\.-]*" on line \d+. Reason: Remote imports are disabled\.}m', '', $string);
 
         // Avoid spacing issues
         $string = ltrim($string, "\n"); // Trim output start to avoid empty lines

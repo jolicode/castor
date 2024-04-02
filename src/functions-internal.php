@@ -31,7 +31,6 @@ function fix_exception(\Exception $exception, int $depth = 0): \Exception
             continue;
         }
         $r = new \ReflectionProperty(\Exception::class, $key);
-        $r->setAccessible(true);
         $r->setValue($exception, $lastFrame[$key]);
     }
 

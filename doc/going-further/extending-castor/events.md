@@ -30,10 +30,6 @@ function my_event_listener(AfterApplicationInitializationEvent|AfterExecuteTaskE
 
 Here is the built-in events triggered by Castor:
 
-* `Castor\Event\BeforeApplicationInitializationEvent`: This event is triggered
-  before the application has been initialized and before the task and context
-  has been looked at. It provides access to the `Application` instance;
-
 * `Castor\Event\AfterApplicationInitializationEvent`: This event is triggered
   after the application has been initialized. It provides access to the
   `Application` instance and an array of `TaskDescriptor` objects;
