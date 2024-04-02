@@ -11,10 +11,11 @@ final class OutputCleaner
         $string = str_replace('_sf_castor.linux-amd64.phar', '_sf_castor', $string);
         $string = str_replace('castor.linux-amd64.phar', 'castor', $string);
         $string = preg_replace('{In functions.php line \d+:}m', 'In functions.php line XXXX:', $string);
+        $string = preg_replace('{In FunctionFinder.php line \d+:}m', 'In FunctionFinder.php line XXXX:', $string);
         $string = preg_replace('{In Process.php line \d+:}m', 'In Process.php line XXXX:', $string);
         $string = preg_replace('{In ContextRegistry.php line \d+:}m', 'In ContextRegistry.php line XXXX:', $string);
         $string = preg_replace('{you are using v\d+.\d+.\d+.}m', 'you are using vX.Y.Z.', $string);
-        $string = preg_replace('{you are using v\d+.\d+.\d+.}m', 'you are using vX.Y.Z.', $string);
+        $string = preg_replace('{^\d\d:\d\d:\d\d }m', 'hh:mm:ss ', $string);
 
         // Avoid spacing issues
         $string = ltrim($string, "\n"); // Trim output start to avoid empty lines

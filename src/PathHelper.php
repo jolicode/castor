@@ -17,7 +17,7 @@ class PathHelper
 
             $path = getcwd() ?: '/';
 
-            while (!file_exists($path . '/castor.php')) {
+            while (!(file_exists($path . '/castor.php') || file_exists($path . '/.castor/castor.php'))) {
                 if ('/' === $path) {
                     throw new \RuntimeException('Could not find root "castor.php" file.');
                 }

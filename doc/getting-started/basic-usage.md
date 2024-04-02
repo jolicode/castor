@@ -45,20 +45,17 @@ From now on, we will omit the leading `<?php` in all doc examples.
 > [!TIP]
 > Related example: [foo.php](https://github.com/jolicode/castor/blob/main/examples/foo.php)
 
+Castor will also look for a `.castor/castor.php` file in the current directory,
+or in its parents.
+
+The `castor.php` file has an higher priority than the `.castor/castor.php` file.
+
 ## Splitting tasks in multiple files
 
-### Using a directory
+## The `import()` function
 
-Castor will also look for `castor` directory in the same directory of
-the `castor.php` file and load all the PHP files from it.
-
-You could then have an empty `castor.php` file and split your tasks in
-multiple files, like `castor/hello.php` and `castor/foo.php`.
-
-### The `import()` function
-
-You can also use the `import()` function to import tasks from another file.
-This function takes a file path, or a directory as an argument.
+You can use the `import()` function to import tasks from another file or
+directory. This function takes a file path, or a directory as an argument.
 
 When using a directory as an argument, Castor will load all the PHP files in it:
 
@@ -72,6 +69,16 @@ import(__DIR__ . '/my-app/castor');
 > [!WARNING]
 > You cannot dynamically import tasks. The `import()` function must be called
 > at the top level of the file.
+
+If you use the `.castor/castor.php` layout, you can use the following code to
+load all files in the `.castor/` directory:
+
+```php
+// .castor/castor.php
+use function Castor\import;
+
+import(__DIR__);
+```
 
 ## Overriding task name, namespace or description
 

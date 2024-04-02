@@ -137,6 +137,8 @@ add_test(['init'], 'NewProjectInitTest', '/tmp');
 add_test(['unknown:task', 'toto', '--foo', 1], 'NoConfigUnknownWithArgsTest', '/tmp');
 add_test(['unknown:task'], 'NoConfigUnknownTest', '/tmp');
 add_test([], 'NewProjectTest', '/tmp');
+add_test(['list'], 'LayoutWithFolder', __DIR__ . '/../tests/Examples/fixtures/layout/with-folder');
+add_test(['list'], 'LayoutWithOldFolder', __DIR__ . '/../tests/Examples/fixtures/layout/with-old-folder');
 
 function add_test(array $args, string $class, ?string $cwd = null)
 {
