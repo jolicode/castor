@@ -111,7 +111,7 @@ class PackageImporter
      */
     private function importPackageWithComposer(string $package, string $version, ?string $repositoryUrl = null, ?array $source = null, ?string $file = null): void
     {
-        $this->logger->notice('Importing remote package with Composer.', [
+        $this->logger->info('Importing remote package with Composer.', [
             'package' => $package,
             'version' => $version,
         ]);
