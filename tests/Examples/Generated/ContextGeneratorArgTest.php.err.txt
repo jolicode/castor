@@ -1,4 +1,4 @@
-In FunctionFinder.php line 214:
+In FunctionFinder.php line XXXX:
 
   Function "gen()" is not properly configured:
   The contexts generator must not have arguments.

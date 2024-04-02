@@ -9,9 +9,11 @@
 * Add a bash installer to ease installation
 * Add a option `ignoreValidationErrors` on `AsTask` attribute to ignore
   parameters & options validation errors
-* Add a way to dynamically autocomplete task arguments/options
-* Add a way to merge an application `box.json` config file used by
+* Add support for dynamic autocomplete task arguments/options
+* Add support for merging an application `box.json` config file used by
   `castor:repack` command
+* Find root directory by looking for a `.castor/castor.php` file
+* Deprecate loading all PHP files from `[ROOT_DIR]/castor`
 * Deprecate `Context::withPath()` in favor of `Context::withWorkingDirectory()`
 * Deprecate `path` argument in `capture()`, `exit_code()`, `run()`, `with()` in
   favor of `workingDirectory`

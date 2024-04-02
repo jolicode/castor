@@ -34,34 +34,38 @@ class FunctionFinder
     /** @return iterable<TaskDescriptor|ContextDescriptor|ContextGeneratorDescriptor|ListenerDescriptor|SymfonyTaskDescriptor> */
     public function findFunctions(string $path): iterable
     {
-        yield from self::doFindFunctions([new \SplFileInfo($path . '/castor.php')]);
+        if (file_exists($file = $path . '/castor.php')) {
+            yield from self::doFindFunctions($file);
+        } elseif (file_exists($file = $path . '/.castor/castor.php')) {
+            yield from self::doFindFunctions($file);
+        } else {
+            throw new \RuntimeException('Could not find root "castor.php" file.');
+        }
 
         $castorDirectory = $path . '/castor';
-
         if (is_dir($castorDirectory)) {
+            trigger_deprecation('castor', '0.15', 'Autoloading functions from the "/castor/" directory is deprecated. Import files by yourself with the "castor\import()" function.');
             $files = Finder::create()
                 ->files()
                 ->name('*.php')
                 ->in($castorDirectory)
             ;
 
-            yield from self::doFindFunctions($files);
+            foreach ($files as $file) {
+                yield from self::doFindFunctions($file->getPathname());
+            }
         }
     }
 
     /**
-     * @param iterable<\SplFileInfo> $files
-     *
      * @return iterable<TaskDescriptor|ContextDescriptor|ContextGeneratorDescriptor|ListenerDescriptor|SymfonyTaskDescriptor>
      */
-    private function doFindFunctions(iterable $files): iterable
+    private function doFindFunctions(string $file): iterable
     {
         $initialFunctions = get_defined_functions()['user'];
         $initialClasses = get_declared_classes();
 
-        foreach ($files as $file) {
-            castor_require($file->getPathname());
-        }
+        castor_require($file);
 
         $newFunctions = array_diff(get_defined_functions()['user'], $initialFunctions);
         foreach ($newFunctions as $functionName) {
