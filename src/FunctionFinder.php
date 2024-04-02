@@ -247,16 +247,3 @@ class FunctionFinder
         }
     }
 }
-
-// Don't leak internal variables
-/** @internal */
-function castor_require(string $file): void
-{
-    if (!is_file($file)) {
-        throw new \RuntimeException(sprintf('Could not find file "%s".', $file));
-    }
-
-    FunctionFinder::$files[] = $file;
-
-    require_once $file;
-}

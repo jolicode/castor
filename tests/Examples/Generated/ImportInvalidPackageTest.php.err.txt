@@ -1,0 +1,10 @@
+In castor.php line 5:
+
+  Could not import "foo/bar" in ".../tests/Examples/fixtures/broken/import-invalid-package/castor.php" on line 5. Reason: The "source" argument must contain "url", "type" and "reference" keys.
+
+
+In PackageImporter.php line 132:
+
+  The "source" argument must contain "url", "type" and "reference" keys.
+
+

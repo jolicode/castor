@@ -52,6 +52,7 @@ output:output                                                     Plays with Sym
 parallel:exception                                                Sleep and throw an exception
 parallel:sleep                                                    Sleeps for 5, 7, and 10 seconds in parallel
 quiet:quiet                                                       Executes something but does not output anything
+remote-import:remote-tasks                                        Use functions imported from remote packages
 run:ls                                                            Run a sub-process and display information about it
 run:test-file                                                     Run a sub-process and return its exit code, with get_exit_code() function
 run:variables                                                     Run a sub-process with environment variables and display information about it

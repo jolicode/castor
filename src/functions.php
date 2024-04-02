@@ -765,47 +765,16 @@ function http_client(): HttpClientInterface
     return GlobalHelper::getHttpClient();
 }
 
-function import(string $path): void
-{
-    if (!file_exists($path)) {
-        throw fix_exception(new \InvalidArgumentException(sprintf('The file "%s" does not exist.', $path)));
-    }
-
-    if (is_file($path)) {
-        castor_require($path);
-    }
-
-    if (is_dir($path)) {
-        $files = Finder::create()
-            ->files()
-            ->name('*.php')
-            ->in($path)
-        ;
-
-        foreach ($files as $file) {
-            castor_require($file->getPathname());
-        }
-    }
-}
-
 /**
- * Remove the last frame (the call to run() to display a nice message to the end user.
- *
- * @internal
+ * @param ?array{
+ *     url?: string,
+ *     type?: "git" | "svn",
+ *     reference?: string,
+ * } $source
  */
-function fix_exception(\Exception $exception): \Exception
+function import(string $path, ?string $file = null, ?string $version = null, ?string $vcs = null, ?array $source = null): void
 {
-    $lastFrame = $exception->getTrace()[0];
-    foreach (['file', 'line'] as $key) {
-        if (!\array_key_exists($key, $lastFrame)) {
-            continue;
-        }
-        $r = new \ReflectionProperty(\Exception::class, $key);
-        $r->setAccessible(true);
-        $r->setValue($exception, $lastFrame[$key]);
-    }
-
-    return $exception;
+    GlobalHelper::getApplication()->importer->import($path, $file, $version, $vcs, $source);
 }
 
 /**

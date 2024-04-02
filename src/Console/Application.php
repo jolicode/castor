@@ -20,6 +20,7 @@ use Castor\ExpressionLanguage;
 use Castor\Fingerprint\FingerprintHelper;
 use Castor\FunctionFinder;
 use Castor\GlobalHelper;
+use Castor\Import\Importer;
 use Castor\PlatformHelper;
 use Castor\WaitForHelper;
 use Monolog\Logger;
@@ -59,10 +60,11 @@ class Application extends SymfonyApplication
         public readonly ExpressionLanguage $expressionLanguage,
         public readonly Logger $logger,
         public readonly Filesystem $fs,
+        public readonly WaitForHelper $waitForHelper,
+        public readonly FingerprintHelper $fingerprintHelper,
+        public readonly Importer $importer,
         public HttpClientInterface $httpClient,
         public CacheItemPoolInterface&CacheInterface $cache,
-        public WaitForHelper $waitForHelper,
-        public FingerprintHelper $fingerprintHelper,
     ) {
         $handler = ErrorHandler::register();
         $handler->setDefaultLogger($logger, [
@@ -214,6 +216,24 @@ class Application extends SymfonyApplication
                 $contextNames,
             ));
         }
+
+        $this->getDefinition()->addOption(
+            new InputOption(
+                'no-remote',
+                null,
+                InputOption::VALUE_NONE,
+                'Skip the import of all remote remote packages',
+            )
+        );
+
+        $this->getDefinition()->addOption(
+            new InputOption(
+                'update-remotes',
+                null,
+                InputOption::VALUE_NONE,
+                'Force the update of remote packages',
+            )
+        );
 
         return new TaskDescriptorCollection($tasks, $symfonyTasks);
     }

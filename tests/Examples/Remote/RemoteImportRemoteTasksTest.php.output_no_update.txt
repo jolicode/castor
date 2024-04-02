@@ -1,0 +1,6 @@
+Hello from example!
+===================
+
+This is foobar!
+===============
+

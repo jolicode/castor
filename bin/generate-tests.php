@@ -75,10 +75,14 @@ $taskFilterList = [
     'log:info',
     'log:with-context',
     'parallel:sleep',
+    'remote-import:remote-tasks',
     'run:ls',
     'run:run-parallel',
+    // Imported tasks
+    'pyrech:hello-example',
+    'pyrech:foobar',
 ];
-$optionFilterList = array_flip(['help', 'quiet', 'verbose', 'version', 'ansi', 'no-ansi', 'no-interaction', 'context']);
+$optionFilterList = array_flip(['help', 'quiet', 'verbose', 'version', 'ansi', 'no-ansi', 'no-interaction', 'context', 'no-remote', 'update-remotes']);
 foreach ($applicationDescription['commands'] as $task) {
     if (in_array($task['name'], $taskFilterList, true)) {
         continue;
@@ -119,7 +123,7 @@ $dirs = (new Finder())
 ;
 foreach ($dirs as $dir) {
     $class = u($dir->getRelativePath())->camel()->title()->append('Test')->toString();
-    add_test([], $class, '{{ base }}/tests/Examples/fixtures/broken/' . $dir->getRelativePath());
+    add_test([], $class, '{{ base }}/tests/Examples/fixtures/broken/' . $dir->getRelativePath(), true);
 }
 
 add_test(['args:passthru', 'a', 'b', '--no', '--foo', 'bar', '-x'], 'ArgPassthruExpanded');
@@ -140,7 +144,7 @@ add_test([], 'NewProjectTest', '/tmp');
 add_test(['list'], 'LayoutWithFolder', __DIR__ . '/../tests/Examples/fixtures/layout/with-folder');
 add_test(['list'], 'LayoutWithOldFolder', __DIR__ . '/../tests/Examples/fixtures/layout/with-old-folder');
 
-function add_test(array $args, string $class, ?string $cwd = null)
+function add_test(array $args, string $class, ?string $cwd = null, bool $needRemote = false)
 {
     $fp = fopen(__FILE__, 'r');
     fseek($fp, __COMPILER_HALT_OFFSET__ + 1);
@@ -152,6 +156,7 @@ function add_test(array $args, string $class, ?string $cwd = null)
         env: [
             'COLUMNS' => 1000,
             'ENDPOINT' => $_SERVER['ENDPOINT'],
+            'CASTOR_NO_REMOTE' => $needRemote ? 0 : 1,
         ],
         timeout: null,
     );
@@ -163,6 +168,7 @@ function add_test(array $args, string $class, ?string $cwd = null)
         '{{ args }}' => implode(', ', array_map(fn ($arg) => var_export($arg, true), $args)),
         '{{ exitCode }}' => $process->getExitCode(),
         '{{ cwd }}' => $cwd ? ', ' . var_export($cwd, true) : '',
+        '{{ needRemote }}' => $needRemote ? ', needRemote: true' : '',
     ]);
 
     file_put_contents(__DIR__ . '/../tests/Examples/Generated/' . $class . '.php', $code);
@@ -185,7 +191,7 @@ class {{ class_name }} extends TaskTestCase
     // {{ task }}
     public function test(): void
     {
-        $process = $this->runTask([{{ args }}]{{ cwd }});
+        $process = $this->runTask([{{ args }}]{{ cwd }}{{ needRemote }});
 
         $this->assertSame({{ exitCode }}, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());

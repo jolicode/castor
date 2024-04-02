@@ -19,3 +19,10 @@ parameters:
                 foo?: string,
             }
         '''
+        ImportSource: '''
+            array{
+                url?: string,
+                type?: "git" | "svn",
+                reference?: string,
+            }
+        '''

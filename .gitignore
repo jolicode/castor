@@ -5,3 +5,4 @@
 /my-app.*
 /var/
 /vendor/
+/tests/Examples/fixtures/**/.castor.stub.php
