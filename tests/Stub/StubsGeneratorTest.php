@@ -17,8 +17,8 @@ class StubsGeneratorTest extends TestCase
         $fs = new Filesystem();
         $fs->remove($file);
 
-        $generator = new StubsGenerator(new Logger('name'));
-        $generator->generateStubs($file);
+        $generator = new StubsGenerator(sys_get_temp_dir(), new Logger('name'));
+        (fn ($file) => $generator->generateStubs($file))->bindTo($generator, StubsGenerator::class)($file);
 
         $process = new Process([\PHP_BINARY, '-l', $file]);
         $process->run();

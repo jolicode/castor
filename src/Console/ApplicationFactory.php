@@ -56,8 +56,7 @@ class ApplicationFactory
             $logger,
         ));
         $eventDispatcher->addSubscriber(new GenerateStubsListener(
-            new StubsGenerator($logger),
-            $rootDir,
+            new StubsGenerator($rootDir, $logger),
         ));
 
         /** @var SymfonyApplication */
