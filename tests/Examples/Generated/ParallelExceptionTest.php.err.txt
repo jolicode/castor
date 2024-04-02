@@ -14,7 +14,7 @@ In parallel.php line 72:
 parallel:exception
 
 
-In functions.php line XXXX:
+In ParallelHelper.php line XXXX:
 
   One or more exceptions were thrown in parallel.
 

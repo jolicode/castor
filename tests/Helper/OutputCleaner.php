@@ -12,6 +12,7 @@ final class OutputCleaner
         $string = str_replace('castor.linux-amd64.phar', 'castor', $string);
         $string = preg_replace('{In functions.php line \d+:}m', 'In functions.php line XXXX:', $string);
         $string = preg_replace('{In FunctionFinder.php line \d+:}m', 'In FunctionFinder.php line XXXX:', $string);
+        $string = preg_replace('{In ParallelHelper.php line \d+:}m', 'In ParallelHelper.php line XXXX:', $string);
         $string = preg_replace('{In Process.php line \d+:}m', 'In Process.php line XXXX:', $string);
         $string = preg_replace('{In ContextRegistry.php line \d+:}m', 'In ContextRegistry.php line XXXX:', $string);
         $string = preg_replace('{you are using v\d+.\d+.\d+.}m', 'you are using vX.Y.Z.', $string);
