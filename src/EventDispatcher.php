@@ -18,18 +18,21 @@ class EventDispatcher implements EventDispatcherInterface
 
     public function dispatch(object $event, ?string $eventName = null): object
     {
-        $this->logger->debug("Dispatching event {$eventName}", [
+        $this->logger->info("Dispatching event {$eventName}", [
             'event' => $event,
         ]);
 
         return $this->eventDispatcher->dispatch($event, $eventName);
     }
 
-    public function addListener(string $eventName, callable $listener, int $priority = 0): void
+    /**
+     * @param callable $listener
+     */
+    public function addListener(string $eventName, $listener, int $priority = 0): void
     {
-        $this->logger->debug("Adding listener for event {$eventName}", [
-            'listener' => $listener,
+        $this->logger->info("Adding listener for event {$eventName}", [
             'priority' => $priority,
+            'listener' => $listener,
         ]);
 
         $this->eventDispatcher->addListener($eventName, $listener, $priority);

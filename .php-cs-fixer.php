@@ -26,6 +26,7 @@ return (new PhpCsFixer\Config())
         'concat_space' => ['spacing' => 'one'],
         'ordered_class_elements' => true, // Symfony(PSR12) override the default value, but we don't want
         'blank_line_before_statement' => true, // Symfony(PSR12) override the default value, but we don't want
+        'method_chaining_indentation' => false, // Does not work with tree builder
     ])
     ->setFinder($finder)
 ;

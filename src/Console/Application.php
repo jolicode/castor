@@ -4,8 +4,8 @@ namespace Castor\Console;
 
 use Castor\Console\Command\SymfonyTaskCommand;
 use Castor\Console\Command\TaskCommand;
-use Castor\Console\Output\SectionOutput;
 use Castor\Console\Output\VerbosityLevel;
+use Castor\Container;
 use Castor\Context;
 use Castor\ContextRegistry;
 use Castor\Descriptor\ContextDescriptor;
@@ -17,15 +17,9 @@ use Castor\Descriptor\TaskDescriptorCollection;
 use Castor\Event\AfterApplicationInitializationEvent;
 use Castor\EventDispatcher;
 use Castor\ExpressionLanguage;
-use Castor\Fingerprint\FingerprintHelper;
 use Castor\FunctionFinder;
-use Castor\GlobalHelper;
 use Castor\Helper\PlatformHelper;
-use Castor\Helper\WaitForHelper;
-use Castor\Import\Importer;
 use Monolog\Logger;
-use Psr\Cache\CacheItemPoolInterface;
-use Psr\Log\LogLevel;
 use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Command\Command;
@@ -33,12 +27,7 @@ use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\ErrorHandler\ErrorHandler;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\VarDumper\Cloner\AbstractCloner;
-use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /** @internal */
 class Application extends SymfonyApplication
@@ -46,74 +35,25 @@ class Application extends SymfonyApplication
     public const NAME = 'castor';
     public const VERSION = 'v0.15.0';
 
-    // "Current" objects available at some point of the lifecycle
-    private InputInterface $input;
-    private SectionOutput $sectionOutput;
-    private SymfonyStyle $symfonyStyle;
+    private static Container $container;
+
     private Command $command;
 
     public function __construct(
         private readonly string $rootDir,
+        private readonly ContainerBuilder $containerBuilder,
         public readonly FunctionFinder $functionFinder,
         public readonly ContextRegistry $contextRegistry,
         public readonly EventDispatcher $eventDispatcher,
         public readonly ExpressionLanguage $expressionLanguage,
         public readonly Logger $logger,
-        public readonly Filesystem $fs,
-        public readonly WaitForHelper $waitForHelper,
-        public readonly FingerprintHelper $fingerprintHelper,
-        public readonly Importer $importer,
-        public HttpClientInterface $httpClient,
-        public CacheItemPoolInterface&CacheInterface $cache,
     ) {
-        $handler = ErrorHandler::register();
-        $handler->setDefaultLogger($logger, [
-            \E_COMPILE_WARNING => LogLevel::WARNING,
-            \E_CORE_WARNING => LogLevel::WARNING,
-            \E_USER_WARNING => LogLevel::WARNING,
-            \E_WARNING => LogLevel::WARNING,
-            \E_USER_DEPRECATED => LogLevel::WARNING,
-            \E_DEPRECATED => LogLevel::WARNING,
-            \E_USER_NOTICE => LogLevel::WARNING,
-            \E_NOTICE => LogLevel::WARNING,
-
-            \E_COMPILE_ERROR => LogLevel::ERROR,
-            \E_CORE_ERROR => LogLevel::ERROR,
-            \E_ERROR => LogLevel::ERROR,
-            \E_PARSE => LogLevel::ERROR,
-            \E_RECOVERABLE_ERROR => LogLevel::ERROR,
-            \E_STRICT => LogLevel::ERROR,
-            \E_USER_ERROR => LogLevel::ERROR,
-        ]);
-
-        $this->setCatchErrors(true);
-
-        AbstractCloner::$defaultCasters[self::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
-        AbstractCloner::$defaultCasters[AfterApplicationInitializationEvent::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
-
         parent::__construct(static::NAME, static::VERSION);
-
-        GlobalHelper::setApplication($this);
     }
 
-    public function getInput(): InputInterface
+    public static function getContainer(): Container
     {
-        return $this->input ?? throw new \LogicException('Input not available yet.');
-    }
-
-    public function getSectionOutput(): SectionOutput
-    {
-        return $this->sectionOutput ?? throw new \LogicException('Section output not available yet.');
-    }
-
-    public function getOutput(): OutputInterface
-    {
-        return $this->getSectionOutput()->getConsoleOutput();
-    }
-
-    public function getSymfonyStyle(): SymfonyStyle
-    {
-        return $this->symfonyStyle ?? throw new \LogicException('SymfonyStyle not available yet.');
+        return self::$container ?? throw new \LogicException('Container not available yet.');
     }
 
     /**
@@ -128,9 +68,12 @@ class Application extends SymfonyApplication
     // is registered
     public function doRun(InputInterface $input, OutputInterface $output): int
     {
-        $this->input = $input;
-        $this->sectionOutput = new SectionOutput($output);
-        $this->symfonyStyle = new SymfonyStyle($input, $output);
+        $this->containerBuilder->set(InputInterface::class, $input);
+        $this->containerBuilder->set(OutputInterface::class, $output);
+
+        // @phpstan-ignore-next-line
+        self::$container = $this->containerBuilder->get(Container::class);
+
         $this->logger->pushHandler(new ConsoleHandler($output));
 
         $descriptors = $this->initializeApplication($input);

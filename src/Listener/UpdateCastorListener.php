@@ -8,18 +8,17 @@ use JoliCode\PhpOsHelper\OsHelper;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Process\Process;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class UpdateCastorListener implements EventSubscriberInterface
+class UpdateCastorListener
 {
     public function __construct(
         private readonly CacheItemPoolInterface&CacheInterface $cache,
@@ -28,6 +27,9 @@ class UpdateCastorListener implements EventSubscriberInterface
     ) {
     }
 
+    // Must be before the command is executed, because we have to check for many
+    // command options
+    #[AsEventListener()]
     public function checkUpdate(ConsoleCommandEvent $event): void
     {
         if (class_exists(\RepackedApplication::class)) {
@@ -50,15 +52,6 @@ class UpdateCastorListener implements EventSubscriberInterface
         }
 
         $this->displayUpdateWarningIfNeeded($input, $event->getOutput());
-    }
-
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            // Must be before the command is executed, because we have to check
-            // for many command options
-            ConsoleEvents::COMMAND => 'checkUpdate',
-        ];
     }
 
     private function displayUpdateWarningIfNeeded(InputInterface $input, OutputInterface $output): void

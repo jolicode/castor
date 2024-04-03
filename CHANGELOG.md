@@ -2,6 +2,9 @@
 
 ## Not released yet
 
+* Deprecate `Castor\GlobalHelper` class. There are no replacements. Use raw
+  functions instead.
+
 ## 0.15.0 (2024-04-03)
 
 ### Features

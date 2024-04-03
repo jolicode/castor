@@ -4,78 +4,78 @@ namespace Castor;
 
 use Castor\Console\Application;
 use Castor\Console\Output\SectionOutput;
-use Monolog\Logger;
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+
+trigger_deprecation('castor/castor', '0.16', 'The "%s" class is deprecated and will be removed in castor 1.0. Use the "%s::getContainer()" instead.', __CLASS__, Application::class);
 
 class GlobalHelper
 {
-    private static Application $application;
-
     public static function setApplication(Application $application): void
     {
-        self::$application = $application;
     }
 
     public static function getApplication(): Application
     {
-        return self::$application ?? throw new \LogicException('Application not available yet.');
+        return Application::getContainer()->application;
     }
 
     public static function getContextRegistry(): ContextRegistry
     {
-        return self::getApplication()->contextRegistry;
+        return Application::getContainer()->contextRegistry;
     }
 
-    public static function getEventDispatcher(): EventDispatcher
+    public static function getEventDispatcher(): EventDispatcherInterface
     {
-        return self::getApplication()->eventDispatcher;
+        return Application::getContainer()->eventDispatcher;
     }
 
     public static function getFilesystem(): Filesystem
     {
-        return self::getApplication()->fs;
+        return Application::getContainer()->fs;
     }
 
     public static function getHttpClient(): HttpClientInterface
     {
-        return self::getApplication()->httpClient;
+        return Application::getContainer()->httpClient;
     }
 
     public static function getCache(): CacheItemPoolInterface&CacheInterface
     {
-        return self::getApplication()->cache;
+        return Application::getContainer()->cache;
     }
 
-    public static function getLogger(): Logger
+    public static function getLogger(): LoggerInterface
     {
-        return self::getApplication()->logger;
+        return Application::getContainer()->logger;
     }
 
     public static function getInput(): InputInterface
     {
-        return self::getApplication()->getInput();
+        return Application::getContainer()->input;
     }
 
     public static function getSectionOutput(): SectionOutput
     {
-        return self::getApplication()->getSectionOutput();
+        return Application::getContainer()->sectionOutput;
     }
 
     public static function getOutput(): OutputInterface
     {
-        return self::getApplication()->getOutput();
+        return Application::getContainer()->output;
     }
 
     public static function getSymfonyStyle(): SymfonyStyle
     {
-        return self::getApplication()->getSymfonyStyle();
+        return Application::getContainer()->symfonyStyle;
     }
 
     /**
@@ -83,16 +83,16 @@ class GlobalHelper
      */
     public static function getCommand(bool $allowNull = false): ?Command
     {
-        return self::getApplication()->getCommand($allowNull);
+        return Application::getContainer()->getCommand($allowNull);
     }
 
     public static function getContext(?string $name = null): Context
     {
-        return self::getContextRegistry()->get($name);
+        return Application::getContainer()->getContext($name);
     }
 
     public static function getVariable(string $key, mixed $default = null): mixed
     {
-        return self::getContextRegistry()->getVariable($key, $default);
+        return Application::getContainer()->getVariable($key, $default);
     }
 }

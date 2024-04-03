@@ -4,25 +4,19 @@ namespace Castor\Import\Listener;
 
 use Castor\Event\AfterApplicationInitializationEvent;
 use Castor\Import\Remote\PackageImporter;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 /** @internal */
-class RemoteImportListener implements EventSubscriberInterface
+class RemoteImportListener
 {
     public function __construct(
         private readonly PackageImporter $packageImporter,
     ) {
     }
 
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            AfterApplicationInitializationEvent::class => 'afterInitialize',
-        ];
-    }
-
+    #[AsEventListener()]
     public function afterInitialize(AfterApplicationInitializationEvent $event): void
     {
-        $this->packageImporter->fetchPackages($event->application->getInput());
+        $this->packageImporter->fetchPackages();
     }
 }
