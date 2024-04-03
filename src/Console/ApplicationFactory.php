@@ -7,8 +7,6 @@ use Castor\Console\Command\DebugCommand;
 use Castor\Console\Command\RepackCommand;
 use Castor\Container;
 use Castor\Event\AfterApplicationInitializationEvent;
-use Castor\EventDispatcher;
-use Castor\FunctionFinder;
 use Castor\Helper\PathHelper;
 use Castor\Helper\PlatformHelper;
 use Castor\Monolog\Processor\ProcessProcessor;
@@ -30,13 +28,14 @@ use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\ErrorHandler\ErrorHandler;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\VarDumper\Cloner\AbstractCloner;
 use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
@@ -144,6 +143,7 @@ class ApplicationFactory
                     ],
                 ])
             ->alias(LoggerInterface::class, Logger::class)
+            ->set(EventDispatcher::class)
             ->alias(EventDispatcherInterface::class, EventDispatcher::class)
             ->alias('event_dispatcher', EventDispatcherInterface::class)
             ->set(Filesystem::class)

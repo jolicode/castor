@@ -3,7 +3,6 @@
 namespace Castor\Console;
 
 use Castor\Console\Command\SymfonyTaskCommand;
-use Castor\Console\Command\TaskCommand;
 use Castor\Console\Output\VerbosityLevel;
 use Castor\Container;
 use Castor\Context;
@@ -16,12 +15,9 @@ use Castor\Descriptor\TaskDescriptor;
 use Castor\Descriptor\TaskDescriptorCollection;
 use Castor\Event\AfterApplicationInitializationEvent;
 use Castor\Event\BeforeApplicationInitializationEvent;
-use Castor\EventDispatcher;
-use Castor\ExpressionLanguage;
+use Castor\Factory\TaskCommandFactory;
 use Castor\FunctionFinder;
 use Castor\Helper\PlatformHelper;
-use Castor\Helper\Slugger;
-use Monolog\Logger;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\ExceptionInterface;
@@ -29,6 +25,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /** @internal */
 class Application extends SymfonyApplication
@@ -43,12 +40,10 @@ class Application extends SymfonyApplication
     public function __construct(
         private readonly string $rootDir,
         private readonly ContainerBuilder $containerBuilder,
+        private readonly EventDispatcherInterface $eventDispatcher,
         private readonly FunctionFinder $functionFinder,
         private readonly ContextRegistry $contextRegistry,
-        private readonly EventDispatcher $eventDispatcher,
-        private readonly ExpressionLanguage $expressionLanguage,
-        private readonly Slugger $slugger,
-        private readonly Logger $logger,
+        private readonly TaskCommandFactory $taskCommandFactory,
     ) {
         parent::__construct(static::NAME, static::VERSION);
     }
@@ -91,20 +86,10 @@ class Application extends SymfonyApplication
         $descriptors = $event->taskDescriptorCollection;
 
         foreach ($descriptors->taskDescriptors as $taskDescriptor) {
-            $this->add(new TaskCommand(
-                $taskDescriptor,
-                $this->expressionLanguage,
-                $this->eventDispatcher,
-                $this->contextRegistry,
-                $this->slugger,
-            ));
+            $this->add($this->taskCommandFactory->createTask($taskDescriptor));
         }
         foreach ($descriptors->symfonyTaskDescriptors as $symfonyTaskDescriptor) {
-            $this->add(new SymfonyTaskCommand(
-                $symfonyTaskDescriptor->taskAttribute,
-                $symfonyTaskDescriptor->function,
-                $symfonyTaskDescriptor->definition,
-            ));
+            $this->add(SymfonyTaskCommand::createFromDescriptor($symfonyTaskDescriptor));
         }
 
         return parent::doRun($input, $output);

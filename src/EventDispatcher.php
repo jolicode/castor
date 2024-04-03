@@ -4,10 +4,12 @@ namespace Castor;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
 use Symfony\Component\EventDispatcher\EventDispatcher as SymfonyEventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+#[AsDecorator(EventDispatcherInterface::class)]
 class EventDispatcher implements EventDispatcherInterface
 {
     public function __construct(

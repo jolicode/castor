@@ -12,7 +12,6 @@ use Castor\ContextRegistry;
 use Castor\Descriptor\TaskDescriptor;
 use Castor\Event\AfterExecuteTaskEvent;
 use Castor\Event\BeforeExecuteTaskEvent;
-use Castor\EventDispatcher;
 use Castor\Exception\FunctionConfigurationException;
 use Castor\ExpressionLanguage;
 use Castor\Helper\Slugger;
@@ -23,6 +22,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /** @internal */
 class TaskCommand extends Command implements SignalableCommandInterface
@@ -37,7 +37,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
     public function __construct(
         private readonly TaskDescriptor $taskDescriptor,
         private readonly ExpressionLanguage $expressionLanguage,
-        private readonly EventDispatcher $eventDispatcher,
+        private readonly EventDispatcherInterface $eventDispatcher,
         private readonly ContextRegistry $contextRegistry,
         private readonly Slugger $slugger,
     ) {

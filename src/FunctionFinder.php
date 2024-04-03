@@ -14,7 +14,6 @@ use Castor\Descriptor\SymfonyTaskDescriptor;
 use Castor\Descriptor\TaskDescriptor;
 use Castor\Exception\FunctionConfigurationException;
 use Castor\Helper\Slugger;
-use Castor\Helper\SluggerHelper;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ExceptionInterface;
