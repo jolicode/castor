@@ -1,37 +1,38 @@
 <?php
 
-namespace Castor\Helper;
+namespace Castor\Runner;
 
-use Castor\Console\Application;
 use Castor\Console\Output\SectionOutput;
-use Castor\Container;
 use Castor\Context;
+use Castor\Runner\ParallelRunner;
 use JoliCode\PhpOsHelper\OsHelper;
-use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use Symfony\Component\Process\Process;
 
 use function Castor\run;
 
 /** @internal */
-#[Exclude]
-final class WatchHelper
+final class WatchRunner
 {
+    public function __construct(
+        private ParallelRunner $parallelRunner,
+        private SectionOutput $sectionOutput,
+    ) {
+    }
+
     /**
      * @param string|non-empty-array<string>                 $path
      * @param (callable(string, string) : (false|void|null)) $function
      */
-    public static function watch(Application $app, SectionOutput $sectionOutput, string|array $path, callable $function, Context $context): void
+    public function watch(string|array $path, callable $function, Context $context): void
     {
-        $output = $sectionOutput->getConsoleOutput();
-
         if (\is_array($path)) {
             $parallelCallbacks = [];
 
             foreach ($path as $p) {
-                $parallelCallbacks[] = fn () => self::watch($app, $sectionOutput, $p, $function, $context);
+                $parallelCallbacks[] = fn () => self::watch($p, $function, $context);
             }
 
-            Container::get()->parallelRunner->parallel(...$parallelCallbacks);
+            $this->parallelRunner->parallel(...$parallelCallbacks);
 
             return;
         }
@@ -67,7 +68,7 @@ final class WatchHelper
         $command = [$binaryPath, $path];
         $buffer = '';
 
-        run($command, callback: static function ($type, $bytes, $process) use ($function, $sectionOutput, &$buffer) {
+        run($command, callback: function ($type, $bytes, $process) use ($function, &$buffer) {
             if (Process::OUT === $type) {
                 $data = $buffer . $bytes;
                 $lines = explode("\n", $data);
@@ -98,7 +99,7 @@ final class WatchHelper
                     array_shift($lines);
                 }
             } else {
-                $sectionOutput->writeProcessOutput($type, $bytes, $process);
+                $this->sectionOutput->writeProcessOutput($type, $bytes, $process);
             }
         }, context: $watchContext);
     }

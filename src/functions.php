@@ -10,7 +10,6 @@ use Castor\Exception\WaitFor\ExitedBeforeTimeoutException;
 use Castor\Exception\WaitFor\TimeoutReachedException;
 use Castor\Helper\HasherHelper;
 use Castor\Helper\PathHelper;
-use Castor\Helper\WatchHelper;
 use Joli\JoliNotif\Notification;
 use Joli\JoliNotif\NotifierFactory;
 use JoliCode\PhpOsHelper\OsHelper;
@@ -472,7 +471,7 @@ function watch(string|array $path, callable $function, ?Context $context = null)
 {
     $context ??= Container::get()->getContext();
 
-    WatchHelper::watch(Container::get()->application, Container::get()->sectionOutput, $path, $function, $context);
+    Container::get()->watchRunner->watch($path, $function, $context);
 }
 
 /**
