@@ -16,6 +16,7 @@ use Castor\Exception\FunctionConfigurationException;
 use Castor\Helper\SluggerHelper;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Process\Exception\ExceptionInterface;
 use Symfony\Component\Process\Process;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -167,7 +168,12 @@ class FunctionFinder
         $definitions = $this->cache->get($key, function (ItemInterface $item) use ($console) {
             $item->expiresAfter(60 * 60 * 24);
             $p = new Process([...$console, '--format=json']);
-            $p->mustRun();
+
+            try {
+                $p->mustRun();
+            } catch (ExceptionInterface $e) {
+                throw new FunctionConfigurationException('Could not run the Symfony console.', $reflectionClass, $e);
+            }
 
             try {
                 return json_decode($p->getOutput(), true, 512, \JSON_THROW_ON_ERROR);

@@ -16,6 +16,10 @@
 * Find root directory by looking for a `.castor/castor.php` file
 * Allow stub file to be in `.castor/.castor.stub.php`
 
+* Fix issue with PTY on windows, it's now always disabled
+* Fix issue when finding root dir on windows
+* Fix issue on SymfonyTask creation
+
 * Deprecate loading all PHP files from `[ROOT_DIR]/castor`
 * Deprecate `Context::withPath()` in favor of `Context::withWorkingDirectory()`
 * Deprecate `path` argument in `capture()`, `exit_code()`, `run()`, `with()` in
