@@ -17,7 +17,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 use function Castor\capture;
 
 /** @internal */
-final class WaitForHelper
+final class Waiter
 {
     public function __construct(
         private readonly HttpClientInterface $httpClient,

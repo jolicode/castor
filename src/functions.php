@@ -801,7 +801,7 @@ function wait_for(
     int $intervalMs = 100,
     string $message = 'Waiting for callback to be available...',
 ): void {
-    Container::get()->waitForHelper->waitFor(
+    Container::get()->waiter->waitFor(
         io: io(),
         callback: $callback,
         timeout: $timeout,
@@ -823,7 +823,7 @@ function wait_for_port(
     int $intervalMs = 100,
     ?string $message = null,
 ): void {
-    Container::get()->waitForHelper->waitForPort(
+    Container::get()->waiter->waitForPort(
         io: io(),
         port: $port,
         host: $host,
@@ -845,7 +845,7 @@ function wait_for_url(
     int $intervalMs = 100,
     ?string $message = null,
 ): void {
-    Container::get()->waitForHelper->waitForUrl(
+    Container::get()->waiter->waitForUrl(
         io: io(),
         url: $url,
         timeout: $timeout,
@@ -867,7 +867,7 @@ function wait_for_http_status(
     int $intervalMs = 100,
     ?string $message = null,
 ): void {
-    Container::get()->waitForHelper->waitForHttpStatus(
+    Container::get()->waiter->waitForHttpStatus(
         io: io(),
         url: $url,
         status: $status,
@@ -890,7 +890,7 @@ function wait_for_http_response(
     int $intervalMs = 100,
     ?string $message = null,
 ): void {
-    Container::get()->waitForHelper->waitForHttpResponse(
+    Container::get()->waiter->waitForHttpResponse(
         io: io(),
         url: $url,
         responseChecker: $responseChecker,
@@ -912,7 +912,7 @@ function wait_for_docker_container(
     ?string $message = null,
     ?callable $containerChecker = null,
 ): void {
-    Container::get()->waitForHelper->waitForDockerContainer(
+    Container::get()->waiter->waitForDockerContainer(
         io: io(),
         containerName: $containerName,
         timeout: $timeout,

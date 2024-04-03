@@ -5,7 +5,7 @@ namespace Castor;
 use Castor\Console\Application;
 use Castor\Console\Output\SectionOutput;
 use Castor\Fingerprint\FingerprintHelper;
-use Castor\Helper\WaitForHelper;
+use Castor\Helper\Waiter;
 use Castor\Import\Importer;
 use Castor\Runner\ParallelRunner;
 use Castor\Runner\WatchRunner;
@@ -42,7 +42,7 @@ final class Container
         public readonly ParallelRunner $parallelRunner,
         public readonly SectionOutput $sectionOutput,
         public readonly SymfonyStyle $symfonyStyle,
-        public readonly WaitForHelper $waitForHelper,
+        public readonly Waiter $waiter,
         public readonly WatchRunner $watchRunner,
     ) {
     }
