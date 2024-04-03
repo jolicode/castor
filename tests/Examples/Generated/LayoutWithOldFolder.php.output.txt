@@ -1,5 +1,5 @@
 hh:mm:ss WARNING   [castor] User Deprecated: Since castor 0.15: Autoloading functions from the "/castor/" directory is deprecated. Import files by yourself with the "castor\import()" function. ["exception" => ErrorException { …}]
-castor v0.14.0
+castor v0.15.0
 
 Usage:
   command [options] [arguments]

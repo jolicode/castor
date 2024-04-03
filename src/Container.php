@@ -7,6 +7,7 @@ use Castor\Console\Output\SectionOutput;
 use Castor\Fingerprint\FingerprintHelper;
 use Castor\Helper\WaitForHelper;
 use Castor\Import\Importer;
+use Castor\Runner\ParallelRunner;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -32,14 +33,15 @@ final class Container
         public readonly Filesystem $fs,
         public readonly FingerprintHelper $fingerprintHelper,
         public readonly FunctionFinder $functionFinder,
-        public readonly WaitForHelper $waitForHelper,
         public readonly HttpClientInterface $httpClient,
         public readonly Importer $importer,
         public readonly InputInterface $input,
         public readonly LoggerInterface $logger,
         public readonly OutputInterface $output,
+        public readonly ParallelRunner $parallelRunner,
         public readonly SectionOutput $sectionOutput,
         public readonly SymfonyStyle $symfonyStyle,
+        public readonly WaitForHelper $waitForHelper,
     ) {
     }
 

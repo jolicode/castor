@@ -9,7 +9,6 @@ use Castor\Exception\MinimumVersionRequirementNotMetException;
 use Castor\Exception\WaitFor\ExitedBeforeTimeoutException;
 use Castor\Exception\WaitFor\TimeoutReachedException;
 use Castor\Helper\HasherHelper;
-use Castor\Helper\ParallelHelper;
 use Castor\Helper\PathHelper;
 use Castor\Helper\WatchHelper;
 use Joli\JoliNotif\Notification;
@@ -43,7 +42,7 @@ use function Symfony\Component\String\u;
  */
 function parallel(callable ...$callbacks): array
 {
-    return ParallelHelper::parallel(Container::get()->application, Container::get()->output, ...$callbacks);
+    return Container::get()->parallelRunner->parallel(...$callbacks);
 }
 
 /**

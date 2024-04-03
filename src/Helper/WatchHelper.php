@@ -4,6 +4,7 @@ namespace Castor\Helper;
 
 use Castor\Console\Application;
 use Castor\Console\Output\SectionOutput;
+use Castor\Container;
 use Castor\Context;
 use JoliCode\PhpOsHelper\OsHelper;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
@@ -30,7 +31,7 @@ final class WatchHelper
                 $parallelCallbacks[] = fn () => self::watch($app, $sectionOutput, $p, $function, $context);
             }
 
-            ParallelHelper::parallel($app, $output, ...$parallelCallbacks);
+            Container::get()->parallelRunner->parallel(...$parallelCallbacks);
 
             return;
         }
