@@ -43,7 +43,7 @@ use function Symfony\Component\String\u;
  */
 function parallel(callable ...$callbacks): array
 {
-    return ParallelHelper::parallel(Application::getContainer()->application, Application::getContainer()->output, ...$callbacks);
+    return ParallelHelper::parallel(Container::get()->application, Container::get()->output, ...$callbacks);
 }
 
 /**
@@ -65,7 +65,7 @@ function run(
     ?Context $context = null,
     ?string $path = null,
 ): Process {
-    $context ??= Application::getContainer()->getContext();
+    $context ??= Container::get()->getContext();
 
     if (null !== $environment) {
         $context = $context->withEnvironment($environment);
@@ -141,7 +141,7 @@ function run(
 
     if (!$context->quiet && !$callback) {
         $callback = static function ($type, $bytes, $process) {
-            Application::getContainer()->sectionOutput->writeProcessOutput($type, $bytes, $process);
+            Container::get()->sectionOutput->writeProcessOutput($type, $bytes, $process);
         };
     }
 
@@ -149,7 +149,7 @@ function run(
         'process' => $process,
     ]);
 
-    Application::getContainer()->sectionOutput->initProcess($process);
+    Container::get()->sectionOutput->initProcess($process);
 
     $process->start(function ($type, $bytes) use ($callback, $process) {
         if ($callback) {
@@ -157,11 +157,11 @@ function run(
         }
     });
 
-    Application::getContainer()->eventDispatcher->dispatch(new Event\ProcessStartEvent($process));
+    Container::get()->eventDispatcher->dispatch(new Event\ProcessStartEvent($process));
 
     if (\Fiber::getCurrent()) {
         while ($process->isRunning()) {
-            Application::getContainer()->sectionOutput->tickProcess($process);
+            Container::get()->sectionOutput->tickProcess($process);
             \Fiber::suspend();
             usleep(20_000);
         }
@@ -170,8 +170,8 @@ function run(
     try {
         $exitCode = $process->wait();
     } finally {
-        Application::getContainer()->sectionOutput->finishProcess($process);
-        Application::getContainer()->eventDispatcher->dispatch(new Event\ProcessTerminateEvent($process));
+        Container::get()->sectionOutput->finishProcess($process);
+        Container::get()->eventDispatcher->dispatch(new Event\ProcessTerminateEvent($process));
     }
 
     if ($context->notify) {
@@ -471,9 +471,9 @@ function notify(string $message): void
  */
 function watch(string|array $path, callable $function, ?Context $context = null): void
 {
-    $context ??= Application::getContainer()->getContext();
+    $context ??= Container::get()->getContext();
 
-    WatchHelper::watch(Application::getContainer()->application, Application::getContainer()->sectionOutput, $path, $function, $context);
+    WatchHelper::watch(Container::get()->application, Container::get()->sectionOutput, $path, $function, $context);
 }
 
 /**
@@ -483,17 +483,17 @@ function watch(string|array $path, callable $function, ?Context $context = null)
  */
 function log(string|\Stringable $message, mixed $level = 'info', array $context = []): void
 {
-    Application::getContainer()->logger->log($level, $message, $context);
+    Container::get()->logger->log($level, $message, $context);
 }
 
 function logger(): LoggerInterface
 {
-    return Application::getContainer()->logger;
+    return Container::get()->logger;
 }
 
 function app(): Application
 {
-    return Application::getContainer()->application;
+    return Container::get()->application;
 }
 
 function get_application(): Application
@@ -505,7 +505,7 @@ function get_application(): Application
 
 function input(): InputInterface
 {
-    return Application::getContainer()->input;
+    return Container::get()->input;
 }
 
 function get_input(): InputInterface
@@ -517,7 +517,7 @@ function get_input(): InputInterface
 
 function output(): OutputInterface
 {
-    return Application::getContainer()->output;
+    return Container::get()->output;
 }
 
 /**
@@ -532,19 +532,19 @@ function get_output(): OutputInterface
 
 function io(): SymfonyStyle
 {
-    return Application::getContainer()->symfonyStyle;
+    return Container::get()->symfonyStyle;
 }
 
 function add_context(string $name, \Closure $callable, bool $default = false): void
 {
     trigger_deprecation('jolicode/castor', '0.13', 'The "%s()" function is deprecated, use "Castor\Attributes\%s()" instead.', __FUNCTION__, AsContextGenerator::class);
 
-    Application::getContainer()->contextRegistry->addContext($name, $callable, $default);
+    Container::get()->contextRegistry->addContext($name, $callable, $default);
 }
 
 function context(?string $name = null): Context
 {
-    return Application::getContainer()->getContext($name);
+    return Container::get()->getContext($name);
 }
 
 function get_context(): Context
@@ -565,7 +565,7 @@ function get_context(): Context
  */
 function variable(string $key, mixed $default = null): mixed
 {
-    return Application::getContainer()->getVariable($key, $default);
+    return Container::get()->getVariable($key, $default);
 }
 
 /**
@@ -573,7 +573,7 @@ function variable(string $key, mixed $default = null): mixed
  */
 function task(bool $allowNull = false): ?Command
 {
-    return Application::getContainer()->getCommand($allowNull);
+    return Container::get()->getCommand($allowNull);
 }
 
 function get_command(): Command
@@ -585,7 +585,7 @@ function get_command(): Command
 
 function fs(): Filesystem
 {
-    return Application::getContainer()->fs;
+    return Container::get()->fs;
 }
 
 function finder(): Finder
@@ -611,12 +611,12 @@ function cache(string $key, callable $or): mixed
         $key,
     );
 
-    return Application::getContainer()->cache->get($key, $or);
+    return Container::get()->cache->get($key, $or);
 }
 
 function get_cache(): CacheItemPoolInterface&CacheInterface
 {
-    return Application::getContainer()->cache;
+    return Container::get()->cache;
 }
 
 /**
@@ -631,7 +631,7 @@ function request(string $method, string $url, array $options = []): ResponseInte
 
 function http_client(): HttpClientInterface
 {
-    return Application::getContainer()->httpClient;
+    return Container::get()->httpClient;
 }
 
 /**
@@ -643,7 +643,7 @@ function http_client(): HttpClientInterface
  */
 function import(string $path, ?string $file = null, ?string $version = null, ?string $vcs = null, ?array $source = null): void
 {
-    Application::getContainer()->importer->import($path, $file, $version, $vcs, $source);
+    Container::get()->importer->import($path, $file, $version, $vcs, $source);
 }
 
 function mount(string $path, ?string $namespacePrefix = null): void
@@ -652,7 +652,7 @@ function mount(string $path, ?string $namespacePrefix = null): void
         throw fix_exception(new \InvalidArgumentException(sprintf('The directory "%s" does not exist.', $path)));
     }
 
-    Application::getContainer()->functionFinder->mounts[] = new Mount($path, $namespacePrefix);
+    Container::get()->functionFinder->mounts[] = new Mount($path, $namespacePrefix);
 }
 
 /**
@@ -690,7 +690,7 @@ function with(
     Context|string|null $context = null,
     ?string $path = null,
 ): mixed {
-    $contextRegistry = Application::getContainer()->contextRegistry;
+    $contextRegistry = Container::get()->contextRegistry;
 
     $initialContext = null;
     if ($contextRegistry->hasCurrentContext()) {
@@ -763,21 +763,21 @@ function with(
 function hasher(string $algo = 'xxh128'): HasherHelper
 {
     return new HasherHelper(
-        Application::getContainer()->getCommand(),
-        Application::getContainer()->input,
-        Application::getContainer()->logger,
+        Container::get()->getCommand(),
+        Container::get()->input,
+        Container::get()->logger,
         $algo,
     );
 }
 
 function fingerprint_exists(string $fingerprint): bool
 {
-    return Application::getContainer()->fingerprintHelper->verifyFingerprintFromHash($fingerprint);
+    return Container::get()->fingerprintHelper->verifyFingerprintFromHash($fingerprint);
 }
 
 function fingerprint_save(string $fingerprint): void
 {
-    Application::getContainer()->fingerprintHelper->postProcessFingerprintForHash($fingerprint);
+    Container::get()->fingerprintHelper->postProcessFingerprintForHash($fingerprint);
 }
 
 function fingerprint(callable $callback, string $fingerprint, bool $force = false): bool
@@ -803,7 +803,7 @@ function wait_for(
     int $intervalMs = 100,
     string $message = 'Waiting for callback to be available...',
 ): void {
-    Application::getContainer()->waitForHelper->waitFor(
+    Container::get()->waitForHelper->waitFor(
         io: io(),
         callback: $callback,
         timeout: $timeout,
@@ -825,7 +825,7 @@ function wait_for_port(
     int $intervalMs = 100,
     ?string $message = null,
 ): void {
-    Application::getContainer()->waitForHelper->waitForPort(
+    Container::get()->waitForHelper->waitForPort(
         io: io(),
         port: $port,
         host: $host,
@@ -847,7 +847,7 @@ function wait_for_url(
     int $intervalMs = 100,
     ?string $message = null,
 ): void {
-    Application::getContainer()->waitForHelper->waitForUrl(
+    Container::get()->waitForHelper->waitForUrl(
         io: io(),
         url: $url,
         timeout: $timeout,
@@ -869,7 +869,7 @@ function wait_for_http_status(
     int $intervalMs = 100,
     ?string $message = null,
 ): void {
-    Application::getContainer()->waitForHelper->waitForHttpStatus(
+    Container::get()->waitForHelper->waitForHttpStatus(
         io: io(),
         url: $url,
         status: $status,
@@ -892,7 +892,7 @@ function wait_for_http_response(
     int $intervalMs = 100,
     ?string $message = null,
 ): void {
-    Application::getContainer()->waitForHelper->waitForHttpResponse(
+    Container::get()->waitForHelper->waitForHttpResponse(
         io: io(),
         url: $url,
         responseChecker: $responseChecker,
@@ -914,7 +914,7 @@ function wait_for_docker_container(
     ?string $message = null,
     ?callable $containerChecker = null,
 ): void {
-    Application::getContainer()->waitForHelper->waitForDockerContainer(
+    Container::get()->waitForHelper->waitForDockerContainer(
         io: io(),
         containerName: $containerName,
         timeout: $timeout,
@@ -943,7 +943,7 @@ function yaml_dump(mixed $input, int $inline = 2, int $indent = 4, int $flags = 
 
 function guard_min_version(string $minVersion): void
 {
-    $currentVersion = Application::getContainer()->application->getVersion();
+    $currentVersion = Container::get()->application->getVersion();
 
     $minVersion = u($minVersion)->ensureStart('v')->toString();
     if (version_compare($currentVersion, $minVersion, '<')) {

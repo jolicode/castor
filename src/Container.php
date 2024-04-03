@@ -21,6 +21,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 /** @internal */
 final class Container
 {
+    private static self $instance;
+
     public function __construct(
         public readonly Application $application,
         public readonly CacheItemPoolInterface&CacheInterface $cache,
@@ -39,6 +41,16 @@ final class Container
         public readonly SectionOutput $sectionOutput,
         public readonly SymfonyStyle $symfonyStyle,
     ) {
+    }
+
+    public static function set(self $instance): void
+    {
+        self::$instance = $instance;
+    }
+
+    public static function get(): self
+    {
+        return self::$instance ?? throw new \LogicException('Container not initialized yet.');
     }
 
     /**

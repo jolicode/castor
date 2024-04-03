@@ -33,8 +33,6 @@ class Application extends SymfonyApplication
     public const NAME = 'castor';
     public const VERSION = 'v0.15.0';
 
-    private static Container $container;
-
     private Command $command;
 
     public function __construct(
@@ -46,11 +44,6 @@ class Application extends SymfonyApplication
         private readonly TaskCommandFactory $taskCommandFactory,
     ) {
         parent::__construct(static::NAME, static::VERSION);
-    }
-
-    public static function getContainer(): Container
-    {
-        return self::$container ?? throw new \LogicException('Container not available yet.');
     }
 
     /**
@@ -72,7 +65,7 @@ class Application extends SymfonyApplication
         $this->eventDispatcher->dispatch($event);
 
         // @phpstan-ignore-next-line
-        self::$container = $this->containerBuilder->get(Container::class);
+        Container::set($this->containerBuilder->get(Container::class));
 
         $descriptors = $this->initializeApplication($input);
 
