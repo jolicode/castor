@@ -21,11 +21,12 @@ class PathHelper
             $path = getcwd() ?: '/';
 
             while (!(file_exists($path . '/castor.php') || file_exists($path . '/.castor/castor.php'))) {
-                if ('/' === $path) {
+                $parent = Path::getDirectory($path);
+                if ($parent === $path) {
                     throw new \RuntimeException('Could not find root "castor.php" file.');
                 }
 
-                $path = Path::getDirectory($path);
+                $path = $parent;
             }
 
             $root = $path;
