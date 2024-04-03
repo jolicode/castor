@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+## 0.15.0 (2024-04-03)
+
+### Features
+
 * Add support for importing remote functions and tasks
 * Add a bash installer to ease installation
 * Distribute static binaries `castor.darwin-arm64` automatically with the
@@ -16,9 +20,13 @@
 * Find root directory by looking for a `.castor/castor.php` file
 * Allow stub file to be in `.castor/.castor.stub.php`
 
+### Fixes
+
 * Fix issue with PTY on windows, it's now always disabled
 * Fix issue when finding root dir on windows
 * Fix issue on SymfonyTask creation
+
+### Deprecations
 
 * Deprecate loading all PHP files from `[ROOT_DIR]/castor`
 * Deprecate `Context::withPath()` in favor of `Context::withWorkingDirectory()`
