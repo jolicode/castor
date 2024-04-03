@@ -33,6 +33,19 @@ function build()
     parallel(linux(...), darwin(...), windows(...));
 }
 
+#[AsTask(description: 'install dependencies')]
+function install(): void
+{
+    run(['composer', 'install']);
+}
+
+#[AsTask(description: 'update dependencies')]
+function update(): void
+{
+    run(['composer', 'update']);
+    run(['composer', 'bump']);
+}
+
 function compile(callable $compiler)
 {
     // When we compile the phar, we use the current castor application, with its autoloader.

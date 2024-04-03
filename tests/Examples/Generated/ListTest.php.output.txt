@@ -13,10 +13,10 @@ cache:complex                                                     Cache with usa
 cache:simple                                                      Cache a simple call
 castor:phar:build                                                 Build phar for all systems
 castor:phar:darwin                                                Build phar for MacOS system
+castor:phar:install                                               install dependencies
 castor:phar:linux                                                 Build phar for Linux system
+castor:phar:update                                                update dependencies
 castor:phar:windows                                               Build phar for Windows system
-castor:qa:cs                                                      Fix CS
-castor:qa:phpstan                                                 Run PHPStan
 castor:static:darwin-amd64                                        Build static binary for MacOS (amd64) system
 castor:static:darwin-arm64                                        Build static binary for MacOS (arm64) system
 castor:static:linux                                               Build static binary for Linux system
@@ -51,6 +51,12 @@ open:multiple                                                     Open an URL an
 output:output                                                     Plays with Symfony Style
 parallel:exception                                                Sleep and throw an exception
 parallel:sleep                                                    Sleeps for 5, 7, and 10 seconds in parallel
+qa:cs:cs                                                          Fix CS
+qa:cs:install                                                     install dependencies
+qa:cs:update                                                      Update dependencies
+qa:phpstan:install                                                install dependencies
+qa:phpstan:phpstan                                                Run PHPStan
+qa:phpstan:update                                                 update dependencies
 quiet:quiet                                                       Executes something but does not output anything
 remote-import:remote-tasks                                        Use functions imported from remote packages
 run:ls                                                            Run a sub-process and display information about it

@@ -10,11 +10,14 @@
     }
   ],
   "require": {
-    "humbug/box": "^4.3.8"
+    "humbug/box": ">=4.5.1"
   },
   "config": {
     "optimize-autoloader": true,
     "preferred-install": "dist",
-    "sort-packages": true
+    "sort-packages": true,
+    "platform": {
+      "php": "8.1"
+    }
   }
 }
