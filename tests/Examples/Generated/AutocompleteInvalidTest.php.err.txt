@@ -1,4 +1,4 @@
-In TaskCommand.php line 238:
+In TaskCommand.php line XXXX:
 
   Function "autocomplete_argument()" is not properly configured:
   The value provided in the "autocomplete" option on parameter "argument" is not callable.

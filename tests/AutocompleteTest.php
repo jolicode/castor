@@ -5,6 +5,8 @@ namespace Castor\Tests;
 use Castor\Attribute\AsArgument;
 use Castor\Attribute\AsTask;
 use Castor\Console\Command\TaskCommand;
+use Castor\ContextRegistry;
+use Castor\Descriptor\TaskDescriptor;
 use Castor\EventDispatcher;
 use Castor\ExpressionLanguage;
 use Symfony\Component\Console\Completion\CompletionInput;
@@ -12,12 +14,17 @@ use Symfony\Component\Console\Tester\CommandCompletionTester;
 
 class AutocompleteTest extends TaskTestCase
 {
-    /** @dataProvider getData */
+    /** @dataProvider provideCompletionTests */
     public function testCompletion(\Closure $function, array $expectedValues, string $input = '')
     {
-        $reflectionFunction = new \ReflectionFunction($function);
+        $descriptor = new TaskDescriptor(new AsTask('task'), new \ReflectionFunction($function));
 
-        $command = new TaskCommand(new AsTask('task'), $reflectionFunction, $this->createMock(EventDispatcher::class), $this->createMock(ExpressionLanguage::class));
+        $command = new TaskCommand(
+            $descriptor,
+            $this->createMock(EventDispatcher::class),
+            $this->createMock(ExpressionLanguage::class),
+            $this->createMock(ContextRegistry::class),
+        );
 
         $tester = new CommandCompletionTester($command);
         $suggestions = $tester->complete([$input]);
@@ -25,7 +32,7 @@ class AutocompleteTest extends TaskTestCase
         $this->assertSame($expectedValues, $suggestions);
     }
 
-    public function getData(): \Generator
+    public function provideCompletionTests(): \Generator
     {
         yield [task_with_suggested_values(...), ['a', 'b', 'c']];
         yield [task_with_autocomplete(...), ['d', 'e', 'f']];

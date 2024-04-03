@@ -643,6 +643,15 @@ function import(string $path, ?string $file = null, ?string $version = null, ?st
     GlobalHelper::getApplication()->importer->import($path, $file, $version, $vcs, $source);
 }
 
+function mount(string $path, ?string $namespacePrefix = null): void
+{
+    if (!is_dir($path)) {
+        throw fix_exception(new \InvalidArgumentException(sprintf('The directory "%s" does not exist.', $path)));
+    }
+
+    GlobalHelper::getApplication()->functionFinder->mounts[] = new Mount($path, $namespacePrefix);
+}
+
 /**
  * @return array<string, mixed>
  */

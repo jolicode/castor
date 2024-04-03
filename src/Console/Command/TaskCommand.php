@@ -6,14 +6,16 @@ use Castor\Attribute\AsArgument;
 use Castor\Attribute\AsCommandArgument;
 use Castor\Attribute\AsOption;
 use Castor\Attribute\AsRawTokens;
-use Castor\Attribute\AsTask;
 use Castor\Console\Application;
 use Castor\Console\Input\GetRawTokenTrait;
+use Castor\ContextRegistry;
+use Castor\Descriptor\TaskDescriptor;
 use Castor\Event\AfterExecuteTaskEvent;
 use Castor\Event\BeforeExecuteTaskEvent;
 use Castor\EventDispatcher;
 use Castor\Exception\FunctionConfigurationException;
 use Castor\ExpressionLanguage;
+use Castor\GlobalHelper;
 use Castor\Helper\SluggerHelper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\SignalableCommandInterface;
@@ -34,17 +36,17 @@ class TaskCommand extends Command implements SignalableCommandInterface
     private array $argumentsMap = [];
 
     public function __construct(
-        public readonly AsTask $taskAttribute,
-        public readonly \ReflectionFunction $function,
+        private readonly TaskDescriptor $taskDescriptor,
         private readonly EventDispatcher $eventDispatcher,
         private readonly ExpressionLanguage $expressionLanguage,
+        private readonly ContextRegistry $contextRegistry,
     ) {
-        $this->setDescription($taskAttribute->description);
-        $this->setAliases($taskAttribute->aliases);
+        $this->setDescription($taskDescriptor->taskAttribute->description);
+        $this->setAliases($taskDescriptor->taskAttribute->aliases);
 
-        $taskName = $taskAttribute->name;
-        if ($taskAttribute->namespace) {
-            $taskName = $taskAttribute->namespace . ':' . $taskName;
+        $taskName = $taskDescriptor->taskAttribute->name;
+        if ($taskDescriptor->taskAttribute->namespace) {
+            $taskName = $taskDescriptor->taskAttribute->namespace . ':' . $taskName;
         }
 
         $this->setProcessTitle(Application::NAME . ':' . $taskName);
@@ -57,34 +59,34 @@ class TaskCommand extends Command implements SignalableCommandInterface
      */
     public function getSubscribedSignals(): array
     {
-        return array_keys($this->taskAttribute->onSignals);
+        return array_keys($this->taskDescriptor->taskAttribute->onSignals);
     }
 
     public function handleSignal(int $signal, int|false $previousExitCode = 0): int|false
     {
-        if (!\array_key_exists($signal, $this->taskAttribute->onSignals)) {
+        if (!\array_key_exists($signal, $this->taskDescriptor->taskAttribute->onSignals)) {
             return false;
         }
 
-        return $this->taskAttribute->onSignals[$signal]($signal);
+        return $this->taskDescriptor->taskAttribute->onSignals[$signal]($signal);
     }
 
     public function isEnabled(): bool
     {
-        if (\is_bool($this->taskAttribute->enabled)) {
-            return $this->taskAttribute->enabled;
+        if (\is_bool($this->taskDescriptor->taskAttribute->enabled)) {
+            return $this->taskDescriptor->taskAttribute->enabled;
         }
 
-        return $this->expressionLanguage->evaluate($this->taskAttribute->enabled);
+        return $this->expressionLanguage->evaluate($this->taskDescriptor->taskAttribute->enabled);
     }
 
     protected function configure(): void
     {
-        if ($this->taskAttribute->ignoreValidationErrors) {
+        if ($this->taskDescriptor->taskAttribute->ignoreValidationErrors) {
             $this->ignoreValidationErrors();
         }
 
-        foreach ($this->function->getParameters() as $parameter) {
+        foreach ($this->taskDescriptor->function->getParameters() as $parameter) {
             if ($parameter->getAttributes(AsRawTokens::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null) {
                 continue;
             }
@@ -121,7 +123,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
                     );
                 } elseif ($taskArgumentAttribute instanceof AsOption) {
                     if ('verbose' === $name) {
-                        throw new FunctionConfigurationException('You cannot re-define a "verbose" option. But you can use "output()->isVerbose()" in your code instead.', $this->function);
+                        throw new FunctionConfigurationException('You cannot re-define a "verbose" option. But you can use "output()->isVerbose()" in your code instead.', $this->taskDescriptor->function);
                     }
 
                     $mode = $taskArgumentAttribute->mode;
@@ -147,7 +149,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
                     );
                 }
             } catch (LogicException $e) {
-                throw new FunctionConfigurationException(sprintf('The argument "%s" cannot be configured: "%s".', $parameter->getName(), $e->getMessage()), $this->function, $e);
+                throw new FunctionConfigurationException(sprintf('The argument "%s" cannot be configured: "%s".', $parameter->getName(), $e->getMessage()), $this->taskDescriptor->function, $e);
             }
         }
     }
@@ -156,7 +158,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
     {
         $args = [];
 
-        foreach ($this->function->getParameters() as $parameter) {
+        foreach ($this->taskDescriptor->function->getParameters() as $parameter) {
             if ($parameter->getAttributes(AsRawTokens::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null) {
                 $args[] = $this->getRawTokens($input);
 
@@ -174,22 +176,34 @@ class TaskCommand extends Command implements SignalableCommandInterface
         }
 
         try {
-            $function = $this->function->getClosure();
+            $function = $this->taskDescriptor->function->getClosure();
             if (!\is_callable($function)) {
                 throw new \LogicException('The function is not a callable.');
             }
 
-            $this->eventDispatcher->dispatch(new BeforeExecuteTaskEvent($this));
+            $initialContext = GlobalHelper::getContext();
 
-            $result = $function(...$args);
+            try {
+                if ($this->taskDescriptor->workingDirectory) {
+                    $this->contextRegistry->setCurrentContext(
+                        $initialContext->withWorkingDirectory($this->taskDescriptor->workingDirectory)
+                    );
+                }
 
-            $this->eventDispatcher->dispatch(new AfterExecuteTaskEvent($this, $result));
+                $this->eventDispatcher->dispatch(new BeforeExecuteTaskEvent($this));
+
+                $result = $function(...$args);
+
+                $this->eventDispatcher->dispatch(new AfterExecuteTaskEvent($this, $result));
+            } finally {
+                $this->contextRegistry->setCurrentContext($initialContext);
+            }
         } catch (\Error $e) {
             $castorFunctions = array_filter(get_defined_functions()['user'], fn (string $functionName) => str_starts_with($functionName, 'castor\\'));
             $castorFunctionsWithoutNamespace = array_map(fn (string $functionName) => substr($functionName, \strlen('castor\\')), $castorFunctions);
             foreach ($castorFunctionsWithoutNamespace as $function) {
                 if ("Call to undefined function {$function}()" === $e->getMessage()) {
-                    throw new \LogicException(sprintf('Call to undefined function %s(). Did you forget to import it? Try to add "use function Castor\%s;" in top of "%s" file.', $function, $function, $this->function->getFileName()));
+                    throw new \LogicException(sprintf('Call to undefined function %s(). Did you forget to import it? Try to add "use function Castor\%s;" in top of "%s" file.', $function, $function, $this->taskDescriptor->function->getFileName()));
                 }
             }
 
@@ -227,7 +241,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
     private function getSuggestedValues(AsArgument|AsOption $attribute): array|\Closure
     {
         if ($attribute->suggestedValues && null !== $attribute->autocomplete) {
-            throw new FunctionConfigurationException(sprintf('You cannot define both "suggestedValues" and "autocomplete" option on parameter "%s".', $attribute->name), $this->function);
+            throw new FunctionConfigurationException(sprintf('You cannot define both "suggestedValues" and "autocomplete" option on parameter "%s".', $attribute->name), $this->taskDescriptor->function);
         }
 
         if (null === $attribute->autocomplete) {
@@ -235,7 +249,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
         }
 
         if (!\is_callable($attribute->autocomplete)) {
-            throw new FunctionConfigurationException(sprintf('The value provided in the "autocomplete" option on parameter "%s" is not callable.', $attribute->name), $this->function);
+            throw new FunctionConfigurationException(sprintf('The value provided in the "autocomplete" option on parameter "%s" is not callable.', $attribute->name), $this->taskDescriptor->function);
         }
 
         return \Closure::fromCallable($attribute->autocomplete);

@@ -26,6 +26,7 @@ Castor provides the following built-in functions:
 - [`load_dot_env`](going-further/interacting-with-castor/dot-env.md#the-load_dot_env-function)
 - [`log`](going-further/interacting-with-castor/log.md#the-log-function)
 - [`logger`](going-further/interacting-with-castor/log.md#the-logger-function)
+- [`mount`](going-further/extending-castor/mount.md)
 - [`notify`](going-further/helpers/notify.md#the-notify-function)
 - [`open`](going-further/helpers/open.md)
 - [`output`](going-further/helpers/console-and-io.md#the-output-function)

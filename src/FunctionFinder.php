@@ -26,6 +26,9 @@ class FunctionFinder
     /** @var array<string> */
     public static array $files = [];
 
+    /** @var array<Mount> */
+    public array $mounts = [];
+
     public function __construct(
         private readonly CacheInterface $cache,
         private readonly string $rootDir,
@@ -54,6 +57,25 @@ class FunctionFinder
 
             foreach ($files as $file) {
                 yield from self::doFindFunctions($file->getPathname());
+            }
+        }
+
+        $mounts = $this->mounts;
+        $this->mounts = [];
+        foreach ($mounts as $mount) {
+            foreach (self::findFunctions($mount->path) as $descriptor) {
+                if ($descriptor instanceof TaskDescriptor) {
+                    $descriptor->workingDirectory = $mount->path;
+                    if ($mount->namespacePrefix) {
+                        if ($descriptor->taskAttribute->namespace) {
+                            $descriptor->taskAttribute->namespace = $mount->namespacePrefix . ':' . $descriptor->taskAttribute->namespace;
+                        } else {
+                            $descriptor->taskAttribute->namespace = $mount->namespacePrefix;
+                        }
+                    }
+                }
+
+                yield $descriptor;
             }
         }
     }

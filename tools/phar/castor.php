@@ -10,21 +10,21 @@ use function Castor\run;
 #[AsTask(description: 'Build phar for Linux system')]
 function linux()
 {
-    compile(fn () => run('vendor/bin/box compile -c box.linux-amd64.json', workingDirectory: __DIR__));
-    compile(fn () => run('vendor/bin/box compile -c box.linux-arm64.json', workingDirectory: __DIR__));
+    compile(fn () => run('vendor/bin/box compile -c box.linux-amd64.json'));
+    compile(fn () => run('vendor/bin/box compile -c box.linux-arm64.json'));
 }
 
 #[AsTask(description: 'Build phar for MacOS system')]
 function darwin()
 {
-    compile(fn () => run('vendor/bin/box compile -c box.darwin-amd64.json', workingDirectory: __DIR__));
-    compile(fn () => run('vendor/bin/box compile -c box.darwin-arm64.json', workingDirectory: __DIR__));
+    compile(fn () => run('vendor/bin/box compile -c box.darwin-amd64.json'));
+    compile(fn () => run('vendor/bin/box compile -c box.darwin-arm64.json'));
 }
 
 #[AsTask(description: 'Build phar for Windows system')]
 function windows()
 {
-    compile(fn () => run('vendor/bin/box compile -c box.windows-amd64.json', workingDirectory: __DIR__));
+    compile(fn () => run('vendor/bin/box compile -c box.windows-amd64.json'));
 }
 
 #[AsTask(description: 'Build phar for all systems')]
@@ -44,7 +44,7 @@ function compile(callable $compiler)
 
     // So we force a name when we compile the phar. It can be static since it
     // could not conflict with a real autoloader (in a client application).
-    // Except if the application chosse the very same name... but it's unlikely.
+    // Except if the application choses the very same name... but it's unlikely.
 
     $composerFile = __DIR__ . '/../../composer.json';
     $composerJson = file_get_contents($composerFile);
