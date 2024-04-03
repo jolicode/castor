@@ -169,7 +169,11 @@ class FunctionFinder
             $p = new Process([...$console, '--format=json']);
             $p->mustRun();
 
-            return json_decode($p->getOutput(), true);
+            try {
+                return json_decode($p->getOutput(), true, 512, \JSON_THROW_ON_ERROR);
+            } catch (\JsonException $e) {
+                throw new \RuntimeException('Could not decode the Symfony console output.', 0, $e);
+            }
         });
 
         $sfAttribute = $reflectionClass->getAttributes(AsCommand::class);
