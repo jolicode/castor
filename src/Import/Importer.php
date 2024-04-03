@@ -5,6 +5,7 @@ namespace Castor\Import;
 use Castor\Import\Exception\ImportError;
 use Castor\Import\Exception\RemoteNotAllowed;
 use Castor\Import\Remote\PackageImporter;
+use JoliCode\PhpOsHelper\OsHelper;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Finder\Finder;
 
@@ -24,6 +25,10 @@ class Importer
     public function import(string $path, ?string $file = null, ?string $version = null, ?string $vcs = null, ?array $source = null): void
     {
         $scheme = parse_url($path, \PHP_URL_SCHEME);
+
+        if ($scheme && OsHelper::isWindows() && preg_match('@^\w+:\\.*@', $path)) {
+            $scheme = null;
+        }
 
         if ($scheme) {
             $package = mb_substr($path, mb_strlen($scheme) + 3);
