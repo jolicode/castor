@@ -67,7 +67,7 @@ understand. This will now use the `package://` scheme.
 ```php
 use function Castor\import;
 
-import('composer://vendor-name/project-name', source: [
+import('package://vendor-name/project-name', source: [
     'url' => 'https://github.com/organization/repository.git',
     'type' => 'git', // 'Any source type supported by Composer (git, svn, etc)'
     'reference' => 'main', //  A commit id, a branch or a tag name
