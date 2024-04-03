@@ -47,29 +47,38 @@ jobs:
           REQUIRE_DEV: true
 
   phpunit:
-    name: "PHPUnit on ${{ matrix.php }} / Castor from ${{ matrix.castor.method }}"
-    runs-on: ubuntu-latest
+    name: "PHPUnit on ${{ matrix.os }} - ${{ matrix.php }} / Castor from ${{ matrix.castor.method }}"
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os: [ ubuntu-latest, macos-latest ]
+        php: [ "8.1", "8.3" ]
+        exclude:
+          - os: macos-latest
         include:
           - php: "8.1"
+            os: macos-latest
             castor:
               bin: 'bin/castor'
               method: 'bin/castor'
           - php: "8.1"
+            os: ubuntu-latest
+            castor:
+              bin: 'bin/castor'
+              method: 'bin/castor'
+          - php: "8.1"
+            os: ubuntu-latest
             castor:
               bin: 'tools/phar/build/castor.linux-amd64.phar'
               method: 'phar'
           - php: "8.1"
+            os: ubuntu-latest
             castor:
               bin: 'castor'
               method: 'static'
-          - php: "8.2"
-            castor:
-              bin: 'bin/castor'
-              method: 'bin/castor'
           - php: "8.3"
+            os: ubuntu-latest
             castor:
               bin: 'bin/castor'
               method: 'bin/castor'
@@ -86,14 +95,14 @@ jobs:
 
       - name: Build Castor phar for Linux
         run: bin/castor castor:phar:linux
-        if: matrix.castor.method == 'phar' || matrix.castor.method == 'static'
+        if: matrix.castor.method == 'phar' || matrix.castor.method == 'static' && matrix.os == 'ubuntu-latest'
 
       - name: Compile Custom Built PHP along Castor phar for Linux
         run: |
           set -e
           bin/castor castor:static:linux
           mv castor.linux-amd64 ${{ github.workspace }}/${{ matrix.castor.bin }}
-        if: matrix.castor.method == 'static'
+        if: matrix.castor.method == 'static' && matrix.os == 'ubuntu-latest'
 
       # We use box in a test, so we need to make it available everywhere
       - name: Link box
