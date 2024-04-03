@@ -21,6 +21,7 @@ use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -41,6 +42,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 /** @internal */
+#[Exclude]
 class ApplicationFactory
 {
     public static function create(): SymfonyApplication
@@ -120,6 +122,9 @@ class ApplicationFactory
             ->exclude([
                 __DIR__ . '/../functions.php',
                 __DIR__ . '/../functions-internal.php',
+                __DIR__ . '/../Descriptor/*',
+                __DIR__ . '/../Event/*',
+                __DIR__ . '/../**/Exception/*',
             ])
             ->set(CacheInterface::class, FilesystemAdapter::class)
                 ->args([

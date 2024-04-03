@@ -5,7 +5,9 @@ namespace Castor;
 use Castor\Console\Output\VerbosityLevel;
 use Castor\Helper\PathHelper;
 use Castor\VerbosityLevel as LegacyVerbosityLevel;
+use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
+#[Exclude]
 class Context implements \ArrayAccess
 {
     public readonly string $workingDirectory;

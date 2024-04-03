@@ -2,11 +2,13 @@
 
 namespace Castor\Helper;
 
+use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use Symfony\Component\Filesystem\Path;
 
 /**
  * @final
  */
+#[Exclude]
 class PathHelper
 {
     public static function getRoot(): string

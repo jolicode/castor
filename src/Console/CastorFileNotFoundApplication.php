@@ -6,8 +6,10 @@ use Castor\Console\Command\InitCommand;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 /** @internal */
+#[Exclude]
 class CastorFileNotFoundApplication extends SymfonyApplication
 {
     public function __construct(

@@ -6,11 +6,13 @@ use Castor\Console\Application;
 use Castor\Console\Output\SectionOutput;
 use Castor\Context;
 use JoliCode\PhpOsHelper\OsHelper;
+use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use Symfony\Component\Process\Process;
 
 use function Castor\run;
 
 /** @internal */
+#[Exclude]
 final class WatchHelper
 {
     /**

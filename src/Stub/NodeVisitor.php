@@ -5,8 +5,10 @@ namespace Castor\Stub;
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
+use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 /** @internal */
+#[Exclude]
 class NodeVisitor extends NodeVisitorAbstract
 {
     /** @var array<string, Node\Name> */

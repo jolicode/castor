@@ -5,8 +5,10 @@ namespace Castor\Helper;
 use Castor\Console\Application;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 /** @internal */
+#[Exclude]
 final class ParallelHelper
 {
     /**
