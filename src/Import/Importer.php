@@ -9,8 +9,8 @@ use JoliCode\PhpOsHelper\OsHelper;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Finder\Finder;
 
-use function Castor\castor_require;
-use function Castor\fix_exception;
+use function Castor\Internal\castor_require;
+use function Castor\Internal\fix_exception;
 
 /** @internal */
 class Importer

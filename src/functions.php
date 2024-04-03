@@ -34,6 +34,7 @@ use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
+use function Castor\Internal\fix_exception;
 use function Symfony\Component\String\u;
 
 /**

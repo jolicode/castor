@@ -4,7 +4,6 @@ namespace Castor\Runner;
 
 use Castor\Console\Output\SectionOutput;
 use Castor\Context;
-use Castor\Runner\ParallelRunner;
 use JoliCode\PhpOsHelper\OsHelper;
 use Symfony\Component\Process\Process;
 

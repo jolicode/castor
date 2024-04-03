@@ -21,6 +21,8 @@ use Symfony\Component\Process\Process;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
+use function Castor\Internal\castor_require;
+
 /** @internal */
 class FunctionFinder
 {

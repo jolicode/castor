@@ -1,6 +1,8 @@
 <?php
 
-namespace Castor;
+namespace Castor\Internal;
+
+use Castor\FunctionFinder;
 
 /**
  * Don't leak internal variables when requiring files.
