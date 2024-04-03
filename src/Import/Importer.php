@@ -26,7 +26,8 @@ class Importer
     {
         $scheme = parse_url($path, \PHP_URL_SCHEME);
 
-        if ($scheme && OsHelper::isWindows() && preg_match('@^\w+:\\.*@', $path)) {
+        // Windows paths are not URLs even if parse_url() returns a scheme for the drive letter
+        if ($scheme && OsHelper::isWindows() && preg_match('@^\w+:\\\@', $path)) {
             $scheme = null;
         }
 
