@@ -33,7 +33,6 @@ function build()
     parallel(linux(...), darwin(...), windows(...));
 }
 
-
 #[AsTask(description: 'install dependencies')]
 function install(): void
 {
