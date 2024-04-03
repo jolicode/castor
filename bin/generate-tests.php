@@ -80,10 +80,13 @@ $taskFilterList = [
     'log:error',
     'log:info',
     'log:with-context',
+    'list',
     'parallel:sleep',
     'remote-import:remote-tasks',
     'run:ls',
     'run:run-parallel',
+    'symfony:greet',
+    'symfony:hello',
     // Imported tasks
     'pyrech:hello-example',
     'pyrech:foobar',
@@ -140,7 +143,10 @@ add_test(['context:context', '--context', 'path'], 'ContextContextPathTest');
 add_test(['context:context', '--context', 'production'], 'ContextContextProductionTest');
 add_test(['context:context', '--context', 'run'], 'ContextContextRunTest');
 add_test(['enabled:hello', '--context', 'production'], 'EnabledInProduction');
+add_test(['list', '--raw', '--format', 'txt', '--short'], 'ListTest', skipOnBinary: true);
 add_test(['parallel:sleep', '--sleep5', '0', '--sleep7', '0', '--sleep10', '0'], 'ParallelSleepTest');
+add_test(['symfony:greet', 'World', '--french', 'COUCOU', '--punctuation', '!' ], 'SymfonyGreetTest', skipOnBinary: true);
+add_test(['symfony:hello'], 'SymfonyHelloTest', skipOnBinary: true);
 // In /tmp
 add_test(['completion', 'bash'], 'NoConfigCompletionTest', '/tmp');
 add_test(['init'], 'NewProjectInitTest', '/tmp');
@@ -150,7 +156,7 @@ add_test([], 'NewProjectTest', '/tmp');
 add_test(['list'], 'LayoutWithFolder', __DIR__ . '/../tests/Examples/fixtures/layout/with-folder');
 add_test(['list'], 'LayoutWithOldFolder', __DIR__ . '/../tests/Examples/fixtures/layout/with-old-folder');
 
-function add_test(array $args, string $class, ?string $cwd = null, bool $needRemote = false)
+function add_test(array $args, string $class, ?string $cwd = null, bool $needRemote = false, bool $skipOnBinary = false)
 {
     $fp = fopen(__FILE__, 'r');
     fseek($fp, __COMPILER_HALT_OFFSET__ + 1);
@@ -175,6 +181,16 @@ function add_test(array $args, string $class, ?string $cwd = null, bool $needRem
         '{{ exitCode }}' => $process->getExitCode(),
         '{{ cwd }}' => $cwd ? ', ' . var_export($cwd, true) : '',
         '{{ needRemote }}' => $needRemote ? ', needRemote: true' : '',
+        '{{ skip-on-binary }}' => match ($skipOnBinary) {
+            true => <<<'PHP'
+
+                    if (self::$binary) {
+                        $this->markTestSkipped('This test is not compatible with the binary version of Castor.');
+                    }
+
+            PHP,
+            default => '',
+        },
     ]);
 
     file_put_contents(__DIR__ . '/../tests/Examples/Generated/' . $class . '.php', $code);
@@ -196,7 +212,7 @@ class {{ class_name }} extends TaskTestCase
 {
     // {{ task }}
     public function test(): void
-    {
+    {{{ skip-on-binary }}
         $process = $this->runTask([{{ args }}]{{ cwd }}{{ needRemote }});
 
         $this->assertSame({{ exitCode }}, $process->getExitCode());

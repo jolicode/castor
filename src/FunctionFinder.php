@@ -105,6 +105,10 @@ class FunctionFinder
         if (class_exists(\RepackedApplication::class)) {
             return;
         }
+        // Nor in static binary
+        if (!\PHP_BINARY) {
+            return;
+        }
 
         $newClasses = array_diff(get_declared_classes(), $initialClasses);
         foreach ($newClasses as $className) {
@@ -165,8 +169,9 @@ class FunctionFinder
 
         $key = hash('sha256', implode('-', ['symfony-console-definitions-', ...$console, $this->rootDir]));
 
-        $definitions = $this->cache->get($key, function (ItemInterface $item) use ($console) {
+        $definitions = $this->cache->get($key, function (ItemInterface $item) use ($console, $reflectionClass) {
             $item->expiresAfter(60 * 60 * 24);
+
             $p = new Process([...$console, '--format=json']);
 
             try {
@@ -178,7 +183,7 @@ class FunctionFinder
             try {
                 return json_decode($p->getOutput(), true, 512, \JSON_THROW_ON_ERROR);
             } catch (\JsonException $e) {
-                throw new \RuntimeException('Could not decode the Symfony console output.', 0, $e);
+                throw new FunctionConfigurationException('Could not run the Symfony console.', $reflectionClass, $e);
             }
         });
 
