@@ -15,7 +15,6 @@ use Castor\Event\BeforeExecuteTaskEvent;
 use Castor\EventDispatcher;
 use Castor\Exception\FunctionConfigurationException;
 use Castor\ExpressionLanguage;
-use Castor\GlobalHelper;
 use Castor\Helper\SluggerHelper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\SignalableCommandInterface;
@@ -181,7 +180,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
                 throw new \LogicException('The function is not a callable.');
             }
 
-            $initialContext = GlobalHelper::getContext();
+            $initialContext = $this->contextRegistry->getCurrentContext();
 
             try {
                 if ($this->taskDescriptor->workingDirectory) {

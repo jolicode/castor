@@ -2,10 +2,11 @@
 
 namespace Castor\Helper;
 
-use Castor\Console\Application;
 use Castor\Fingerprint\FileHashStrategy;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -19,7 +20,8 @@ class HasherHelper
      * @see https://www.php.net/manual/en/function.hash-algos.php
      */
     public function __construct(
-        private readonly Application $application,
+        private readonly Command $command,
+        private readonly InputInterface $input,
         private readonly LoggerInterface $logger = new NullLogger(),
         string $algo = 'xxh128',
     ) {
@@ -122,7 +124,7 @@ class HasherHelper
 
     public function writeTaskName(): self
     {
-        $taskName = $this->application->getCommand()->getName() ?? 'n/a';
+        $taskName = $this->command->getName() ?? 'n/a';
 
         $this->logger->debug('Hashing task name "{name}".', [
             'name' => $taskName,
@@ -139,11 +141,9 @@ class HasherHelper
             'args' => implode(', ', $args),
         ]);
 
-        $input = $this->application->getInput();
-
         foreach ($args as $arg) {
-            if ($input->hasArgument($arg)) {
-                $this->write($input->getArgument($arg));
+            if ($this->input->hasArgument($arg)) {
+                $this->write($this->input->getArgument($arg));
             }
         }
 

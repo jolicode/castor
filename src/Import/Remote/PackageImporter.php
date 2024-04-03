@@ -2,30 +2,27 @@
 
 namespace Castor\Import\Remote;
 
-use Castor\Console\Application;
 use Castor\Helper\PathHelper;
 use Castor\Import\Exception\ImportError;
 use Castor\Import\Exception\InvalidImportFormat;
 use Castor\Import\Exception\RemoteNotAllowed;
+use Castor\Import\Importer;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /** @internal */
 class PackageImporter
 {
-    private ?Application $application = null;
-
     public function __construct(
+        #[Autowire(lazy: true)]
+        private readonly Importer $importer,
+        private readonly InputInterface $input,
         private readonly LoggerInterface $logger,
         private readonly Composer $composer,
         /** @var array<string, Import> */
         private array $imports = [],
     ) {
-    }
-
-    public function setApplication(Application $application): void
-    {
-        $this->application = $application;
     }
 
     /** @phpstan-param ImportSource $source */
@@ -69,12 +66,8 @@ class PackageImporter
         throw new InvalidImportFormat(sprintf('The import scheme "%s" is not supported.', $scheme));
     }
 
-    public function fetchPackages(InputInterface $input): void
+    public function fetchPackages(): void
     {
-        if (!$this->application) {
-            throw new \RuntimeException('The application must be set before calling fetchPackages()');
-        }
-
         if (!$this->imports) {
             $this->composer->remove();
 
@@ -82,8 +75,8 @@ class PackageImporter
         }
 
         // Need to look for the raw options as the input is not yet parsed
-        $forceUpdate = true !== $input->getParameterOption('--update-remotes', true);
-        $displayProgress = 'list' !== $input->getFirstArgument();
+        $forceUpdate = true !== $this->input->getParameterOption('--update-remotes', true);
+        $displayProgress = 'list' !== $this->input->getFirstArgument();
 
         $autoloadPath = PathHelper::getRoot() . Composer::VENDOR_DIR . 'autoload.php';
 
@@ -97,7 +90,7 @@ class PackageImporter
 
         foreach ($this->imports as $package => $import) {
             foreach ($import->getFiles() as $file) {
-                $this->application->importer->import(PathHelper::getRoot() . Composer::VENDOR_DIR . $package . '/' . ($file ?? ''));
+                $this->importer->import(PathHelper::getRoot() . Composer::VENDOR_DIR . $package . '/' . ($file ?? ''));
             }
         }
     }
@@ -154,14 +147,8 @@ class PackageImporter
             return false;
         }
 
-        if (!$this->application) {
-            throw new \RuntimeException('The application must be set before calling allowsRemote()');
-        }
-
-        $input = $this->application->getInput();
-
         // Need to look for the raw options as the input is not yet parsed
-        return true === $input->getParameterOption('--no-remote', true);
+        return true === $this->input->getParameterOption('--no-remote', true);
     }
 }
 

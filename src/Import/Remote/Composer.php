@@ -4,11 +4,12 @@ namespace Castor\Import\Remote;
 
 use Castor\Console\Application;
 use Castor\Fingerprint\FingerprintHelper;
-use Castor\GlobalHelper;
 use Castor\Helper\PathHelper;
 use Castor\Import\Exception\ComposerError;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\Console\Helper\ProgressIndicator;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -29,10 +30,11 @@ class Composer
 
     public function __construct(
         private readonly Filesystem $filesystem,
-        private readonly LoggerInterface $logger,
+        private readonly OutputInterface $output,
         private readonly FingerprintHelper $fingerprintHelper,
         /** @var array<string, mixed> */
         private array $configuration = self::DEFAULT_COMPOSER_CONFIGURATION,
+        private readonly LoggerInterface $logger = new NullLogger(),
     ) {
     }
 
@@ -74,7 +76,7 @@ class Composer
         if ($force || !$this->fingerprintHelper->verifyFingerprintFromHash($fingerprint)) {
             $progressIndicator = null;
             if ($displayProgress) {
-                $progressIndicator = new ProgressIndicator(GlobalHelper::getOutput(), null, 100, ['⠏', '⠛', '⠹', '⢸', '⣰', '⣤', '⣆', '⡇']);
+                $progressIndicator = new ProgressIndicator($this->output, null, 100, ['⠏', '⠛', '⠹', '⢸', '⣰', '⣤', '⣆', '⡇']);
                 $progressIndicator->start('<comment>Downloading remote packages</comment>');
             }
 
