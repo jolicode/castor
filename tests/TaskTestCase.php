@@ -9,8 +9,8 @@ use Symfony\Component\Process\Process;
 
 abstract class TaskTestCase extends TestCase
 {
-    static string $castorBin;
-    static bool $binary = false;
+    public static string $castorBin;
+    public static bool $binary = false;
 
     public static function setUpBeforeClass(): void
     {

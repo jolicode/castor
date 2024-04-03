@@ -11,7 +11,7 @@ class ListOnStaticBinTest extends TaskTestCase
     public function test(): void
     {
         if (!self::$binary) {
-            $this->markTestSkipped('This test for the binary version of Castor.');
+            $this->markTestSkipped('This test is for the binary version of Castor.');
         }
 
         $process = $this->runTask(['list', '--raw', '--format', 'txt', '--short']);

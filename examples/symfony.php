@@ -15,7 +15,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand('hello', 'Says hello from a symfony application')]
-#[AsSymfonyTask(name: 'symfony:hello', console: [PHP_BINARY, __FILE__])] // We need to force PHP binary to support windows
+#[AsSymfonyTask(name: 'symfony:hello', console: [\PHP_BINARY, __FILE__])] // We need to force PHP binary to support windows
 class HelloCommand extends Command
 {
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -27,7 +27,7 @@ class HelloCommand extends Command
 }
 
 #[AsCommand('greet')]
-#[AsSymfonyTask(name: 'symfony:greet', console: [PHP_BINARY, __FILE__])] // We need to force PHP binary to support windows
+#[AsSymfonyTask(name: 'symfony:greet', console: [\PHP_BINARY, __FILE__])] // We need to force PHP binary to support windows
 class GreetCommand extends Command
 {
     protected function configure(): void

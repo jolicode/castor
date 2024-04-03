@@ -145,7 +145,7 @@ add_test(['context:context', '--context', 'run'], 'ContextContextRunTest');
 add_test(['enabled:hello', '--context', 'production'], 'EnabledInProduction');
 add_test(['list', '--raw', '--format', 'txt', '--short'], 'ListTest', skipOnBinary: true);
 add_test(['parallel:sleep', '--sleep5', '0', '--sleep7', '0', '--sleep10', '0'], 'ParallelSleepTest');
-add_test(['symfony:greet', 'World', '--french', 'COUCOU', '--punctuation', '!' ], 'SymfonyGreetTest', skipOnBinary: true);
+add_test(['symfony:greet', 'World', '--french', 'COUCOU', '--punctuation', '!'], 'SymfonyGreetTest', skipOnBinary: true);
 add_test(['symfony:hello'], 'SymfonyHelloTest', skipOnBinary: true);
 // In /tmp
 add_test(['completion', 'bash'], 'NoConfigCompletionTest', '/tmp');
@@ -174,6 +174,8 @@ function add_test(array $args, string $class, ?string $cwd = null, bool $needRem
     );
     $process->run();
 
+    $err = OutputCleaner::cleanOutput($process->getErrorOutput());
+
     $code = strtr($template, [
         '{{ class_name }}' => $class,
         '{{ task }}' => $args[0] ?? 'no task',
@@ -184,18 +186,25 @@ function add_test(array $args, string $class, ?string $cwd = null, bool $needRem
         '{{ skip-on-binary }}' => match ($skipOnBinary) {
             true => <<<'PHP'
 
-                    if (self::$binary) {
-                        $this->markTestSkipped('This test is not compatible with the binary version of Castor.');
-                    }
+                        if (self::$binary) {
+                            $this->markTestSkipped('This test is not compatible with the binary version of Castor.');
+                        }
 
-            PHP,
+                PHP,
             default => '',
+        },
+        '{{ error-assertion }}' => match ((bool) $err) {
+            true => <<<'PHP'
+                $this->assertStringEqualsFile(__FILE__ . '.err.txt', $process->getErrorOutput());
+                PHP,
+            default => <<<'PHP'
+                $this->assertSame('', $process->getErrorOutput());
+                PHP,
         },
     ]);
 
     file_put_contents(__DIR__ . '/../tests/Examples/Generated/' . $class . '.php', $code);
     file_put_contents(__DIR__ . '/../tests/Examples/Generated/' . $class . '.php.output.txt', OutputCleaner::cleanOutput($process->getOutput()));
-    $err = OutputCleaner::cleanOutput($process->getErrorOutput());
     if ($err) {
         file_put_contents(__DIR__ . '/../tests/Examples/Generated/' . $class . '.php.err.txt', $err);
     }
@@ -217,10 +226,6 @@ class {{ class_name }} extends TaskTestCase
 
         $this->assertSame({{ exitCode }}, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());
-        if (file_exists(__FILE__ . '.err.txt')) {
-            $this->assertStringEqualsFile(__FILE__ . '.err.txt', $process->getErrorOutput());
-        } else {
-            $this->assertSame('', $process->getErrorOutput());
-        }
+        {{ error-assertion }}
     }
 }
