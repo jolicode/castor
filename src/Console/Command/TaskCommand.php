@@ -15,7 +15,7 @@ use Castor\Event\BeforeExecuteTaskEvent;
 use Castor\EventDispatcher;
 use Castor\Exception\FunctionConfigurationException;
 use Castor\ExpressionLanguage;
-use Castor\Helper\SluggerHelper;
+use Castor\Helper\Slugger;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\SignalableCommandInterface;
 use Symfony\Component\Console\Exception\LogicException;
@@ -36,9 +36,10 @@ class TaskCommand extends Command implements SignalableCommandInterface
 
     public function __construct(
         private readonly TaskDescriptor $taskDescriptor,
-        private readonly EventDispatcher $eventDispatcher,
         private readonly ExpressionLanguage $expressionLanguage,
+        private readonly EventDispatcher $eventDispatcher,
         private readonly ContextRegistry $contextRegistry,
+        private readonly Slugger $slugger,
     ) {
         $this->setDescription($taskDescriptor->taskAttribute->description);
         $this->setAliases($taskDescriptor->taskAttribute->aliases);
@@ -222,7 +223,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
 
     private function setParameterName(\ReflectionParameter $parameter, ?string $name): string
     {
-        $name = SluggerHelper::slug($name ?? $parameter->getName());
+        $name = $this->slugger->slug($name ?? $parameter->getName());
 
         $this->argumentsMap[$parameter->getName()] = $name;
 

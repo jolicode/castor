@@ -13,6 +13,7 @@ use Castor\Descriptor\ListenerDescriptor;
 use Castor\Descriptor\SymfonyTaskDescriptor;
 use Castor\Descriptor\TaskDescriptor;
 use Castor\Exception\FunctionConfigurationException;
+use Castor\Helper\Slugger;
 use Castor\Helper\SluggerHelper;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Finder\Finder;
@@ -31,6 +32,7 @@ class FunctionFinder
     public array $mounts = [];
 
     public function __construct(
+        private readonly Slugger $slugger,
         private readonly CacheInterface $cache,
         private readonly string $rootDir,
     ) {
@@ -135,12 +137,12 @@ class FunctionFinder
         }
 
         if ('' === $taskAttribute->name) {
-            $taskAttribute->name = SluggerHelper::slug($reflectionFunction->getShortName());
+            $taskAttribute->name = $this->slugger->slug($reflectionFunction->getShortName());
         }
 
         if (null === $taskAttribute->namespace) {
             $ns = str_replace('/', ':', \dirname(str_replace('\\', '/', $reflectionFunction->getName())));
-            $ns = implode(':', array_map(SluggerHelper::slug(...), explode(':', $ns)));
+            $ns = implode(':', array_map($this->slugger->slug(...), explode(':', $ns)));
             $taskAttribute->namespace = $ns;
         }
 
@@ -233,7 +235,7 @@ class FunctionFinder
             if ($contextAttribute->default) {
                 $contextAttribute->name = 'default';
             } else {
-                $contextAttribute->name = SluggerHelper::slug($reflectionFunction->getShortName());
+                $contextAttribute->name = $this->slugger->slug($reflectionFunction->getShortName());
             }
         }
 

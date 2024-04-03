@@ -33,6 +33,7 @@ use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\VarDumper\Cloner\AbstractCloner;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -121,7 +122,6 @@ class ApplicationFactory
                 __DIR__ . '/../functions.php',
                 __DIR__ . '/../functions-internal.php',
             ])
-            ->set(FunctionFinder::class)
             ->set(CacheInterface::class, FilesystemAdapter::class)
                 ->args([
                     '$directory' => '%cache_dir%',
@@ -147,6 +147,7 @@ class ApplicationFactory
             ->alias(EventDispatcherInterface::class, EventDispatcher::class)
             ->alias('event_dispatcher', EventDispatcherInterface::class)
             ->set(Filesystem::class)
+            ->set(AsciiSlugger::class)
             ->set(Container::class)
                 ->public()
             ->set(ContainerInterface::class)

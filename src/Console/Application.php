@@ -20,6 +20,7 @@ use Castor\EventDispatcher;
 use Castor\ExpressionLanguage;
 use Castor\FunctionFinder;
 use Castor\Helper\PlatformHelper;
+use Castor\Helper\Slugger;
 use Monolog\Logger;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Command\Command;
@@ -42,11 +43,12 @@ class Application extends SymfonyApplication
     public function __construct(
         private readonly string $rootDir,
         private readonly ContainerBuilder $containerBuilder,
-        public readonly FunctionFinder $functionFinder,
-        public readonly ContextRegistry $contextRegistry,
-        public readonly EventDispatcher $eventDispatcher,
-        public readonly ExpressionLanguage $expressionLanguage,
-        public readonly Logger $logger,
+        private readonly FunctionFinder $functionFinder,
+        private readonly ContextRegistry $contextRegistry,
+        private readonly EventDispatcher $eventDispatcher,
+        private readonly ExpressionLanguage $expressionLanguage,
+        private readonly Slugger $slugger,
+        private readonly Logger $logger,
     ) {
         parent::__construct(static::NAME, static::VERSION);
     }
@@ -91,9 +93,10 @@ class Application extends SymfonyApplication
         foreach ($descriptors->taskDescriptors as $taskDescriptor) {
             $this->add(new TaskCommand(
                 $taskDescriptor,
-                $this->eventDispatcher,
                 $this->expressionLanguage,
+                $this->eventDispatcher,
                 $this->contextRegistry,
+                $this->slugger,
             ));
         }
         foreach ($descriptors->symfonyTaskDescriptors as $symfonyTaskDescriptor) {
