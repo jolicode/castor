@@ -10,6 +10,8 @@ final class OutputCleaner
         // In the bash completion script ×2
         $string = str_replace('_sf_castor.linux-amd64.phar', '_sf_castor', $string);
         $string = str_replace('castor.linux-amd64.phar', 'castor', $string);
+        $string = str_replace('_sf_castor.linux-amd64', '_sf_castor', $string);
+        $string = str_replace('castor.linux-amd64', 'castor', $string);
         $string = preg_replace('{In ([A-Z]\w+).php line \d+:}m', 'In \1.php line XXXX:', $string);
         $string = preg_replace('{In functions.php line \d+:}m', 'In functions.php line XXXX:', $string);
         $string = preg_replace('{you are using v\d+.\d+.\d+.}m', 'you are using vX.Y.Z.', $string);

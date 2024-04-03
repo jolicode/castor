@@ -3,6 +3,7 @@
 namespace run;
 
 use Castor\Attribute\AsTask;
+use JoliCode\PhpOsHelper\OsHelper;
 use Symfony\Component\Console\Helper\ProcessHelper;
 
 use function Castor\app;
@@ -15,7 +16,11 @@ use function Castor\run;
 #[AsTask(description: 'Run a sub-process and display information about it')]
 function ls(): void
 {
-    $process = run('ls -alh && echo $foo', quiet: true, environment: ['foo' => 'ba\'"`r']);
+    if (OsHelper::isWindows()) {
+        $process = run('dir');
+    } else {
+        $process = run('ls -alh && echo $foo', quiet: true, environment: ['foo' => 'ba\'"`r']);
+    }
 
     io()->writeln('Output:' . $process->getOutput());
     io()->writeln('Error output: ' . $process->getErrorOutput());

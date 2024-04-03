@@ -128,12 +128,15 @@ function run(
         ;
     }
 
-    if ($context->tty) {
-        $process->setTty(true);
-        $process->setInput(\STDIN);
-    } elseif ($context->pty) {
-        $process->setPty(true);
-        $process->setInput(\STDIN);
+    // TTY does not work on windows, and PTY is a mess, so let's skip everything!
+    if (!OsHelper::isWindows()) {
+        if ($context->tty) {
+            $process->setTty(true);
+            $process->setInput(\STDIN);
+        } elseif ($context->pty) {
+            $process->setPty(true);
+            $process->setInput(\STDIN);
+        }
     }
 
     if (!$context->quiet && !$callback) {

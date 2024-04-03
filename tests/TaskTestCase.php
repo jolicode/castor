@@ -9,16 +9,20 @@ use Symfony\Component\Process\Process;
 
 abstract class TaskTestCase extends TestCase
 {
+    public static string $castorBin;
+    public static bool $binary = false;
+
     public static function setUpBeforeClass(): void
     {
         WebServerHelper::start();
+
+        self::$castorBin = $_SERVER['CASTOR_BIN'] ?? __DIR__ . '/../bin/castor';
+        self::$binary = 'application/x-executable' === mime_content_type(self::$castorBin);
     }
 
     public function runTask(array $args, ?string $cwd = null, bool $needRemote = false): Process
     {
         $coverage = $this->getTestResultObject()?->getCodeCoverage();
-
-        $castorBin = $_SERVER['CASTOR_BIN'] ?? __DIR__ . '/../bin/castor';
 
         $extraEnv = [
             'ENDPOINT' => $_SERVER['ENDPOINT'],
@@ -29,7 +33,7 @@ abstract class TaskTestCase extends TestCase
         }
 
         if ($coverage) {
-            $castorBin = __DIR__ . '/bin/castor';
+            self::$castorBin = __DIR__ . '/bin/castor';
             $testName = debug_backtrace()[1]['class'] . '::' . debug_backtrace()[1]['function'];
             $outputFilename = stream_get_meta_data(tmpfile())['uri'];
             $extraEnv['CC_OUTPUT_FILENAME'] = $outputFilename;
@@ -37,7 +41,7 @@ abstract class TaskTestCase extends TestCase
         }
 
         $process = new Process(
-            [$castorBin, '--no-ansi', ...$args],
+            [self::$castorBin, '--no-ansi', ...$args],
             cwd: $cwd ? str_replace('{{ base }}', __DIR__ . '/..', $cwd) : __DIR__ . '/..',
             env: [
                 'COLUMNS' => 1000,
