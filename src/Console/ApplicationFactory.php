@@ -16,7 +16,6 @@ use Monolog\Logger;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Application as SymfonyApplication;
@@ -46,10 +45,7 @@ class ApplicationFactory
 {
     public static function create(): SymfonyApplication
     {
-        AbstractCloner::$defaultCasters[self::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
-        AbstractCloner::$defaultCasters[AfterApplicationInitializationEvent::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
-
-        $handler = ErrorHandler::register();
+        $errorHandler = self::configureDebug();
 
         try {
             $rootDir = PathHelper::getRoot();
@@ -66,30 +62,20 @@ class ApplicationFactory
         $container->compile();
 
         $container->set(ContainerInterface::class, $container);
-
-        /** @var LoggerInterface */
-        $logger = $container->get(LoggerInterface::class);
-        $handler->setDefaultLogger($logger, [
-            \E_COMPILE_WARNING => LogLevel::WARNING,
-            \E_CORE_WARNING => LogLevel::WARNING,
-            \E_USER_WARNING => LogLevel::WARNING,
-            \E_WARNING => LogLevel::WARNING,
-            \E_USER_DEPRECATED => LogLevel::WARNING,
-            \E_DEPRECATED => LogLevel::WARNING,
-            \E_USER_NOTICE => LogLevel::WARNING,
-            \E_NOTICE => LogLevel::WARNING,
-
-            \E_COMPILE_ERROR => LogLevel::ERROR,
-            \E_CORE_ERROR => LogLevel::ERROR,
-            \E_ERROR => LogLevel::ERROR,
-            \E_PARSE => LogLevel::ERROR,
-            \E_RECOVERABLE_ERROR => LogLevel::ERROR,
-            \E_STRICT => LogLevel::ERROR,
-            \E_USER_ERROR => LogLevel::ERROR,
-        ]);
+        $container->set(ErrorHandler::class, $errorHandler);
 
         // @phpstan-ignore-next-line
         return $container->get(Application::class);
+    }
+
+    private static function configureDebug(): ErrorHandler
+    {
+        $errorHandler = ErrorHandler::register();
+
+        AbstractCloner::$defaultCasters[self::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
+        AbstractCloner::$defaultCasters[AfterApplicationInitializationEvent::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
+
+        return $errorHandler;
     }
 
     private static function buildContainer(): ContainerBuilder
@@ -158,7 +144,6 @@ class ApplicationFactory
                     ],
                 ])
             ->alias(LoggerInterface::class, Logger::class)
-                ->public()
             ->alias(EventDispatcherInterface::class, EventDispatcher::class)
             ->alias('event_dispatcher', EventDispatcherInterface::class)
             ->set(Filesystem::class)
@@ -172,6 +157,8 @@ class ApplicationFactory
             ->set(InputInterface::class)
                 ->synthetic()
             ->set(SymfonyStyle::class)
+            ->set(ErrorHandler::class)
+                ->synthetic()
         ;
 
         $app = $services->set(Application::class, class_exists(\RepackedApplication::class) ? \RepackedApplication::class : null)

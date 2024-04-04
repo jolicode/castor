@@ -15,12 +15,12 @@ use Castor\Descriptor\SymfonyTaskDescriptor;
 use Castor\Descriptor\TaskDescriptor;
 use Castor\Descriptor\TaskDescriptorCollection;
 use Castor\Event\AfterApplicationInitializationEvent;
+use Castor\Event\BeforeApplicationInitializationEvent;
 use Castor\EventDispatcher;
 use Castor\ExpressionLanguage;
 use Castor\FunctionFinder;
 use Castor\Helper\PlatformHelper;
 use Monolog\Logger;
-use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\ExceptionInterface;
@@ -71,10 +71,11 @@ class Application extends SymfonyApplication
         $this->containerBuilder->set(InputInterface::class, $input);
         $this->containerBuilder->set(OutputInterface::class, $output);
 
+        $event = new BeforeApplicationInitializationEvent($this);
+        $this->eventDispatcher->dispatch($event);
+
         // @phpstan-ignore-next-line
         self::$container = $this->containerBuilder->get(Container::class);
-
-        $this->logger->pushHandler(new ConsoleHandler($output));
 
         $descriptors = $this->initializeApplication($input);
 
