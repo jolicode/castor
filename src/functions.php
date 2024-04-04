@@ -151,6 +151,9 @@ function exit_code(
     );
 }
 
+/**
+ * @deprecated Since castor/castor 0.8. Use Castor\exit_code() instead
+ */
 function get_exit_code(...$args): int
 {
     trigger_deprecation('jolicode/castor', '0.8', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'exit_code');
@@ -200,6 +203,9 @@ function ssh_run(
     );
 }
 
+/**
+ * @deprecated Since castor/castor 0.10. Use Castor\ssh_run() instead
+ */
 function ssh(...$args): Process
 {
     trigger_deprecation('jolicode/castor', '0.10', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'ssh_run');
@@ -333,8 +339,6 @@ function notify(string $message): void
  */
 function watch(string|array $path, callable $function, ?Context $context = null): void
 {
-    $context ??= Container::get()->getContext();
-
     Container::get()->watchRunner->watch($path, $function, $context);
 }
 
@@ -358,6 +362,9 @@ function app(): Application
     return Container::get()->application;
 }
 
+/**
+ * @deprecated Since castor/castor 0.8. Use Castor\app() instead
+ */
 function get_application(): Application
 {
     trigger_deprecation('jolicode/castor', '0.8', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'app');
@@ -370,6 +377,9 @@ function input(): InputInterface
     return Container::get()->input;
 }
 
+/**
+ * @deprecated Since castor/castor 0.8. Use Castor\input() instead
+ */
 function get_input(): InputInterface
 {
     trigger_deprecation('jolicode/castor', '0.8', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'input');
@@ -383,7 +393,7 @@ function output(): OutputInterface
 }
 
 /**
- * @deprecated
+ * @deprecated Since castor/castor 0.8. Use Castor\output() instead
  */
 function get_output(): OutputInterface
 {
@@ -397,6 +407,9 @@ function io(): SymfonyStyle
     return Container::get()->symfonyStyle;
 }
 
+/**
+ * @deprecated Since castor/castor 0.13. Use "Castor\Attributes\AsContextGenerator()" instead.
+ */
 function add_context(string $name, \Closure $callable, bool $default = false): void
 {
     trigger_deprecation('jolicode/castor', '0.13', 'The "%s()" function is deprecated, use "Castor\Attributes\%s()" instead.', __FUNCTION__, AsContextGenerator::class);
@@ -409,6 +422,9 @@ function context(?string $name = null): Context
     return Container::get()->getContext($name);
 }
 
+/**
+ * @deprecated Since castor/castor 0.8. Use Castor\context() instead
+ */
 function get_context(): Context
 {
     trigger_deprecation('jolicode/castor', '0.8', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'context');
@@ -438,6 +454,9 @@ function task(bool $allowNull = false): ?Command
     return Container::get()->getCommand($allowNull);
 }
 
+/**
+ * @deprecated Since castor/castor 0.8. Use Castor\task() instead
+ */
 function get_command(): Command
 {
     trigger_deprecation('jolicode/castor', '0.8', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'task');

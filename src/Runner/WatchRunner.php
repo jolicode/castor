@@ -4,16 +4,17 @@ namespace Castor\Runner;
 
 use Castor\Console\Output\SectionOutput;
 use Castor\Context;
+use Castor\ContextRegistry;
 use JoliCode\PhpOsHelper\OsHelper;
 use Symfony\Component\Process\Process;
-
-use function Castor\run;
 
 /** @internal */
 final class WatchRunner
 {
     public function __construct(
+        private ContextRegistry $contextRegistry,
         private ParallelRunner $parallelRunner,
+        private ProcessRunner $processRunner,
         private SectionOutput $sectionOutput,
     ) {
     }
@@ -22,8 +23,10 @@ final class WatchRunner
      * @param string|non-empty-array<string>                 $path
      * @param (callable(string, string) : (false|void|null)) $function
      */
-    public function watch(string|array $path, callable $function, Context $context): void
+    public function watch(string|array $path, callable $function, ?Context $context = null): void
     {
+        $context ??= $this->contextRegistry->getCurrentContext();
+
         if (\is_array($path)) {
             $parallelCallbacks = [];
 
@@ -67,7 +70,7 @@ final class WatchRunner
         $command = [$binaryPath, $path];
         $buffer = '';
 
-        run($command, callback: function ($type, $bytes, $process) use ($function, &$buffer) {
+        $this->processRunner->run($command, callback: function ($type, $bytes, $process) use ($function, &$buffer) {
             if (Process::OUT === $type) {
                 $data = $buffer . $bytes;
                 $lines = explode("\n", $data);
