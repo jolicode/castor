@@ -14,7 +14,6 @@ use JoliCode\PhpOsHelper\OsHelper;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
-use Spatie\Ssh\Ssh;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -185,22 +184,7 @@ function ssh_run(
     ?bool $notify = null,
     ?float $timeout = null,
 ): Process {
-    $ssh = ssh_configuration($host, $user, $sshOptions);
-
-    if ($path) {
-        $command = sprintf('cd %s && %s', $path, $command);
-    }
-
-    return run(
-        $ssh->getExecuteCommand($command),
-        environment: [],
-        tty: false,
-        pty: false,
-        timeout: $timeout,
-        quiet: $quiet,
-        allowFailure: $allowFailure,
-        notify: $notify
-    );
+    return Container::get()->sshRunner->execute($command, $path, $host, $user, $sshOptions, $quiet, $allowFailure, $notify, $timeout);
 }
 
 /**
@@ -237,18 +221,7 @@ function ssh_upload(
     ?bool $notify = null,
     ?float $timeout = null,
 ): Process {
-    $ssh = ssh_configuration($host, $user, $sshOptions);
-
-    return run(
-        $ssh->getUploadCommand($sourcePath, $destinationPath),
-        environment: [],
-        tty: false,
-        pty: false,
-        timeout: $timeout,
-        quiet: $quiet,
-        allowFailure: $allowFailure,
-        notify: $notify
-    );
+    return Container::get()->sshRunner->upload($sourcePath, $destinationPath, $host, $user, $sshOptions, $quiet, $allowFailure, $notify, $timeout);
 }
 
 /**
@@ -275,57 +248,7 @@ function ssh_download(
     ?bool $notify = null,
     ?float $timeout = null,
 ): Process {
-    $ssh = ssh_configuration($host, $user, $sshOptions);
-
-    return run(
-        $ssh->getDownloadCommand($sourcePath, $destinationPath),
-        environment: [],
-        tty: false,
-        pty: false,
-        timeout: $timeout,
-        quiet: $quiet,
-        allowFailure: $allowFailure,
-        notify: $notify
-    );
-}
-
-/**
- * @param array{
- *     'port'?: int,
- *     'path_private_key'?: string,
- *     'jump_host'?: string,
- *     'multiplexing_control_path'?: string,
- *     'multiplexing_control_persist'?: string,
- *     'enable_strict_check'?: bool,
- *     'password_authentication'?: bool,
- * } $sshOptions
- *
- * @internal
- */
-function ssh_configuration(
-    string $host,
-    string $user,
-    array $sshOptions = [],
-): Ssh {
-    $ssh = Ssh::create($user, $host, $sshOptions['port'] ?? null);
-
-    if ($sshOptions['path_private_key'] ?? false) {
-        $ssh->usePrivateKey($sshOptions['path_private_key']);
-    }
-    if ($sshOptions['jump_host'] ?? false) {
-        $ssh->useJumpHost($sshOptions['jump_host']);
-    }
-    if ($sshOptions['multiplexing_control_path'] ?? false) {
-        $ssh->useMultiplexing($sshOptions['multiplexing_control_path'], $sshOptions['multiplexing_control_persist'] ?? '10m');
-    }
-    if ($sshOptions['enable_strict_check'] ?? false) {
-        $sshOptions['enable_strict_check'] ? $ssh->enableStrictHostKeyChecking() : $ssh->disableStrictHostKeyChecking();
-    }
-    if ($sshOptions['password_authentication'] ?? false) {
-        $sshOptions['password_authentication'] ? $ssh->enablePasswordAuthentication() : $ssh->disablePasswordAuthentication();
-    }
-
-    return $ssh;
+    return Container::get()->sshRunner->download($sourcePath, $destinationPath, $host, $user, $sshOptions, $quiet, $allowFailure, $notify, $timeout);
 }
 
 function notify(string $message): void

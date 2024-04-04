@@ -10,6 +10,7 @@ use Castor\Helper\Waiter;
 use Castor\Import\Importer;
 use Castor\Runner\ParallelRunner;
 use Castor\Runner\ProcessRunner;
+use Castor\Runner\SshRunner;
 use Castor\Runner\WatchRunner;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
@@ -45,6 +46,7 @@ final class Container
         public readonly ParallelRunner $parallelRunner,
         public readonly ProcessRunner $processRunner,
         public readonly SectionOutput $sectionOutput,
+        public readonly SshRunner $sshRunner,
         public readonly SymfonyStyle $symfonyStyle,
         public readonly Waiter $waiter,
         public readonly WatchRunner $watchRunner,
