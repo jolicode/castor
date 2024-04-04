@@ -42,9 +42,6 @@ $taskFilterList = [
     'help',
     // Never complete or impossible to run
     'castor:debug',
-    'ssh:download',
-    'ssh:ls',
-    'ssh:upload',
     'watch:fs-change',
     'watch:parallel-change',
     'watch:stop',
