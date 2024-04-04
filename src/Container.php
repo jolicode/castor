@@ -8,6 +8,7 @@ use Castor\Fingerprint\FingerprintHelper;
 use Castor\Helper\Waiter;
 use Castor\Import\Importer;
 use Castor\Runner\ParallelRunner;
+use Castor\Runner\ProcessRunner;
 use Castor\Runner\WatchRunner;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
@@ -40,6 +41,7 @@ final class Container
         public readonly LoggerInterface $logger,
         public readonly OutputInterface $output,
         public readonly ParallelRunner $parallelRunner,
+        public readonly ProcessRunner $processRunner,
         public readonly SectionOutput $sectionOutput,
         public readonly SymfonyStyle $symfonyStyle,
         public readonly Waiter $waiter,

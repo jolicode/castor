@@ -24,7 +24,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
@@ -64,135 +63,20 @@ function run(
     ?Context $context = null,
     ?string $path = null,
 ): Process {
-    $context ??= Container::get()->getContext();
-
-    if (null !== $environment) {
-        $context = $context->withEnvironment($environment);
-    }
-
-    if ($workingDirectory) {
-        $context = $context->withWorkingDirectory($workingDirectory);
-        if ($path) {
-            throw new \LogicException('You cannot use both the "path" and "workingDirectory" arguments at the same time.');
-        }
-    }
-    if ($path) {
-        trigger_deprecation('castor', '0.15', 'The "path" argument is deprecated, use "workingDirectory" instead.');
-
-        $context = $context->withWorkingDirectory($path);
-    }
-
-    if (null !== $tty) {
-        $context = $context->withTty($tty);
-    }
-
-    if (null !== $pty) {
-        $context = $context->withPty($pty);
-    }
-
-    if (null !== $timeout) {
-        $context = $context->withTimeout($timeout);
-    }
-
-    if (null !== $quiet) {
-        $context = $context->withQuiet($quiet);
-    }
-
-    if (null !== $allowFailure) {
-        $context = $context->withAllowFailure($allowFailure);
-    }
-
-    if (null !== $notify) {
-        $context = $context->withNotify($notify);
-    }
-
-    if (\is_array($command)) {
-        $process = new Process($command, $context->workingDirectory, $context->environment, null, $context->timeout);
-    } else {
-        $process = Process::fromShellCommandline($command, $context->workingDirectory, $context->environment, null, $context->timeout);
-    }
-
-    // When quiet is set, it means we want to capture the output.
-    // So we disable TTY and PTY because it does not make sens otherwise (and it's buggy).
-    if ($context->quiet) {
-        if ($tty) {
-            throw new \LogicException('The "tty" argument cannot be used with "quiet".');
-        }
-        if ($pty) {
-            throw new \LogicException('The "pty" argument cannot be used with "quiet".');
-        }
-        $context = $context
-            ->withTty(false)
-            ->withPty(false)
-        ;
-    }
-
-    // TTY does not work on windows, and PTY is a mess, so let's skip everything!
-    if (!OsHelper::isWindows()) {
-        if ($context->tty) {
-            $process->setTty(true);
-            $process->setInput(\STDIN);
-        } elseif ($context->pty) {
-            $process->setPty(true);
-            $process->setInput(\STDIN);
-        }
-    }
-
-    if (!$context->quiet && !$callback) {
-        $callback = static function ($type, $bytes, $process) {
-            Container::get()->sectionOutput->writeProcessOutput($type, $bytes, $process);
-        };
-    }
-
-    log(sprintf('Running command: "%s".', $process->getCommandLine()), 'info', [
-        'process' => $process,
-    ]);
-
-    Container::get()->sectionOutput->initProcess($process);
-
-    $process->start(function ($type, $bytes) use ($callback, $process) {
-        if ($callback) {
-            $callback($type, $bytes, $process);
-        }
-    });
-
-    Container::get()->eventDispatcher->dispatch(new Event\ProcessStartEvent($process));
-
-    if (\Fiber::getCurrent()) {
-        while ($process->isRunning()) {
-            Container::get()->sectionOutput->tickProcess($process);
-            \Fiber::suspend();
-            usleep(20_000);
-        }
-    }
-
-    try {
-        $exitCode = $process->wait();
-    } finally {
-        Container::get()->sectionOutput->finishProcess($process);
-        Container::get()->eventDispatcher->dispatch(new Event\ProcessTerminateEvent($process));
-    }
-
-    if ($context->notify) {
-        notify(sprintf('The command "%s" has been finished %s.', $process->getCommandLine(), 0 === $exitCode ? 'successfully' : 'with an error'));
-    }
-
-    if (0 !== $exitCode) {
-        log(sprintf('Command finished with an error (exit code=%d).', $process->getExitCode()), 'notice');
-        if (!$context->allowFailure) {
-            if ($context->verbosityLevel->isVeryVerbose()) {
-                throw new ProcessFailedException($process);
-            }
-
-            throw fix_exception(new \Exception("The command \"{$process->getCommandLine()}\" failed."));
-        }
-
-        return $process;
-    }
-
-    log('Command finished successfully.', 'debug');
-
-    return $process;
+    return Container::get()->processRunner->run(
+        $command,
+        $environment,
+        $workingDirectory,
+        $tty,
+        $pty,
+        $timeout,
+        $quiet,
+        $allowFailure,
+        $notify,
+        $callback,
+        $context,
+        $path,
+    );
 }
 
 /**
