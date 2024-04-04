@@ -1,4 +1,4 @@
-castor v0.14.0
+castor v0.15.0
 
 Usage:
   command [options] [arguments]

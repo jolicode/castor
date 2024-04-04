@@ -6,6 +6,7 @@ use Castor\Exception\ExecutableNotFoundException;
 use Castor\Exception\WaitFor\DockerContainerStateException;
 use Castor\Exception\WaitFor\ExitedBeforeTimeoutException;
 use Castor\Exception\WaitFor\TimeoutReachedException;
+use Castor\Runner\ProcessRunner;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -14,13 +15,12 @@ use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
-use function Castor\capture;
-
 /** @internal */
-final class WaitForHelper
+final class Waiter
 {
     public function __construct(
         private readonly HttpClientInterface $httpClient,
+        private readonly ProcessRunner $processRunner,
         private readonly LoggerInterface $logger = new NullLogger(),
     ) {
     }
@@ -238,9 +238,9 @@ final class WaitForHelper
         $this->waitFor(
             io: $io,
             callback: function () use ($timeout, $io, $portsToCheck, $containerChecker, $containerName) {
-                $containerId = capture("docker ps -a -q --filter name={$containerName}", allowFailure: true);
+                $containerId = $this->processRunner->capture("docker ps -a -q --filter name={$containerName}", allowFailure: true);
                 $isContainerExist = (bool) $containerId;
-                $isContainerRunning = (bool) capture("docker inspect -f '{{.State.Running}}' {$containerId}", allowFailure: true);
+                $isContainerRunning = (bool) $this->processRunner->capture("docker inspect -f '{{.State.Running}}' {$containerId}", allowFailure: true);
 
                 if (false === $isContainerExist) {
                     throw new DockerContainerStateException($containerName, 'not exist');

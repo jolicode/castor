@@ -7,11 +7,11 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use Symfony\Component\Finder\Finder;
 
-/**
- * @final
- */
+/** @final */
+#[Exclude]
 class HasherHelper
 {
     private readonly \HashContext $hashContext;

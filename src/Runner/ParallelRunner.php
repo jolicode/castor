@@ -1,22 +1,32 @@
 <?php
 
-namespace Castor\Helper;
+namespace Castor\Runner;
 
 use Castor\Console\Application;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /** @internal */
-final class ParallelHelper
+final class ParallelRunner
 {
+    public function __construct(
+        private readonly Application $app,
+        private readonly OutputInterface $output,
+    ) {
+    }
+
     /**
      * @return array<mixed>
      */
-    public static function parallel(Application $app, OutputInterface $output, callable ...$callbacks): array
+    public function parallel(callable ...$callbacks): array
     {
         /** @var \Fiber[] $fibers */
         $fibers = [];
         $exceptions = [];
+        $errorOutput = $this->output;
+        if ($errorOutput instanceof ConsoleOutput) {
+            $errorOutput = $errorOutput->getErrorOutput();
+        }
 
         foreach ($callbacks as $callback) {
             $fiber = new \Fiber($callback);
@@ -24,11 +34,7 @@ final class ParallelHelper
             try {
                 $fiber->start();
             } catch (\Throwable $e) {
-                if ($output instanceof ConsoleOutput) {
-                    $output = $output->getErrorOutput();
-                }
-
-                $app->renderThrowable($e, $output);
+                $this->app->renderThrowable($e, $errorOutput);
 
                 $exceptions[] = $e;
             }
@@ -48,11 +54,7 @@ final class ParallelHelper
                     try {
                         $fiber->resume();
                     } catch (\Throwable $e) {
-                        if ($output instanceof ConsoleOutput) {
-                            $output = $output->getErrorOutput();
-                        }
-
-                        $app->renderThrowable($e, $output);
+                        $this->app->renderThrowable($e, $errorOutput);
 
                         $exceptions[] = $e;
                     }

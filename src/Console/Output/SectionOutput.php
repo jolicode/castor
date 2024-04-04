@@ -12,10 +12,8 @@ class SectionOutput
 {
     private const COLORS = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', 'default'];
 
-    private OutputInterface|ConsoleSectionOutput $consoleOutput;
-
+    private OutputInterface $consoleOutput;
     private ?ConsoleOutput $mainOutput;
-
     /** @var \SplObjectStorage<Process, SectionDetails> */
     private \SplObjectStorage $sections;
 

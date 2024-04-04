@@ -7,10 +7,12 @@ use Castor\Attribute\AsTask;
 use Castor\Console\Command\TaskCommand;
 use Castor\ContextRegistry;
 use Castor\Descriptor\TaskDescriptor;
-use Castor\EventDispatcher;
 use Castor\ExpressionLanguage;
+use Castor\Helper\Slugger;
 use Symfony\Component\Console\Completion\CompletionInput;
 use Symfony\Component\Console\Tester\CommandCompletionTester;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class AutocompleteTest extends TaskTestCase
 {
@@ -21,9 +23,10 @@ class AutocompleteTest extends TaskTestCase
 
         $command = new TaskCommand(
             $descriptor,
-            $this->createMock(EventDispatcher::class),
             $this->createMock(ExpressionLanguage::class),
+            $this->createMock(EventDispatcherInterface::class),
             $this->createMock(ContextRegistry::class),
+            new Slugger(new AsciiSlugger()),
         );
 
         $tester = new CommandCompletionTester($command);

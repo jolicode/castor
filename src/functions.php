@@ -9,11 +9,7 @@ use Castor\Exception\MinimumVersionRequirementNotMetException;
 use Castor\Exception\WaitFor\ExitedBeforeTimeoutException;
 use Castor\Exception\WaitFor\TimeoutReachedException;
 use Castor\Helper\HasherHelper;
-use Castor\Helper\ParallelHelper;
 use Castor\Helper\PathHelper;
-use Castor\Helper\WatchHelper;
-use Joli\JoliNotif\Notification;
-use Joli\JoliNotif\NotifierFactory;
 use JoliCode\PhpOsHelper\OsHelper;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
@@ -26,7 +22,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
@@ -36,6 +31,7 @@ use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
+use function Castor\Internal\fix_exception;
 use function Symfony\Component\String\u;
 
 /**
@@ -43,7 +39,7 @@ use function Symfony\Component\String\u;
  */
 function parallel(callable ...$callbacks): array
 {
-    return ParallelHelper::parallel(Application::getContainer()->application, Application::getContainer()->output, ...$callbacks);
+    return Container::get()->parallelRunner->parallel(...$callbacks);
 }
 
 /**
@@ -65,135 +61,28 @@ function run(
     ?Context $context = null,
     ?string $path = null,
 ): Process {
-    $context ??= Application::getContainer()->getContext();
-
-    if (null !== $environment) {
-        $context = $context->withEnvironment($environment);
-    }
-
-    if ($workingDirectory) {
-        $context = $context->withWorkingDirectory($workingDirectory);
-        if ($path) {
-            throw new \LogicException('You cannot use both the "path" and "workingDirectory" arguments at the same time.');
-        }
+    if ($workingDirectory && $path) {
+        throw new \LogicException('You cannot use both the "path" and "workingDirectory" arguments at the same time.');
     }
     if ($path) {
         trigger_deprecation('castor', '0.15', 'The "path" argument is deprecated, use "workingDirectory" instead.');
 
-        $context = $context->withWorkingDirectory($path);
+        $workingDirectory = $path;
     }
 
-    if (null !== $tty) {
-        $context = $context->withTty($tty);
-    }
-
-    if (null !== $pty) {
-        $context = $context->withPty($pty);
-    }
-
-    if (null !== $timeout) {
-        $context = $context->withTimeout($timeout);
-    }
-
-    if (null !== $quiet) {
-        $context = $context->withQuiet($quiet);
-    }
-
-    if (null !== $allowFailure) {
-        $context = $context->withAllowFailure($allowFailure);
-    }
-
-    if (null !== $notify) {
-        $context = $context->withNotify($notify);
-    }
-
-    if (\is_array($command)) {
-        $process = new Process($command, $context->workingDirectory, $context->environment, null, $context->timeout);
-    } else {
-        $process = Process::fromShellCommandline($command, $context->workingDirectory, $context->environment, null, $context->timeout);
-    }
-
-    // When quiet is set, it means we want to capture the output.
-    // So we disable TTY and PTY because it does not make sens otherwise (and it's buggy).
-    if ($context->quiet) {
-        if ($tty) {
-            throw new \LogicException('The "tty" argument cannot be used with "quiet".');
-        }
-        if ($pty) {
-            throw new \LogicException('The "pty" argument cannot be used with "quiet".');
-        }
-        $context = $context
-            ->withTty(false)
-            ->withPty(false)
-        ;
-    }
-
-    // TTY does not work on windows, and PTY is a mess, so let's skip everything!
-    if (!OsHelper::isWindows()) {
-        if ($context->tty) {
-            $process->setTty(true);
-            $process->setInput(\STDIN);
-        } elseif ($context->pty) {
-            $process->setPty(true);
-            $process->setInput(\STDIN);
-        }
-    }
-
-    if (!$context->quiet && !$callback) {
-        $callback = static function ($type, $bytes, $process) {
-            Application::getContainer()->sectionOutput->writeProcessOutput($type, $bytes, $process);
-        };
-    }
-
-    log(sprintf('Running command: "%s".', $process->getCommandLine()), 'info', [
-        'process' => $process,
-    ]);
-
-    Application::getContainer()->sectionOutput->initProcess($process);
-
-    $process->start(function ($type, $bytes) use ($callback, $process) {
-        if ($callback) {
-            $callback($type, $bytes, $process);
-        }
-    });
-
-    Application::getContainer()->eventDispatcher->dispatch(new Event\ProcessStartEvent($process));
-
-    if (\Fiber::getCurrent()) {
-        while ($process->isRunning()) {
-            Application::getContainer()->sectionOutput->tickProcess($process);
-            \Fiber::suspend();
-            usleep(20_000);
-        }
-    }
-
-    try {
-        $exitCode = $process->wait();
-    } finally {
-        Application::getContainer()->sectionOutput->finishProcess($process);
-        Application::getContainer()->eventDispatcher->dispatch(new Event\ProcessTerminateEvent($process));
-    }
-
-    if ($context->notify) {
-        notify(sprintf('The command "%s" has been finished %s.', $process->getCommandLine(), 0 === $exitCode ? 'successfully' : 'with an error'));
-    }
-
-    if (0 !== $exitCode) {
-        log(sprintf('Command finished with an error (exit code=%d).', $process->getExitCode()), 'notice');
-        if (!$context->allowFailure) {
-            if ($context->verbosityLevel->isVeryVerbose()) {
-                throw new ProcessFailedException($process);
-            }
-
-            throw fix_exception(new \Exception("The command \"{$process->getCommandLine()}\" failed."));
-        }
-
-        return $process;
-    }
-
-    log('Command finished successfully.', 'debug');
-
-    return $process;
+    return Container::get()->processRunner->run(
+        $command,
+        $environment,
+        $workingDirectory,
+        $tty,
+        $pty,
+        $timeout,
+        $quiet,
+        $allowFailure,
+        $notify,
+        $callback,
+        $context,
+    );
 }
 
 /**
@@ -210,14 +99,6 @@ function capture(
     ?Context $context = null,
     ?string $path = null,
 ): string {
-    $hasOnFailure = null !== $onFailure;
-    if ($hasOnFailure) {
-        if (null !== $allowFailure) {
-            throw new \LogicException('The "allowFailure" argument cannot be used with "onFailure".');
-        }
-        $allowFailure = true;
-    }
-
     if ($workingDirectory && $path) {
         throw new \LogicException('You cannot use both the "path" and "workingDirectory" arguments at the same time.');
     }
@@ -227,21 +108,15 @@ function capture(
         $workingDirectory = $path;
     }
 
-    $process = run(
-        command: $command,
-        environment: $environment,
-        workingDirectory: $workingDirectory,
-        timeout: $timeout,
-        allowFailure: $allowFailure,
-        context: $context,
-        quiet: true,
+    return Container::get()->processRunner->capture(
+        $command,
+        $environment,
+        $workingDirectory,
+        $timeout,
+        $allowFailure,
+        $onFailure,
+        $context,
     );
-
-    if ($hasOnFailure && !$process->isSuccessful()) {
-        return $onFailure;
-    }
-
-    return trim($process->getOutput());
 }
 
 /**
@@ -266,19 +141,19 @@ function exit_code(
         $workingDirectory = $path;
     }
 
-    $process = run(
-        command: $command,
-        environment: $environment,
-        workingDirectory: $workingDirectory,
-        timeout: $timeout,
-        allowFailure: true,
-        context: $context,
-        quiet: $quiet,
+    return Container::get()->processRunner->exitCode(
+        $command,
+        $environment,
+        $workingDirectory,
+        $timeout,
+        $quiet,
+        $context,
     );
-
-    return $process->getExitCode() ?? 0;
 }
 
+/**
+ * @deprecated Since castor/castor 0.8. Use Castor\exit_code() instead
+ */
 function get_exit_code(...$args): int
 {
     trigger_deprecation('jolicode/castor', '0.8', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'exit_code');
@@ -328,6 +203,9 @@ function ssh_run(
     );
 }
 
+/**
+ * @deprecated Since castor/castor 0.10. Use Castor\ssh_run() instead
+ */
 function ssh(...$args): Process
 {
     trigger_deprecation('jolicode/castor', '0.10', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'ssh_run');
@@ -452,17 +330,7 @@ function ssh_configuration(
 
 function notify(string $message): void
 {
-    static $notifier;
-
-    $notifier ??= NotifierFactory::create();
-
-    $notification =
-        (new Notification())
-            ->setTitle('Castor')
-            ->setBody($message)
-    ;
-
-    $notifier->send($notification);
+    Container::get()->notifier->send($message);
 }
 
 /**
@@ -471,9 +339,7 @@ function notify(string $message): void
  */
 function watch(string|array $path, callable $function, ?Context $context = null): void
 {
-    $context ??= Application::getContainer()->getContext();
-
-    WatchHelper::watch(Application::getContainer()->application, Application::getContainer()->sectionOutput, $path, $function, $context);
+    Container::get()->watchRunner->watch($path, $function, $context);
 }
 
 /**
@@ -483,19 +349,22 @@ function watch(string|array $path, callable $function, ?Context $context = null)
  */
 function log(string|\Stringable $message, mixed $level = 'info', array $context = []): void
 {
-    Application::getContainer()->logger->log($level, $message, $context);
+    Container::get()->logger->log($level, $message, $context);
 }
 
 function logger(): LoggerInterface
 {
-    return Application::getContainer()->logger;
+    return Container::get()->logger;
 }
 
 function app(): Application
 {
-    return Application::getContainer()->application;
+    return Container::get()->application;
 }
 
+/**
+ * @deprecated Since castor/castor 0.8. Use Castor\app() instead
+ */
 function get_application(): Application
 {
     trigger_deprecation('jolicode/castor', '0.8', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'app');
@@ -505,9 +374,12 @@ function get_application(): Application
 
 function input(): InputInterface
 {
-    return Application::getContainer()->input;
+    return Container::get()->input;
 }
 
+/**
+ * @deprecated Since castor/castor 0.8. Use Castor\input() instead
+ */
 function get_input(): InputInterface
 {
     trigger_deprecation('jolicode/castor', '0.8', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'input');
@@ -517,11 +389,11 @@ function get_input(): InputInterface
 
 function output(): OutputInterface
 {
-    return Application::getContainer()->output;
+    return Container::get()->output;
 }
 
 /**
- * @deprecated
+ * @deprecated Since castor/castor 0.8. Use Castor\output() instead
  */
 function get_output(): OutputInterface
 {
@@ -532,21 +404,27 @@ function get_output(): OutputInterface
 
 function io(): SymfonyStyle
 {
-    return Application::getContainer()->symfonyStyle;
+    return Container::get()->symfonyStyle;
 }
 
+/**
+ * @deprecated Since castor/castor 0.13. Use "Castor\Attributes\AsContextGenerator()" instead.
+ */
 function add_context(string $name, \Closure $callable, bool $default = false): void
 {
     trigger_deprecation('jolicode/castor', '0.13', 'The "%s()" function is deprecated, use "Castor\Attributes\%s()" instead.', __FUNCTION__, AsContextGenerator::class);
 
-    Application::getContainer()->contextRegistry->addContext($name, $callable, $default);
+    Container::get()->contextRegistry->addContext($name, $callable, $default);
 }
 
 function context(?string $name = null): Context
 {
-    return Application::getContainer()->getContext($name);
+    return Container::get()->getContext($name);
 }
 
+/**
+ * @deprecated Since castor/castor 0.8. Use Castor\context() instead
+ */
 function get_context(): Context
 {
     trigger_deprecation('jolicode/castor', '0.8', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'context');
@@ -565,7 +443,7 @@ function get_context(): Context
  */
 function variable(string $key, mixed $default = null): mixed
 {
-    return Application::getContainer()->getVariable($key, $default);
+    return Container::get()->getVariable($key, $default);
 }
 
 /**
@@ -573,9 +451,12 @@ function variable(string $key, mixed $default = null): mixed
  */
 function task(bool $allowNull = false): ?Command
 {
-    return Application::getContainer()->getCommand($allowNull);
+    return Container::get()->getCommand($allowNull);
 }
 
+/**
+ * @deprecated Since castor/castor 0.8. Use Castor\task() instead
+ */
 function get_command(): Command
 {
     trigger_deprecation('jolicode/castor', '0.8', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'task');
@@ -585,7 +466,7 @@ function get_command(): Command
 
 function fs(): Filesystem
 {
-    return Application::getContainer()->fs;
+    return Container::get()->fs;
 }
 
 function finder(): Finder
@@ -611,12 +492,12 @@ function cache(string $key, callable $or): mixed
         $key,
     );
 
-    return Application::getContainer()->cache->get($key, $or);
+    return Container::get()->cache->get($key, $or);
 }
 
 function get_cache(): CacheItemPoolInterface&CacheInterface
 {
-    return Application::getContainer()->cache;
+    return Container::get()->cache;
 }
 
 /**
@@ -631,7 +512,7 @@ function request(string $method, string $url, array $options = []): ResponseInte
 
 function http_client(): HttpClientInterface
 {
-    return Application::getContainer()->httpClient;
+    return Container::get()->httpClient;
 }
 
 /**
@@ -643,7 +524,7 @@ function http_client(): HttpClientInterface
  */
 function import(string $path, ?string $file = null, ?string $version = null, ?string $vcs = null, ?array $source = null): void
 {
-    Application::getContainer()->importer->import($path, $file, $version, $vcs, $source);
+    Container::get()->importer->import($path, $file, $version, $vcs, $source);
 }
 
 function mount(string $path, ?string $namespacePrefix = null): void
@@ -652,7 +533,7 @@ function mount(string $path, ?string $namespacePrefix = null): void
         throw fix_exception(new \InvalidArgumentException(sprintf('The directory "%s" does not exist.', $path)));
     }
 
-    Application::getContainer()->functionFinder->mounts[] = new Mount($path, $namespacePrefix);
+    Container::get()->functionFinder->mounts[] = new Mount($path, $namespacePrefix);
 }
 
 /**
@@ -690,7 +571,7 @@ function with(
     Context|string|null $context = null,
     ?string $path = null,
 ): mixed {
-    $contextRegistry = Application::getContainer()->contextRegistry;
+    $contextRegistry = Container::get()->contextRegistry;
 
     $initialContext = null;
     if ($contextRegistry->hasCurrentContext()) {
@@ -763,21 +644,21 @@ function with(
 function hasher(string $algo = 'xxh128'): HasherHelper
 {
     return new HasherHelper(
-        Application::getContainer()->getCommand(),
-        Application::getContainer()->input,
-        Application::getContainer()->logger,
+        Container::get()->getCommand(),
+        Container::get()->input,
+        Container::get()->logger,
         $algo,
     );
 }
 
 function fingerprint_exists(string $fingerprint): bool
 {
-    return Application::getContainer()->fingerprintHelper->verifyFingerprintFromHash($fingerprint);
+    return Container::get()->fingerprintHelper->verifyFingerprintFromHash($fingerprint);
 }
 
 function fingerprint_save(string $fingerprint): void
 {
-    Application::getContainer()->fingerprintHelper->postProcessFingerprintForHash($fingerprint);
+    Container::get()->fingerprintHelper->postProcessFingerprintForHash($fingerprint);
 }
 
 function fingerprint(callable $callback, string $fingerprint, bool $force = false): bool
@@ -803,7 +684,7 @@ function wait_for(
     int $intervalMs = 100,
     string $message = 'Waiting for callback to be available...',
 ): void {
-    Application::getContainer()->waitForHelper->waitFor(
+    Container::get()->waiter->waitFor(
         io: io(),
         callback: $callback,
         timeout: $timeout,
@@ -825,7 +706,7 @@ function wait_for_port(
     int $intervalMs = 100,
     ?string $message = null,
 ): void {
-    Application::getContainer()->waitForHelper->waitForPort(
+    Container::get()->waiter->waitForPort(
         io: io(),
         port: $port,
         host: $host,
@@ -847,7 +728,7 @@ function wait_for_url(
     int $intervalMs = 100,
     ?string $message = null,
 ): void {
-    Application::getContainer()->waitForHelper->waitForUrl(
+    Container::get()->waiter->waitForUrl(
         io: io(),
         url: $url,
         timeout: $timeout,
@@ -869,7 +750,7 @@ function wait_for_http_status(
     int $intervalMs = 100,
     ?string $message = null,
 ): void {
-    Application::getContainer()->waitForHelper->waitForHttpStatus(
+    Container::get()->waiter->waitForHttpStatus(
         io: io(),
         url: $url,
         status: $status,
@@ -892,7 +773,7 @@ function wait_for_http_response(
     int $intervalMs = 100,
     ?string $message = null,
 ): void {
-    Application::getContainer()->waitForHelper->waitForHttpResponse(
+    Container::get()->waiter->waitForHttpResponse(
         io: io(),
         url: $url,
         responseChecker: $responseChecker,
@@ -914,7 +795,7 @@ function wait_for_docker_container(
     ?string $message = null,
     ?callable $containerChecker = null,
 ): void {
-    Application::getContainer()->waitForHelper->waitForDockerContainer(
+    Container::get()->waiter->waitForDockerContainer(
         io: io(),
         containerName: $containerName,
         timeout: $timeout,
@@ -943,7 +824,7 @@ function yaml_dump(mixed $input, int $inline = 2, int $indent = 4, int $flags = 
 
 function guard_min_version(string $minVersion): void
 {
-    $currentVersion = Application::getContainer()->application->getVersion();
+    $currentVersion = Container::get()->application->getVersion();
 
     $minVersion = u($minVersion)->ensureStart('v')->toString();
     if (version_compare($currentVersion, $minVersion, '<')) {

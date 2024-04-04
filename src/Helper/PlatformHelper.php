@@ -3,12 +3,14 @@
 namespace Castor\Helper;
 
 use JoliCode\PhpOsHelper\OsHelper;
+use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 /**
  * Platform helper inspired by Composer's Platform class.
  *
  * @internal
  */
+#[Exclude]
 final class PlatformHelper
 {
     /**

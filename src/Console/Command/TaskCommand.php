@@ -12,10 +12,9 @@ use Castor\ContextRegistry;
 use Castor\Descriptor\TaskDescriptor;
 use Castor\Event\AfterExecuteTaskEvent;
 use Castor\Event\BeforeExecuteTaskEvent;
-use Castor\EventDispatcher;
 use Castor\Exception\FunctionConfigurationException;
 use Castor\ExpressionLanguage;
-use Castor\Helper\SluggerHelper;
+use Castor\Helper\Slugger;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\SignalableCommandInterface;
 use Symfony\Component\Console\Exception\LogicException;
@@ -23,8 +22,11 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Attribute\Exclude;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /** @internal */
+#[Exclude]
 class TaskCommand extends Command implements SignalableCommandInterface
 {
     use GetRawTokenTrait;
@@ -36,9 +38,10 @@ class TaskCommand extends Command implements SignalableCommandInterface
 
     public function __construct(
         private readonly TaskDescriptor $taskDescriptor,
-        private readonly EventDispatcher $eventDispatcher,
         private readonly ExpressionLanguage $expressionLanguage,
+        private readonly EventDispatcherInterface $eventDispatcher,
         private readonly ContextRegistry $contextRegistry,
+        private readonly Slugger $slugger,
     ) {
         $this->setDescription($taskDescriptor->taskAttribute->description);
         $this->setAliases($taskDescriptor->taskAttribute->aliases);
@@ -222,7 +225,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
 
     private function setParameterName(\ReflectionParameter $parameter, ?string $name): string
     {
-        $name = SluggerHelper::slug($name ?? $parameter->getName());
+        $name = $this->slugger->slug($name ?? $parameter->getName());
 
         $this->argumentsMap[$parameter->getName()] = $name;
 

@@ -3,7 +3,6 @@
 namespace Castor\Console;
 
 use Castor\Console\Command\SymfonyTaskCommand;
-use Castor\Console\Command\TaskCommand;
 use Castor\Console\Output\VerbosityLevel;
 use Castor\Container;
 use Castor\Context;
@@ -16,11 +15,9 @@ use Castor\Descriptor\TaskDescriptor;
 use Castor\Descriptor\TaskDescriptorCollection;
 use Castor\Event\AfterApplicationInitializationEvent;
 use Castor\Event\BeforeApplicationInitializationEvent;
-use Castor\EventDispatcher;
-use Castor\ExpressionLanguage;
+use Castor\Factory\TaskCommandFactory;
 use Castor\FunctionFinder;
 use Castor\Helper\PlatformHelper;
-use Monolog\Logger;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\ExceptionInterface;
@@ -28,6 +25,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /** @internal */
 class Application extends SymfonyApplication
@@ -35,25 +33,17 @@ class Application extends SymfonyApplication
     public const NAME = 'castor';
     public const VERSION = 'v0.15.0';
 
-    private static Container $container;
-
     private Command $command;
 
     public function __construct(
         private readonly string $rootDir,
         private readonly ContainerBuilder $containerBuilder,
-        public readonly FunctionFinder $functionFinder,
-        public readonly ContextRegistry $contextRegistry,
-        public readonly EventDispatcher $eventDispatcher,
-        public readonly ExpressionLanguage $expressionLanguage,
-        public readonly Logger $logger,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly FunctionFinder $functionFinder,
+        private readonly ContextRegistry $contextRegistry,
+        private readonly TaskCommandFactory $taskCommandFactory,
     ) {
         parent::__construct(static::NAME, static::VERSION);
-    }
-
-    public static function getContainer(): Container
-    {
-        return self::$container ?? throw new \LogicException('Container not available yet.');
     }
 
     /**
@@ -75,7 +65,7 @@ class Application extends SymfonyApplication
         $this->eventDispatcher->dispatch($event);
 
         // @phpstan-ignore-next-line
-        self::$container = $this->containerBuilder->get(Container::class);
+        Container::set($this->containerBuilder->get(Container::class));
 
         $descriptors = $this->initializeApplication($input);
 
@@ -89,19 +79,10 @@ class Application extends SymfonyApplication
         $descriptors = $event->taskDescriptorCollection;
 
         foreach ($descriptors->taskDescriptors as $taskDescriptor) {
-            $this->add(new TaskCommand(
-                $taskDescriptor,
-                $this->eventDispatcher,
-                $this->expressionLanguage,
-                $this->contextRegistry,
-            ));
+            $this->add($this->taskCommandFactory->createTask($taskDescriptor));
         }
         foreach ($descriptors->symfonyTaskDescriptors as $symfonyTaskDescriptor) {
-            $this->add(new SymfonyTaskCommand(
-                $symfonyTaskDescriptor->taskAttribute,
-                $symfonyTaskDescriptor->function,
-                $symfonyTaskDescriptor->definition,
-            ));
+            $this->add(SymfonyTaskCommand::createFromDescriptor($symfonyTaskDescriptor));
         }
 
         return parent::doRun($input, $output);

@@ -7,11 +7,11 @@ use Castor\Console\Command\DebugCommand;
 use Castor\Console\Command\RepackCommand;
 use Castor\Container;
 use Castor\Event\AfterApplicationInitializationEvent;
-use Castor\EventDispatcher;
-use Castor\FunctionFinder;
 use Castor\Helper\PathHelper;
 use Castor\Helper\PlatformHelper;
 use Castor\Monolog\Processor\ProcessProcessor;
+use Joli\JoliNotif\Notifier;
+use Joli\JoliNotif\NotifierFactory;
 use Monolog\Logger;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Container\ContainerInterface;
@@ -23,6 +23,7 @@ use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -30,17 +31,20 @@ use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\ErrorHandler\ErrorHandler;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\VarDumper\Cloner\AbstractCloner;
 use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 /** @internal */
+#[Exclude]
 class ApplicationFactory
 {
     public static function create(): SymfonyApplication
@@ -116,17 +120,22 @@ class ApplicationFactory
                 ->autoconfigure()
                 ->bind('string $rootDir', '%root_dir%')
                 ->bind('string $cacheDir', '%cache_dir%')
+
             ->load('Castor\\', __DIR__ . '/../*')
-            ->exclude([
-                __DIR__ . '/../functions.php',
-                __DIR__ . '/../functions-internal.php',
-            ])
-            ->set(FunctionFinder::class)
+                ->exclude([
+                    __DIR__ . '/../functions.php',
+                    __DIR__ . '/../functions-internal.php',
+                    __DIR__ . '/../Descriptor/*',
+                    __DIR__ . '/../Event/*',
+                    __DIR__ . '/../**/Exception/*',
+                ])
+
             ->set(CacheInterface::class, FilesystemAdapter::class)
                 ->args([
                     '$directory' => '%cache_dir%',
                 ])
             ->alias(CacheItemPoolInterface::class . '&' . CacheInterface::class, CacheInterface::class)
+
             ->set(HttpClientInterface::class)
                 ->factory([HttpClient::class, 'create'])
                 ->args([
@@ -136,6 +145,7 @@ class ApplicationFactory
                         ],
                     ],
                 ])
+
             ->set(Logger::class)
                 ->args([
                     '$name' => 'castor',
@@ -144,19 +154,32 @@ class ApplicationFactory
                     ],
                 ])
             ->alias(LoggerInterface::class, Logger::class)
+
+            ->set(EventDispatcher::class)
             ->alias(EventDispatcherInterface::class, EventDispatcher::class)
             ->alias('event_dispatcher', EventDispatcherInterface::class)
+
             ->set(Filesystem::class)
+
+            ->set(AsciiSlugger::class)
+
+            ->set(Notifier::class)
+                ->factory([NotifierFactory::class, 'create'])
+
             ->set(Container::class)
                 ->public()
+
             ->set(ContainerInterface::class)
                 ->synthetic()
+
             ->set(OutputInterface::class)
                 ->synthetic()
-                ->lazy()
+
             ->set(InputInterface::class)
                 ->synthetic()
+
             ->set(SymfonyStyle::class)
+
             ->set(ErrorHandler::class)
                 ->synthetic()
         ;
