@@ -5,6 +5,7 @@ namespace Castor;
 use Castor\Console\Application;
 use Castor\Console\Output\SectionOutput;
 use Castor\Fingerprint\FingerprintHelper;
+use Castor\Helper\Notifier;
 use Castor\Helper\Waiter;
 use Castor\Import\Importer;
 use Castor\Runner\ParallelRunner;
@@ -39,6 +40,7 @@ final class Container
         public readonly Importer $importer,
         public readonly InputInterface $input,
         public readonly LoggerInterface $logger,
+        public readonly Notifier $notifier,
         public readonly OutputInterface $output,
         public readonly ParallelRunner $parallelRunner,
         public readonly ProcessRunner $processRunner,

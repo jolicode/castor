@@ -6,15 +6,15 @@ use Castor\Console\Output\SectionOutput;
 use Castor\Context;
 use Castor\ContextRegistry;
 use Castor\Event;
+use Castor\Helper\Notifier;
 use JoliCode\PhpOsHelper\OsHelper;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\Process\Process;
 
+use Symfony\Component\Process\Process;
 use function Castor\Internal\fix_exception;
-use function Castor\notify;
 
 class ProcessRunner
 {
@@ -22,6 +22,7 @@ class ProcessRunner
         private readonly ContextRegistry $contextRegistry,
         private readonly SectionOutput $sectionOutput,
         private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly Notifier $notifier,
         private readonly LoggerInterface $logger = new NullLogger(),
     ) {
     }
@@ -155,7 +156,7 @@ class ProcessRunner
         }
 
         if ($context->notify) {
-            notify(sprintf('The command "%s" has been finished %s.', $process->getCommandLine(), 0 === $exitCode ? 'successfully' : 'with an error'));
+            $this->notifier->send(sprintf('The command "%s" has been finished %s.', $process->getCommandLine(), 0 === $exitCode ? 'successfully' : 'with an error'));
         }
 
         if (0 !== $exitCode) {

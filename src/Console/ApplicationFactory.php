@@ -10,6 +10,8 @@ use Castor\Event\AfterApplicationInitializationEvent;
 use Castor\Helper\PathHelper;
 use Castor\Helper\PlatformHelper;
 use Castor\Monolog\Processor\ProcessProcessor;
+use Joli\JoliNotif\Notifier;
+use Joli\JoliNotif\NotifierFactory;
 use Monolog\Logger;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Container\ContainerInterface;
@@ -153,6 +155,8 @@ class ApplicationFactory
             ->alias('event_dispatcher', EventDispatcherInterface::class)
             ->set(Filesystem::class)
             ->set(AsciiSlugger::class)
+            ->set(Notifier::class)
+                ->factory([NotifierFactory::class, 'create'])
             ->set(Container::class)
                 ->public()
             ->set(ContainerInterface::class)
