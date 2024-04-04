@@ -3,9 +3,6 @@
 Castor provide several `ssh_*` functions to run SSH commands on remote servers
 or upload/download files through SCP.
 
-> [!NOTE]
-> These functions are marked as experimental and may change in the future.
-
 ## Common parameters
 
 The following parameters are common to all of the `ssh_*()` functions:
@@ -49,9 +46,6 @@ function ls(): void
     ], path: '/var/www');
 }
 ```
-
-> [!NOTE]
-> This feature is marked as experimental and may change in the future.
 
 ## Upload and download files
 

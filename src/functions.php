@@ -161,8 +161,6 @@ function get_exit_code(...$args): int
 }
 
 /**
- * This function is considered experimental and may change in the future.
- *
  * @param array{
  *     'port'?: int,
  *     'path_private_key'?: string,
@@ -198,8 +196,6 @@ function ssh(...$args): Process
 }
 
 /**
- * This function is considered experimental and may change in the future.
- *
  * @param array{
  *     'port'?: int,
  *     'path_private_key'?: string,
@@ -225,8 +221,6 @@ function ssh_upload(
 }
 
 /**
- * This function is considered experimental and may change in the future.
- *
  * @param array{
  *     'port'?: int,
  *     'path_private_key'?: string,
