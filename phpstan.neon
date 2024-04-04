@@ -26,6 +26,17 @@ parameters:
                 reference?: string,
             }
         '''
+        SshOptions: '''
+            array{
+               'port'?: int,
+               'path_private_key'?: string,
+               'jump_host'?: string,
+               'multiplexing_control_path'?: string,
+               'multiplexing_control_persist'?: string,
+               'enable_strict_check'?: bool,
+               'password_authentication'?: bool,
+           }
+       '''
     ignoreErrors:
         -
             message: "#^Function pyrech\\\\.* not found\\.$#"
