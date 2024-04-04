@@ -161,8 +161,6 @@ function get_exit_code(...$args): int
 }
 
 /**
- * This function is considered experimental and may change in the future.
- *
  * @param array{
  *     'port'?: int,
  *     'path_private_key'?: string,
@@ -176,7 +174,7 @@ function get_exit_code(...$args): int
 function ssh_run(
     string $command,
     string $host,
-    string $user,
+    ?string $user = null,
     array $sshOptions = [],
     ?string $path = null,
     ?bool $quiet = null,
@@ -198,8 +196,6 @@ function ssh(...$args): Process
 }
 
 /**
- * This function is considered experimental and may change in the future.
- *
  * @param array{
  *     'port'?: int,
  *     'path_private_key'?: string,
@@ -214,7 +210,7 @@ function ssh_upload(
     string $sourcePath,
     string $destinationPath,
     string $host,
-    string $user,
+    ?string $user = null,
     array $sshOptions = [],
     ?bool $quiet = null,
     ?bool $allowFailure = null,
@@ -225,8 +221,6 @@ function ssh_upload(
 }
 
 /**
- * This function is considered experimental and may change in the future.
- *
  * @param array{
  *     'port'?: int,
  *     'path_private_key'?: string,
@@ -241,7 +235,7 @@ function ssh_download(
     string $sourcePath,
     string $destinationPath,
     string $host,
-    string $user,
+    ?string $user = null,
     array $sshOptions = [],
     ?bool $quiet = null,
     ?bool $allowFailure = null,

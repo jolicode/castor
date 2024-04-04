@@ -70,6 +70,7 @@ signal:sigusr2                                                    Captures SIGUS
 ssh:download                                                      Downloads a file from the remote server
 ssh:ls                                                            Lists content of /var/www directory on the remote server
 ssh:upload                                                        Uploads a file to the remote server
+ssh:whoami                                                        Connect to a remote server without specifying a user
 symfony:greet
 symfony:hello                                                     Says hello from a symfony application
 version-guard:min-version-check                                   Check if the minimum castor version requirement is met

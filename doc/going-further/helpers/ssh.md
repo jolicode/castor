@@ -3,15 +3,12 @@
 Castor provide several `ssh_*` functions to run SSH commands on remote servers
 or upload/download files through SCP.
 
-> [!NOTE]
-> These functions are marked as experimental and may change in the future.
-
 ## Common parameters
 
 The following parameters are common to all of the `ssh_*()` functions:
 
 - `$host` (string): Host to connect to.
-- `$user` (string): User to connect with.
+- `$user` (string): Optional user to connect with.
 - `$ssh_options` (array): Optional configuration of the connexion.
  
 The `ssh_options` argument supports the following options:
@@ -49,9 +46,6 @@ function ls(): void
     ], path: '/var/www');
 }
 ```
-
-> [!NOTE]
-> This feature is marked as experimental and may change in the future.
 
 ## Upload and download files
 

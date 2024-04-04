@@ -18,7 +18,7 @@ final class SshRunner
         string $command,
         ?string $path,
         string $host,
-        string $user,
+        ?string $user = null,
         array $sshOptions = [],
         ?bool $quiet = null,
         ?bool $allowFailure = null,
@@ -39,7 +39,7 @@ final class SshRunner
         string $sourcePath,
         string $destinationPath,
         string $host,
-        string $user,
+        ?string $user = null,
         array $sshOptions = [],
         ?bool $quiet = null,
         ?bool $allowFailure = null,
@@ -56,7 +56,7 @@ final class SshRunner
         string $sourcePath,
         string $destinationPath,
         string $host,
-        string $user,
+        ?string $user = null,
         array $sshOptions = [],
         ?bool $quiet = null,
         ?bool $allowFailure = null,
@@ -90,7 +90,7 @@ final class SshRunner
     /** @phpstan-param SshOptions $sshOptions */
     private function buildSsh(
         string $host,
-        string $user,
+        ?string $user = null,
         array $sshOptions = [],
     ): Ssh {
         $ssh = Ssh::create($user, $host, $sshOptions['port'] ?? null);

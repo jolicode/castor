@@ -1,0 +1,11 @@
+ssh: Could not resolve hostname server-1.example.com: Name or service not known
+
+In SshRunner.php line XXXX:
+
+  The command "ssh -p 2222 server-1.example.com 'bash -se' << \EOF-SPATIE-SSH
+  cd /var/www && whoami
+  EOF-SPATIE-SSH" failed.
+
+
+ssh:whoami
+

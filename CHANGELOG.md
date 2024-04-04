@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+* Add support for SSH connection without specifying a user
+* Marked SSH features as stable
 * Deprecate `Castor\GlobalHelper` class. There are no replacements. Use raw
   functions instead.
 
