@@ -12,8 +12,8 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
-
 use Symfony\Component\Process\Process;
+
 use function Castor\Internal\fix_exception;
 
 class ProcessRunner
@@ -44,7 +44,6 @@ class ProcessRunner
         ?bool $notify = null,
         ?callable $callback = null,
         ?Context $context = null,
-        ?string $path = null,
     ): Process {
         $context ??= $this->contextRegistry->getCurrentContext();
 
@@ -54,14 +53,6 @@ class ProcessRunner
 
         if ($workingDirectory) {
             $context = $context->withWorkingDirectory($workingDirectory);
-            if ($path) {
-                throw new \LogicException('You cannot use both the "path" and "workingDirectory" arguments at the same time.');
-            }
-        }
-        if ($path) {
-            trigger_deprecation('castor', '0.15', 'The "path" argument is deprecated, use "workingDirectory" instead.');
-
-            $context = $context->withWorkingDirectory($path);
         }
 
         if (null !== $tty) {
@@ -175,5 +166,68 @@ class ProcessRunner
         $this->logger->debug('Command finished successfully.');
 
         return $process;
+    }
+
+    /**
+     * @param string|array<string|\Stringable|int>       $command
+     * @param array<string, string|\Stringable|int>|null $environment
+     */
+    public function capture(
+        string|array $command,
+        ?array $environment = null,
+        ?string $workingDirectory = null,
+        ?float $timeout = null,
+        ?bool $allowFailure = null,
+        ?string $onFailure = null,
+        ?Context $context = null,
+    ): string {
+        $hasOnFailure = null !== $onFailure;
+        if ($hasOnFailure) {
+            if (null !== $allowFailure) {
+                throw new \LogicException('The "allowFailure" argument cannot be used with "onFailure".');
+            }
+            $allowFailure = true;
+        }
+
+        $process = $this->run(
+            command: $command,
+            environment: $environment,
+            workingDirectory: $workingDirectory,
+            timeout: $timeout,
+            allowFailure: $allowFailure,
+            context: $context,
+            quiet: true,
+        );
+
+        if ($hasOnFailure && !$process->isSuccessful()) {
+            return $onFailure;
+        }
+
+        return trim($process->getOutput());
+    }
+
+    /**
+     * @param string|array<string|\Stringable|int>       $command
+     * @param array<string, string|\Stringable|int>|null $environment
+     */
+    public function exitCode(
+        string|array $command,
+        ?array $environment = null,
+        ?string $workingDirectory = null,
+        ?float $timeout = null,
+        ?bool $quiet = null,
+        ?Context $context = null,
+    ): int {
+        $process = $this->run(
+            command: $command,
+            environment: $environment,
+            workingDirectory: $workingDirectory,
+            timeout: $timeout,
+            allowFailure: true,
+            context: $context,
+            quiet: $quiet,
+        );
+
+        return $process->getExitCode() ?? 0;
     }
 }

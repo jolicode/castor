@@ -61,6 +61,15 @@ function run(
     ?Context $context = null,
     ?string $path = null,
 ): Process {
+    if ($workingDirectory && $path) {
+        throw new \LogicException('You cannot use both the "path" and "workingDirectory" arguments at the same time.');
+    }
+    if ($path) {
+        trigger_deprecation('castor', '0.15', 'The "path" argument is deprecated, use "workingDirectory" instead.');
+
+        $workingDirectory = $path;
+    }
+
     return Container::get()->processRunner->run(
         $command,
         $environment,
@@ -73,7 +82,6 @@ function run(
         $notify,
         $callback,
         $context,
-        $path,
     );
 }
 
@@ -91,14 +99,6 @@ function capture(
     ?Context $context = null,
     ?string $path = null,
 ): string {
-    $hasOnFailure = null !== $onFailure;
-    if ($hasOnFailure) {
-        if (null !== $allowFailure) {
-            throw new \LogicException('The "allowFailure" argument cannot be used with "onFailure".');
-        }
-        $allowFailure = true;
-    }
-
     if ($workingDirectory && $path) {
         throw new \LogicException('You cannot use both the "path" and "workingDirectory" arguments at the same time.');
     }
@@ -108,21 +108,15 @@ function capture(
         $workingDirectory = $path;
     }
 
-    $process = run(
-        command: $command,
-        environment: $environment,
-        workingDirectory: $workingDirectory,
-        timeout: $timeout,
-        allowFailure: $allowFailure,
-        context: $context,
-        quiet: true,
+    return Container::get()->processRunner->capture(
+        $command,
+        $environment,
+        $workingDirectory,
+        $timeout,
+        $allowFailure,
+        $onFailure,
+        $context,
     );
-
-    if ($hasOnFailure && !$process->isSuccessful()) {
-        return $onFailure;
-    }
-
-    return trim($process->getOutput());
 }
 
 /**
@@ -147,17 +141,14 @@ function exit_code(
         $workingDirectory = $path;
     }
 
-    $process = run(
-        command: $command,
-        environment: $environment,
-        workingDirectory: $workingDirectory,
-        timeout: $timeout,
-        allowFailure: true,
-        context: $context,
-        quiet: $quiet,
+    return Container::get()->processRunner->exitCode(
+        $command,
+        $environment,
+        $workingDirectory,
+        $timeout,
+        $quiet,
+        $context,
     );
-
-    return $process->getExitCode() ?? 0;
 }
 
 function get_exit_code(...$args): int
