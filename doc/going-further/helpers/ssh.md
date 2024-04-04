@@ -11,7 +11,7 @@ or upload/download files through SCP.
 The following parameters are common to all of the `ssh_*()` functions:
 
 - `$host` (string): Host to connect to.
-- `$user` (string): User to connect with.
+- `$user` (string): Optional user to connect with.
 - `$ssh_options` (array): Optional configuration of the connexion.
  
 The `ssh_options` argument supports the following options:

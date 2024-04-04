@@ -34,7 +34,7 @@
         "jolicode/php-os-helper": "^0.1.0",
         "monolog/monolog": "^3.5",
         "nikic/php-parser": "^4.19.1",
-        "spatie/ssh": "^1.10.0",
+        "spatie/ssh": "dev-connect-without-user",
         "symfony/cache": "^6.4.6",
         "symfony/config": "^6.4.6",
         "symfony/console": "^6.4.6",
@@ -53,6 +53,12 @@
         "symfony/var-dumper": "^6.4.6",
         "symfony/yaml": "^6.4.3"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/pyrech/ssh"
+        }
+    ],
     "conflict": {
         "symfony/console": "6.4.3"
     },
