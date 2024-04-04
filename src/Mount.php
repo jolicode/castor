@@ -4,9 +4,7 @@ namespace Castor;
 
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
-/**
- * @internal
- */
+/** @internal */
 #[Exclude]
 class Mount
 {
