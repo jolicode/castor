@@ -23,6 +23,8 @@ $fs->remove(PlatformHelper::getCacheDirectory());
 $fs->remove(__DIR__ . '/../tests/Examples/Generated');
 $fs->mkdir(__DIR__ . '/../tests/Examples/Generated');
 
+displayTitle('Retrieving example tasks');
+
 $application = ApplicationFactory::create();
 $application->setAutoExit(false);
 $application
@@ -35,6 +37,10 @@ try {
 } catch (JsonException $e) {
     throw new RuntimeException('Could not get the list of commands. You probably break something:' . $json, previous: $e);
 }
+
+echo "\nDone.\n";
+
+displayTitle('Generating tests for example tasks');
 
 $taskFilterList = [
     '_complete',
@@ -89,6 +95,7 @@ $taskFilterList = [
     'pyrech:foobar',
 ];
 $optionFilterList = array_flip(['help', 'quiet', 'verbose', 'version', 'ansi', 'no-ansi', 'no-interaction', 'context', 'no-remote', 'update-remotes']);
+
 foreach ($applicationDescription['commands'] as $task) {
     if (in_array($task['name'], $taskFilterList, true)) {
         continue;
@@ -123,14 +130,27 @@ foreach ($applicationDescription['commands'] as $task) {
     add_test($args, $class);
 }
 
-$dirs = (new Finder())
-    ->in($basePath = __DIR__ . '/../tests/Examples/fixtures/broken')
-    ->depth(1)
-;
-foreach ($dirs as $dir) {
-    $class = u($dir->getRelativePath())->camel()->title()->toString();
-    add_test([], $class, '{{ base }}/tests/Examples/fixtures/broken/' . $dir->getRelativePath(), true);
+echo "\nDone.\n";
+
+displayTitle('Generating tests for fixtures');
+
+foreach (['broken', 'valid'] as $type) {
+    $dirs = (new Finder())
+        ->in($basePath = __DIR__ . '/../tests/Examples/fixtures/' . $type)
+        ->depth(1)
+    ;
+
+    foreach ($dirs as $dir) {
+        echo "Generating test for {$type} fixture " . basename(dirname($dir)) . "\n";
+
+        $class = u($dir->getRelativePath())->camel()->title()->toString();
+        add_test([], $class, '{{ base }}/tests/Examples/fixtures/' . $type . '/' . $dir->getRelativePath(), true);
+    }
 }
+
+echo "\nDone.\n";
+
+displayTitle('Generating additional tests');
 
 add_test(['args:passthru', 'a', 'b', '--no', '--foo', 'bar', '-x'], 'ArgPassthruExpanded');
 add_test(['context:context', '--context', 'dynamic'], 'ContextContextDynamic');
@@ -140,7 +160,7 @@ add_test(['context:context', '--context', 'path'], 'ContextContextPath');
 add_test(['context:context', '--context', 'production'], 'ContextContextProduction');
 add_test(['context:context', '--context', 'run'], 'ContextContextRun');
 add_test(['enabled:hello', '--context', 'production'], 'EnabledInProduction');
-add_test(['list', '--raw', '--format', 'txt', '--short'], 'List', skipOnBinary: true);
+add_test(['list', '--raw', '--format', 'txt', '--short'], 'List', needRemote: true, skipOnBinary: true);
 // Transient test, disabled for now
 // add_test(['parallel:sleep', '--sleep5', '0', '--sleep7', '0', '--sleep10', '0'], 'ParallelSleep');
 add_test(['symfony:greet', 'World', '--french', 'COUCOU', '--punctuation', '!'], 'SymfonyGreet', skipOnBinary: true);
@@ -153,6 +173,8 @@ add_test(['unknown:task'], 'NoConfigUnknown', '/tmp');
 add_test([], 'NewProject', '/tmp');
 add_test(['list'], 'LayoutWithFolder', '{{ base }}/tests/Examples/fixtures/layout/with-folder');
 add_test(['list'], 'LayoutWithOldFolder', '{{ base }}/tests/Examples/fixtures/layout/with-old-folder');
+
+echo "\nDone.\n";
 
 function add_test(array $args, string $class, ?string $cwd = null, bool $needRemote = false, bool $skipOnBinary = false)
 {
@@ -207,6 +229,11 @@ function add_test(array $args, string $class, ?string $cwd = null, bool $needRem
     if ($err) {
         file_put_contents(__DIR__ . '/../tests/Examples/Generated/' . $class . '.php.err.txt', $err);
     }
+}
+
+function displayTitle(string $title)
+{
+    echo "\n-- {$title} --\n\n";
 }
 
 __halt_compiler();
