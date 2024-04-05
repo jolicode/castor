@@ -7,6 +7,7 @@
 * Deprecate `Castor\GlobalHelper` class. There are no replacements. Use raw
   functions instead.
 * Import and load task from remote import automatically
+* Fix multiple remote imports of the same package with default version
 
 ## 0.15.0 (2024-04-03)
 

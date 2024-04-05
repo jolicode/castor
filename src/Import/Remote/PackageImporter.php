@@ -32,8 +32,10 @@ class PackageImporter
             throw new RemoteNotAllowed('Remote imports are disabled.');
         }
 
-        if (isset($this->imports[$package]) && $this->imports[$package]->version !== $version) {
-            throw new ImportError(sprintf('The package "%s" is already required in version "%s", could not require it in version "%s"', $package, $this->imports[$package]->version, $version));
+        $requiredVersion = $version ?? '*';
+
+        if (isset($this->imports[$package]) && $this->imports[$package]->version !== $requiredVersion) {
+            throw new ImportError(sprintf('The package "%s" is already required in version "%s", could not require it in version "%s"', $package, $this->imports[$package]->version, $requiredVersion));
         }
 
         if (!preg_match('#^(?<organization>[^/]+)/(?<repository>[^/]+)$#', $package)) {
@@ -45,7 +47,7 @@ class PackageImporter
                 throw new InvalidImportFormat('The "source" argument is not supported for Composer/Packagist packages.');
             }
 
-            $this->importPackageWithComposer($package, version: $version ?? '*', repositoryUrl: $vcs, file: $file);
+            $this->importPackageWithComposer($package, version: $requiredVersion, repositoryUrl: $vcs, file: $file);
 
             return;
         }
