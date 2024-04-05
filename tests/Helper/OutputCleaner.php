@@ -17,6 +17,7 @@ final class OutputCleaner
         $string = preg_replace('{In ([A-Z]\w+).php line \d+:}m', 'In \1.php line XXXX:', $string);
         $string = preg_replace('{In functions.php line \d+:}m', 'In functions.php line XXXX:', $string);
         $string = preg_replace('{you are using v\d+.\d+.\d+.}m', 'you are using vX.Y.Z.', $string);
+        $string = preg_replace('{castor v\d+.\d+.\d+}m', 'castor v.X.Y.Z', $string);
         $string = preg_replace('{^\d\d:\d\d:\d\d }m', 'hh:mm:ss ', $string);
 
         // Clean the warning on tasks when remote imports are disabled

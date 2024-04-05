@@ -205,7 +205,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
             $castorFunctionsWithoutNamespace = array_map(fn (string $functionName) => substr($functionName, \strlen('castor\\')), $castorFunctions);
             foreach ($castorFunctionsWithoutNamespace as $function) {
                 if ("Call to undefined function {$function}()" === $e->getMessage()) {
-                    throw new \LogicException(sprintf('Call to undefined function %s(). Did you forget to import it? Try to add "use function Castor\%s;" in top of "%s" file.', $function, $function, $this->taskDescriptor->function->getFileName()));
+                    throw new \LogicException(sprintf('Call to undefined function %s(). Did you forget to import it? Try to add "use function Castor\%s;" in top of "%s" file.', $function, $function, $this->taskDescriptor->function->getFileName()), 0, $e);
                 }
             }
 
