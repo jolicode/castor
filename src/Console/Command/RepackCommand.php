@@ -2,7 +2,7 @@
 
 namespace Castor\Console\Command;
 
-use Castor\FunctionFinder;
+use Castor\Function\FunctionFinder;
 use Castor\Helper\PathHelper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

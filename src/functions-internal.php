@@ -2,7 +2,7 @@
 
 namespace Castor\Internal;
 
-use Castor\FunctionFinder;
+use Castor\Function\FunctionFinder;
 
 /**
  * Don't leak internal variables when requiring files.

@@ -6,6 +6,7 @@
 * Marked SSH features as stable
 * Deprecate `Castor\GlobalHelper` class. There are no replacements. Use raw
   functions instead.
+* Import and load task from remote import automatically
 
 ## 0.15.0 (2024-04-03)
 

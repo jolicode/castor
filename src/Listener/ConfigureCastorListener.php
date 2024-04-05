@@ -2,7 +2,7 @@
 
 namespace Castor\Listener;
 
-use Castor\Event\BeforeApplicationInitializationEvent;
+use Castor\Event\BeforeApplicationBootEvent;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
@@ -22,7 +22,7 @@ class ConfigureCastorListener
     }
 
     #[AsEventListener()]
-    public function configureCastor(BeforeApplicationInitializationEvent $event): void
+    public function configureCastor(BeforeApplicationBootEvent $event): void
     {
         if ($this->logger instanceof Logger) {
             $this->logger->pushHandler(new ConsoleHandler($this->output));
