@@ -451,7 +451,7 @@ function mount(string $path, ?string $namespacePrefix = null): void
         throw fix_exception(new \InvalidArgumentException(sprintf('The directory "%s" does not exist.', $path)));
     }
 
-    Container::get()->kernel->addMount(new Mount($path, $namespacePrefix));
+    Container::get()->kernel->addMount(new Mount($path, namespacePrefix: $namespacePrefix));
 }
 
 /**

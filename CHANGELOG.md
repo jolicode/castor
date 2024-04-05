@@ -4,13 +4,14 @@
 
 * Add support for SSH connection without specifying a user
 * Marked SSH features as stable
-* Deprecate `Castor\GlobalHelper` class. There are no replacements. Use raw
-  functions instead.
 * Import and load task from remote import automatically
 * Fix multiple remote imports of the same package with default version
+* Do not load task from `vendor` directory
 * Add `context()` function in expression language to enable a task
-* Fix import of local tasks when using remote import
-
+* Deprecate `Castor\GlobalHelper` class. There are no replacements. Use raw
+  functions instead
+* Deprecate `AfterApplicationInitializationEvent` event. Use
+  `FunctionsResolvedEvent` instead.
 
 ## 0.15.0 (2024-04-03)
 

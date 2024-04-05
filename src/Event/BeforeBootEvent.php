@@ -5,7 +5,7 @@ namespace Castor\Event;
 use Castor\Console\Application;
 
 /** @internal */
-class BeforeApplicationBootEvent
+class BeforeBootEvent
 {
     public function __construct(
         public readonly Application $application,

@@ -10,6 +10,7 @@ class Mount
 {
     public function __construct(
         public readonly string $path,
+        public readonly bool $allowEmptyEntrypoint = false,
         public readonly ?string $namespacePrefix = null,
     ) {
     }

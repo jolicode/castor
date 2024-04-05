@@ -18,10 +18,19 @@ use function Symfony\Component\String\u;
 $_SERVER['ENDPOINT'] ??= 'http://127.0.0.1:9955';
 WebServerHelper::start();
 
+displayTitle('Cleaning');
+
 $fs = new Filesystem();
 $fs->remove(PlatformHelper::getCacheDirectory());
 $fs->remove(__DIR__ . '/../tests/Generated');
 $fs->mkdir(__DIR__ . '/../tests/Generated');
+$fs->remove((new Finder())
+    ->in(__DIR__ . '/../tests/fixtures')
+    ->in(__DIR__ . '/../tests/fixtures')
+    ->path('composer.installed')
+    ->ignoreDotFiles(false)
+);
+echo "\nDone.\n";
 
 displayTitle('Retrieving example tasks');
 

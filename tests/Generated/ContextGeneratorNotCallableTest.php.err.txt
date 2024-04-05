@@ -1,4 +1,4 @@
-In FunctionFinder.php line XXXX:
+In FunctionResolver.php line XXXX:
 
   Function "gen()" is not properly configured:
   The context generator "foo" is not callable.

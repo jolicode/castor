@@ -2,18 +2,26 @@
 
 namespace Castor\Console\Command;
 
-use Castor\Function\FunctionFinder;
 use Castor\Helper\PathHelper;
+use Castor\Import\Importer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
 /** @internal */
 class RepackCommand extends Command
 {
+    public function __construct(
+        #[Autowire(lazy: true)]
+        private readonly Importer $importer,
+    ) {
+        parent::__construct();
+    }
+
     protected function configure(): void
     {
         $this
@@ -94,7 +102,7 @@ class RepackCommand extends Command
         $boxConfig['files'] = [
             ...array_map(
                 fn (string $file): string => str_replace(PathHelper::getRoot() . '/', '', $file),
-                FunctionFinder::$files,
+                $this->importer->getImports(),
             ),
             ...$boxConfig['files'] ?? [],
         ];

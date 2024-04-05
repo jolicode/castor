@@ -11,9 +11,12 @@ You can register a listener inside your Castor project by using the
 the targeted event and the priority of this listener.
 
 ```php
-#[AsListener(event: AfterApplicationInitializationEvent::class)]
-#[AsListener(event: AfterExecuteTaskEvent::class, priority: 1)]
-function my_event_listener(AfterApplicationInitializationEvent|AfterExecuteTaskEvent $event): void
+use Castor\Event\AfterExecuteTaskEvent;
+use Castor\Event\FunctionsResolvedEvent;
+
+#[AsListener(event: AfterExecuteTaskEvent::class)]
+#[AsListener(event: FunctionsResolvedEvent::class, priority: 1)]
+function my_event_listener(AfterExecuteTaskEvent|FunctionsResolvedEvent $event): void
 {
     // Custom logic to handle the events
 }
@@ -30,9 +33,9 @@ function my_event_listener(AfterApplicationInitializationEvent|AfterExecuteTaskE
 
 Here is the built-in events triggered by Castor:
 
-* `Castor\Event\AfterApplicationInitializationEvent`: This event is triggered
-  after the application has been initialized. It provides access to the
-  `Application` instance and an array of `TaskDescriptor` objects;
+* `Castor\Event\FunctionsResolvedEvent`: This event is triggered after the
+  functions has been resolved. It provides access to an array of of
+  `TaskDescriptor` and `SymfonyTaskDescriptor` objects;
 
 * `Castor\Event\BeforeExecuteTaskEvent`: This event is triggered before
   executing a task. It provides access to the `TaskCommand` instance;

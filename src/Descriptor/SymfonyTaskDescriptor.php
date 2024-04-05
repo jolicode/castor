@@ -4,7 +4,6 @@ namespace Castor\Descriptor;
 
 use Castor\Attribute\AsSymfonyTask;
 
-/** @internal */
 class SymfonyTaskDescriptor
 {
     /**
