@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+## 0.16.0 (2024-04-05)
+
 * Add support for SSH connection without specifying a user
 * Marked SSH features as stable
 * Deprecate `Castor\GlobalHelper` class. There are no replacements. Use raw
@@ -9,7 +11,6 @@
 * Import and load task from remote import automatically
 * Fix multiple remote imports of the same package with default version
 * Add `context()` function in expression language to enable a task
-
 
 ## 0.15.0 (2024-04-03)
 
