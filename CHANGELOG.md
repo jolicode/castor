@@ -8,6 +8,8 @@
   functions instead.
 * Import and load task from remote import automatically
 * Fix multiple remote imports of the same package with default version
+* Add `context()` function in expression language to enable a task
+
 
 ## 0.15.0 (2024-04-03)
 

@@ -10,7 +10,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\io;
 
-#[AsTask(description: 'Say hello, but only in production', enabled: "var('production') == true")]
+#[AsTask(description: 'Say hello, but only in production', enabled: "var('production') == true || context().name == 'ci'")]
 function hello(): void
 {
     io()->writeln('Hello world!');
@@ -23,10 +23,12 @@ The value can be one of:
 * `false`: always disabled
 * a string: it represents an expression that will be evaluated in the context of
   the task and **must return a bool**. The task will be enabled if the
-  expression returns `true` and disabled otherwise. The expression can use the
-  `var()` function to get the value of a variable. Internally, it uses the
+  expression returns `true` and disabled otherwise. Internally, it uses the
   [symfony/expression-language](https://symfony.com/doc/current/components/expression_language.html)
-  component.
+  component.The expression can use:
+  *  the `var()` function to get the value of a variable;
+  *  the `context()` function to a context by its name. Don't use the first
+     argument to get the current context.
 
 ## Getting a specific context
 
