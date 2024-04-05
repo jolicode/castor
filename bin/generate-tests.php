@@ -20,8 +20,8 @@ WebServerHelper::start();
 
 $fs = new Filesystem();
 $fs->remove(PlatformHelper::getCacheDirectory());
-$fs->remove(__DIR__ . '/../tests/Examples/Generated');
-$fs->mkdir(__DIR__ . '/../tests/Examples/Generated');
+$fs->remove(__DIR__ . '/../tests/Generated');
+$fs->mkdir(__DIR__ . '/../tests/Generated');
 
 displayTitle('Retrieving example tasks');
 
@@ -132,25 +132,26 @@ foreach ($applicationDescription['commands'] as $task) {
 
 echo "\nDone.\n";
 
-displayTitle('Generating tests for fixtures');
+displayTitle('Generating tests for broken fixtures');
 
 $dirs = (new Finder())
-    ->in($basePath = __DIR__ . '/../tests/Examples/fixtures/broken')
+    ->in($basePath = __DIR__ . '/../tests/fixtures/broken')
     ->depth(1)
 ;
 
 foreach ($dirs as $dir) {
-    echo 'Generating test for broken fixture ' . basename(dirname($dir)) . "\n";
-
     $class = u($dir->getRelativePath())->camel()->title()->toString();
-    add_test([], $class, '{{ base }}/tests/Examples/fixtures/broken/' . $dir->getRelativePath(), true);
+    add_test([], $class, '{{ base }}/tests/fixtures/broken/' . $dir->getRelativePath(), true);
 }
 
-add_test(['list'], 'LayoutWithFolder', '{{ base }}/tests/Examples/fixtures/layout/with-folder');
-add_test(['list'], 'LayoutWithOldFolder', '{{ base }}/tests/Examples/fixtures/layout/with-old-folder');
+echo "\nDone.\n";
 
-add_test([], 'ImportSamePackageWithDefaultVersion', '{{ base }}/tests/Examples/fixtures/valid/import-same-package-with-default-version', needRemote: true);
-add_test(['fs-watch'], 'WatchWithForcedTimeout', '{{ base }}/tests/Examples/fixtures/valid/watch-with-forced-timeout');
+displayTitle('Generating tests for valid fixtures');
+
+add_test(['list'], 'LayoutWithFolder', '{{ base }}/tests/fixtures/valid/layout-with-folder');
+add_test(['list'], 'LayoutWithOldFolder', '{{ base }}/tests/fixtures/valid/layout-with-old-folder');
+add_test([], 'ImportSamePackageWithDefaultVersion', '{{ base }}/tests/fixtures/valid/import-same-package-with-default-version', needRemote: true);
+add_test(['fs-watch'], 'WatchWithForcedTimeout', '{{ base }}/tests/fixtures/valid/watch-with-forced-timeout');
 
 echo "\nDone.\n";
 
@@ -226,10 +227,10 @@ function add_test(array $args, string $class, ?string $cwd = null, bool $needRem
         },
     ]);
 
-    file_put_contents(__DIR__ . '/../tests/Examples/Generated/' . $class . '.php', $code);
-    file_put_contents(__DIR__ . '/../tests/Examples/Generated/' . $class . '.php.output.txt', OutputCleaner::cleanOutput($process->getOutput()));
+    file_put_contents(__DIR__ . '/../tests/Generated/' . $class . '.php', $code);
+    file_put_contents(__DIR__ . '/../tests/Generated/' . $class . '.php.output.txt', OutputCleaner::cleanOutput($process->getOutput()));
     if ($err) {
-        file_put_contents(__DIR__ . '/../tests/Examples/Generated/' . $class . '.php.err.txt', $err);
+        file_put_contents(__DIR__ . '/../tests/Generated/' . $class . '.php.err.txt', $err);
     }
 }
 
@@ -241,7 +242,7 @@ function displayTitle(string $title)
 __halt_compiler();
 <?php
 
-namespace Castor\Tests\Examples\Generated;
+namespace Castor\Tests\Generated;
 
 use Castor\Tests\TaskTestCase;
 
