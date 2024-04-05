@@ -1,7 +1,7 @@
  Downloading remote packages
  Remote packages imported
 
-castor v0.15.0
+castor v.X.Y.Z
 
 Usage:
   command [options] [arguments]
