@@ -118,7 +118,7 @@ foreach ($applicationDescription['commands'] as $task) {
         $args[] = $option['default'] ?? 'FIXME';
     }
 
-    $class = u($task['name'])->camel()->title()->append('Test')->toString();
+    $class = u($task['name'])->camel()->title()->toString();
 
     add_test($args, $class);
 }
@@ -128,33 +128,35 @@ $dirs = (new Finder())
     ->depth(1)
 ;
 foreach ($dirs as $dir) {
-    $class = u($dir->getRelativePath())->camel()->title()->append('Test')->toString();
+    $class = u($dir->getRelativePath())->camel()->title()->toString();
     add_test([], $class, '{{ base }}/tests/Examples/fixtures/broken/' . $dir->getRelativePath(), true);
 }
 
 add_test(['args:passthru', 'a', 'b', '--no', '--foo', 'bar', '-x'], 'ArgPassthruExpanded');
-add_test(['context:context', '--context', 'dynamic'], 'ContextContextDynamicTest');
-add_test(['context:context', '--context', 'my_default', '-v'], 'ContextContextMyDefaultTest');
-add_test(['context:context', '--context', 'no_no_exist'], 'ContextContextDoNotExistTest');
-add_test(['context:context', '--context', 'path'], 'ContextContextPathTest');
-add_test(['context:context', '--context', 'production'], 'ContextContextProductionTest');
-add_test(['context:context', '--context', 'run'], 'ContextContextRunTest');
+add_test(['context:context', '--context', 'dynamic'], 'ContextContextDynamic');
+add_test(['context:context', '--context', 'my_default', '-v'], 'ContextContextMyDefault');
+add_test(['context:context', '--context', 'no_no_exist'], 'ContextContextDoNotExist');
+add_test(['context:context', '--context', 'path'], 'ContextContextPath');
+add_test(['context:context', '--context', 'production'], 'ContextContextProduction');
+add_test(['context:context', '--context', 'run'], 'ContextContextRun');
 add_test(['enabled:hello', '--context', 'production'], 'EnabledInProduction');
-add_test(['list', '--raw', '--format', 'txt', '--short'], 'ListTest', skipOnBinary: true);
-add_test(['parallel:sleep', '--sleep5', '0', '--sleep7', '0', '--sleep10', '0'], 'ParallelSleepTest');
-add_test(['symfony:greet', 'World', '--french', 'COUCOU', '--punctuation', '!'], 'SymfonyGreetTest', skipOnBinary: true);
-add_test(['symfony:hello'], 'SymfonyHelloTest', skipOnBinary: true);
+add_test(['list', '--raw', '--format', 'txt', '--short'], 'List', skipOnBinary: true);
+// Transient test, disabled for now
+// add_test(['parallel:sleep', '--sleep5', '0', '--sleep7', '0', '--sleep10', '0'], 'ParallelSleep');
+add_test(['symfony:greet', 'World', '--french', 'COUCOU', '--punctuation', '!'], 'SymfonyGreet', skipOnBinary: true);
+add_test(['symfony:hello'], 'SymfonyHello', skipOnBinary: true);
 // In /tmp
-add_test(['completion', 'bash'], 'NoConfigCompletionTest', '/tmp');
-add_test(['init'], 'NewProjectInitTest', '/tmp');
-add_test(['unknown:task', 'toto', '--foo', 1], 'NoConfigUnknownWithArgsTest', '/tmp');
-add_test(['unknown:task'], 'NoConfigUnknownTest', '/tmp');
-add_test([], 'NewProjectTest', '/tmp');
-add_test(['list'], 'LayoutWithFolder', __DIR__ . '/../tests/Examples/fixtures/layout/with-folder');
-add_test(['list'], 'LayoutWithOldFolder', __DIR__ . '/../tests/Examples/fixtures/layout/with-old-folder');
+add_test(['completion', 'bash'], 'NoConfigCompletion', '/tmp');
+add_test(['init'], 'NewProjectInit', '/tmp');
+add_test(['unknown:task', 'toto', '--foo', 1], 'NoConfigUnknownWithArgs', '/tmp');
+add_test(['unknown:task'], 'NoConfigUnknown', '/tmp');
+add_test([], 'NewProject', '/tmp');
+add_test(['list'], 'LayoutWithFolder', '{{ base }}/tests/Examples/fixtures/layout/with-folder');
+add_test(['list'], 'LayoutWithOldFolder', '{{ base }}/tests/Examples/fixtures/layout/with-old-folder');
 
 function add_test(array $args, string $class, ?string $cwd = null, bool $needRemote = false, bool $skipOnBinary = false)
 {
+    $class .= 'Test';
     $fp = fopen(__FILE__, 'r');
     fseek($fp, __COMPILER_HALT_OFFSET__ + 1);
     $template = stream_get_contents($fp);

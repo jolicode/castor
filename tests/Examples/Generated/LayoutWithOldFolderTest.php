@@ -4,12 +4,12 @@ namespace Castor\Tests\Examples\Generated;
 
 use Castor\Tests\TaskTestCase;
 
-class EnabledInProduction extends TaskTestCase
+class LayoutWithOldFolderTest extends TaskTestCase
 {
-    // enabled:hello
+    // list
     public function test(): void
     {
-        $process = $this->runTask(['enabled:hello', '--context', 'production']);
+        $process = $this->runTask(['list'], '{{ base }}/tests/Examples/fixtures/layout/with-old-folder');
 
         $this->assertSame(0, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());
