@@ -1,0 +1,9 @@
+Hello from listener! (higher priority) before task execution
+Hello from listener! (lower priority)
+Ola from listener! I am listening to multiple events but only showing only for BeforeExecuteTaskEvent
+Hello after process creation!
+Hello after process start!
+Hello from task!
+Hello after process stop!
+Ola from listener! I am listening to multiple events but only showing only for AfterExecuteTaskEvent
+Hello from console terminate event listener!

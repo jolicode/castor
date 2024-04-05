@@ -6,6 +6,7 @@ use Castor\Attribute\AsListener;
 use Castor\Attribute\AsTask;
 use Castor\Event\AfterExecuteTaskEvent;
 use Castor\Event\BeforeExecuteTaskEvent;
+use Castor\Event\ProcessCreatedEvent;
 use Castor\Event\ProcessStartEvent;
 use Castor\Event\ProcessTerminateEvent;
 use Symfony\Component\Console\ConsoleEvents;
@@ -86,4 +87,16 @@ function process_start_event(ProcessStartEvent $event): void
     }
 
     io()->writeln('Hello after process start!');
+}
+
+#[AsListener(event: ProcessCreatedEvent::class)]
+function process_created_event(ProcessCreatedEvent $event): void
+{
+    $command = task(true);
+
+    if ('event-listener:my-task' !== $command?->getName()) {
+        return;
+    }
+
+    io()->writeln('Hello after process creation!');
 }

@@ -1,5 +1,0 @@
-In castor.php line 5:
-
-  Could not import "path-to-castor.php" in ".../tests/Examples/fixtures/broken/import-invalid-import/castor.php" on line 5. Reason: The "file", "version", "vcs" and "source" arguments can only be used with a remote import.
-
-

@@ -1,0 +1,10 @@
+In castor.php line 6:
+
+  Could not import "pyrech/castor-example" in ".../tests/fixtures/broken/import-same-package-different-version/castor.php" on line 6. Reason: The package "pyrech/castor-example" is already required in version "^1.0", could not require it in version "^2.0"
+
+
+In PackageImporter.php line XXXX:
+
+  The package "pyrech/castor-example" is already required in version "^1.0", could not require it in version "^2.0"
+
+

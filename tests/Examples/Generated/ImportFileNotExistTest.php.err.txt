@@ -1,5 +1,0 @@
-In castor.php line 5:
-
-  Could not import "path/to/not/existing/castor.php" in ".../tests/Examples/fixtures/broken/import-file-not-exist/castor.php" on line 5. Reason: The file "path/to/not/existing/castor.php" does not exist.
-
-

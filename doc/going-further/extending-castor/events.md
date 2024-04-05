@@ -40,6 +40,10 @@ Here is the built-in events triggered by Castor:
 * `Castor\Event\AfterExecuteTaskEvent`: This event is triggered after executing
   a task. It provides access to the `TaskCommand` instance.
 
+* `Castor\Event\ProcessCreatedEvent`: This event is triggered after a process
+  has been created by the `run` function but not yet started. It provides access
+  to the `Process` instance.
+
 * `Castor\Event\ProcessStartEvent`: This event is triggered after a process has
   been started by the `run` function. It provides access to the `Process`
   instance.
