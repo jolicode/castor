@@ -1,6 +1,6 @@
 <?php
 
-namespace Castor;
+namespace Castor\Function;
 
 use Castor\Attribute\AsContext;
 use Castor\Attribute\AsContextGenerator;
@@ -15,22 +15,16 @@ use Castor\Descriptor\TaskDescriptor;
 use Castor\Exception\FunctionConfigurationException;
 use Castor\Helper\Slugger;
 use Symfony\Component\Console\Attribute\AsCommand;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ExceptionInterface;
 use Symfony\Component\Process\Process;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
-use function Castor\Internal\castor_require;
-
 /** @internal */
-class FunctionFinder
+final class FunctionFinder
 {
     /** @var array<string> */
     public static array $files = [];
-
-    /** @var array<Mount> */
-    public array $mounts = [];
 
     public function __construct(
         private readonly Slugger $slugger,
@@ -39,62 +33,15 @@ class FunctionFinder
     ) {
     }
 
-    /** @return iterable<TaskDescriptor|ContextDescriptor|ContextGeneratorDescriptor|ListenerDescriptor|SymfonyTaskDescriptor> */
-    public function findFunctions(string $path): iterable
-    {
-        if (file_exists($file = $path . '/castor.php')) {
-            yield from self::doFindFunctions($file);
-        } elseif (file_exists($file = $path . '/.castor/castor.php')) {
-            yield from self::doFindFunctions($file);
-        } else {
-            throw new \RuntimeException('Could not find root "castor.php" file.');
-        }
-
-        $castorDirectory = $path . '/castor';
-        if (is_dir($castorDirectory)) {
-            trigger_deprecation('castor', '0.15', 'Autoloading functions from the "/castor/" directory is deprecated. Import files by yourself with the "castor\import()" function.');
-            $files = Finder::create()
-                ->files()
-                ->name('*.php')
-                ->in($castorDirectory)
-            ;
-
-            foreach ($files as $file) {
-                yield from self::doFindFunctions($file->getPathname());
-            }
-        }
-
-        $mounts = $this->mounts;
-        $this->mounts = [];
-        foreach ($mounts as $mount) {
-            foreach (self::findFunctions($mount->path) as $descriptor) {
-                if ($descriptor instanceof TaskDescriptor) {
-                    $descriptor->workingDirectory = $mount->path;
-                    if ($mount->namespacePrefix) {
-                        if ($descriptor->taskAttribute->namespace) {
-                            $descriptor->taskAttribute->namespace = $mount->namespacePrefix . ':' . $descriptor->taskAttribute->namespace;
-                        } else {
-                            $descriptor->taskAttribute->namespace = $mount->namespacePrefix;
-                        }
-                    }
-                }
-
-                yield $descriptor;
-            }
-        }
-    }
-
     /**
+     * @param list<string>       $previousFunctions
+     * @param list<class-string> $previousClasses
+     *
      * @return iterable<TaskDescriptor|ContextDescriptor|ContextGeneratorDescriptor|ListenerDescriptor|SymfonyTaskDescriptor>
      */
-    private function doFindFunctions(string $file): iterable
+    public function findFunctions(array $previousFunctions, array $previousClasses): iterable
     {
-        $initialFunctions = get_defined_functions()['user'];
-        $initialClasses = get_declared_classes();
-
-        castor_require($file);
-
-        $newFunctions = array_diff(get_defined_functions()['user'], $initialFunctions);
+        $newFunctions = array_diff(get_defined_functions()['user'], $previousFunctions);
         foreach ($newFunctions as $functionName) {
             $reflectionFunction = new \ReflectionFunction($functionName);
 
@@ -113,7 +60,7 @@ class FunctionFinder
             return;
         }
 
-        $newClasses = array_diff(get_declared_classes(), $initialClasses);
+        $newClasses = array_diff(get_declared_classes(), $previousClasses);
         foreach ($newClasses as $className) {
             $reflectionClass = new \ReflectionClass($className);
 

@@ -77,6 +77,31 @@ class Importer
         }
     }
 
+    public function require(string $path): void
+    {
+        if (file_exists($file = $path . '/castor.php')) {
+            castor_require($file);
+        } elseif (file_exists($file = $path . '/.castor/castor.php')) {
+            castor_require($file);
+        } else {
+            throw new \RuntimeException('Could not find root "castor.php" file.');
+        }
+
+        $castorDirectory = $path . '/castor';
+        if (is_dir($castorDirectory)) {
+            trigger_deprecation('castor', '0.15', 'Autoloading functions from the "/castor/" directory is deprecated. Import files by yourself with the "castor\import()" function.');
+            $files = Finder::create()
+                ->files()
+                ->name('*.php')
+                ->in($castorDirectory)
+            ;
+
+            foreach ($files as $file) {
+                castor_require($file->getPathname());
+            }
+        }
+    }
+
     private function getImportLocatedMessage(string $path, string $reason, int $depth): string
     {
         /** @var array{file: string, line: int} $caller */

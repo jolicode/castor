@@ -13,7 +13,7 @@ class ListTest extends TaskTestCase
             $this->markTestSkipped('This test is not compatible with the binary version of Castor.');
         }
 
-        $process = $this->runTask(['list', '--raw', '--format', 'txt', '--short']);
+        $process = $this->runTask(['list', '--raw', '--format', 'txt', '--short'], needRemote: true);
 
         $this->assertSame(0, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());

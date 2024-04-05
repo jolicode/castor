@@ -5,9 +5,11 @@ namespace Castor;
 use Castor\Console\Application;
 use Castor\Console\Output\SectionOutput;
 use Castor\Fingerprint\FingerprintHelper;
+use Castor\Function\FunctionFinder;
 use Castor\Helper\Notifier;
 use Castor\Helper\Waiter;
 use Castor\Import\Importer;
+use Castor\Import\Kernel;
 use Castor\Runner\ParallelRunner;
 use Castor\Runner\ProcessRunner;
 use Castor\Runner\SshRunner;
@@ -40,6 +42,7 @@ final class Container
         public readonly HttpClientInterface $httpClient,
         public readonly Importer $importer,
         public readonly InputInterface $input,
+        public readonly Kernel $kernel,
         public readonly LoggerInterface $logger,
         public readonly Notifier $notifier,
         public readonly OutputInterface $output,

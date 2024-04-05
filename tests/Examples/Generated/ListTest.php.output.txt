@@ -51,6 +51,8 @@ open:multiple                                                     Open an URL an
 output:output                                                     Plays with Symfony Style
 parallel:exception                                                Sleep and throw an exception
 parallel:sleep                                                    Sleeps for 5, 7, and 10 seconds in parallel
+pyrech:foobar                                                     Hello from foobar!
+pyrech:hello-example                                              Hello from example!
 qa:cs:cs                                                          Fix CS
 qa:cs:install                                                     install dependencies
 qa:cs:update                                                      Update dependencies

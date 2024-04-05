@@ -7,23 +7,21 @@ use Castor\Console\Output\VerbosityLevel;
 use Castor\Container;
 use Castor\Context;
 use Castor\ContextRegistry;
-use Castor\Descriptor\ContextDescriptor;
-use Castor\Descriptor\ContextGeneratorDescriptor;
-use Castor\Descriptor\ListenerDescriptor;
-use Castor\Descriptor\SymfonyTaskDescriptor;
-use Castor\Descriptor\TaskDescriptor;
-use Castor\Descriptor\TaskDescriptorCollection;
 use Castor\Event\AfterApplicationInitializationEvent;
+use Castor\Event\BeforeApplicationBootEvent;
 use Castor\Event\BeforeApplicationInitializationEvent;
 use Castor\Factory\TaskCommandFactory;
-use Castor\FunctionFinder;
+use Castor\Function\FunctionLoader;
 use Castor\Helper\PlatformHelper;
+use Castor\Import\Importer;
+use Castor\Import\Kernel;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -39,7 +37,10 @@ class Application extends SymfonyApplication
         private readonly string $rootDir,
         private readonly ContainerBuilder $containerBuilder,
         private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly FunctionFinder $functionFinder,
+        #[Autowire(lazy: true)]
+        private readonly Importer $importer,
+        private readonly FunctionLoader $functionLoader,
+        private readonly Kernel $kernel,
         private readonly ContextRegistry $contextRegistry,
         private readonly TaskCommandFactory $taskCommandFactory,
     ) {
@@ -61,27 +62,40 @@ class Application extends SymfonyApplication
         $this->containerBuilder->set(InputInterface::class, $input);
         $this->containerBuilder->set(OutputInterface::class, $output);
 
-        $event = new BeforeApplicationInitializationEvent($this);
-        $this->eventDispatcher->dispatch($event);
-
         // @phpstan-ignore-next-line
         Container::set($this->containerBuilder->get(Container::class));
 
-        $descriptors = $this->initializeApplication($input);
+        $this->eventDispatcher->dispatch(new BeforeApplicationBootEvent($this));
+
+        $currentFunctions = get_defined_functions()['user'];
+        $currentClasses = get_declared_classes();
+
+        $functionsRootDir = $this->rootDir;
+        if (class_exists(\RepackedApplication::class)) {
+            $functionsRootDir = \RepackedApplication::ROOT_DIR;
+        }
+        $this->importer->require($functionsRootDir);
+
+        $this->eventDispatcher->dispatch(new BeforeApplicationInitializationEvent($this));
+
+        $taskDescriptorCollection = $this->functionLoader->load($currentFunctions, $currentClasses);
+        $taskDescriptorCollection = $taskDescriptorCollection->merge($this->kernel->mount());
+
+        $this->initializeApplication($input);
 
         // Must be done after the initializeApplication() call, to ensure all
         // contexts have been created; but before the adding of task, because we
         // may want to seek in the context to know if the command is enabled
         $this->configureContext($input, $output);
 
-        $event = new AfterApplicationInitializationEvent($this, $descriptors);
+        $event = new AfterApplicationInitializationEvent($this, $taskDescriptorCollection);
         $this->eventDispatcher->dispatch($event);
-        $descriptors = $event->taskDescriptorCollection;
+        $taskDescriptorCollection = $event->taskDescriptorCollection;
 
-        foreach ($descriptors->taskDescriptors as $taskDescriptor) {
+        foreach ($taskDescriptorCollection->taskDescriptors as $taskDescriptor) {
             $this->add($this->taskCommandFactory->createTask($taskDescriptor));
         }
-        foreach ($descriptors->symfonyTaskDescriptors as $symfonyTaskDescriptor) {
+        foreach ($taskDescriptorCollection->symfonyTaskDescriptors as $symfonyTaskDescriptor) {
             $this->add(SymfonyTaskCommand::createFromDescriptor($symfonyTaskDescriptor));
         }
 
@@ -95,36 +109,8 @@ class Application extends SymfonyApplication
         return parent::doRunCommand($command, $input, $output);
     }
 
-    private function initializeApplication(InputInterface $input): TaskDescriptorCollection
+    private function initializeApplication(InputInterface $input): void
     {
-        $functionsRootDir = $this->rootDir;
-        if (class_exists(\RepackedApplication::class)) {
-            $functionsRootDir = \RepackedApplication::ROOT_DIR;
-        }
-
-        $descriptors = $this->functionFinder->findFunctions($functionsRootDir);
-        $tasks = [];
-        $symfonyTasks = [];
-        foreach ($descriptors as $descriptor) {
-            if ($descriptor instanceof TaskDescriptor) {
-                $tasks[] = $descriptor;
-            } elseif ($descriptor instanceof SymfonyTaskDescriptor) {
-                $symfonyTasks[] = $descriptor;
-            } elseif ($descriptor instanceof ContextDescriptor) {
-                $this->contextRegistry->addDescriptor($descriptor);
-            } elseif ($descriptor instanceof ContextGeneratorDescriptor) {
-                foreach ($descriptor->generators as $name => $generator) {
-                    $this->contextRegistry->addContext($name, $generator);
-                }
-            } elseif ($descriptor instanceof ListenerDescriptor && null !== $descriptor->reflectionFunction->getClosure()) {
-                $this->eventDispatcher->addListener(
-                    $descriptor->asListener->event,
-                    $descriptor->reflectionFunction->getClosure(),
-                    $descriptor->asListener->priority
-                );
-            }
-        }
-
         $this->contextRegistry->setDefaultIfEmpty();
 
         $contextNames = $this->contextRegistry->getNames();
@@ -159,8 +145,6 @@ class Application extends SymfonyApplication
                 'Force the update of remote packages',
             )
         );
-
-        return new TaskDescriptorCollection($tasks, $symfonyTasks);
     }
 
     private function configureContext(InputInterface $input, OutputInterface $output): void

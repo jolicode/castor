@@ -1,6 +1,6 @@
 <?php
 
-namespace Castor;
+namespace Castor\Import;
 
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
