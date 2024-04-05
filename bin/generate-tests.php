@@ -134,19 +134,23 @@ echo "\nDone.\n";
 
 displayTitle('Generating tests for fixtures');
 
-foreach (['broken', 'valid'] as $type) {
-    $dirs = (new Finder())
-        ->in($basePath = __DIR__ . '/../tests/Examples/fixtures/' . $type)
-        ->depth(1)
-    ;
+$dirs = (new Finder())
+    ->in($basePath = __DIR__ . '/../tests/Examples/fixtures/broken')
+    ->depth(1)
+;
 
-    foreach ($dirs as $dir) {
-        echo "Generating test for {$type} fixture " . basename(dirname($dir)) . "\n";
+foreach ($dirs as $dir) {
+    echo 'Generating test for broken fixture ' . basename(dirname($dir)) . "\n";
 
-        $class = u($dir->getRelativePath())->camel()->title()->toString();
-        add_test([], $class, '{{ base }}/tests/Examples/fixtures/' . $type . '/' . $dir->getRelativePath(), true);
-    }
+    $class = u($dir->getRelativePath())->camel()->title()->toString();
+    add_test([], $class, '{{ base }}/tests/Examples/fixtures/broken/' . $dir->getRelativePath(), true);
 }
+
+add_test(['list'], 'LayoutWithFolder', '{{ base }}/tests/Examples/fixtures/layout/with-folder');
+add_test(['list'], 'LayoutWithOldFolder', '{{ base }}/tests/Examples/fixtures/layout/with-old-folder');
+
+add_test([], 'ImportSamePackageWithDefaultVersion', '{{ base }}/tests/Examples/fixtures/valid/import-same-package-with-default-version', needRemote: true);
+add_test(['fs-watch'], 'WatchWithForcedTimeout', '{{ base }}/tests/Examples/fixtures/valid/watch-with-forced-timeout');
 
 echo "\nDone.\n";
 
@@ -171,8 +175,6 @@ add_test(['init'], 'NewProjectInit', '/tmp');
 add_test(['unknown:task', 'toto', '--foo', 1], 'NoConfigUnknownWithArgs', '/tmp');
 add_test(['unknown:task'], 'NoConfigUnknown', '/tmp');
 add_test([], 'NewProject', '/tmp');
-add_test(['list'], 'LayoutWithFolder', '{{ base }}/tests/Examples/fixtures/layout/with-folder');
-add_test(['list'], 'LayoutWithOldFolder', '{{ base }}/tests/Examples/fixtures/layout/with-old-folder');
 
 echo "\nDone.\n";
 
