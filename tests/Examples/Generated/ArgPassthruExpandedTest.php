@@ -4,7 +4,7 @@ namespace Castor\Tests\Examples\Generated;
 
 use Castor\Tests\TaskTestCase;
 
-class ArgPassthruExpanded extends TaskTestCase
+class ArgPassthruExpandedTest extends TaskTestCase
 {
     // args:passthru
     public function test(): void
