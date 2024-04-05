@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fb72e1c19f56d7a9634b45f23092687e",
+    "content-hash": "21ecd9ebc77b21996b43963e25f977ca",
     "packages": [
         {
             "name": "jolicode/jolinotif",
@@ -480,16 +480,16 @@
         },
         {
             "name": "spatie/ssh",
-            "version": "dev-connect-without-user",
+            "version": "1.10.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/pyrech/ssh.git",
-                "reference": "3df910a9ea2dcae5b2ae174cc38afebc701f7ee4"
+                "url": "https://github.com/spatie/ssh.git",
+                "reference": "8a69221ec27112bf463e6da78b21f17c047abd75"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pyrech/ssh/zipball/3df910a9ea2dcae5b2ae174cc38afebc701f7ee4",
-                "reference": "3df910a9ea2dcae5b2ae174cc38afebc701f7ee4",
+                "url": "https://api.github.com/repos/spatie/ssh/zipball/8a69221ec27112bf463e6da78b21f17c047abd75",
+                "reference": "8a69221ec27112bf463e6da78b21f17c047abd75",
                 "shasum": ""
             },
             "require": {
@@ -507,19 +507,7 @@
                     "Spatie\\Ssh\\": "src"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Spatie\\Ssh\\Tests\\": "tests"
-                }
-            },
-            "scripts": {
-                "test": [
-                    "vendor/bin/pest"
-                ],
-                "test-coverage": [
-                    "vendor/bin/pest --coverage-html coverage"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -538,15 +526,16 @@
                 "ssh"
             ],
             "support": {
-                "source": "https://github.com/pyrech/ssh/tree/connect-without-user"
+                "issues": "https://github.com/spatie/ssh/issues",
+                "source": "https://github.com/spatie/ssh/tree/1.10.1"
             },
             "funding": [
                 {
-                    "type": "custom",
-                    "url": "https://spatie.be/open-source/support-us"
+                    "url": "https://spatie.be/open-source/support-us",
+                    "type": "custom"
                 }
             ],
-            "time": "2024-04-04T11:23:24+00:00"
+            "time": "2024-04-05T09:15:00+00:00"
         },
         {
             "name": "symfony/cache",
@@ -3607,9 +3596,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "spatie/ssh": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
