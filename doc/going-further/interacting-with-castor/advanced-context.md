@@ -25,9 +25,9 @@ The value can be one of:
   the task and **must return a bool**. The task will be enabled if the
   expression returns `true` and disabled otherwise. Internally, it uses the
   [symfony/expression-language](https://symfony.com/doc/current/components/expression_language.html)
-  component.The expression can use:
-  *  the `var()` function to get the value of a variable;
-  *  the `context()` function to a context by its name. Don't use the first
+  component. The expression can use:
+  - the `var()` function to get the value of a variable;
+  - the `context()` function to a context by its name. Don't use the first
      argument to get the current context.
 
 ## Getting a specific context
