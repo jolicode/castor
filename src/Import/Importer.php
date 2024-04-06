@@ -68,6 +68,8 @@ class Importer
             $files = Finder::create()
                 ->files()
                 ->name('*.php')
+                ->notPath('/vendor\/composer/')
+                ->notName('autoload.php')
                 ->in($path)
             ;
 
