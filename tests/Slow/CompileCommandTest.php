@@ -3,12 +3,20 @@
 namespace Castor\Tests\Slow;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
 class CompileCommandTest extends TestCase
 {
     public function test()
     {
+        $finder = new ExecutableFinder();
+        $box = $finder->find('box');
+
+        if (null === $box) {
+            $this->markTestSkipped('box is not installed.');
+        }
+
         $castorAppDirPath = RepackCommandTest::setupRepackedCastorApp('castor-test-compile');
 
         (new Process(

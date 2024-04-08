@@ -1,1 +1,1 @@
-sh: 1: i_do_not_exist: not found
+bash: line 1: i_do_not_exist: command not found

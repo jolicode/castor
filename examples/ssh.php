@@ -27,7 +27,7 @@ function whoami(): void
 #[AsTask(description: 'Uploads a file to the remote server')]
 function upload(): void
 {
-    ssh_upload('/tmp/test.html', '/var/www/index.html', host: 'server-1.example.com', user: 'debian');
+    ssh_upload(__FILE__, '/var/www/index.html', host: 'server-1.example.com', user: 'debian');
 }
 
 #[AsTask(description: 'Downloads a file from the remote server')]
