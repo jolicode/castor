@@ -105,7 +105,7 @@ class Context implements \ArrayAccess
 
     public function withPath(string $path): self
     {
-        trigger_deprecation('castor', '0.15', 'The method "%s()" is deprecated, use "%s::withCurrentDirectory()" instead.', __METHOD__, __CLASS__);
+        trigger_deprecation('castor', '0.15', 'The method "%s()" is deprecated, use "%s::withWorkingDirectory()" instead.', __METHOD__, __CLASS__);
 
         return $this->withWorkingDirectory($path);
     }
