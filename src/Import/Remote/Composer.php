@@ -54,23 +54,15 @@ class Composer
 
     public function update(bool $force = false, bool $displayProgress = true): void
     {
-        $composer = (new ExecutableFinder())->find('composer');
-
-        if (!$composer) {
-            throw new ComposerError('The "composer" executable was not found. In order to use remote import, please make sure that Composer is installed and available in your PATH.');
-        }
-
         $dir = PathHelper::getRoot() . self::VENDOR_DIR;
 
-        $this->filesystem->mkdir($dir);
-
-        file_put_contents($dir . '.gitignore', "*\n");
-
-        $this->writeJsonFile($dir);
-
-        $ran = false;
-
         if ($force || !$this->isInstalled($dir)) {
+            $this->filesystem->mkdir($dir);
+
+            file_put_contents($dir . '.gitignore', "*\n");
+
+            $this->writeJsonFile($dir);
+
             $progressIndicator = null;
             if ($displayProgress) {
                 $progressIndicator = new ProgressIndicator($this->output, null, 100, ['⠏', '⠛', '⠹', '⢸', '⣰', '⣤', '⣆', '⡇']);
@@ -87,11 +79,7 @@ class Composer
                 $progressIndicator->finish('<info>Remote packages imported</info>');
             }
             $this->writeInstalled($dir);
-
-            $ran = true;
-        }
-
-        if (!$ran) {
+        } else {
             $this->logger->debug('Packages were already required, no need to run Composer.');
         }
     }
@@ -106,13 +94,19 @@ class Composer
      */
     private function run(array $args, callable $callback): void
     {
+        $composer = (new ExecutableFinder())->find('composer');
+
+        if (!$composer) {
+            throw new ComposerError('The "composer" executable was not found. In order to use remote import, please make sure that Composer is installed and available in your PATH.');
+        }
+
         $this->logger->debug('Running Composer command.', [
             'args' => implode(' ', $args),
         ]);
 
         $dir = PathHelper::getRoot() . self::VENDOR_DIR;
 
-        $process = new Process(['composer', ...$args, '--working-dir', $dir]);
+        $process = new Process([$composer, ...$args, '--working-dir', $dir]);
         $process->setEnv([
             'COMPOSER_VENDOR_DIR' => $dir,
         ]);

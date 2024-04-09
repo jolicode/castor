@@ -64,7 +64,7 @@ class RepackCommandTest extends TestCase
             'repositories' => [
                 [
                     'type' => 'path',
-                    'url' => __DIR__ . '/..',
+                    'url' => __DIR__ . '/../..',
                 ],
             ],
             'require' => [

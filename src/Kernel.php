@@ -51,12 +51,7 @@ final class Kernel
     {
         $this->eventDispatcher->dispatch(new BeforeBootEvent($this->application));
 
-        $functionsRootDir = $this->rootDir;
-        if (class_exists(\RepackedApplication::class)) {
-            $functionsRootDir = \RepackedApplication::ROOT_DIR;
-        }
-
-        $this->addMount(new Mount($functionsRootDir));
+        $this->addMount(new Mount($this->rootDir));
 
         $hasLoadedPackages = false;
 
@@ -104,7 +99,7 @@ final class Kernel
 
         // Apply mounts
         foreach ($descriptorsCollection->taskDescriptors as $taskDescriptor) {
-            if ($mount->path) {
+            if ($mount->path !== $this->rootDir) {
                 $taskDescriptor->workingDirectory = $mount->path;
             }
             if ($mount->namespacePrefix) {
