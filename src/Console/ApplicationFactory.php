@@ -6,6 +6,7 @@ use Castor\Console\Command\CompileCommand;
 use Castor\Console\Command\DebugCommand;
 use Castor\Console\Command\RepackCommand;
 use Castor\Container;
+use Castor\Descriptor\DescriptorsCollection;
 use Castor\Event\AfterApplicationInitializationEvent;
 use Castor\Helper\PathHelper;
 use Castor\Helper\PlatformHelper;
@@ -78,6 +79,7 @@ class ApplicationFactory
 
         AbstractCloner::$defaultCasters[self::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
         AbstractCloner::$defaultCasters[AfterApplicationInitializationEvent::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
+        AbstractCloner::$defaultCasters[DescriptorsCollection::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
 
         return $errorHandler;
     }

@@ -6,27 +6,26 @@ use Castor\Helper\PathHelper;
 use Castor\Import\Exception\ImportError;
 use Castor\Import\Exception\InvalidImportFormat;
 use Castor\Import\Exception\RemoteNotAllowed;
-use Castor\Import\Importer;
+use Castor\Import\Mount;
+use Castor\Kernel;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /** @internal */
 class PackageImporter
 {
     public function __construct(
-        #[Autowire(lazy: true)]
-        private readonly Importer $importer,
         private readonly InputInterface $input,
         private readonly LoggerInterface $logger,
         private readonly Composer $composer,
+        private readonly Kernel $kernel,
         /** @var array<string, Import> */
         private array $imports = [],
     ) {
     }
 
     /** @phpstan-param ImportSource $source */
-    public function importPackage(string $scheme, string $package, ?string $file = null, ?string $version = null, ?string $vcs = null, ?array $source = null): void
+    public function addPackage(string $scheme, string $package, ?string $file = null, ?string $version = null, ?string $vcs = null, ?array $source = null): void
     {
         if (!$this->allowsRemote()) {
             throw new RemoteNotAllowed('Remote imports are disabled.');
@@ -47,7 +46,7 @@ class PackageImporter
                 throw new InvalidImportFormat('The "source" argument is not supported for Composer/Packagist packages.');
             }
 
-            $this->importPackageWithComposer($package, version: $requiredVersion, repositoryUrl: $vcs, file: $file);
+            $this->addPackageWithComposer($package, version: $requiredVersion, repositoryUrl: $vcs, file: $file);
 
             return;
         }
@@ -60,7 +59,7 @@ class PackageImporter
                 throw new InvalidImportFormat('The "source" argument is required for non-Composer packages.');
             }
 
-            $this->importPackageWithComposer($package, version: 'v1', source: $source, file: $file);
+            $this->addPackageWithComposer($package, version: 'v1', source: $source, file: $file);
 
             return;
         }
@@ -68,12 +67,10 @@ class PackageImporter
         throw new InvalidImportFormat(sprintf('The import scheme "%s" is not supported.', $scheme));
     }
 
-    public function fetchPackages(): void
+    public function fetchPackages(): bool
     {
         if (!$this->imports) {
-            $this->composer->remove();
-
-            return;
+            return false;
         }
 
         // Need to look for the raw options as the input is not yet parsed
@@ -92,9 +89,21 @@ class PackageImporter
 
         foreach ($this->imports as $package => $import) {
             foreach ($import->getFiles() as $file) {
-                $this->importer->import(PathHelper::getRoot() . Composer::VENDOR_DIR . $package . '/' . ($file ?? ''));
+                $this->kernel->addMount(new Mount(
+                    PathHelper::getRoot() . Composer::VENDOR_DIR . $package . '/' . ($file ?? ''),
+                    allowEmptyEntrypoint: true,
+                ));
             }
         }
+
+        $this->imports = [];
+
+        return true;
+    }
+
+    public function clean(): void
+    {
+        $this->composer->remove();
     }
 
     /**
@@ -104,7 +113,7 @@ class PackageImporter
      *     reference?: string,
      * } $source
      */
-    private function importPackageWithComposer(string $package, string $version, ?string $repositoryUrl = null, ?array $source = null, ?string $file = null): void
+    private function addPackageWithComposer(string $package, string $version, ?string $repositoryUrl = null, ?array $source = null, ?string $file = null): void
     {
         $this->logger->info('Importing remote package with Composer.', [
             'package' => $package,

@@ -2,66 +2,74 @@
 
 namespace Castor\Function;
 
+use Castor\Console\Application;
+use Castor\Console\Command\SymfonyTaskCommand;
 use Castor\ContextRegistry;
 use Castor\Descriptor\ContextDescriptor;
 use Castor\Descriptor\ContextGeneratorDescriptor;
 use Castor\Descriptor\ListenerDescriptor;
 use Castor\Descriptor\SymfonyTaskDescriptor;
 use Castor\Descriptor\TaskDescriptor;
-use Castor\Descriptor\TaskDescriptorCollection;
+use Castor\Factory\TaskCommandFactory;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /** @internal */
 final class FunctionLoader
 {
     public function __construct(
-        private readonly FunctionFinder $functionFinder,
         private readonly ContextRegistry $contextRegistry,
         private readonly EventDispatcherInterface $eventDispatcher,
+        #[Autowire(lazy: true)]
+        private readonly Application $application,
+        private readonly TaskCommandFactory $taskCommandFactory,
     ) {
     }
 
     /**
-     * @param list<string>       $previousFunctions
-     * @param list<class-string> $previousClasses
+     * @param list<ContextDescriptor>          $contextDescriptors
+     * @param list<ContextGeneratorDescriptor> $contextGeneratorDescriptors
      */
-    public function load(array $previousFunctions, array $previousClasses): TaskDescriptorCollection
+    public function loadContexts(array $contextDescriptors, array $contextGeneratorDescriptors): void
     {
-        $descriptors = $this
-            ->functionFinder
-            ->findFunctions($previousFunctions, $previousClasses)
-        ;
-
-        return $this->loadFunctions($descriptors);
+        foreach ($contextDescriptors as $descriptor) {
+            $this->contextRegistry->addDescriptor($descriptor);
+        }
+        foreach ($contextGeneratorDescriptors as $descriptor) {
+            foreach ($descriptor->generators as $name => $generator) {
+                $this->contextRegistry->addContext($name, $generator);
+            }
+        }
     }
 
     /**
-     * @param iterable<TaskDescriptor|ContextDescriptor|ContextGeneratorDescriptor|ListenerDescriptor|SymfonyTaskDescriptor> $descriptors
+     * @param list<ListenerDescriptor> $listenerDescriptors
      */
-    private function loadFunctions(iterable $descriptors): TaskDescriptorCollection
+    public function loadListeners(array $listenerDescriptors): void
     {
-        $tasks = [];
-        $symfonyTasks = [];
-        foreach ($descriptors as $descriptor) {
-            if ($descriptor instanceof TaskDescriptor) {
-                $tasks[] = $descriptor;
-            } elseif ($descriptor instanceof SymfonyTaskDescriptor) {
-                $symfonyTasks[] = $descriptor;
-            } elseif ($descriptor instanceof ContextDescriptor) {
-                $this->contextRegistry->addDescriptor($descriptor);
-            } elseif ($descriptor instanceof ContextGeneratorDescriptor) {
-                foreach ($descriptor->generators as $name => $generator) {
-                    $this->contextRegistry->addContext($name, $generator);
-                }
-            } elseif ($descriptor instanceof ListenerDescriptor && null !== $descriptor->reflectionFunction->getClosure()) {
-                $this->eventDispatcher->addListener(
-                    $descriptor->asListener->event,
-                    $descriptor->reflectionFunction->getClosure(),
-                    $descriptor->asListener->priority
-                );
-            }
+        foreach ($listenerDescriptors as $descriptor) {
+            $this->eventDispatcher->addListener(
+                $descriptor->asListener->event,
+                // @phpstan-ignore-next-line
+                $descriptor->reflectionFunction->getClosure(),
+                $descriptor->asListener->priority
+            );
         }
+    }
 
-        return new TaskDescriptorCollection($tasks, $symfonyTasks);
+    /**
+     * @param list<TaskDescriptor>        $taskDescriptors
+     * @param list<SymfonyTaskDescriptor> $symfonyTaskDescriptors
+     */
+    public function loadTasks(
+        array $taskDescriptors,
+        array $symfonyTaskDescriptors,
+    ): void {
+        foreach ($taskDescriptors as $descriptor) {
+            $this->application->add($this->taskCommandFactory->createTask($descriptor));
+        }
+        foreach ($symfonyTaskDescriptors as $descriptor) {
+            $this->application->add(SymfonyTaskCommand::createFromDescriptor($descriptor));
+        }
     }
 }

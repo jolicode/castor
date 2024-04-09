@@ -15,6 +15,11 @@ use function Castor\Internal\fix_exception;
 /** @internal */
 class Importer
 {
+    /**
+     * @var array<string, true>
+     */
+    private array $imports = [];
+
     public function __construct(
         private readonly PackageImporter $packageImporter,
         private readonly LoggerInterface $logger,
@@ -35,7 +40,7 @@ class Importer
             $package = mb_substr($path, mb_strlen($scheme) + 3);
 
             try {
-                $this->packageImporter->importPackage(
+                $this->packageImporter->addPackage(
                     $scheme,
                     $package,
                     $file,
@@ -61,47 +66,39 @@ class Importer
         }
 
         if (is_file($path)) {
-            castor_require($path);
+            $this->importFile($path);
         }
 
         if (is_dir($path)) {
             $files = Finder::create()
                 ->files()
                 ->name('*.php')
-                ->notPath('/vendor\/composer/')
-                ->notName('autoload.php')
+                ->notPath('vendor')
                 ->in($path)
             ;
 
             foreach ($files as $file) {
-                castor_require($file->getPathname());
+                $this->importFile($file->getPathname());
             }
         }
     }
 
-    public function require(string $path): void
+    public function importFile(string $file): void
     {
-        if (file_exists($file = $path . '/castor.php')) {
-            castor_require($file);
-        } elseif (file_exists($file = $path . '/.castor/castor.php')) {
-            castor_require($file);
-        } else {
-            throw new \RuntimeException('Could not find root "castor.php" file.');
+        if (isset($this->imports[$file])) {
+            return;
         }
+        $this->imports[$file] = true;
 
-        $castorDirectory = $path . '/castor';
-        if (is_dir($castorDirectory)) {
-            trigger_deprecation('castor', '0.15', 'Autoloading functions from the "/castor/" directory is deprecated. Import files by yourself with the "castor\import()" function.');
-            $files = Finder::create()
-                ->files()
-                ->name('*.php')
-                ->in($castorDirectory)
-            ;
+        castor_require($file);
+    }
 
-            foreach ($files as $file) {
-                castor_require($file->getPathname());
-            }
-        }
+    /**
+     * @return list<string>
+     */
+    public function getImports(): array
+    {
+        return array_keys($this->imports);
     }
 
     private function getImportLocatedMessage(string $path, string $reason, int $depth): string

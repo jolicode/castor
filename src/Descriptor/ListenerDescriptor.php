@@ -4,6 +4,7 @@ namespace Castor\Descriptor;
 
 use Castor\Attribute\AsListener;
 
+/** @internal */
 class ListenerDescriptor
 {
     public function __construct(

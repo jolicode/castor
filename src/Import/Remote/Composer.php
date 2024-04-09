@@ -3,7 +3,6 @@
 namespace Castor\Import\Remote;
 
 use Castor\Console\Application;
-use Castor\Fingerprint\FingerprintHelper;
 use Castor\Helper\PathHelper;
 use Castor\Import\Exception\ComposerError;
 use Psr\Log\LoggerInterface;
@@ -31,7 +30,6 @@ class Composer
     public function __construct(
         private readonly Filesystem $filesystem,
         private readonly OutputInterface $output,
-        private readonly FingerprintHelper $fingerprintHelper,
         /** @var array<string, mixed> */
         private array $configuration = self::DEFAULT_COMPOSER_CONFIGURATION,
         private readonly LoggerInterface $logger = new NullLogger(),
@@ -68,12 +66,11 @@ class Composer
 
         file_put_contents($dir . '.gitignore', "*\n");
 
-        $this->writeJsonFile($dir . 'composer.json', $this->configuration);
+        $this->writeJsonFile($dir);
 
         $ran = false;
-        $fingerprint = base64_encode(json_encode($this->configuration, \JSON_THROW_ON_ERROR));
 
-        if ($force || !$this->fingerprintHelper->verifyFingerprintFromHash($fingerprint)) {
+        if ($force || !$this->isInstalled($dir)) {
             $progressIndicator = null;
             if ($displayProgress) {
                 $progressIndicator = new ProgressIndicator($this->output, null, 100, ['⠏', '⠛', '⠹', '⢸', '⣰', '⣤', '⣆', '⡇']);
@@ -89,7 +86,7 @@ class Composer
             if ($progressIndicator) {
                 $progressIndicator->finish('<info>Remote packages imported</info>');
             }
-            $this->fingerprintHelper->postProcessFingerprintForHash($fingerprint);
+            $this->writeInstalled($dir);
 
             $ran = true;
         }
@@ -131,11 +128,20 @@ class Composer
         ]);
     }
 
-    /**
-     * @param array<string, mixed> $json
-     */
-    private function writeJsonFile(string $path, array $json): void
+    private function writeJsonFile(string $path): void
     {
-        file_put_contents($path, json_encode($json, \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR));
+        file_put_contents("{$path}/composer.json", json_encode($this->configuration, \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR));
+    }
+
+    private function writeInstalled(string $path): void
+    {
+        file_put_contents("{$path}/composer.installed", hash('sha256', json_encode($this->configuration, \JSON_THROW_ON_ERROR)));
+    }
+
+    private function isInstalled(string $path): bool
+    {
+        $path = "{$path}/composer.installed";
+
+        return file_exists($path) && file_get_contents($path) === hash('sha256', json_encode($this->configuration, \JSON_THROW_ON_ERROR));
     }
 }

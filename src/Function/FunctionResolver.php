@@ -9,6 +9,7 @@ use Castor\Attribute\AsSymfonyTask;
 use Castor\Attribute\AsTask;
 use Castor\Descriptor\ContextDescriptor;
 use Castor\Descriptor\ContextGeneratorDescriptor;
+use Castor\Descriptor\DescriptorsCollection;
 use Castor\Descriptor\ListenerDescriptor;
 use Castor\Descriptor\SymfonyTaskDescriptor;
 use Castor\Descriptor\TaskDescriptor;
@@ -21,11 +22,8 @@ use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
 /** @internal */
-final class FunctionFinder
+final class FunctionResolver
 {
-    /** @var array<string> */
-    public static array $files = [];
-
     public function __construct(
         private readonly Slugger $slugger,
         private readonly CacheInterface $cache,
@@ -36,10 +34,45 @@ final class FunctionFinder
     /**
      * @param list<string>       $previousFunctions
      * @param list<class-string> $previousClasses
+     */
+    public function resolveFunctions(array $previousFunctions, array $previousClasses): DescriptorsCollection
+    {
+        $contextDescriptors = [];
+        $contextGeneratorDescriptors = [];
+        $taskDescriptors = [];
+        $symfonyTaskDescriptors = [];
+        $listenerDescriptors = [];
+
+        foreach ($this->doResolveFunctions($previousFunctions, $previousClasses) as $descriptor) {
+            if ($descriptor instanceof TaskDescriptor) {
+                $taskDescriptors[] = $descriptor;
+            } elseif ($descriptor instanceof SymfonyTaskDescriptor) {
+                $symfonyTaskDescriptors[] = $descriptor;
+            } elseif ($descriptor instanceof ContextDescriptor) {
+                $contextDescriptors[] = $descriptor;
+            } elseif ($descriptor instanceof ContextGeneratorDescriptor) {
+                $contextGeneratorDescriptors[] = $descriptor;
+            } elseif ($descriptor instanceof ListenerDescriptor) {
+                $listenerDescriptors[] = $descriptor;
+            }
+        }
+
+        return new DescriptorsCollection(
+            $contextDescriptors,
+            $contextGeneratorDescriptors,
+            $listenerDescriptors,
+            $taskDescriptors,
+            $symfonyTaskDescriptors,
+        );
+    }
+
+    /**
+     * @param list<string>       $previousFunctions
+     * @param list<class-string> $previousClasses
      *
      * @return iterable<TaskDescriptor|ContextDescriptor|ContextGeneratorDescriptor|ListenerDescriptor|SymfonyTaskDescriptor>
      */
-    public function findFunctions(array $previousFunctions, array $previousClasses): iterable
+    private function doResolveFunctions(array $previousFunctions, array $previousClasses): iterable
     {
         $newFunctions = array_diff(get_defined_functions()['user'], $previousFunctions);
         foreach ($newFunctions as $functionName) {
