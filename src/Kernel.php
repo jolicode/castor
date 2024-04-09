@@ -99,7 +99,7 @@ final class Kernel
 
         // Apply mounts
         foreach ($descriptorsCollection->taskDescriptors as $taskDescriptor) {
-            if ($mount->path) {
+            if ($mount->path !== $this->rootDir) {
                 $taskDescriptor->workingDirectory = $mount->path;
             }
             if ($mount->namespacePrefix) {
