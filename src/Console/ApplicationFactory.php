@@ -52,17 +52,24 @@ class ApplicationFactory
     {
         $errorHandler = self::configureDebug();
 
-        try {
-            $rootDir = PathHelper::getRoot();
-        } catch (\RuntimeException $e) {
-            return new CastorFileNotFoundApplication($e);
+        if (class_exists(\RepackedApplication::class)) {
+            $rootDir = \RepackedApplication::ROOT_DIR;
+            $repacked = true;
+        } else {
+            try {
+                $rootDir = PathHelper::getRoot();
+            } catch (\RuntimeException $e) {
+                return new CastorFileNotFoundApplication($e);
+            }
+            $repacked = false;
         }
 
-        $container = self::buildContainer();
+        $container = self::buildContainer($repacked);
         $container->getParameterBag()->add([
             'root_dir' => $rootDir,
             'cache_dir' => PlatformHelper::getCacheDirectory(),
             'event_dispatcher.event_aliases' => ConsoleEvents::ALIASES,
+            'repacked' => $repacked,
         ]);
         $container->compile();
 
@@ -84,7 +91,7 @@ class ApplicationFactory
         return $errorHandler;
     }
 
-    private static function buildContainer(): ContainerBuilder
+    private static function buildContainer(bool $repacked): ContainerBuilder
     {
         $container = new ContainerBuilder();
 
@@ -107,12 +114,12 @@ class ApplicationFactory
         $phpLoader = new PhpFileLoader($container, new FileLocator());
         $instanceof = [];
         $configurator = new ContainerConfigurator($container, $phpLoader, $instanceof, __DIR__, __FILE__);
-        self::configureContainer($configurator);
+        self::configureContainer($configurator, $repacked);
 
         return $container;
     }
 
-    private static function configureContainer(ContainerConfigurator $c): void
+    private static function configureContainer(ContainerConfigurator $c, bool $repacked): void
     {
         $services = $c->services();
 
@@ -186,7 +193,7 @@ class ApplicationFactory
                 ->synthetic()
         ;
 
-        $app = $services->set(Application::class, class_exists(\RepackedApplication::class) ? \RepackedApplication::class : null)
+        $app = $services->set(Application::class, $repacked ? \RepackedApplication::class : null)
                 ->public()
                 ->args([
                     '$containerBuilder' => service(ContainerInterface::class),
@@ -195,7 +202,7 @@ class ApplicationFactory
                 ->call('setDispatcher', [service(EventDispatcherInterface::class)])
                 ->call('setCatchErrors', [true])
         ;
-        if (!class_exists(\RepackedApplication::class)) {
+        if (!$repacked) {
             $app
                 ->call('add', [service(RepackCommand::class)])
                 ->call('add', [service(CompileCommand::class)])

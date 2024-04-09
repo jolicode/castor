@@ -4,12 +4,15 @@ namespace Castor\Listener;
 
 use Castor\Stub\StubsGenerator;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 class GenerateStubsListener
 {
     public function __construct(
         private readonly StubsGenerator $stubsGenerator,
+        #[Autowire('%repacked%')]
+        private readonly bool $repacked,
     ) {
     }
 
@@ -18,7 +21,7 @@ class GenerateStubsListener
     #[AsEventListener()]
     public function generateStubs(ConsoleCommandEvent $event): void
     {
-        if (class_exists(\RepackedApplication::class)) {
+        if ($this->repacked) {
             return;
         }
 

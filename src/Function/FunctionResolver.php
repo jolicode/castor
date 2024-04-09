@@ -16,6 +16,7 @@ use Castor\Descriptor\TaskDescriptor;
 use Castor\Exception\FunctionConfigurationException;
 use Castor\Helper\Slugger;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Process\Exception\ExceptionInterface;
 use Symfony\Component\Process\Process;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -28,6 +29,8 @@ final class FunctionResolver
         private readonly Slugger $slugger,
         private readonly CacheInterface $cache,
         private readonly string $rootDir,
+        #[Autowire('%repacked%')]
+        private readonly bool $repacked,
     ) {
     }
 
@@ -85,7 +88,7 @@ final class FunctionResolver
         }
 
         // Symfony task in repacked application are not supported
-        if (class_exists(\RepackedApplication::class)) {
+        if ($this->repacked) {
             return;
         }
         // Nor in static binary

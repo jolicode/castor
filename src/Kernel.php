@@ -51,12 +51,7 @@ final class Kernel
     {
         $this->eventDispatcher->dispatch(new BeforeBootEvent($this->application));
 
-        $functionsRootDir = $this->rootDir;
-        if (class_exists(\RepackedApplication::class)) {
-            $functionsRootDir = \RepackedApplication::ROOT_DIR;
-        }
-
-        $this->addMount(new Mount($functionsRootDir));
+        $this->addMount(new Mount($this->rootDir));
 
         $hasLoadedPackages = false;
 
