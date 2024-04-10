@@ -9,7 +9,7 @@ class ImportSamePackageWithDefaultVersionTest extends TaskTestCase
     // no task
     public function test(): void
     {
-        $process = $this->runTask([], '{{ base }}/tests/fixtures/valid/import-same-package-with-default-version', needRemote: true);
+        $process = $this->runTask([], '{{ base }}/tests/fixtures/valid/import-same-package-with-default-version', needRemote: true, needResetVendor: true);
 
         $this->assertSame(0, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());
