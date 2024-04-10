@@ -55,6 +55,7 @@ abstract class TaskTestCase extends TestCase
                 ...$extraEnv,
             ],
         );
+
         $process->run();
 
         if ($coverage) {
