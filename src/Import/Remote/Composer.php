@@ -12,6 +12,7 @@ use Symfony\Component\Console\Helper\ProgressIndicator;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Filesystem;
 
 /** @internal */
@@ -31,9 +32,11 @@ class Composer
 
     public function __construct(
         private readonly Filesystem $filesystem,
+        #[Autowire(lazy: true)]
         private readonly OutputInterface $output,
         /** @var array<string, mixed> */
         private array $configuration = self::DEFAULT_COMPOSER_CONFIGURATION,
+        private bool $hasRun = false,
         private readonly LoggerInterface $logger = new NullLogger(),
     ) {
     }
@@ -58,36 +61,46 @@ class Composer
     {
         $dir = PathHelper::getRoot() . self::VENDOR_DIR;
 
-        if ($force || !$this->isInstalled($dir)) {
-            $this->filesystem->mkdir($dir);
-
-            file_put_contents($dir . '.gitignore', "*\n");
-            file_put_contents("{$dir}/composer.json", json_encode($this->configuration, \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR));
-
-            $progressIndicator = null;
-            if ($displayProgress) {
-                $progressIndicator = new ProgressIndicator($this->output, null, 100, ['⠏', '⠛', '⠹', '⢸', '⣰', '⣤', '⣆', '⡇']);
-                $progressIndicator->start('<comment>Downloading remote packages</comment>');
-            }
-
-            $this->run(['update'], callback: function () use ($progressIndicator) {
-                if ($progressIndicator) {
-                    $progressIndicator->advance();
-                }
-            });
-
-            if ($progressIndicator) {
-                $progressIndicator->finish('<info>Remote packages imported</info>');
-            }
-            $this->writeInstalled($dir);
-        } else {
+        if (!($force || !$this->isInstalled($dir))) {
             $this->logger->debug('Packages were already required, no need to run Composer.');
+
+            return;
         }
+
+        $this->filesystem->mkdir($dir);
+
+        file_put_contents($dir . '.gitignore', "*\n");
+        file_put_contents("{$dir}/composer.json", json_encode($this->configuration, \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR));
+
+        $progressIndicator = null;
+        if ($displayProgress) {
+            $progressIndicator = new ProgressIndicator($this->output, null, 100, ['⠏', '⠛', '⠹', '⢸', '⣰', '⣤', '⣆', '⡇']);
+            $progressIndicator->start('<comment>Downloading remote packages</comment>');
+        }
+
+        $this->run(['update'], callback: function () use ($progressIndicator) {
+            if ($progressIndicator) {
+                $progressIndicator->advance();
+            }
+        });
+
+        if ($progressIndicator) {
+            $progressIndicator->finish('<info>Remote packages imported</info>');
+        }
+
+        $this->writeInstalled($dir);
+
+        $this->hasRun = true;
     }
 
     public function remove(): void
     {
         $this->filesystem->remove(PathHelper::getRoot() . self::VENDOR_DIR);
+    }
+
+    public function hasRun(): bool
+    {
+        return $this->hasRun;
     }
 
     /**

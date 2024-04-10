@@ -3,7 +3,9 @@
 namespace Castor\Console;
 
 use Castor\Container;
+use Castor\Exception\RestartException;
 use Castor\Kernel;
+use JoliCode\PhpOsHelper\OsHelper;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputDefinition;
@@ -11,6 +13,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Process\Process;
 
 /** @internal */
 class Application extends SymfonyApplication
@@ -43,7 +46,11 @@ class Application extends SymfonyApplication
         // @phpstan-ignore-next-line
         Container::set($this->containerBuilder->get(Container::class));
 
-        $this->kernel->boot($input, $output);
+        try {
+            $this->kernel->boot($input, $output);
+        } catch (RestartException) {
+            return $this->restart();
+        }
 
         return parent::doRun($input, $output);
     }
@@ -78,5 +85,20 @@ class Application extends SymfonyApplication
         );
 
         return $definition;
+    }
+
+    private function restart(): int
+    {
+        $p = new Process($_SERVER['argv']);
+
+        $callback = null;
+
+        if (OsHelper::isWindows() || !stream_isatty(STDOUT)) {
+            $callback = fn ($type, $out) => print $out;
+        } else {
+            $p->setTty(true);
+        }
+
+        return $p->run($callback);
     }
 }

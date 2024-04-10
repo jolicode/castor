@@ -10,11 +10,13 @@ use Castor\Event\AfterApplicationInitializationEvent;
 use Castor\Event\BeforeBootEvent;
 use Castor\Event\FunctionsResolvedEvent;
 use Castor\Exception\CouldNotFindEntrypointException;
+use Castor\Exception\RestartException;
 use Castor\Function\FunctionLoader;
 use Castor\Function\FunctionResolver;
 use Castor\Helper\PlatformHelper;
 use Castor\Import\Importer;
 use Castor\Import\Mount;
+use Castor\Import\Remote\Composer;
 use Castor\Import\Remote\PackageImporter;
 use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Input\InputInterface;
@@ -44,6 +46,7 @@ final class Kernel
         private readonly FunctionResolver $functionResolver,
         private readonly FunctionLoader $functionLoader,
         private readonly ContextRegistry $contextRegistry,
+        private readonly Composer $composer,
     ) {
     }
 
@@ -70,6 +73,8 @@ final class Kernel
 
         if (!$hasLoadedPackages) {
             $this->packageImporter->clean();
+        } elseif ($this->composer->hasRun()) {
+            throw new RestartException();
         }
     }
 
