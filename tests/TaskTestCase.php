@@ -5,6 +5,7 @@ namespace Castor\Tests;
 use Castor\Tests\Helper\OutputCleaner;
 use Castor\Tests\Helper\WebServerHelper;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 
 abstract class TaskTestCase extends TestCase
@@ -20,7 +21,7 @@ abstract class TaskTestCase extends TestCase
         self::$binary = 'application/x-executable' === mime_content_type(self::$castorBin);
     }
 
-    public function runTask(array $args, ?string $cwd = null, bool $needRemote = false): Process
+    public function runTask(array $args, ?string $cwd = null, bool $needRemote = false, bool $needResetVendor = false): Process
     {
         $coverage = $this->getTestResultObject()?->getCodeCoverage();
 
@@ -40,9 +41,15 @@ abstract class TaskTestCase extends TestCase
             $extraEnv['CC_TEST_NAME'] = $testName;
         }
 
+        $workingDirectory = $cwd ? str_replace('{{ base }}', __DIR__ . '/..', $cwd) : __DIR__ . '/..';
+
+        if ($needResetVendor) {
+            (new Filesystem())->remove($workingDirectory . '/.castor/vendor');
+        }
+
         $process = new Process(
             [self::$castorBin, '--no-ansi', ...$args],
-            cwd: $cwd ? str_replace('{{ base }}', __DIR__ . '/..', $cwd) : __DIR__ . '/..',
+            cwd: $workingDirectory,
             env: [
                 'COLUMNS' => 1000,
                 ...$extraEnv,

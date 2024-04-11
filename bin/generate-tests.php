@@ -159,7 +159,7 @@ displayTitle('Generating tests for valid fixtures');
 
 add_test(['list'], 'LayoutWithFolder', '{{ base }}/tests/fixtures/valid/layout-with-folder');
 add_test(['list'], 'LayoutWithOldFolder', '{{ base }}/tests/fixtures/valid/layout-with-old-folder');
-add_test([], 'ImportSamePackageWithDefaultVersion', '{{ base }}/tests/fixtures/valid/import-same-package-with-default-version', needRemote: true);
+add_test([], 'ImportSamePackageWithDefaultVersion', '{{ base }}/tests/fixtures/valid/import-same-package-with-default-version', needRemote: true, needResetVendor: true);
 add_test(['fs-watch'], 'WatchWithForcedTimeout', '{{ base }}/tests/fixtures/valid/watch-with-forced-timeout');
 
 echo "\nDone.\n";
@@ -188,7 +188,7 @@ add_test([], 'NewProject', '/tmp');
 
 echo "\nDone.\n";
 
-function add_test(array $args, string $class, ?string $cwd = null, bool $needRemote = false, bool $skipOnBinary = false)
+function add_test(array $args, string $class, ?string $cwd = null, bool $needRemote = false, bool $skipOnBinary = false, bool $needResetVendor = false)
 {
     $class .= 'Test';
     $fp = fopen(__FILE__, 'r');
@@ -216,6 +216,7 @@ function add_test(array $args, string $class, ?string $cwd = null, bool $needRem
         '{{ exitCode }}' => $process->getExitCode(),
         '{{ cwd }}' => $cwd ? ', ' . var_export($cwd, true) : '',
         '{{ needRemote }}' => $needRemote ? ', needRemote: true' : '',
+        '{{ needResetVendor }}' => $needResetVendor ? ', needResetVendor: true' : '',
         '{{ skip-on-binary }}' => match ($skipOnBinary) {
             true => <<<'PHP'
 
@@ -260,7 +261,7 @@ class {{ class_name }} extends TaskTestCase
     // {{ task }}
     public function test(): void
     {{{ skip-on-binary }}
-        $process = $this->runTask([{{ args }}]{{ cwd }}{{ needRemote }});
+        $process = $this->runTask([{{ args }}]{{ cwd }}{{ needRemote }}{{ needResetVendor }});
 
         $this->assertSame({{ exitCode }}, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());
