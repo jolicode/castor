@@ -14,6 +14,11 @@ class RemoteImportRemoteTasksTest extends TaskTestCase
 
         // No vendor => should download
         $process = $this->runTask(['remote-import:remote-tasks'], needRemote: true);
+
+        if ($process->getExitCode() !== 0) {
+            $this->fail($process->getErrorOutput());
+        }
+
         $this->assertSame(0, $process->getExitCode());
         $this->assertStringEqualsFile(__FILE__ . '.output_update.txt', $process->getOutput());
 

@@ -255,6 +255,7 @@ __halt_compiler();
 namespace Castor\Tests\Generated;
 
 use Castor\Tests\TaskTestCase;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class {{ class_name }} extends TaskTestCase
 {
@@ -263,7 +264,10 @@ class {{ class_name }} extends TaskTestCase
     {{{ skip-on-binary }}
         $process = $this->runTask([{{ args }}]{{ cwd }}{{ needRemote }}{{ needResetVendor }});
 
-        $this->assertSame({{ exitCode }}, $process->getExitCode());
+        if ({{ exitCode }} !== $process->getExitCode()) {
+            throw new ProcessFailedException($process);
+        }
+
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());
         {{ error-assertion }}
     }

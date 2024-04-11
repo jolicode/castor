@@ -3,6 +3,7 @@
 namespace Castor\Tests\Generated;
 
 use Castor\Tests\TaskTestCase;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class TwoDefaultContextTest extends TaskTestCase
 {
@@ -11,7 +12,10 @@ class TwoDefaultContextTest extends TaskTestCase
     {
         $process = $this->runTask([], '{{ base }}/tests/fixtures/broken/two-default-context', needRemote: true);
 
-        $this->assertSame(1, $process->getExitCode());
+        if (1 !== $process->getExitCode()) {
+            throw new ProcessFailedException($process);
+        }
+
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());
         $this->assertStringEqualsFile(__FILE__ . '.err.txt', $process->getErrorOutput());
     }
