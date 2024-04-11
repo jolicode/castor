@@ -4,7 +4,6 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use Castor\Console\ApplicationFactory;
-use Castor\Helper\PlatformHelper;
 use Castor\Tests\Helper\OutputCleaner;
 use Castor\Tests\Helper\WebServerHelper;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -16,12 +15,13 @@ use Symfony\Component\Process\Process;
 use function Symfony\Component\String\u;
 
 $_SERVER['ENDPOINT'] ??= 'http://127.0.0.1:9955';
+$_SERVER['CASTOR_CACHE_DIR'] ??= '/tmp/castor-tests/cache';
 WebServerHelper::start();
 
 displayTitle('Cleaning');
 
 $fs = new Filesystem();
-$fs->remove(PlatformHelper::getCacheDirectory());
+$fs->remove($_SERVER['CASTOR_CACHE_DIR']);
 $fs->remove(__DIR__ . '/../tests/Generated');
 $fs->mkdir(__DIR__ . '/../tests/Generated');
 $fs->remove((new Finder())

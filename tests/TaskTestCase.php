@@ -11,6 +11,7 @@ use Symfony\Component\Process\Process;
 abstract class TaskTestCase extends TestCase
 {
     public static string $castorBin;
+    public static string $castorCacheDir;
     public static bool $binary = false;
 
     public static function setUpBeforeClass(): void
@@ -18,6 +19,7 @@ abstract class TaskTestCase extends TestCase
         WebServerHelper::start();
 
         self::$castorBin = $_SERVER['CASTOR_BIN'] ?? __DIR__ . '/../bin/castor';
+        self::$castorCacheDir = $_SERVER['CASTOR_CACHE_DIR'] ?? '/tmp/castor-tests/cache';
         self::$binary = 'application/x-executable' === mime_content_type(self::$castorBin);
     }
 
@@ -27,6 +29,7 @@ abstract class TaskTestCase extends TestCase
 
         $extraEnv = [
             'ENDPOINT' => $_SERVER['ENDPOINT'],
+            'CASTOR_CACHE_DIR' => self::$castorCacheDir,
         ];
 
         if (!$needRemote) {
