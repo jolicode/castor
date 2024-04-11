@@ -3,6 +3,7 @@
 namespace Castor\Tests\Generated;
 
 use Castor\Tests\TaskTestCase;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class WaitForWaitForUrlWithSpecificResponseContentAndStatusTest extends TaskTestCase
 {
@@ -11,7 +12,10 @@ class WaitForWaitForUrlWithSpecificResponseContentAndStatusTest extends TaskTest
     {
         $process = $this->runTask(['wait-for:wait-for-url-with-specific-response-content-and-status']);
 
-        $this->assertSame(0, $process->getExitCode());
+        if (0 !== $process->getExitCode()) {
+            throw new ProcessFailedException($process);
+        }
+
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());
         $this->assertSame('', $process->getErrorOutput());
     }

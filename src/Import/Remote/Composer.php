@@ -5,13 +5,14 @@ namespace Castor\Import\Remote;
 use Castor\Console\Application;
 use Castor\Helper\PathHelper;
 use Castor\Import\Exception\ComposerError;
+use Composer\Console\Application as ComposerApplication;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Console\Helper\ProgressIndicator;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Process\ExecutableFinder;
-use Symfony\Component\Process\Process;
 
 /** @internal */
 class Composer
@@ -21,6 +22,7 @@ class Composer
         'description' => 'This file is managed by Castor. Do not edit it manually.',
         'config' => [
             'sort-packages' => true,
+            'vendor-dir' => '.',
         ],
         'replace' => [
             'castor/castor' => Application::VERSION,
@@ -93,31 +95,48 @@ class Composer
      */
     private function run(array $args, callable $callback): void
     {
-        $composer = (new ExecutableFinder())->find('composer');
+        $directory = PathHelper::getRoot() . self::VENDOR_DIR;
 
-        if (!$composer) {
-            throw new ComposerError('The "composer" executable was not found. In order to use remote import, please make sure that Composer is installed and available in your PATH.');
-        }
+        $args[] = '--working-dir';
+        $args[] = $directory;
+
+        $composerApplication = new ComposerApplication();
+        $composerApplication->setAutoExit(false);
 
         $this->logger->debug('Running Composer command.', [
             'args' => implode(' ', $args),
         ]);
 
-        $dir = PathHelper::getRoot() . self::VENDOR_DIR;
+        $argvInput = new ArgvInput(['composer', ...$args]);
 
-        $process = new Process([$composer, ...$args, '--working-dir', $dir]);
-        $process->setEnv([
-            'COMPOSER_VENDOR_DIR' => $dir,
-        ]);
-        $process->run($callback);
+        $output = new class($callback) extends Output {
+            /** @param callable $callback */
+            public function __construct(private $callback, public string $output = '')
+            {
+                parent::__construct();
+            }
 
-        if (!$process->isSuccessful()) {
-            throw new ComposerError('The Composer process failed: ' . $process->getErrorOutput());
+            public function doWrite(string $message, bool $newline): void
+            {
+                $this->output .= $message;
+
+                if ($newline) {
+                    $this->output .= \PHP_EOL;
+                }
+
+                ($this->callback)($message, $newline);
+            }
+        };
+
+        $exitCode = $composerApplication->run($argvInput, $output);
+
+        if (0 !== $exitCode) {
+            throw new ComposerError('The Composer process failed: ' . $output->output);
         }
 
         $this->logger->debug('Composer command was successful.', [
             'args' => implode(' ', $args),
-            'output' => $process->getOutput(),
+            'output' => $output->output,
         ]);
     }
 
