@@ -39,7 +39,7 @@ class CompileCommand extends Command
             ->addOption('os', null, InputOption::VALUE_REQUIRED, 'Target OS for PHP compilation', 'linux', ['linux', 'macos'])
             ->addOption('arch', null, InputOption::VALUE_REQUIRED, 'Target architecture for PHP compilation', 'x86_64', ['x86_64', 'aarch64'])
             ->addOption('php-version', null, InputOption::VALUE_REQUIRED, 'PHP version in major.minor format', '8.3')
-            ->addOption('php-extensions', null, InputOption::VALUE_REQUIRED, 'PHP extensions required, in a comma-separated format. Defaults are the minimum required to run a basic "Hello World" task in Castor.', 'mbstring,phar,posix,tokenizer,curl')
+            ->addOption('php-extensions', null, InputOption::VALUE_REQUIRED, 'PHP extensions required, in a comma-separated format. Defaults are the minimum required to run a basic "Hello World" task in Castor.', 'mbstring,phar,posix,tokenizer,curl,openssl')
             ->addOption('php-rebuild', null, InputOption::VALUE_NONE, 'Ignore cache and force PHP build compilation.')
             ->setHidden(true)
         ;
@@ -180,9 +180,14 @@ class CompileCommand extends Command
                 '--build-micro',
                 '--with-micro-fake-cli',
                 '--arch=' . $arch,
+                '--debug',
             ],
             cwd: $spcBinaryDir,
-            timeout: null,
+            env: [
+                'OPENSSL_LIBS' => '-l:libssl.a -l:libcrypto.a -ldl -lpthread',
+                'OPENSSL_CFLAGS' => sprintf('-I%s/source/openssl/include', $spcBinaryDir),
+            ],
+            timeout: null
         );
         $io->text('Running command: ' . $buildProcess->getCommandLine());
         $buildProcess->mustRun(fn ($type, $buffer) => print $buffer);
@@ -250,7 +255,7 @@ class CompileCommand extends Command
     {
         $c = hash_init('sha256');
 
-        foreach (['os', 'arch', 'php-version'] as $phpBuildOption) {
+        foreach (['os', 'arch', 'php-version', 'php-extensions'] as $phpBuildOption) {
             hash_update($c, $input->getOption($phpBuildOption));
         }
 

@@ -15,7 +15,7 @@ class RemoteImportRemoteTasksTest extends TaskTestCase
         // No vendor => should download
         $process = $this->runTask(['remote-import:remote-tasks'], needRemote: true);
 
-        if ($process->getExitCode() !== 0) {
+        if (0 !== $process->getExitCode()) {
             $this->fail($process->getErrorOutput());
         }
 

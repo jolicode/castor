@@ -12,7 +12,6 @@
   ],
   "blacklist": [
     "castor",
-    "LICENSE",
     "Test",
     "tools",
     "vendor/symfony/http-foundation"
