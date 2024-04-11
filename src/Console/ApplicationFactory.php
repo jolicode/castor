@@ -67,7 +67,7 @@ class ApplicationFactory
         $container = self::buildContainer($repacked);
         $container->getParameterBag()->add([
             'root_dir' => $rootDir,
-            'cache_dir' => PlatformHelper::getCacheDirectory(),
+            'cache_dir' => $_SERVER['CASTOR_CACHE_DIR'] ?? PlatformHelper::getDefaultCacheDirectory(),
             'event_dispatcher.event_aliases' => ConsoleEvents::ALIASES,
             'repacked' => $repacked,
         ]);

@@ -28,7 +28,7 @@ final class PlatformHelper
         return getenv($name);
     }
 
-    public static function getCacheDirectory(): string
+    public static function getDefaultCacheDirectory(): string
     {
         try {
             $home = self::getUserDirectory();

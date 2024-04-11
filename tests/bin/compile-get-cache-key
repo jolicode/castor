@@ -14,7 +14,7 @@ $command = (new class() extends CompileCommand {
         }}
     )
     ->setCode(Closure::bind(
-        fn($input) => (print PlatformHelper::getCacheDirectory() . '/castor-php-static-compiler/' . $this->generatePHPBuildCacheKey($input)) && 0,
+        fn($input) => (print PlatformHelper::getDefaultCacheDirectory() . '/castor-php-static-compiler/' . $this->generatePHPBuildCacheKey($input)) && 0,
         null,
         CompileCommand::class
     ))
