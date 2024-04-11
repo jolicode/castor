@@ -85,7 +85,8 @@ class CompileCommand extends Command
                 $phpExtensions,
                 ('macos' === $os && 'aarch64' === $arch) ? 'arm64' : $arch,
                 $spcBinaryDir,
-                $io
+                $io,
+                $output->getVerbosity() >= OutputInterface::VERBOSITY_DEBUG,
             );
         }
 
@@ -172,22 +173,27 @@ class CompileCommand extends Command
         $downloadProcess->mustRun(fn ($type, $buffer) => print $buffer);
     }
 
-    private function buildPHP(string $spcBinaryPath, mixed $phpExtensions, mixed $arch, string $spcBinaryDir, SymfonyStyle $io): void
+    private function buildPHP(string $spcBinaryPath, mixed $phpExtensions, mixed $arch, string $spcBinaryDir, SymfonyStyle $io, bool $debug = false): void
     {
+        $command = [
+            $spcBinaryPath, 'build', $phpExtensions,
+            '--build-micro',
+            '--with-micro-fake-cli',
+            '--arch=' . $arch,
+        ];
+
+        if ($debug) {
+            $command[] = '--debug';
+        }
+
         $buildProcess = new Process(
-            command: [
-                $spcBinaryPath, 'build', $phpExtensions,
-                '--build-micro',
-                '--with-micro-fake-cli',
-                '--arch=' . $arch,
-                '--debug',
-            ],
+            command: $command,
             cwd: $spcBinaryDir,
             env: [
                 'OPENSSL_LIBS' => '-l:libssl.a -l:libcrypto.a -ldl -lpthread',
                 'OPENSSL_CFLAGS' => sprintf('-I%s/source/openssl/include', $spcBinaryDir),
             ],
-            timeout: null
+            timeout: null,
         );
         $io->text('Running command: ' . $buildProcess->getCommandLine());
         $buildProcess->mustRun(fn ($type, $buffer) => print $buffer);
