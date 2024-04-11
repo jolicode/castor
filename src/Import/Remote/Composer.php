@@ -60,8 +60,7 @@ class Composer
             $this->filesystem->mkdir($dir);
 
             file_put_contents($dir . '.gitignore', "*\n");
-
-            $this->writeJsonFile($dir);
+            file_put_contents("{$dir}/composer.json", json_encode($this->configuration, \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR));
 
             $progressIndicator = null;
             if ($displayProgress) {
@@ -120,11 +119,6 @@ class Composer
             'args' => implode(' ', $args),
             'output' => $process->getOutput(),
         ]);
-    }
-
-    private function writeJsonFile(string $path): void
-    {
-        file_put_contents("{$path}/composer.json", json_encode($this->configuration, \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR));
     }
 
     private function writeInstalled(string $path): void

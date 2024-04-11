@@ -49,6 +49,8 @@ final class Kernel
 
     public function boot(InputInterface $input, OutputInterface $output): void
     {
+        $this->packageImporter->requireAutoload();
+
         $this->eventDispatcher->dispatch(new BeforeBootEvent($this->application));
 
         $this->addMount(new Mount($this->rootDir));

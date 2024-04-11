@@ -24,6 +24,17 @@ class PackageImporter
     ) {
     }
 
+    public function requireAutoload(): void
+    {
+        $autoloadPath = PathHelper::getRoot() . Composer::VENDOR_DIR . 'autoload.php';
+
+        if (!file_exists($autoloadPath)) {
+            return;
+        }
+
+        require $autoloadPath;
+    }
+
     /** @phpstan-param ImportSource $source */
     public function addPackage(string $scheme, string $package, ?string $file = null, ?string $version = null, ?string $vcs = null, ?array $source = null): void
     {
@@ -77,15 +88,9 @@ class PackageImporter
         $forceUpdate = true !== $this->input->getParameterOption('--update-remotes', true);
         $displayProgress = 'list' !== $this->input->getFirstArgument();
 
-        $autoloadPath = PathHelper::getRoot() . Composer::VENDOR_DIR . 'autoload.php';
-
-        if (!file_exists($autoloadPath)) {
-            $forceUpdate = true;
-        }
-
         $this->composer->update($forceUpdate, $displayProgress);
 
-        require_once $autoloadPath;
+        $this->requireAutoload();
 
         foreach ($this->imports as $package => $import) {
             foreach ($import->getFiles() as $file) {
