@@ -19,7 +19,9 @@ class CompileCommand extends Command
 {
     // When something **important** related to the compilation changed, increase
     // this version to invalide the cache
-    private const CACHE_VERSION = '1';
+    private const CACHE_VERSION = '2';
+
+    private const SPC_VERSION = '2.1.7';
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,
@@ -129,7 +131,8 @@ class CompileCommand extends Command
         $response = $this->httpClient->request('GET', $spcSourceUrl);
         $contentLength = $response->getHeaders()['content-length'][0] ?? 0;
 
-        $outputStream = fopen($spcBinaryDestination, 'w');
+        $spcTarGzDestination = $spcBinaryDestination . '.tar.gz';
+        $outputStream = fopen($spcTarGzDestination, 'w');
         $progressBar = $io->createProgressBar((int) $contentLength);
 
         if (false === $outputStream) {
@@ -142,9 +145,18 @@ class CompileCommand extends Command
         }
 
         fclose($outputStream);
-        chmod($spcBinaryDestination, 0o755);
 
         $progressBar->finish();
+
+        $extractProcess = new Process(
+            command: ['tar', 'xf', $spcTarGzDestination],
+            cwd: \dirname($spcBinaryDestination),
+            timeout: null,
+        );
+
+        $io->text('Running command: ' . $extractProcess->getCommandLine());
+        $extractProcess->mustRun(fn ($type, $buffer) => print $buffer);
+        chmod($spcBinaryDestination, 0o755);
     }
 
     private function installPHPBuildTools(string $spcBinaryPath, string $spcBinaryDir, SymfonyStyle $io): void
@@ -227,7 +239,7 @@ class CompileCommand extends Command
         if ($this->fs->exists($spcBinaryPath)) {
             $io->text(sprintf('Using the static-php-cli (spc) tool from "%s"', $spcBinaryPath));
         } else {
-            $spcSourceUrl = sprintf('https://dl.static-php.dev/static-php-cli/spc-bin/nightly/spc-%s-%s', $os, $arch);
+            $spcSourceUrl = sprintf('https://github.com/crazywhalecc/static-php-cli/releases/download/%s/spc-%s-%s.tar.gz', self::SPC_VERSION, $os, $arch);
             $io->text(sprintf('Downloading the static-php-cli (spc) tool from "%s" to "%s"', $spcSourceUrl, $spcBinaryPath));
             $this->downloadSPC($spcSourceUrl, $spcBinaryPath, $io);
             $io->newLine(2);
