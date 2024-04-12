@@ -31,7 +31,7 @@ runs:
       if: ${{ inputs.os == 'darwin-amd64' }}
 
     - name: Build Castor static binary for MacOS - arm64
-      run: bin/castor castor:static:darwin-arm64 -vvv
+      run: bin/castor castor:static:darwin-arm64
       shell: bash
       if: ${{ inputs.os == 'darwin-arm64' }}
 

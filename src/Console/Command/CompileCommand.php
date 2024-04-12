@@ -180,10 +180,11 @@ class CompileCommand extends Command
             '--build-micro',
             '--with-micro-fake-cli',
             '--arch=' . $arch,
+            '--debug',
         ];
 
         if ($debug) {
-            $command[] = '--debug';
+//            $command[] = '--debug';
         }
 
         $buildProcess = new Process(
