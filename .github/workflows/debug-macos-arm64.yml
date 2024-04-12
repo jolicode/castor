@@ -10,7 +10,7 @@ permissions:
 jobs:
   phars:
     name: Create phar and static binary
-    runs-on: macos-20240402.2
+    runs-on: macos-14
 
     steps:
       - name: Checkout
