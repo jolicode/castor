@@ -1,0 +1,29 @@
+name: Debug MacOS ARM64
+
+on:
+  push:
+    branches: [ "fix/macos-arm64" ]
+
+permissions:
+  contents: write
+
+jobs:
+  phars:
+    name: Create phar and static binary
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/install
+
+      - uses: ./.github/actions/phar
+
+      - uses: ./.github/actions/cache
+        with:
+          os: 'darwin'
+
+      - uses: ./.github/actions/static
+        with:
+          os: 'darwin-arm64'
