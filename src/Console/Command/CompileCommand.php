@@ -21,7 +21,7 @@ class CompileCommand extends Command
     // this version to invalide the cache
     private const CACHE_VERSION = '2';
 
-    private const SPC_VERSION = '2.1.5';
+    private const SPC_VERSION = '2.1.7';
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,

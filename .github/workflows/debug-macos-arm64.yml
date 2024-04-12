@@ -20,6 +20,10 @@ jobs:
 
       - uses: ./.github/actions/phar
 
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
       - uses: ./.github/actions/cache
         with:
           os: 'darwin'
