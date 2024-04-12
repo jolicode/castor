@@ -23,5 +23,5 @@ function darwinAmd64()
 #[AsTask(description: 'Build static binary for MacOS (arm64) system')]
 function darwinArm64()
 {
-    run('bin/castor compile tools/phar/build/castor.darwin-arm64.phar --os=macos --arch=aarch64 --binary-path=castor.darwin-arm64 --php-extensions=mbstring,phar,posix,tokenizer,curl,filter,openssl', timeout: 0);
+    run('bin/castor compile tools/phar/build/castor.darwin-arm64.phar --os=macos --arch=aarch64 --binary-path=castor.darwin-arm64 --php-extensions=mbstring,phar,posix,tokenizer,pcntl,curl,filter,openssl', timeout: 0);
 }
