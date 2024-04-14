@@ -99,6 +99,7 @@ class Composer
 
         $args[] = '--working-dir';
         $args[] = $directory;
+        $args[] = '--no-interaction';
 
         $composerApplication = new ComposerApplication();
         $composerApplication->setAutoExit(false);
