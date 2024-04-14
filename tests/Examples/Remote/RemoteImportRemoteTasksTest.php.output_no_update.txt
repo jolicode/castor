@@ -1,3 +1,5 @@
+doctrine collections imported
+
 Hello from example!
 ===================
 

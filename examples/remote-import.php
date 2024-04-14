@@ -17,6 +17,8 @@ import('package://pyrech/foobar', source: [
     'reference' => 'main', //  commit id, branch or tag name
 ]);
 
+import(__DIR__ . '/remote-import-import.phpi');
+
 #[AsTask(description: 'Use functions imported from remote packages')]
 function remote_tasks(): void
 {

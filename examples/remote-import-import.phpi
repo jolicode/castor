@@ -1,0 +1,12 @@
+<?php
+
+use function Castor\import;
+use function Castor\wait_for_import;
+
+import('composer://doctrine/collections');
+
+wait_for_import();
+
+if (class_exists('Doctrine\Common\Collections\ArrayCollection')) {
+   echo "doctrine collections imported" . PHP_EOL;
+}

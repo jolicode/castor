@@ -71,6 +71,20 @@ final class Kernel
         if (!$hasLoadedPackages) {
             $this->packageImporter->clean();
         }
+
+        // get the list of all fiber executions for imported filed
+        $importedFilesExecution = $this->importer->getImportedFilesExecution();
+
+        /** @var \Fiber $fiber */
+        foreach ($importedFilesExecution as $fiber) {
+            if ($fiber->isTerminated()) {
+                continue;
+            }
+
+            while ($fiber->isSuspended()) {
+                $fiber->resume();
+            }
+        }
     }
 
     public function addMount(Mount $mount): void

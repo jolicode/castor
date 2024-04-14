@@ -445,6 +445,13 @@ function import(string $path, ?string $file = null, ?string $version = null, ?st
     Container::get()->importer->import($path, $file, $version, $vcs, $source);
 }
 
+function wait_for_import(): void
+{
+    if ($fiber = \Fiber::getCurrent()) {
+        $fiber->suspend();
+    }
+}
+
 function mount(string $path, ?string $namespacePrefix = null): void
 {
     if (!is_dir($path)) {

@@ -20,6 +20,11 @@ class Importer
      */
     private array $imports = [];
 
+    /**
+     * @var list<\Fiber>
+     */
+    private array $importedFilesExecution = [];
+
     public function __construct(
         private readonly PackageImporter $packageImporter,
         private readonly LoggerInterface $logger,
@@ -88,9 +93,15 @@ class Importer
         if (isset($this->imports[$file])) {
             return;
         }
+
         $this->imports[$file] = true;
 
-        castor_require($file);
+        $fiber = new \Fiber(function () use ($file) {
+            castor_require($file);
+        });
+        $fiber->start();
+
+        $this->importedFilesExecution[] = $fiber;
     }
 
     /**
@@ -99,6 +110,14 @@ class Importer
     public function getImports(): array
     {
         return array_keys($this->imports);
+    }
+
+    /**
+     * @return list<\Fiber>
+     */
+    public function getImportedFilesExecution(): array
+    {
+        return $this->importedFilesExecution;
     }
 
     private function getImportLocatedMessage(string $path, string $reason, int $depth): string

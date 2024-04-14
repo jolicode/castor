@@ -1,3 +1,4 @@
+doctrine collections imported
 completion                                                        Dump the shell completion script
 hello                                                             hello
 help                                                              Display help for a command

@@ -1,6 +1,7 @@
  Downloading remote packages
  Remote packages imported
 
+doctrine collections imported
 
 Hello from example!
 ===================
