@@ -28,6 +28,9 @@ final class OutputCleaner
         // Clean the warning on tasks when remote imports are disabled
         $string = preg_replace('{hh:mm:ss WARNING   \[castor\] Could not import "[\w:/\.-]*" in "[\w:/\.-]*" on line \d+. Reason: Remote imports are disabled\.}m', '', $string);
 
+        // Fix notification logs
+        $string = preg_replace('{hh:mm:ss ERROR     \[castor\] Failed to send notification\.}m', '', $string);
+
         // Avoid spacing issues
         $string = ltrim($string, "\n"); // Trim output start to avoid empty lines (like after removing remote import warnings)
         $string = preg_replace('/ +$/m', '', $string); // Remove trailing space
