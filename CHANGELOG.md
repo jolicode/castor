@@ -8,6 +8,7 @@
 * Allow to use imported class in task from remote import
 * Do not load task from `vendor` directory
 * Add `context()` function in expression language to enable a task
+* Better handle notification errors and exceptions
 * Deprecate `Castor\GlobalHelper` class. There are no replacements. Use raw
   functions instead
 * Deprecate `AfterApplicationInitializationEvent` event. Use
