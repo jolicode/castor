@@ -24,6 +24,7 @@ final class SshRunner
         ?bool $allowFailure = null,
         ?bool $notify = null,
         ?float $timeout = null,
+        ?callable $callback = null,
     ): Process {
         $ssh = $this->buildSsh($host, $user, $sshOptions);
 
@@ -31,7 +32,7 @@ final class SshRunner
             $command = sprintf('cd %s && %s', $path, $command);
         }
 
-        return $this->run($ssh->getExecuteCommand($command), $quiet, $allowFailure, $notify, $timeout);
+        return $this->run($ssh->getExecuteCommand($command), $quiet, $allowFailure, $notify, $timeout, $callback);
     }
 
     /** @phpstan-param SshOptions $sshOptions */
@@ -45,10 +46,11 @@ final class SshRunner
         ?bool $allowFailure = null,
         ?bool $notify = null,
         ?float $timeout = null,
+        ?callable $callback = null,
     ): Process {
         $ssh = $this->buildSsh($host, $user, $sshOptions);
 
-        return $this->run($ssh->getUploadCommand($sourcePath, $destinationPath), $quiet, $allowFailure, $notify, $timeout);
+        return $this->run($ssh->getUploadCommand($sourcePath, $destinationPath), $quiet, $allowFailure, $notify, $timeout, $callback);
     }
 
     /** @phpstan-param SshOptions $sshOptions */
@@ -62,10 +64,11 @@ final class SshRunner
         ?bool $allowFailure = null,
         ?bool $notify = null,
         ?float $timeout = null,
+        ?callable $callback = null,
     ): Process {
         $ssh = $this->buildSsh($host, $user, $sshOptions);
 
-        return $this->run($ssh->getDownloadCommand($sourcePath, $destinationPath), $quiet, $allowFailure, $notify, $timeout);
+        return $this->run($ssh->getDownloadCommand($sourcePath, $destinationPath), $quiet, $allowFailure, $notify, $timeout, $callback);
     }
 
     private function run(
@@ -74,6 +77,7 @@ final class SshRunner
         ?bool $allowFailure = null,
         ?bool $notify = null,
         ?float $timeout = null,
+        ?callable $callback = null,
     ): Process {
         return $this->processRunner->run(
             $command,
@@ -83,7 +87,8 @@ final class SshRunner
             timeout: $timeout,
             quiet: $quiet,
             allowFailure: $allowFailure,
-            notify: $notify
+            notify: $notify,
+            callback: $callback
         );
     }
 
