@@ -5,18 +5,18 @@ namespace Castor\Tests\Generated;
 use Castor\Tests\TaskTestCase;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
-class ImportComposerSourceTest extends TaskTestCase
+class CastorComposerTest extends TaskTestCase
 {
-    // no task
+    // castor:composer
     public function test(): void
     {
-        $process = $this->runTask([], '{{ base }}/tests/fixtures/broken/import-composer-source', needRemote: true);
+        $process = $this->runTask(['castor:composer']);
 
-        if (1 !== $process->getExitCode()) {
+        if (0 !== $process->getExitCode()) {
             throw new ProcessFailedException($process);
         }
 
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());
-        $this->assertStringEqualsFile(__FILE__ . '.err.txt', $process->getErrorOutput());
+        $this->assertSame('', $process->getErrorOutput());
     }
 }

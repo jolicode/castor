@@ -1,8 +1,11 @@
 .castor.stub.php
 /.php-cs-fixer.cache
 /.phpunit.cache
-/castor.*
 /my-app.*
 /var/
 /vendor/
 /tests/Examples/fixtures/**/.castor.stub.php
+/castor.*
+!/castor.php
+!/castor.composer.json
+!/castor.composer.lock

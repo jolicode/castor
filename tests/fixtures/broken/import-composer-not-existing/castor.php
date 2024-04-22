@@ -2,4 +2,4 @@
 
 use function Castor\import;
 
-import('package://foo/bar');
+import('composer://foo/bar');

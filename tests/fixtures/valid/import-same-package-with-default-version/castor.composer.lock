@@ -1,0 +1,44 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "c082a3a3c3e136d76b8061eed737db1a",
+    "packages": [
+        {
+            "name": "pyrech/castor-example",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pyrech/castor-example.git",
+                "reference": "775447566dec8b7e5f73664fb34b98b7843d2f48"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pyrech/castor-example/zipball/775447566dec8b7e5f73664fb34b98b7843d2f48",
+                "reference": "775447566dec8b7e5f73664fb34b98b7843d2f48",
+                "shasum": ""
+            },
+            "type": "project",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "support": {
+                "issues": "https://github.com/pyrech/castor-example/issues",
+                "source": "https://github.com/pyrech/castor-example/tree/v1.1.0"
+            },
+            "time": "2024-02-26T16:09:25+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.6.0"
+}

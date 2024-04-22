@@ -1,0 +1,12 @@
+{
+    "description": "This file is managed by Castor. Do not edit it manually.",
+    "config": {
+        "sort-packages": true
+    },
+    "replace": {
+        "castor\/castor": "v0.15.0"
+    },
+    "require": {
+        "pyrech\/castor-example": "^1.0"
+    }
+}

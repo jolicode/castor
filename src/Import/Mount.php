@@ -12,6 +12,7 @@ class Mount
         public readonly string $path,
         public readonly bool $allowEmptyEntrypoint = false,
         public readonly ?string $namespacePrefix = null,
+        public readonly bool $allowRemotePackage = true,
     ) {
     }
 }

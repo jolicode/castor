@@ -1,0 +1,31 @@
+{
+    "config": {
+        "sort-packages": true
+    },
+    "replace": {
+        "castor\/castor": "v0.15.0"
+    },
+    "require": {
+        "pyrech\/castor-example": "^1.0",
+        "pyrech\/castor-example-package-not-published": "*",
+        "pyrech\/foobar": "v1"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https:\/\/github.com\/pyrech\/castor-example-package-not-published.git"
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "pyrech\/foobar",
+                "version": "v1",
+                "source": {
+                    "url": "https:\/\/github.com\/pyrech\/castor-example-misc.git",
+                    "type": "git",
+                    "reference": "main"
+                }
+            }
+        }
+    ]
+}

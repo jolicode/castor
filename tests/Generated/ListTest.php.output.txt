@@ -11,6 +11,7 @@ args:passthru                                                     Dumps all argu
 bar:bar                                                           Prints bar, but also executes foo
 cache:complex                                                     Cache with usage of CacheItemInterface
 cache:simple                                                      Cache a simple call
+castor:composer                                                   Interact with built-in Composer for castor
 castor:phar:build                                                 Build phar for all systems
 castor:phar:darwin                                                Build phar for MacOS system
 castor:phar:install                                               install dependencies

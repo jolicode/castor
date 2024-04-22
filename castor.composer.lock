@@ -1,0 +1,78 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "b75aac45797c9e71f42258d681d262de",
+    "packages": [
+        {
+            "name": "pyrech/castor-example",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pyrech/castor-example.git",
+                "reference": "775447566dec8b7e5f73664fb34b98b7843d2f48"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pyrech/castor-example/zipball/775447566dec8b7e5f73664fb34b98b7843d2f48",
+                "reference": "775447566dec8b7e5f73664fb34b98b7843d2f48",
+                "shasum": ""
+            },
+            "type": "project",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "support": {
+                "issues": "https://github.com/pyrech/castor-example/issues",
+                "source": "https://github.com/pyrech/castor-example/tree/v1.1.0"
+            },
+            "time": "2024-02-26T16:09:25+00:00"
+        },
+        {
+            "name": "pyrech/castor-example-package-not-published",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pyrech/castor-example-package-not-published.git",
+                "reference": "e87fa3f71b9784800caadca8ca3e001bb646f201"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pyrech/castor-example-package-not-published/zipball/e87fa3f71b9784800caadca8ca3e001bb646f201",
+                "reference": "e87fa3f71b9784800caadca8ca3e001bb646f201",
+                "shasum": ""
+            },
+            "type": "project",
+            "license": [
+                "MIT"
+            ],
+            "support": {
+                "source": "https://github.com/pyrech/castor-example-package-not-published/tree/v1.0.0",
+                "issues": "https://github.com/pyrech/castor-example-package-not-published/issues"
+            },
+            "time": "2024-02-26T13:09:56+00:00"
+        },
+        {
+            "name": "pyrech/foobar",
+            "version": "v1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pyrech/castor-example-misc.git",
+                "reference": "main"
+            },
+            "type": "library"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.6.0"
+}
