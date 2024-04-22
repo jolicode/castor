@@ -3,12 +3,12 @@
 namespace Castor\Console\Command;
 
 use Castor\Console\Input\GetRawTokenTrait;
-use Castor\Container;
 use Castor\Import\Remote\Composer;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /** @internal */
 #[AsCommand(
@@ -16,12 +16,14 @@ use Symfony\Component\Console\Output\OutputInterface;
     description: 'Interact with built-in Composer for castor',
     aliases: ['composer'],
 )]
-class ComposerCommand extends Command
+final class ComposerCommand extends Command
 {
     use GetRawTokenTrait;
 
     public function __construct(
         private readonly string $rootDir,
+        #[Autowire(lazy: true)]
+        private readonly Composer $composer,
     ) {
         parent::__construct();
     }
@@ -36,7 +38,6 @@ class ComposerCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $extra = array_filter($this->getRawTokens($input), fn ($item) => 'composer' !== $item);
-        $composer = Container::get()->composer;
 
         $vendorDirectory = $this->rootDir . Composer::VENDOR_DIR;
 
@@ -45,7 +46,7 @@ class ComposerCommand extends Command
             $file = $this->rootDir . '/castor.composer.json';
         }
 
-        $composer->run($file, $vendorDirectory, $extra, $output, true);
+        $this->composer->run($file, $vendorDirectory, $extra, $output, true);
 
         return Command::SUCCESS;
     }

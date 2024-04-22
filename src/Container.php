@@ -8,7 +8,6 @@ use Castor\Fingerprint\FingerprintHelper;
 use Castor\Helper\Notifier;
 use Castor\Helper\Waiter;
 use Castor\Import\Importer;
-use Castor\Import\Remote\Composer;
 use Castor\Runner\ParallelRunner;
 use Castor\Runner\ProcessRunner;
 use Castor\Runner\SshRunner;
@@ -32,7 +31,6 @@ final class Container
     public function __construct(
         public readonly Application $application,
         public readonly CacheItemPoolInterface&CacheInterface $cache,
-        public readonly Composer $composer,
         public readonly ContextRegistry $contextRegistry,
         public readonly ContextRegistry $outputInterface,
         public readonly EventDispatcherInterface $eventDispatcher,
