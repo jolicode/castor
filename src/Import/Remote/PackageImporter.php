@@ -54,7 +54,7 @@ class PackageImporter
             $packageDirectory = PathHelper::getRoot() . Composer::VENDOR_DIR . $package;
 
             if (!file_exists($packageDirectory)) {
-                throw new ImportError(sprintf('The package "%s" is not installed, make sure you required it in your composer-castor.json file.', $package));
+                throw new ImportError(sprintf('The package "%s" is not installed, make sure you required it in your composer.castor.json file.', $package));
             }
 
             $this->kernel->addMount(new Mount(

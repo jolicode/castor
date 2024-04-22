@@ -75,11 +75,14 @@ class Composer
     /**
      * @param string[] $args
      */
-    public function run(string $composerJsonFilePath, string $vendorDirectory, array $args, callable|OutputInterface $callback): void
+    public function run(string $composerJsonFilePath, string $vendorDirectory, array $args, callable|OutputInterface $callback, bool $allowInteraction = false): void
     {
         $args[] = '--working-dir';
         $args[] = \dirname($vendorDirectory);
-        $args[] = '--no-interaction';
+
+        if (!$allowInteraction) {
+            $args[] = '--no-interaction';
+        }
 
         putenv('COMPOSER=' . $composerJsonFilePath);
         $_ENV['COMPOSER'] = $composerJsonFilePath;
@@ -120,7 +123,7 @@ class Composer
         unset($_ENV['COMPOSER'], $_SERVER['COMPOSER']);
 
         if (0 !== $exitCode) {
-            throw new ComposerError('The Composer process failed : ' . $bufferedOutput);
+            throw new ComposerError('The Composer process failed: ' . $bufferedOutput);
         }
 
         $this->logger->debug('Composer command was successful.', [
