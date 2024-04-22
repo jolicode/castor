@@ -17,6 +17,7 @@ use Symfony\Component\Filesystem\Filesystem;
 class Composer
 {
     public const VENDOR_DIR = '/.castor/vendor/';
+    public const WORKING_DIR = '/.castor';
 
     public function __construct(
         private readonly Filesystem $filesystem,
@@ -28,6 +29,7 @@ class Composer
     public function install(string $entrypointDirectory, bool $update = false, bool $displayProgress = true): void
     {
         $vendorDirectory = $entrypointDirectory . self::VENDOR_DIR;
+        $workingDir = $entrypointDirectory . self::WORKING_DIR;
 
         if (!file_exists($file = $entrypointDirectory . '/castor.composer.json') && !file_exists($file = $entrypointDirectory . '/.castor/castor.composer.json')) {
             $this->logger->debug(sprintf('The castor.composer.json file does not exists in %s or %s/.castor, skipping composer install.', $entrypointDirectory, $entrypointDirectory));
@@ -54,7 +56,7 @@ class Composer
 
         $command = $update ? 'update' : 'install';
 
-        $this->run($file, $vendorDirectory, [$command], callback: function () use ($progressIndicator) {
+        $this->run($file, $workingDir, [$command], callback: function () use ($progressIndicator) {
             if ($progressIndicator) {
                 $progressIndicator->advance();
             }
@@ -75,10 +77,10 @@ class Composer
     /**
      * @param string[] $args
      */
-    public function run(string $composerJsonFilePath, string $vendorDirectory, array $args, callable|OutputInterface $callback, bool $allowInteraction = false): void
+    public function run(string $composerJsonFilePath, string $workingDirectory, array $args, callable|OutputInterface $callback, bool $allowInteraction = false): void
     {
         $args[] = '--working-dir';
-        $args[] = \dirname($vendorDirectory);
+        $args[] = $workingDirectory;
 
         if (!$allowInteraction) {
             $args[] = '--no-interaction';

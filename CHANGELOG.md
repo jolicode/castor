@@ -14,6 +14,7 @@
 * Deprecate `AfterApplicationInitializationEvent` event. Use
   `FunctionsResolvedEvent` instead.
 * Fix multiple remote imports of the same package with default version
+* Fix issue for init `castor.composer.json` when `.castor` directory not exists
 
 ## 0.15.0 (2024-04-03)
 
