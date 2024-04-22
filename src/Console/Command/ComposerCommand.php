@@ -40,9 +40,9 @@ class ComposerCommand extends Command
 
         $vendorDirectory = $this->rootDir . Composer::VENDOR_DIR;
 
-        if (!file_exists($file = $this->rootDir . '/composer.castor.json') && !file_exists($file = $this->rootDir . '/.castor/composer.castor.json')) {
+        if (!file_exists($file = $this->rootDir . '/castor.composer.json') && !file_exists($file = $this->rootDir . '/.castor/castor.composer.json')) {
             // Default to the root directory (so someone can do a composer init by example)
-            $file = $this->rootDir . '/composer.castor.json';
+            $file = $this->rootDir . '/castor.composer.json';
         }
 
         $composer->run($file, $vendorDirectory, $extra, $output, true);

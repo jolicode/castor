@@ -29,8 +29,8 @@ class Composer
     {
         $vendorDirectory = $entrypointDirectory . self::VENDOR_DIR;
 
-        if (!file_exists($file = $entrypointDirectory . '/composer.castor.json') && !file_exists($file = $entrypointDirectory . '/.castor/composer.castor.json')) {
-            $this->logger->debug(sprintf('The composer.castor.json file does not exists in %s or %s/.castor, skipping composer install.', $entrypointDirectory, $entrypointDirectory));
+        if (!file_exists($file = $entrypointDirectory . '/castor.composer.json') && !file_exists($file = $entrypointDirectory . '/.castor/castor.composer.json')) {
+            $this->logger->debug(sprintf('The castor.composer.json file does not exists in %s or %s/.castor, skipping composer install.', $entrypointDirectory, $entrypointDirectory));
 
             return;
         }

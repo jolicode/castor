@@ -443,7 +443,7 @@ function http_client(): HttpClientInterface
 function import(string $path, ?string $file = null, ?string $version = null, ?string $vcs = null, ?array $source = null): void
 {
     if (null !== $version || null !== $vcs || null !== $source) {
-        @trigger_deprecation('castor/castor', '0.16.0', 'The "version", "vcs" and "source" arguments are deprecated, use the `composer.castor.json` file instead.');
+        @trigger_deprecation('castor/castor', '0.16.0', 'The "version", "vcs" and "source" arguments are deprecated, use the `castor.composer.json` file instead.');
     }
 
     Container::get()->importer->import($path, $file);
