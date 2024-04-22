@@ -27,13 +27,13 @@ class Composer
 
     public function install(string $entrypointDirectory, bool $update = false, bool $displayProgress = true): void
     {
+        $vendorDirectory = $entrypointDirectory . self::VENDOR_DIR;
+
         if (!file_exists($file = $entrypointDirectory . '/composer.castor.json') && !file_exists($file = $entrypointDirectory . '/.castor/composer.castor.json')) {
             $this->logger->debug(sprintf('The composer.castor.json file does not exists in %s or %s/.castor, skipping composer install.', $entrypointDirectory, $entrypointDirectory));
 
             return;
         }
-
-        $vendorDirectory = PathHelper::getRoot() . self::VENDOR_DIR;
 
         if (!$update && $this->isInstalled($vendorDirectory, $file)) {
             return;
@@ -54,7 +54,7 @@ class Composer
 
         $command = $update ? 'update' : 'install';
 
-        $this->run($file, [$command], callback: function () use ($progressIndicator) {
+        $this->run($file, $vendorDirectory, [$command], callback: function () use ($progressIndicator) {
             if ($progressIndicator) {
                 $progressIndicator->advance();
             }
@@ -75,12 +75,10 @@ class Composer
     /**
      * @param string[] $args
      */
-    private function run(string $composerJsonFilePath, array $args, callable $callback): void
+    public function run(string $composerJsonFilePath, string $vendorDirectory, array $args, callable|OutputInterface $callback): void
     {
-        $directory = PathHelper::getRoot() . self::VENDOR_DIR;
-
         $args[] = '--working-dir';
-        $args[] = \dirname($directory);
+        $args[] = \dirname($vendorDirectory);
         $args[] = '--no-interaction';
 
         putenv('COMPOSER=' . $composerJsonFilePath);
@@ -95,10 +93,11 @@ class Composer
         ]);
 
         $argvInput = new ArgvInput(['composer', ...$args]);
+        $bufferedOutput = '';
 
-        $output = new class($callback) extends Output {
+        $output = $callback instanceof OutputInterface ? $callback : new class($callback, $bufferedOutput) extends Output {
             /** @param callable $callback */
-            public function __construct(private $callback, public string $output = '')
+            public function __construct(private $callback, public string &$output)
             {
                 parent::__construct();
             }
@@ -121,12 +120,12 @@ class Composer
         unset($_ENV['COMPOSER'], $_SERVER['COMPOSER']);
 
         if (0 !== $exitCode) {
-            throw new ComposerError('The Composer process failed: ' . $output->output);
+            throw new ComposerError('The Composer process failed : ' . $bufferedOutput);
         }
 
         $this->logger->debug('Composer command was successful.', [
             'args' => implode(' ', $args),
-            'output' => $output->output,
+            'output' => $bufferedOutput,
         ]);
     }
 
