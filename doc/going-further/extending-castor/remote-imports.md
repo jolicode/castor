@@ -1,5 +1,8 @@
 # Import remote functions
 
+> [!WARNING]
+> Remote imports is in a experimental state and may change in the future.
+
 Castor can import functions from your filesystem but also from a remote resource.
 
 ## Installing remote packages
