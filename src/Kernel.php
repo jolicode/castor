@@ -53,23 +53,21 @@ final class Kernel
 
         $this->eventDispatcher->dispatch(new BeforeBootEvent($this->application));
 
-        $this->addMount(new Mount($this->rootDir));
+        $allowRemotePackage = true;
 
-        $hasLoadedPackages = false;
+        if ($_SERVER['CASTOR_NO_REMOTE'] ?? false) {
+            $allowRemotePackage = false;
+        } elseif (true !== $input->getParameterOption('--no-remote', true)) {
+            $allowRemotePackage = false;
+        }
+
+        $this->addMount(new Mount($this->rootDir, allowRemotePackage: $allowRemotePackage));
 
         while ($mount = array_shift($this->mounts)) {
             $currentFunctions = get_defined_functions()['user'];
             $currentClasses = get_declared_classes();
 
             $this->load($mount, $currentFunctions, $currentClasses, $input, $output);
-
-            if ($this->packageImporter->fetchPackages()) {
-                $hasLoadedPackages = true;
-            }
-        }
-
-        if (!$hasLoadedPackages) {
-            $this->packageImporter->clean();
         }
     }
 
@@ -89,6 +87,13 @@ final class Kernel
         InputInterface $input,
         OutputInterface $output
     ): void {
+        if ($mount->allowRemotePackage) {
+            $update = true !== $input->getParameterOption('--update-remotes', true);
+            $displayProgress = 'list' !== $input->getFirstArgument();
+
+            $this->packageImporter->install($mount, $update, $displayProgress);
+        }
+
         try {
             $this->requireEntrypoint($mount->path);
         } catch (CouldNotFindEntrypointException $e) {

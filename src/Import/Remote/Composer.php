@@ -2,7 +2,6 @@
 
 namespace Castor\Import\Remote;
 
-use Castor\Console\Application;
 use Castor\Helper\PathHelper;
 use Castor\Import\Exception\ComposerError;
 use Composer\Console\Application as ComposerApplication;
@@ -18,71 +17,54 @@ use Symfony\Component\Filesystem\Filesystem;
 class Composer
 {
     public const VENDOR_DIR = '/.castor/vendor/';
-    public const DEFAULT_COMPOSER_CONFIGURATION = [
-        'description' => 'This file is managed by Castor. Do not edit it manually.',
-        'config' => [
-            'sort-packages' => true,
-            'vendor-dir' => '.',
-        ],
-        'replace' => [
-            'castor/castor' => Application::VERSION,
-        ],
-    ];
 
     public function __construct(
         private readonly Filesystem $filesystem,
         private readonly OutputInterface $output,
-        /** @var array<string, mixed> */
-        private array $configuration = self::DEFAULT_COMPOSER_CONFIGURATION,
         private readonly LoggerInterface $logger = new NullLogger(),
     ) {
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    public function getConfiguration(): array
+    public function install(string $entrypointDirectory, bool $update = false, bool $displayProgress = true): void
     {
-        return $this->configuration;
-    }
+        if (!file_exists($file = $entrypointDirectory . '/composer.castor.json') && !file_exists($file = $entrypointDirectory . '/.castor/composer.castor.json')) {
+            $this->logger->debug(sprintf('The composer.castor.json file does not exists in %s or %s/.castor, skipping composer install.', $entrypointDirectory, $entrypointDirectory));
 
-    /**
-     * @param array<string, mixed> $configuration
-     */
-    public function setConfiguration(array $configuration): void
-    {
-        $this->configuration = $configuration;
-    }
-
-    public function update(bool $force = false, bool $displayProgress = true): void
-    {
-        $dir = PathHelper::getRoot() . self::VENDOR_DIR;
-
-        if ($force || !$this->isInstalled($dir)) {
-            $this->filesystem->mkdir($dir);
-
-            file_put_contents($dir . '.gitignore', "*\n");
-            file_put_contents("{$dir}/composer.json", json_encode($this->configuration, \JSON_PRETTY_PRINT | \JSON_THROW_ON_ERROR));
-
-            $progressIndicator = null;
-            if ($displayProgress) {
-                $progressIndicator = new ProgressIndicator($this->output, null, 100, ['⠏', '⠛', '⠹', '⢸', '⣰', '⣤', '⣆', '⡇']);
-                $progressIndicator->start('<comment>Downloading remote packages</comment>');
-            }
-
-            $this->run(['update'], callback: function () use ($progressIndicator) {
-                if ($progressIndicator) {
-                    $progressIndicator->advance();
-                }
-            });
-
-            if ($progressIndicator) {
-                $progressIndicator->finish('<info>Remote packages imported</info>');
-            }
-            $this->writeInstalled($dir);
-        } else {
-            $this->logger->debug('Packages were already required, no need to run Composer.');
+            return;
         }
+
+        $vendorDirectory = PathHelper::getRoot() . self::VENDOR_DIR;
+
+        if (!$update && $this->isInstalled($vendorDirectory, $file)) {
+            return;
+        }
+
+        if (!file_exists($vendorDirectory)) {
+            $this->filesystem->mkdir($vendorDirectory);
+        }
+
+        file_put_contents($vendorDirectory . '.gitignore', "*\n");
+
+        $progressIndicator = null;
+
+        if ($displayProgress) {
+            $progressIndicator = new ProgressIndicator($this->output, null, 100, ['⠏', '⠛', '⠹', '⢸', '⣰', '⣤', '⣆', '⡇']);
+            $progressIndicator->start('<comment>Downloading remote packages</comment>');
+        }
+
+        $command = $update ? 'update' : 'install';
+
+        $this->run($file, [$command], callback: function () use ($progressIndicator) {
+            if ($progressIndicator) {
+                $progressIndicator->advance();
+            }
+        });
+
+        if ($progressIndicator) {
+            $progressIndicator->finish('<info>Remote packages imported</info>');
+        }
+
+        $this->writeInstalled($vendorDirectory, $file);
     }
 
     public function remove(): void
@@ -93,13 +75,17 @@ class Composer
     /**
      * @param string[] $args
      */
-    private function run(array $args, callable $callback): void
+    private function run(string $composerJsonFilePath, array $args, callable $callback): void
     {
         $directory = PathHelper::getRoot() . self::VENDOR_DIR;
 
         $args[] = '--working-dir';
-        $args[] = $directory;
+        $args[] = \dirname($directory);
         $args[] = '--no-interaction';
+
+        putenv('COMPOSER=' . $composerJsonFilePath);
+        $_ENV['COMPOSER'] = $composerJsonFilePath;
+        $_SERVER['COMPOSER'] = $composerJsonFilePath;
 
         $composerApplication = new ComposerApplication();
         $composerApplication->setAutoExit(false);
@@ -131,6 +117,9 @@ class Composer
 
         $exitCode = $composerApplication->run($argvInput, $output);
 
+        putenv('COMPOSER=');
+        unset($_ENV['COMPOSER'], $_SERVER['COMPOSER']);
+
         if (0 !== $exitCode) {
             throw new ComposerError('The Composer process failed: ' . $output->output);
         }
@@ -141,15 +130,15 @@ class Composer
         ]);
     }
 
-    private function writeInstalled(string $path): void
+    private function writeInstalled(string $path, string $composerFilePath): void
     {
-        file_put_contents("{$path}/composer.installed", hash('sha256', json_encode($this->configuration, \JSON_THROW_ON_ERROR)));
+        file_put_contents("{$path}/composer.installed", hash('sha256', json_encode(file_get_contents($composerFilePath), \JSON_THROW_ON_ERROR)));
     }
 
-    private function isInstalled(string $path): bool
+    private function isInstalled(string $path, string $composerFilePath): bool
     {
         $path = "{$path}/composer.installed";
 
-        return file_exists($path) && file_get_contents($path) === hash('sha256', json_encode($this->configuration, \JSON_THROW_ON_ERROR));
+        return file_exists($path) && file_get_contents($path) === hash('sha256', json_encode(file_get_contents($composerFilePath), \JSON_THROW_ON_ERROR));
     }
 }

@@ -26,8 +26,7 @@ class Importer
     ) {
     }
 
-    /** @phpstan-param ImportSource $source */
-    public function import(string $path, ?string $file = null, ?string $version = null, ?string $vcs = null, ?array $source = null): void
+    public function import(string $path, ?string $file = null): void
     {
         $scheme = parse_url($path, \PHP_URL_SCHEME);
 
@@ -40,13 +39,10 @@ class Importer
             $package = mb_substr($path, mb_strlen($scheme) + 3);
 
             try {
-                $this->packageImporter->addPackage(
+                $this->packageImporter->importFromPackage(
                     $scheme,
                     $package,
                     $file,
-                    $version,
-                    $vcs,
-                    $source,
                 );
 
                 return;
@@ -57,8 +53,8 @@ class Importer
 
                 return;
             }
-        } elseif (null !== $file || null !== $version || null !== $vcs || null !== $source) {
-            throw $this->createImportException($path, 'The "file", "version", "vcs" and "source" arguments can only be used with a remote import.');
+        } elseif (null !== $file) {
+            throw $this->createImportException($path, 'The "file" argument can only be used with a remote import.');
         }
 
         if (!file_exists($path)) {
