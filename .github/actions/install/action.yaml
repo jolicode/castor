@@ -18,6 +18,7 @@ runs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: '${{ inputs.php-version }}'
+        coverage: none
 
     - name: Install dependencies (project)
       run: composer install --prefer-dist --no-progress --optimize-autoloader --classmap-authoritative ${{ inputs.composer-flags }}
