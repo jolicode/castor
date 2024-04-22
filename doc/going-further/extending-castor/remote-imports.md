@@ -2,106 +2,48 @@
 
 Castor can import functions from your filesystem but also from a remote resource.
 
-## Importing functions
+## Installing remote packages
 
 When importing functions from a remote resource, Castor will use Composer to
 download the packages and store them in `.castor/vendor/`.
 
-To import functions, you need to use the same `import()` function used to import
-your tasks, but this time with a different syntax for the `path` argument.
+To import functions, you need to create a `castor.composer.json` file next to 
+the `castor.php` file (either at the root of your project or in the `.castor/` 
+directory).
 
-The import syntax depends on the source of the packages.
+This also can be done by running the `castor composer init` command.
 
-### From a Composer package (scheme `composer://`)
+See the [Composer documentation](https://getcomposer.org/doc/04-schema.md) for
+more information about the `composer.json` file.
 
-This is the most common use case when the functions to import are defined in a
-Composer package. You can directly import them by using the package name
-prefixed with the `composer://` scheme:
+## Importing file from a remote package
 
-```php
-use function Castor\import;
-
-import('composer://vendor-name/project-name');
-```
-
-This will import all the tasks defined in the package.
-
-#### Specify the version
-
-You can define the version of the package to import by using the `version`
-argument:
+Third party functions may not be autoloaded by Composer, as there may be 
+optional. To import them, you can use the `import()` function.
 
 ```php
-use function Castor\import;
-
-import('composer://vendor-name/project-name', version: '^1.0');
+import('composer://vendor/package/', file: 'functions.php');
 ```
 
-You can use any version constraint supported by Composer (like `*`, `dev-main`,
-`^1.0`, etc.). See the [Composer documentation](https://getcomposer.org/doc/articles/versions.md#writing-version-constraints)
-for more information.
+File is optional, if not provided, Castor will look for a `castor.php` file in 
+the package.
 
-> [!TIP]
-> The `version` argument is optional and will default to `*`.
+## Manipulating castor composer file
 
-#### Import from a package not pushed to packagist.org
+Castor provide a `composer` command to manipulate the `castor.composer.json` 
+file.
 
-In some cases, you may have a Composer package that is not pushed to
-packagist.org (like a private package hosted on packagist.com or another package
-registry). In such cases, you can import it by using the `vcs` argument to
-specify the repository URL where the package is hosted:
+For example, you can use it to add a package to the file:
 
-```php
-
-use function Castor\import;
-
-import('composer://vendor-name/project-name', vcs: 'https://github.com/organization/repository.git');
+```bash
+castor composer require 'vendor/package'
 ```
 
-### From a repository (scheme `package://`)
+Or you can use it to update packages
 
-If the functions you want to import are not available as a Composer package, you
-can still import them by using a special configuration that Composer will
-understand. This will now use the `package://` scheme.
-
-```php
-use function Castor\import;
-
-import('package://vendor-name/project-name', source: [
-    'url' => 'https://github.com/organization/repository.git',
-    'type' => 'git', // 'Any source type supported by Composer (git, svn, etc)'
-    'reference' => 'main', //  A commit id, a branch or a tag name
-]);
+```bash
+castor composer update
 ```
-
-> [!NOTE]
-> The "vendor-name/project-name" name can be whatever you want, and will only be
-> used internally by Castor and Composer to make the repository behave like a
-> normal Composer package.
-
-> [!TIP]
-> Rather than using the `package://` scheme, it may be simpler to create a
-> standard `composer.json` to your repository and import your newly created
-> package by using the `composer://` scheme and the `vcs` argument.
-
-## Import only a specific file
-
-No matter where does the package come from (Composer package, git repository,
-etc.), you can restrict the file (or directory) to be imported. This is
-configured by using the `file` argument specifying the path inside the package
-or repository.
-
-```php
-use function Castor\import;
-
-import('composer://vendor-name/project-name', file: 'castor/my-tasks.php');
-```
-
-> [!NOTE]
-> The `file` argument is optional and will empty by default, causing Castor to
-> import and parse all the PHP files in the package. While handy, it's probably
-> not what you want if your package contains PHP code that are not related to
-> Castor.
 
 ## Preventing remote imports
 
@@ -125,19 +67,10 @@ $ export CASTOR_NO_REMOTE=1
 $ castor my-task # will not import any remote functions
 ```
 
-## Update imported packages
+## Lock file
 
-When you import a package in a given version, Castor will not update
-automatically update the packages once a new version of your dependency is
-available.
+Like every PHP projects using Composer, it will generate a 
+`castor.composer.lock` file to lock the versions of the imported packages.
 
-To update your dependencies, you will either need to:
-
-- change the required version yourself (thus every one using your Castor project
-will profit of the update once they run your project);
-- force the update on your side only by either using the `--update-remotes`
-option or by removing the `.castor/vendor/` folder.
-
-```bash
-$ castor --update-remotes
-```
+It is recommended to commit this file to your version control system to ensure
+that everyone uses the same versions of the imported packages.
