@@ -15,7 +15,7 @@ use Castor\Function\FunctionResolver;
 use Castor\Helper\PlatformHelper;
 use Castor\Import\Importer;
 use Castor\Import\Mount;
-use Castor\Import\Remote\PackageImporter;
+use Castor\Import\Remote\Composer;
 use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -40,7 +40,7 @@ final class Kernel
         #[Autowire(lazy: true)]
         private readonly Importer $importer,
         #[Autowire(lazy: true)]
-        private readonly PackageImporter $packageImporter,
+        private readonly Composer $composer,
         private readonly FunctionResolver $functionResolver,
         private readonly FunctionLoader $functionLoader,
         private readonly ContextRegistry $contextRegistry,
@@ -49,11 +49,11 @@ final class Kernel
 
     public function boot(InputInterface $input, OutputInterface $output): void
     {
-        $this->packageImporter->requireAutoload();
+        $this->composer->requireAutoload();
 
         $this->eventDispatcher->dispatch(new BeforeBootEvent($this->application));
 
-        $allowRemotePackage = $this->packageImporter->isRemoteAllowed();
+        $allowRemotePackage = $this->composer->isRemoteAllowed();
 
         $this->addMount(new Mount($this->rootDir, allowRemotePackage: $allowRemotePackage));
 
@@ -82,7 +82,7 @@ final class Kernel
         OutputInterface $output
     ): void {
         if ($mount->allowRemotePackage) {
-            $this->packageImporter->install($mount);
+            $this->composer->install($mount->path);
         }
 
         try {
