@@ -15,7 +15,7 @@ use Castor\Function\FunctionResolver;
 use Castor\Helper\PlatformHelper;
 use Castor\Import\Importer;
 use Castor\Import\Mount;
-use Castor\Import\Remote\PackageImporter;
+use Castor\Import\Remote\Composer;
 use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -40,7 +40,7 @@ final class Kernel
         #[Autowire(lazy: true)]
         private readonly Importer $importer,
         #[Autowire(lazy: true)]
-        private readonly PackageImporter $packageImporter,
+        private readonly Composer $composer,
         private readonly FunctionResolver $functionResolver,
         private readonly FunctionLoader $functionLoader,
         private readonly ContextRegistry $contextRegistry,
@@ -49,17 +49,9 @@ final class Kernel
 
     public function boot(InputInterface $input, OutputInterface $output): void
     {
-        $this->packageImporter->requireAutoload();
-
         $this->eventDispatcher->dispatch(new BeforeBootEvent($this->application));
 
-        $allowRemotePackage = true;
-
-        if ($_SERVER['CASTOR_NO_REMOTE'] ?? false) {
-            $allowRemotePackage = false;
-        } elseif (true !== $input->getParameterOption('--no-remote', true)) {
-            $allowRemotePackage = false;
-        }
+        $allowRemotePackage = $this->composer->isRemoteAllowed();
 
         $this->addMount(new Mount($this->rootDir, allowRemotePackage: $allowRemotePackage));
 
@@ -69,6 +61,8 @@ final class Kernel
 
             $this->load($mount, $currentFunctions, $currentClasses, $input, $output);
         }
+
+        $this->composer->requireAutoload();
     }
 
     public function addMount(Mount $mount): void
@@ -88,10 +82,7 @@ final class Kernel
         OutputInterface $output
     ): void {
         if ($mount->allowRemotePackage) {
-            $update = true !== $input->getParameterOption('--update-remotes', true);
-            $displayProgress = 'list' !== $input->getFirstArgument();
-
-            $this->packageImporter->install($mount, $update, $displayProgress);
+            $this->composer->install($mount->path);
         }
 
         try {

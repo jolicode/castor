@@ -4,7 +4,7 @@ namespace Castor\Import;
 
 use Castor\Import\Exception\ImportError;
 use Castor\Import\Exception\RemoteNotAllowed;
-use Castor\Import\Remote\PackageImporter;
+use Castor\Import\Remote\Composer;
 use JoliCode\PhpOsHelper\OsHelper;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Finder\Finder;
@@ -21,7 +21,7 @@ class Importer
     private array $imports = [];
 
     public function __construct(
-        private readonly PackageImporter $packageImporter,
+        private readonly Composer $composer,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -39,7 +39,7 @@ class Importer
             $package = mb_substr($path, mb_strlen($scheme) + 3);
 
             try {
-                $this->packageImporter->importFromPackage(
+                $this->composer->importFromPackage(
                     $scheme,
                     $package,
                     $file,

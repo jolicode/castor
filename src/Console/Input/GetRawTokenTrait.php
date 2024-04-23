@@ -23,7 +23,7 @@ trait GetRawTokenTrait
         $parameters = [];
         $keep = false;
         foreach ($tokens as $value) {
-            if ($value === $input->getFirstArgument()) {
+            if (!$keep && $value === $input->getFirstArgument()) {
                 $keep = true;
 
                 continue;

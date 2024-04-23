@@ -3,7 +3,7 @@ In castor.php line 5:
   Could not import "invalid-package-name" in ".../tests/fixtures/broken/import-invalid-format/castor.php" on line 5. Reason: The import path must be formatted like this: "composer://<organization>/<repository>".
 
 
-In PackageImporter.php line XXXX:
+In Composer.php line XXXX:
 
   The import path must be formatted like this: "composer://<organization>/<repository>".
 
