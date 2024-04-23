@@ -2,19 +2,18 @@
 
 ## Not released yet
 
-* Add support for SSH connection without specifying a user
+* Totally rework the import feature. Castor use special `castor.composer.json`
+  file to handle imports. This fixes many bugs and issues with the previous
 * Marked SSH features as stable
-* Import and load task from remote import automatically
-* Allow to use imported class in task from remote import
-* Do not load task from `vendor` directory
+* Add `?callable $callback = null` param to `ssh_*` functions to manipulate
+  output
+* Add support for SSH connection without specifying a user
 * Add `context()` function in expression language to enable a task
-* Better handle notification errors and exceptions
+* Better handling of notification errors and exceptions
 * Deprecate `Castor\GlobalHelper` class. There are no replacements. Use raw
   functions instead
 * Deprecate `AfterApplicationInitializationEvent` event. Use
   `FunctionsResolvedEvent` instead.
-* Fix multiple remote imports of the same package with default version
-* Add `?callable $callback = null` param to `ssh_*` functions
 
 ## 0.15.0 (2024-04-03)
 
