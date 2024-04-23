@@ -44,9 +44,7 @@ final class ComposerCommand extends Command
 
         $vendorDirectory = $this->rootDir . '/' . Composer::VENDOR_DIR;
 
-        $extra = array_filter($this->getRawTokens($input), fn ($item) => 'composer' !== $item);
-
-        $this->composer->run($file, $vendorDirectory, $extra, $output, $input->isInteractive());
+        $this->composer->run($file, $vendorDirectory, $this->getRawTokens($input), $output, $input->isInteractive());
 
         return Command::SUCCESS;
     }
