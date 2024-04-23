@@ -95,6 +95,7 @@ $taskFilterList = [
     'list',
     'parallel:sleep',
     'remote-import:remote-tasks',
+    'remote-import:remote-task-class',
     'run:ls',
     'run:run-parallel',
     'symfony:greet',
@@ -185,6 +186,8 @@ add_test(['init'], 'NewProjectInit', '/tmp');
 add_test(['unknown:task', 'toto', '--foo', 1], 'NoConfigUnknownWithArgs', '/tmp');
 add_test(['unknown:task'], 'NoConfigUnknown', '/tmp');
 add_test([], 'NewProject', '/tmp');
+// remote special test
+add_test(['remote-import:remote-task-class'], 'RemoteImportClassWithVendorReset', needRemote: true, needResetVendor: true);
 
 echo "\nDone.\n";
 
@@ -195,9 +198,15 @@ function add_test(array $args, string $class, ?string $cwd = null, bool $needRem
     fseek($fp, __COMPILER_HALT_OFFSET__ + 1);
     $template = stream_get_contents($fp);
 
+    $workingDirectory = $cwd ? str_replace('{{ base }}', __DIR__ . '/..', $cwd) : __DIR__ . '/..';
+
+    if ($needResetVendor) {
+        (new Filesystem())->remove($workingDirectory . '/.castor/vendor');
+    }
+
     $process = new Process(
         [\PHP_BINARY,  __DIR__ . '/castor', '--no-ansi', ...$args],
-        cwd: $cwd ? str_replace('{{ base }}', __DIR__ . '/..', $cwd) : __DIR__ . '/..',
+        cwd: $workingDirectory,
         env: [
             'COLUMNS' => 1000,
             'ENDPOINT' => $_SERVER['ENDPOINT'],

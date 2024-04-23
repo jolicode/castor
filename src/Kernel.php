@@ -61,8 +61,6 @@ final class Kernel
 
             $this->load($mount, $currentFunctions, $currentClasses, $input, $output);
         }
-
-        $this->composer->requireAutoload();
     }
 
     public function addMount(Mount $mount): void
@@ -83,6 +81,10 @@ final class Kernel
     ): void {
         if ($mount->allowRemotePackage) {
             $this->composer->install($mount->path);
+        }
+
+        if ($mount->path === $this->rootDir) {
+            $this->composer->requireAutoload();
         }
 
         try {
