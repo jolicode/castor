@@ -20,6 +20,7 @@ class CompileCommand extends Command
     // When something **important** related to the compilation changed, increase
     // this version to invalide the cache
     private const CACHE_VERSION = '2';
+    private const DEFAULT_SPC_VERSION = '2.1.7';
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,
@@ -35,6 +36,7 @@ class CompileCommand extends Command
             ->setName('castor:compile')
             ->setAliases(['compile'])
             ->addArgument('phar-path', InputArgument::REQUIRED, 'Path to phar to compile along PHP')
+            ->addOption('spc-version', null, InputOption::VALUE_REQUIRED, 'Version of the static-php-cli (spc) tool to use', self::DEFAULT_SPC_VERSION)
             ->addOption('binary-path', null, InputOption::VALUE_REQUIRED, 'Path to compiled static binary. It can be the parent dirname too', PathHelper::getRoot())
             ->addOption('os', null, InputOption::VALUE_REQUIRED, 'Target OS for PHP compilation', 'linux', ['linux', 'macos'])
             ->addOption('arch', null, InputOption::VALUE_REQUIRED, 'Target architecture for PHP compilation', 'x86_64', ['x86_64', 'aarch64'])
@@ -65,6 +67,7 @@ class CompileCommand extends Command
             $io,
             $os,
             $arch,
+            $input->getOption('spc-version'),
         );
 
         if (!$this->fs->exists($spcBinaryDir . '/buildroot/bin/micro.sfx') || $input->getOption('php-rebuild')) {
@@ -130,7 +133,8 @@ class CompileCommand extends Command
         $response = $this->httpClient->request('GET', $spcSourceUrl);
         $contentLength = $response->getHeaders()['content-length'][0] ?? 0;
 
-        $outputStream = fopen($spcBinaryDestination, 'w');
+        $spcTarGzDestination = $spcBinaryDestination . '.tar.gz';
+        $outputStream = fopen($spcTarGzDestination, 'w');
         $progressBar = $io->createProgressBar((int) $contentLength);
 
         if (false === $outputStream) {
@@ -143,6 +147,15 @@ class CompileCommand extends Command
         }
 
         fclose($outputStream);
+
+        $extractProcess = new Process(
+            command: ['tar', 'xf', $spcTarGzDestination],
+            cwd: \dirname($spcBinaryDestination),
+            timeout: null,
+        );
+
+        $io->text('Running command: ' . $extractProcess->getCommandLine());
+        $extractProcess->mustRun(fn ($type, $buffer) => print $buffer);
         chmod($spcBinaryDestination, 0o755);
 
         $progressBar->finish();
@@ -220,14 +233,14 @@ class CompileCommand extends Command
         $mergePHPandPHARProcess->mustRun(fn ($type, $buffer) => print $buffer);
     }
 
-    private function setupSPC(string $spcBinaryDir, string $spcBinaryPath, SymfonyStyle $io, mixed $os, mixed $arch): void
+    private function setupSPC(string $spcBinaryDir, string $spcBinaryPath, SymfonyStyle $io, mixed $os, mixed $arch, string $spcVersion): void
     {
         $this->fs->mkdir($spcBinaryDir, 0o755);
 
         if ($this->fs->exists($spcBinaryPath)) {
             $io->text(sprintf('Using the static-php-cli (spc) tool from "%s"', $spcBinaryPath));
         } else {
-            $spcSourceUrl = sprintf('https://dl.static-php.dev/static-php-cli/spc-bin/nightly/spc-%s-%s', $os, $arch);
+            $spcSourceUrl = sprintf('https://github.com/crazywhalecc/static-php-cli/releases/download/%s/spc-%s-%s.tar.gz', $spcVersion, $os, $arch);
             $io->text(sprintf('Downloading the static-php-cli (spc) tool from "%s" to "%s"', $spcSourceUrl, $spcBinaryPath));
             $this->downloadSPC($spcSourceUrl, $spcBinaryPath, $io);
             $io->newLine(2);
@@ -271,6 +284,7 @@ class CompileCommand extends Command
         hash_update($c, implode(',', $phpExtensions));
 
         hash_update($c, self::CACHE_VERSION);
+        hash_update($c, $input->getOption('spc-version'));
 
         return hash_final($c);
     }
