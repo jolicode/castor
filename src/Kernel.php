@@ -53,13 +53,7 @@ final class Kernel
 
         $this->eventDispatcher->dispatch(new BeforeBootEvent($this->application));
 
-        $allowRemotePackage = true;
-
-        if ($_SERVER['CASTOR_NO_REMOTE'] ?? false) {
-            $allowRemotePackage = false;
-        } elseif (true !== $input->getParameterOption('--no-remote', true)) {
-            $allowRemotePackage = false;
-        }
+        $allowRemotePackage = $this->packageImporter->isRemoteAllowed();
 
         $this->addMount(new Mount($this->rootDir, allowRemotePackage: $allowRemotePackage));
 
@@ -88,10 +82,7 @@ final class Kernel
         OutputInterface $output
     ): void {
         if ($mount->allowRemotePackage) {
-            $update = true !== $input->getParameterOption('--update-remotes', true);
-            $displayProgress = 'list' !== $input->getFirstArgument();
-
-            $this->packageImporter->install($mount, $update, $displayProgress);
+            $this->packageImporter->install($mount);
         }
 
         try {

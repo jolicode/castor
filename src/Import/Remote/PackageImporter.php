@@ -22,7 +22,7 @@ class PackageImporter
 
     public function requireAutoload(): void
     {
-        $autoloadPath = PathHelper::getRoot() . Composer::VENDOR_DIR . 'autoload.php';
+        $autoloadPath = PathHelper::getRoot() . '/' . Composer::VENDOR_DIR . '/autoload.php';
 
         if (!file_exists($autoloadPath)) {
             return;
@@ -31,14 +31,28 @@ class PackageImporter
         require $autoloadPath;
     }
 
-    public function install(Mount $mount, bool $update = false, bool $displayProgress = true): void
+    public function isRemoteAllowed(): bool
     {
-        $this->composer->install($mount->path, $update, $displayProgress);
+        if ($_SERVER['CASTOR_NO_REMOTE'] ?? false) {
+            return false;
+        }
+
+        // Need to look for the raw options as the input is not yet parsed
+        if (true !== $this->input->getParameterOption('--no-remote', true)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function install(Mount $mount): void
+    {
+        $this->composer->install($mount->path);
     }
 
     public function importFromPackage(string $scheme, string $package, ?string $file = null): void
     {
-        if (!$this->allowsRemote()) {
+        if (!$this->isRemoteAllowed()) {
             throw new RemoteNotAllowed('Remote imports are disabled.');
         }
 
@@ -51,14 +65,14 @@ class PackageImporter
                 @trigger_deprecation('castor/castor', '0.16.0', 'The "package" scheme is deprecated, use "composer" instead.');
             }
 
-            $packageDirectory = PathHelper::getRoot() . Composer::VENDOR_DIR . $package;
+            $packageDirectory = PathHelper::getRoot() . '/' . Composer::VENDOR_DIR . '/' . $package;
 
             if (!file_exists($packageDirectory)) {
                 throw new ImportError(sprintf('The package "%s" is not installed, make sure you required it in your castor.composer.json file.', $package));
             }
 
             $this->kernel->addMount(new Mount(
-                PathHelper::getRoot() . Composer::VENDOR_DIR . $package . '/' . ($file ?? ''),
+                PathHelper::getRoot() . '/' . Composer::VENDOR_DIR . '/' . $package . '/' . ($file ?? ''),
                 allowEmptyEntrypoint: true,
                 allowRemotePackage: false,
             ));
@@ -72,15 +86,5 @@ class PackageImporter
     public function clean(): void
     {
         $this->composer->remove();
-    }
-
-    public function allowsRemote(): bool
-    {
-        if ($_SERVER['CASTOR_NO_REMOTE'] ?? false) {
-            return false;
-        }
-
-        // Need to look for the raw options as the input is not yet parsed
-        return true === $this->input->getParameterOption('--no-remote', true);
     }
 }

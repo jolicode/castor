@@ -9,6 +9,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Console\Helper\ProgressIndicator;
 use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -16,18 +17,20 @@ use Symfony\Component\Filesystem\Filesystem;
 /** @internal */
 class Composer
 {
-    public const VENDOR_DIR = '/.castor/vendor/';
+    public const VENDOR_DIR = '.castor/vendor';
 
     public function __construct(
         private readonly Filesystem $filesystem,
+        private readonly InputInterface $input,
         private readonly OutputInterface $output,
         private readonly LoggerInterface $logger = new NullLogger(),
     ) {
     }
 
-    public function install(string $entrypointDirectory, bool $update = false, bool $displayProgress = true): void
+    public function install(string $entrypointDirectory): void
     {
-        $vendorDirectory = $entrypointDirectory . self::VENDOR_DIR;
+        $update = true !== $this->input->getParameterOption('--update-remotes', true);
+        $displayProgress = 'list' !== $this->input->getFirstArgument();
 
         if (!file_exists($file = $entrypointDirectory . '/castor.composer.json') && !file_exists($file = $entrypointDirectory . '/.castor/castor.composer.json')) {
             $this->logger->debug(sprintf('The castor.composer.json file does not exists in %s or %s/.castor, skipping composer install.', $entrypointDirectory, $entrypointDirectory));
@@ -35,15 +38,14 @@ class Composer
             return;
         }
 
+        $vendorDirectory = $entrypointDirectory . '/' . self::VENDOR_DIR;
+
         if (!$update && $this->isInstalled($vendorDirectory, $file)) {
             return;
         }
 
-        if (!file_exists($vendorDirectory)) {
-            $this->filesystem->mkdir($vendorDirectory);
-        }
-
-        file_put_contents($vendorDirectory . '.gitignore', "*\n");
+        $this->filesystem->mkdir($vendorDirectory);
+        $this->filesystem->dumpFile($vendorDirectory . '/.gitignore', "*\n");
 
         $progressIndicator = null;
 
@@ -69,18 +71,18 @@ class Composer
 
     public function remove(): void
     {
-        $this->filesystem->remove(PathHelper::getRoot() . self::VENDOR_DIR);
+        $this->filesystem->remove(PathHelper::getRoot() . '/' . self::VENDOR_DIR);
     }
 
     /**
      * @param string[] $args
      */
-    public function run(string $composerJsonFilePath, string $vendorDirectory, array $args, callable|OutputInterface $callback, bool $allowInteraction = false): void
+    public function run(string $composerJsonFilePath, string $vendorDirectory, array $args, callable|OutputInterface $callback, bool $interactive = false): void
     {
         $args[] = '--working-dir';
         $args[] = \dirname($vendorDirectory);
 
-        if (!$allowInteraction) {
+        if (!$interactive) {
             $args[] = '--no-interaction';
         }
 

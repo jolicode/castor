@@ -37,16 +37,16 @@ final class ComposerCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $extra = array_filter($this->getRawTokens($input), fn ($item) => 'composer' !== $item);
-
-        $vendorDirectory = $this->rootDir . Composer::VENDOR_DIR;
-
         if (!file_exists($file = $this->rootDir . '/castor.composer.json') && !file_exists($file = $this->rootDir . '/.castor/castor.composer.json')) {
             // Default to the root directory (so someone can do a composer init by example)
             $file = $this->rootDir . '/castor.composer.json';
         }
 
-        $this->composer->run($file, $vendorDirectory, $extra, $output, true);
+        $vendorDirectory = $this->rootDir . '/' . Composer::VENDOR_DIR;
+
+        $extra = array_filter($this->getRawTokens($input), fn ($item) => 'composer' !== $item);
+
+        $this->composer->run($file, $vendorDirectory, $extra, $output, $input->isInteractive());
 
         return Command::SUCCESS;
     }
