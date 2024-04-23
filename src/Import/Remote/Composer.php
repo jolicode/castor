@@ -9,7 +9,6 @@ use Castor\Import\Exception\InvalidImportFormat;
 use Castor\Import\Exception\RemoteNotAllowed;
 use Castor\Import\Mount;
 use Castor\Kernel;
-use Composer\Console\Application as ComposerApplication;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Console\Helper\ProgressIndicator;
