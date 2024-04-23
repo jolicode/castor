@@ -2,6 +2,7 @@
 
 namespace Castor\Console;
 
+use Castor\Console\Command\ArtCommand;
 use Castor\Console\Command\CompileCommand;
 use Castor\Console\Command\ComposerCommand;
 use Castor\Console\Command\DebugCommand;
@@ -201,6 +202,7 @@ class ApplicationFactory
                 ])
                 ->call('add', [service(DebugCommand::class)])
                 ->call('add', [service(ComposerCommand::class)])
+                ->call('add', [service(ArtCommand::class)])
                 ->call('setDispatcher', [service(EventDispatcherInterface::class)])
                 ->call('setCatchErrors', [true])
         ;
