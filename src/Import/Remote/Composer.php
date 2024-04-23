@@ -77,6 +77,8 @@ class Composer
      */
     public function run(string $composerJsonFilePath, string $vendorDirectory, array $args, callable|OutputInterface $callback, bool $allowInteraction = false): void
     {
+        $this->filesystem->mkdir($vendorDirectory);
+
         $args[] = '--working-dir';
         $args[] = \dirname($vendorDirectory);
 
