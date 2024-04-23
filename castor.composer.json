@@ -6,9 +6,10 @@
         "castor\/castor": "v0.15.0"
     },
     "require": {
-        "pyrech\/castor-example": "^1.0",
-        "pyrech\/castor-example-package-not-published": "*",
-        "pyrech\/foobar": "v1"
+        "doctrine/collections": "^2.2",
+        "pyrech/castor-example": "^1.0",
+        "pyrech/castor-example-package-not-published": "*",
+        "pyrech/foobar": "v1"
     },
     "repositories": [
         {
