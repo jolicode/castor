@@ -182,8 +182,9 @@ function ssh_run(
     ?bool $allowFailure = null,
     ?bool $notify = null,
     ?float $timeout = null,
+    ?callable $callback = null,
 ): Process {
-    return Container::get()->sshRunner->execute($command, $path, $host, $user, $sshOptions, $quiet, $allowFailure, $notify, $timeout);
+    return Container::get()->sshRunner->execute($command, $path, $host, $user, $sshOptions, $quiet, $allowFailure, $notify, $timeout, $callback);
 }
 
 /**

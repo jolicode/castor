@@ -1,0 +1,9 @@
+In SshRunner.php line XXXX:
+
+  The command "ssh  debian@server-1.example.com 'bash -se' << \EOF-SPATIE-SSH
+  ls -alh
+  EOF-SPATIE-SSH" failed.
+
+
+ssh:real-time-output
+

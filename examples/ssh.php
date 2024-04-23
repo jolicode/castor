@@ -4,6 +4,7 @@ namespace ssh;
 
 use Castor\Attribute\AsTask;
 
+use function Castor\io;
 use function Castor\ssh_download;
 use function Castor\ssh_run;
 use function Castor\ssh_upload;
@@ -34,4 +35,17 @@ function upload(): void
 function download(): void
 {
     ssh_download('/tmp/test.html', '/var/www/index.html', host: 'server-1.example.com', user: 'debian');
+}
+
+#[AsTask(description: 'Output in real-time ssh command output')]
+function realTimeOutput(): void
+{
+    ssh_run(
+        command: 'ls -alh',
+        host: 'server-1.example.com',
+        user: 'debian',
+        callback: function ($type, $buffer): void {
+            io()->writeln('REAL TIME OUTPUT> ' . $buffer);
+        }
+    );
 }
