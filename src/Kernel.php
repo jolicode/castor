@@ -49,8 +49,6 @@ final class Kernel
 
     public function boot(InputInterface $input, OutputInterface $output): void
     {
-        $this->composer->requireAutoload();
-
         $this->eventDispatcher->dispatch(new BeforeBootEvent($this->application));
 
         $allowRemotePackage = $this->composer->isRemoteAllowed();
@@ -63,6 +61,8 @@ final class Kernel
 
             $this->load($mount, $currentFunctions, $currentClasses, $input, $output);
         }
+
+        $this->composer->requireAutoload();
     }
 
     public function addMount(Mount $mount): void
