@@ -52,15 +52,16 @@ class Composer
         $update = true !== $this->input->getParameterOption('--update-remotes', true);
         $displayProgress = 'list' !== $this->input->getFirstArgument();
 
-        if (!file_exists($file = $entrypointDirectory . '/castor.composer.json') && !file_exists($file = $entrypointDirectory . '/.castor/castor.composer.json')) {
+        if (!file_exists($composerJsonFile = $entrypointDirectory . '/castor.composer.json') && !file_exists($composerJsonFile = $entrypointDirectory . '/.castor/castor.composer.json')) {
             $this->logger->debug(sprintf('The castor.composer.json file does not exists in %s or %s/.castor, skipping composer install.', $entrypointDirectory, $entrypointDirectory));
 
             return;
         }
 
+        $composerLockFile = \dirname($composerJsonFile) . '/castor.composer.lock';
         $vendorDirectory = $entrypointDirectory . '/' . self::VENDOR_DIR;
 
-        if (!$update && $this->isInstalled($vendorDirectory, $file)) {
+        if (!$update && $this->isInstalled($vendorDirectory, $composerLockFile)) {
             return;
         }
 
@@ -76,7 +77,7 @@ class Composer
 
         $command = $update ? 'update' : 'install';
 
-        $this->run($file, $vendorDirectory, [$command], callback: function () use ($progressIndicator) {
+        $this->run($composerJsonFile, $vendorDirectory, [$command], callback: function () use ($progressIndicator) {
             if ($progressIndicator) {
                 $progressIndicator->advance();
             }
@@ -86,7 +87,7 @@ class Composer
             $progressIndicator->finish('<info>Remote packages imported</info>');
         }
 
-        $this->writeInstalled($vendorDirectory, $file);
+        $this->writeInstalled($vendorDirectory, $composerLockFile);
     }
 
     public function requireAutoload(): void
@@ -200,15 +201,34 @@ class Composer
         ]);
     }
 
-    private function writeInstalled(string $path, string $composerFilePath): void
+    private function writeInstalled(string $path, string $composerLockFile): void
     {
-        file_put_contents("{$path}/composer.installed", hash('sha256', json_encode(file_get_contents($composerFilePath), \JSON_THROW_ON_ERROR)));
+        if (!$composerLockContent = @file_get_contents($composerLockFile)) {
+            throw new \RuntimeException('The composer.lock file does not exist.');
+        }
+
+        $json = json_decode($composerLockContent, true, 512, \JSON_THROW_ON_ERROR);
+
+        file_put_contents("{$path}/composer.installed", $json['content-hash']);
     }
 
-    private function isInstalled(string $path, string $composerFilePath): bool
+    private function isInstalled(string $path, string $composerLockFile): bool
     {
-        $path = "{$path}/composer.installed";
+        if (!file_exists($composerLockFile)) {
+            return false;
+        }
 
-        return file_exists($path) && file_get_contents($path) === hash('sha256', json_encode(file_get_contents($composerFilePath), \JSON_THROW_ON_ERROR));
+        $composerInstalledFile = "{$path}/composer.installed";
+        if (!file_exists($composerInstalledFile)) {
+            return false;
+        }
+
+        if (!$composerLockContent = @file_get_contents($composerLockFile)) {
+            throw new \RuntimeException('The composer.lock file does not exist.');
+        }
+
+        $hash = json_decode($composerLockContent, true, 512, \JSON_THROW_ON_ERROR)['content-hash'];
+
+        return $hash === file_get_contents($composerInstalledFile);
     }
 }
