@@ -49,7 +49,7 @@ class Composer
     public function install(string $entrypointDirectory): void
     {
         $update = true !== $this->input->getParameterOption('--update-remotes', true);
-        $displayProgress = 'list' !== $this->input->getFirstArgument();
+        $displayProgress = 'list' !== $this->input->getFirstArgument() || 'txt' === $this->input->getParameterOption('--format', 'txt');
 
         if (!file_exists($composerJsonFile = $entrypointDirectory . '/castor.composer.json') && !file_exists($composerJsonFile = $entrypointDirectory . '/.castor/castor.composer.json')) {
             $this->logger->debug(sprintf('The castor.composer.json file does not exists in %s or %s/.castor, skipping composer install.', $entrypointDirectory, $entrypointDirectory));
