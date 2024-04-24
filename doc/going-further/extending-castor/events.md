@@ -34,7 +34,7 @@ function my_event_listener(AfterExecuteTaskEvent|FunctionsResolvedEvent $event):
 Here is the built-in events triggered by Castor:
 
 * `Castor\Event\FunctionsResolvedEvent`: This event is triggered after the
-  functions has been resolved. It provides access to an array of of
+  functions has been resolved. It provides access to an array of
   `TaskDescriptor` and `SymfonyTaskDescriptor` objects;
 
 * `Castor\Event\BeforeExecuteTaskEvent`: This event is triggered before
@@ -51,9 +51,9 @@ Here is the built-in events triggered by Castor:
   been started by the `run` function. It provides access to the `Process`
   instance.
 
-* `Castor\Event\ProcessTerminateEvent`: This event is triggered after a process has
-  been terminated and launched inside the `run` function. It provides access to
-  the `Process` instance.
+* `Castor\Event\ProcessTerminateEvent`: This event is triggered after a process
+  has been terminated and launched inside the `run` function. It provides access
+  to the `Process` instance.
 
 ## Console events
 
