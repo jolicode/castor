@@ -17,7 +17,7 @@ It comes with many features to make your life easier:
 * **[Autocomplete](https://castor.jolicode.com/going-further/interacting-with-castor/autocomplete)** support for faster and error-free typing
 * A built-in list of useful functions:
     * [`run()`](https://castor.jolicode.com/getting-started/run/#the-run-function): Runs external processes, enabling seamless integration with external tools
-    * [`parallel()`](https://castor.jolicode.com/going-further/helpers/parallel/#the-parallel-function): Parallelizes process execution to maximize resource utilization
+    * [`io()`](https://castor.jolicode.com/going-further/helpers/console-and-io/#the-io-function): Displays beautiful output and interacts with the terminal
     * [`watch()`](https://castor.jolicode.com/going-further/helpers/watch/): Watches files and automatically triggers actions on file modifications
     * [`log()`](https://castor.jolicode.com/going-further/interacting-with-castor/log/#the-log-function): Captures and analyzes essential information
     * [And even more advanced functions](https://castor.jolicode.com/reference/)
