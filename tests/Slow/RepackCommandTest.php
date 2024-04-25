@@ -21,7 +21,7 @@ class RepackCommandTest extends TestCase
         $castorAppDirPath = self::setupRepackedCastorApp('castor-test-repack');
 
         (new Process([
-            'vendor/jolicode/castor/bin/castor',
+            './bin/castor',
             'repack',
             '--os', 'linux',
         ], cwd: $castorAppDirPath))->mustRun();
@@ -38,6 +38,10 @@ class RepackCommandTest extends TestCase
         // run
         $p = (new Process([$phar, 'hello'], cwd: $castorAppDirPath))->mustRun();
         $this->assertSame('hello', $p->getOutput());
+
+        // Test remote
+        $p = (new Process([$phar, 'pyrech:hello-example'], cwd: $castorAppDirPath))->mustRun();
+        $this->assertSame("\nHello from example!\n===================\n\n", $p->getOutput());
     }
 
     public static function setupRepackedCastorApp(string $castorAppDirName): string
@@ -47,10 +51,26 @@ class RepackCommandTest extends TestCase
         $fs = new Filesystem();
         $fs->remove($castorAppDirPath);
         $fs->mkdir($castorAppDirPath);
+        $fs->dumpFile($castorAppDirPath . '/castor.composer.json', <<<'JSON'
+            {
+                "config": {
+                    "sort-packages": true
+                },
+                "require": {
+                    "pyrech/castor-example": "^1.0"
+                }
+            }
+            JSON
+        );
+
         $fs->dumpFile($castorAppDirPath . '/castor.php', <<<'PHP'
             <?php
 
             use Castor\Attribute\AsTask;
+
+            use function Castor\import;
+
+            import('composer://pyrech/castor-example');
 
             #[AsTask()]
             function hello(): void

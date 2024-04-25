@@ -57,6 +57,10 @@ class Composer
             return;
         }
 
+        if (class_exists(\RepackedApplication::class)) {
+            return;
+        }
+
         $composerLockFile = \dirname($composerJsonFile) . '/castor.composer.lock';
         $vendorDirectory = $entrypointDirectory . '/' . self::VENDOR_DIR;
 
@@ -91,7 +95,7 @@ class Composer
 
     public function requireAutoload(): void
     {
-        $autoloadPath = PathHelper::getRoot() . '/' . self::VENDOR_DIR . '/autoload.php';
+        $autoloadPath = PathHelper::getCastorVendorDir() . '/autoload.php';
 
         if (!file_exists($autoloadPath)) {
             return;
@@ -115,14 +119,14 @@ class Composer
                 @trigger_deprecation('castor/castor', '0.16.0', 'The "package" scheme is deprecated, use "composer" instead.');
             }
 
-            $packageDirectory = PathHelper::getRoot() . '/' . self::VENDOR_DIR . '/' . $package;
+            $packageDirectory = PathHelper::getCastorVendorDir() . '/' . $package;
 
             if (!file_exists($packageDirectory)) {
                 throw new ImportError(sprintf('The package "%s" is not installed, make sure you required it in your castor.composer.json file.', $package));
             }
 
             $this->kernel->addMount(new Mount(
-                PathHelper::getRoot() . '/' . self::VENDOR_DIR . '/' . $package . '/' . ($file ?? ''),
+                PathHelper::getCastorVendorDir() . '/' . $package . '/' . ($file ?? ''),
                 allowEmptyEntrypoint: true,
                 allowRemotePackage: false,
             ));
