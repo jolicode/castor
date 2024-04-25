@@ -4,6 +4,7 @@ namespace Castor\Console\Command;
 
 use Castor\Helper\PathHelper;
 use Castor\Import\Importer;
+use Castor\Import\Remote\Composer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -18,6 +19,8 @@ class RepackCommand extends Command
     public function __construct(
         #[Autowire(lazy: true)]
         private readonly Importer $importer,
+        #[Autowire(lazy: true)]
+        private readonly Composer $composer,
     ) {
         parent::__construct();
     }
@@ -49,6 +52,11 @@ class RepackCommand extends Command
         $box = $finder->find('box');
         if (!$box) {
             throw new \RuntimeException('Could not find box. Please install it: https://github.com/box-project/box/blob/main/doc/installation.md#installation.');
+        }
+
+        // Install the dependencies
+        if ($this->composer->isRemoteAllowed()) {
+            $this->composer->install(PathHelper::getRoot());
         }
 
         $castorSourceDir = PathHelper::realpath(__DIR__ . '/../../..');

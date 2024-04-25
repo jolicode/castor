@@ -200,12 +200,12 @@ class ApplicationFactory
                     '$containerBuilder' => service(ContainerInterface::class),
                 ])
                 ->call('add', [service(DebugCommand::class)])
-                ->call('add', [service(ComposerCommand::class)])
                 ->call('setDispatcher', [service(EventDispatcherInterface::class)])
                 ->call('setCatchErrors', [true])
         ;
         if (!$repacked) {
             $app
+                ->call('add', [service(ComposerCommand::class)])
                 ->call('add', [service(RepackCommand::class)])
                 ->call('add', [service(CompileCommand::class)])
             ;

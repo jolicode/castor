@@ -99,7 +99,7 @@ final class Kernel
 
         // Apply mounts
         foreach ($descriptorsCollection->taskDescriptors as $taskDescriptor) {
-            if ($mount->path !== $this->rootDir) {
+            if ($mount->path !== $this->rootDir && !class_exists(\RepackedApplication::class)) {
                 $taskDescriptor->workingDirectory = $mount->path;
             }
             if ($mount->namespacePrefix) {
