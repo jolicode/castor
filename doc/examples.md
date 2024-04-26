@@ -16,6 +16,7 @@ Here is a partial list of real-world projects using Castor:
 
 - [Castor itself](https://github.com/jolicode/castor/blob/main/castor.php): Castor is developped with Castor
 - [jolicode/docker-starter](https://github.com/jolicode/docker-starter/blob/main/castor.php): A skeleton to start a web project with PHP and Docker
+- [monsieurbiz/SyliusPluginMaker](https://github.com/monsieurbiz/SyliusPluginMaker/blob/master/castor.php): An application to ease the creation of Sylius plugins
 - [lyrixx/twig-include-syntax](https://github.com/lyrixx/twig-include-syntax/blob/main/castor.php): A tool to fix Twig include syntax
 - [gist Spomky/a93cfa4d5373f865c2435bd9b0606522](https://gist.github.com/Spomky/a93cfa4d5373f865c2435bd9b0606522): A Castor task to check licenses used on a Composer project 
 
