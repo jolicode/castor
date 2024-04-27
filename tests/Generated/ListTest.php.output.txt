@@ -47,6 +47,7 @@ log:with-context                                                  Logs an "error
 not-rename:renamed                                                Task that was renamed
 notify:notify-on-finish                                           Sends a notification when the task finishes
 notify:send-notify                                                Sends a notification
+notify:send-notify-with-custom-title                              Sends a notification with a custom title
 open:documentation                                                Open Castor documentation in the default browser
 open:multiple                                                     Open an URL and a file in the default applications
 output:output                                                     Plays with Symfony Style

@@ -8,6 +8,8 @@ use Joli\JoliNotif\Notifier as JoliNotifier;
 use Joli\JoliNotif\Notifier\NullNotifier;
 use Psr\Log\LoggerInterface;
 
+use function Castor\context;
+
 class Notifier
 {
     public function __construct(
@@ -16,10 +18,10 @@ class Notifier
     ) {
     }
 
-    public function send(string $message): void
+    public function send(string $message, ?string $title = null): void
     {
         $notification = (new Notification())
-            ->setTitle('Castor')
+            ->setTitle($title ?? $this->getNotifyTitle())
             ->setBody($message)
         ;
 
@@ -40,5 +42,14 @@ class Notifier
         } catch (\Throwable $e) {
             $this->logger->error('Failed to send notification: ' . $e->getMessage());
         }
+    }
+
+    private function getNotifyTitle(): string
+    {
+        if ('' !== context()->notificationTitle) {
+            return context()->notificationTitle;
+        }
+
+        return 'Castor';
     }
 }
