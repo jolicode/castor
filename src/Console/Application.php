@@ -52,6 +52,11 @@ class Application extends SymfonyApplication
         return parent::doRun($input, $output);
     }
 
+    public function getHelp(): string
+    {
+        return $this->getLogo() . parent::getHelp();
+    }
+
     protected function doRunCommand(Command $command, InputInterface $input, OutputInterface $output): int
     {
         $this->command = $command;
@@ -102,5 +107,62 @@ class Application extends SymfonyApplication
         }
 
         return true;
+    }
+
+    private function getLogo(): string
+    {
+        if (!($_SERVER['CASTOR_TEST'] ?? false)) {
+            $now = new \DateTime();
+            $year = date('Y');
+
+            // Halloween
+            if ($now > new \DateTime($year . '-10-20') && $now < new \DateTime($year . '-11-02')) {
+                return <<<'LOGO'
+
+ ▄████▄   ▄▄▄        ██████ ▄▄▄█████▓ ▒█████   ██▀███
+▒██▀ ▀█  ▒████▄    ▒██    ▒ ▓  ██▒ ▓▒▒██▒  ██▒▓██ ▒ ██▒
+▒▓█    ▄ ▒██  ▀█▄  ░ ▓██▄   ▒ ▓██░ ▒░▒██░  ██▒▓██ ░▄█ ▒
+▒▓▓▄ ▄██▒░██▄▄▄▄██   ▒   ██▒░ ▓██▓ ░ ▒██   ██░▒██▀▀█▄
+▒ ▓███▀ ░ ▓█   ▓██▒▒██████▒▒  ▒██▒ ░ ░ ████▓▒░░██▓ ▒██▒
+░ ░▒ ▒  ░ ▒▒   ▓▒█░▒ ▒▓▒ ▒ ░  ▒ ░░   ░ ▒░▒░▒░ ░ ▒▓ ░▒▓░
+  ░  ▒     ▒   ▒▒ ░░ ░▒  ░ ░    ░      ░ ▒ ▒░   ░▒ ░ ▒░
+░          ░   ▒   ░  ░  ░    ░      ░ ░ ░ ▒    ░░   ░
+░ ░            ░  ░      ░               ░ ░     ░
+░
+
+
+LOGO;
+            }
+
+            // April fool
+            if ('04-01' === $now->format('m-d')) {
+                return <<<'LOGO'
+
+ooo        ooooo           oooo                   .o88o.  o8o  oooo
+`88.       .888'           `888                   888 `"  `"'  `888
+ 888b     d'888   .oooo.    888  oooo   .ooooo.  o888oo  oooo   888   .ooooo.
+ 8 Y88. .P  888  `P  )88b   888 .8P'   d88' `88b  888    `888   888  d88' `88b
+ 8  `888'   888   .oP"888   888888.    888ooo888  888     888   888  888ooo888
+ 8    Y     888  d8(  888   888 `88b.  888    .o  888     888   888  888    .o
+o8o        o888o `Y888""8o o888o o888o `Y8bod8P' o888o   o888o o888o `Y8bod8P'
+
+
+LOGO;
+            }
+        }
+
+        return <<<'LOGO'
+
+   █████████                     █████
+  ███░░░░░███                   ░░███
+ ███     ░░░   ██████    █████  ███████    ██████  ████████
+░███          ░░░░░███  ███░░  ░░░███░    ███░░███░░███░░███
+░███           ███████ ░░█████   ░███    ░███ ░███ ░███ ░░░
+░░███     ███ ███░░███  ░░░░███  ░███ ███░███ ░███ ░███
+ ░░█████████ ░░████████ ██████   ░░█████ ░░██████  █████
+  ░░░░░░░░░   ░░░░░░░░ ░░░░░░     ░░░░░   ░░░░░░  ░░░░░
+
+
+LOGO;
     }
 }

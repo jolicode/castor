@@ -211,6 +211,7 @@ function add_test(array $args, string $class, ?string $cwd = null, bool $needRem
             'COLUMNS' => 1000,
             'ENDPOINT' => $_SERVER['ENDPOINT'],
             'CASTOR_NO_REMOTE' => $needRemote ? 0 : 1,
+            'CASTOR_TEST' => 'true',
         ],
         timeout: null,
     );
