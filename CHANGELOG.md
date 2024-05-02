@@ -14,6 +14,8 @@
   functions instead
 * Deprecate `AfterApplicationInitializationEvent` event. Use
   `FunctionsResolvedEvent` instead.
+* Add `notificationTitle` property to `Context` to set the application name for
+  notifications title
 
 ## 0.15.0 (2024-04-03)
 

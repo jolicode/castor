@@ -247,9 +247,9 @@ function ssh_download(
     return Container::get()->sshRunner->download($sourcePath, $destinationPath, $host, $user, $sshOptions, $quiet, $allowFailure, $notify, $timeout);
 }
 
-function notify(string $message): void
+function notify(string $message, ?string $title = null): void
 {
-    Container::get()->notifier->send($message);
+    Container::get()->notifier->send($message, $title);
 }
 
 /**
