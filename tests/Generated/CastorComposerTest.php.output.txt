@@ -4,7 +4,7 @@
 / /___/ /_/ / / / / / / /_/ / /_/ (__  )  __/ /
 \____/\____/_/ /_/ /_/ .___/\____/____/\___/_/
                     /_/
-Composer version 2.7.2 2024-03-11 17:12:18
+Composer version 2.7.5 2024-05-03 16:23:40
 
 Usage:
   command [options] [arguments]
@@ -47,7 +47,7 @@ Available commands:
   outdated             Shows a list of installed packages that have updates available, including their latest version
   prohibits            [why-not] Shows which packages prevent the given package from being installed
   reinstall            Uninstalls and reinstalls the given package names
-  remove               [rm] Removes a package from the require or require-dev
+  remove               [rm|uninstall] Removes a package from the require or require-dev
   require              [r] Adds required packages to your composer.json and installs them
   run-script           [run] Runs the scripts defined in composer.json
   search               Searches for packages
