@@ -21,7 +21,12 @@ class PathHelper
 
         if (null === $root) {
             if (class_exists(\RepackedApplication::class)) {
-                return $root = Path::getDirectory(getcwd() ?: '.');
+                $cwd = getcwd();
+                if (false === $cwd) {
+                    throw new \RuntimeException('Could not determine current working directory.');
+                }
+
+                return $root = $cwd;
             }
 
             $path = getcwd() ?: '/';
