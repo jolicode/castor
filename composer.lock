@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dd9e777995813229c5bf780cb00037f2",
+    "content-hash": "f5f12560c2808e5bfe15ba465c003ed6",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -638,27 +638,31 @@
         },
         {
             "name": "jolicode/jolinotif",
-            "version": "v2.6.0",
+            "version": "v2.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jolicode/JoliNotif.git",
-                "reference": "6a886aa19aec7cc283125631f31f93f71729bf40"
+                "reference": "14eb53ae5b9c30b761bdf45e9e2b10c90ea7b4c1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jolicode/JoliNotif/zipball/6a886aa19aec7cc283125631f31f93f71729bf40",
-                "reference": "6a886aa19aec7cc283125631f31f93f71729bf40",
+                "url": "https://api.github.com/repos/jolicode/JoliNotif/zipball/14eb53ae5b9c30b761bdf45e9e2b10c90ea7b4c1",
+                "reference": "14eb53ae5b9c30b761bdf45e9e2b10c90ea7b4c1",
                 "shasum": ""
             },
             "require": {
                 "jolicode/php-os-helper": "^0.1.0",
                 "php": ">=8.1",
+                "psr/log": "^3.0",
+                "symfony/deprecation-contracts": "^3",
                 "symfony/process": "^5.4 || ^6.0 || ^7.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.13",
                 "symfony/finder": "^5.4 || ^6.0 || ^7.0",
                 "symfony/phpunit-bridge": "^5.4 || ^6.0 || ^7.0"
+            },
+            "suggest": {
+                "ext-ffi": "Needed to send notifications via libnotify on Linux"
             },
             "bin": [
                 "jolinotif"
@@ -689,7 +693,7 @@
             ],
             "support": {
                 "issues": "https://github.com/jolicode/JoliNotif/issues",
-                "source": "https://github.com/jolicode/JoliNotif/tree/v2.6.0"
+                "source": "https://github.com/jolicode/JoliNotif/tree/v2.7.1"
             },
             "funding": [
                 {
@@ -697,7 +701,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-12-03T13:14:21+00:00"
+            "time": "2024-05-03T19:35:56+00:00"
         },
         {
             "name": "jolicode/php-os-helper",

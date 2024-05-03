@@ -3,10 +3,9 @@
 namespace Castor\Helper;
 
 use Castor\ContextRegistry;
+use Joli\JoliNotif\DefaultNotifier;
 use Joli\JoliNotif\Exception\InvalidNotificationException;
 use Joli\JoliNotif\Notification;
-use Joli\JoliNotif\Notifier as JoliNotifier;
-use Joli\JoliNotif\Notifier\NullNotifier;
 use Psr\Log\LoggerInterface;
 
 use function Castor\context;
@@ -14,7 +13,7 @@ use function Castor\context;
 class Notifier
 {
     public function __construct(
-        private JoliNotifier $notifier,
+        private DefaultNotifier $notifier,
         private LoggerInterface $logger,
         private ContextRegistry $contextRegistry
     ) {
@@ -31,7 +30,9 @@ class Notifier
             ->setBody($message)
         ;
 
-        if ($this->notifier instanceof NullNotifier) {
+        $driver = $this->notifier->getDriver();
+
+        if (null === $driver) {
             $this->logger->warning('No supported notifier found, notification not sent.');
 
             return;

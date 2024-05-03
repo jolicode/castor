@@ -14,8 +14,7 @@ use Castor\ExpressionLanguage;
 use Castor\Helper\PathHelper;
 use Castor\Helper\PlatformHelper;
 use Castor\Monolog\Processor\ProcessProcessor;
-use Joli\JoliNotif\Notifier;
-use Joli\JoliNotif\NotifierFactory;
+use Joli\JoliNotif\DefaultNotifier;
 use Monolog\Logger;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Container\ContainerInterface;
@@ -178,8 +177,7 @@ class ApplicationFactory
 
             ->set(AsciiSlugger::class)
 
-            ->set(Notifier::class)
-                ->factory([NotifierFactory::class, 'create'])
+            ->set(DefaultNotifier::class)
 
             ->set(Container::class)
                 ->public()
