@@ -20,6 +20,7 @@
   - `null` is now the default value (only user notifications are displayed).
   - `true` to enable notifications globally (user and Castor generated notifications)
   - `false` to disable them globally
+* Fix root location when repacking application
 
 ## 0.15.0 (2024-04-03)
 

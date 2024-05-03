@@ -42,6 +42,10 @@ class RepackCommandTest extends TestCase
         // Test remote
         $p = (new Process([$phar, 'pyrech:hello-example'], cwd: $castorAppDirPath))->mustRun();
         $this->assertSame("\nHello from example!\n===================\n\n", $p->getOutput());
+
+        // Ensure the Root is well set
+        $p = (new Process([$phar, 'ls'], cwd: $castorAppDirPath))->mustRun();
+        $this->assertEquals('my-app.linux.phar', trim($p->getOutput()));
     }
 
     public static function setupRepackedCastorApp(string $castorAppDirName): string
@@ -69,6 +73,7 @@ class RepackCommandTest extends TestCase
             use Castor\Attribute\AsTask;
 
             use function Castor\import;
+            use function Castor\run;
 
             import('composer://pyrech/castor-example');
 
@@ -76,6 +81,12 @@ class RepackCommandTest extends TestCase
             function hello(): void
             {
                 echo "hello";
+            }
+
+            #[AsTask()]
+            function ls(): void
+            {
+                run(['ls', 'my-app.linux.phar']);
             }
             PHP
         );
