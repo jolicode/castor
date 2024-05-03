@@ -2,6 +2,7 @@
 
 namespace Castor\Helper;
 
+use Castor\ContextRegistry;
 use Joli\JoliNotif\Exception\InvalidNotificationException;
 use Joli\JoliNotif\Notification;
 use Joli\JoliNotif\Notifier as JoliNotifier;
@@ -15,11 +16,16 @@ class Notifier
     public function __construct(
         private JoliNotifier $notifier,
         private LoggerInterface $logger,
+        private ContextRegistry $contextRegistry
     ) {
     }
 
     public function send(string $message, ?string $title = null): void
     {
+        if (false === $this->contextRegistry->getCurrentContext()->notify) {
+            return;
+        }
+
         $notification = (new Notification())
             ->setTitle($title ?? $this->getNotifyTitle())
             ->setBody($message)
