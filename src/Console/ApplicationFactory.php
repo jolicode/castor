@@ -9,6 +9,8 @@ use Castor\Console\Command\RepackCommand;
 use Castor\Container;
 use Castor\Descriptor\DescriptorsCollection;
 use Castor\Event\AfterApplicationInitializationEvent;
+use Castor\Event\FunctionsResolvedEvent;
+use Castor\ExpressionLanguage;
 use Castor\Helper\PathHelper;
 use Castor\Helper\PlatformHelper;
 use Castor\Monolog\Processor\ProcessProcessor;
@@ -87,7 +89,10 @@ class ApplicationFactory
 
         AbstractCloner::$defaultCasters[self::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
         AbstractCloner::$defaultCasters[AfterApplicationInitializationEvent::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
+        AbstractCloner::$defaultCasters[Application::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
         AbstractCloner::$defaultCasters[DescriptorsCollection::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
+        AbstractCloner::$defaultCasters[ExpressionLanguage::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
+        AbstractCloner::$defaultCasters[FunctionsResolvedEvent::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
 
         return $errorHandler;
     }
