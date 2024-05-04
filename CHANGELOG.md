@@ -34,6 +34,9 @@
 ### Fixes
 
 * Fix root location when repacking application
+* Add `http_download()` function to simplify the process of downloading files
+* Deprecate `request()` in favor of `http_request()` for consistency with newly 
+ introduced `http_*` function
 
 ## 0.15.0 (2024-04-03)
 

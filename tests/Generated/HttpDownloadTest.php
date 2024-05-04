@@ -5,12 +5,12 @@ namespace Castor\Tests\Generated;
 use Castor\Tests\TaskTestCase;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
-class HttpRequestTest extends TaskTestCase
+class HttpDownloadTest extends TaskTestCase
 {
-    // http:request
+    // http:download
     public function test(): void
     {
-        $process = $this->runTask(['http:request']);
+        $process = $this->runTask(['http:download']);
 
         if (0 !== $process->getExitCode()) {
             throw new ProcessFailedException($process);
