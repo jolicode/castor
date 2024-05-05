@@ -20,6 +20,7 @@ Castor provides the following built-in functions:
 - [`guard_min_version`](going-further/helpers/version-check.md#the-guard_min_version-function)
 - [`hasher`](going-further/helpers/fingerprint.md#the-hasher-function)
 - [`http_client`](going-further/helpers/http-request.md#the-http_client-function)
+- [`http_download`](going-further/helpers/http-request.md#the-http-download-function)
 - [`import`](getting-started/basic-usage.md#the-import-function)
 - [`input`](going-further/helpers/console-and-io.md#the-input-function)
 - [`io`](going-further/helpers/console-and-io.md#the-io-function)
