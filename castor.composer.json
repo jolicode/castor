@@ -3,12 +3,12 @@
         "sort-packages": true
     },
     "replace": {
-        "castor\/castor": "v0.15.0"
+        "castor/castor": "v0.15.0"
     },
     "require": {
-        "doctrine/collections": "^2.2",
-        "pyrech/castor-example": "^1.0",
-        "pyrech/castor-example-package-not-published": "*",
+        "doctrine/collections": "^2.2.2",
+        "pyrech/castor-example": "^1.2",
+        "pyrech/castor-example-package-not-published": "^1",
         "pyrech/foobar": "v1"
     },
     "repositories": [

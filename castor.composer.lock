@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cd9d0c82470392c1e6820793ed840f7c",
+    "content-hash": "a9fbd76eb78433a2468785f8c641699f",
     "packages": [
         {
             "name": "doctrine/collections",
@@ -141,28 +141,28 @@
         },
         {
             "name": "pyrech/castor-example",
-            "version": "v1.1.0",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pyrech/castor-example.git",
-                "reference": "775447566dec8b7e5f73664fb34b98b7843d2f48"
+                "reference": "5ad3b4540e6023844f402fc6f2e0cda60082fa6d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pyrech/castor-example/zipball/775447566dec8b7e5f73664fb34b98b7843d2f48",
-                "reference": "775447566dec8b7e5f73664fb34b98b7843d2f48",
+                "url": "https://api.github.com/repos/pyrech/castor-example/zipball/5ad3b4540e6023844f402fc6f2e0cda60082fa6d",
+                "reference": "5ad3b4540e6023844f402fc6f2e0cda60082fa6d",
                 "shasum": ""
             },
-            "type": "project",
+            "type": "library",
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "support": {
                 "issues": "https://github.com/pyrech/castor-example/issues",
-                "source": "https://github.com/pyrech/castor-example/tree/v1.1.0"
+                "source": "https://github.com/pyrech/castor-example/tree/v1.2.0"
             },
-            "time": "2024-02-26T16:09:25+00:00"
+            "time": "2024-05-06T22:02:35+00:00"
         },
         {
             "name": "pyrech/castor-example-package-not-published",

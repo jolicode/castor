@@ -8,6 +8,7 @@ use function Castor\import;
 
 // Importing tasks from a Composer package
 import('composer://pyrech/castor-example');
+import('composer://pyrech/castor-example', file: 'foobar.php');
 // Importing tasks from a Composer package not published on packagist (but still having a composer.json)
 import('composer://pyrech/castor-example-package-not-published');
 // Importing tasks from a repository not using Composer

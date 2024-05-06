@@ -125,10 +125,15 @@ class Composer
                 throw new ImportError(sprintf('The package "%s" is not installed, make sure you required it in your castor.composer.json file.', $package));
             }
 
+            if ($file && !file_exists($packageDirectory . '/' . $file)) {
+                throw new ImportError(sprintf('The file "%s" does not exist in the package "%s".', $file, $package));
+            }
+
             $this->kernel->addMount(new Mount(
-                PathHelper::getCastorVendorDir() . '/' . $package . '/' . ($file ?? ''),
+                PathHelper::getCastorVendorDir() . '/' . $package,
                 allowEmptyEntrypoint: true,
                 allowRemotePackage: false,
+                file: $file,
             ));
 
             return;
