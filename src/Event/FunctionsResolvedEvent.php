@@ -4,8 +4,9 @@ namespace Castor\Event;
 
 use Castor\Descriptor\SymfonyTaskDescriptor;
 use Castor\Descriptor\TaskDescriptor;
+use Symfony\Contracts\EventDispatcher\Event;
 
-class FunctionsResolvedEvent
+class FunctionsResolvedEvent extends Event
 {
     /**
      * @param list<TaskDescriptor>        $taskDescriptors

@@ -7,10 +7,6 @@ use Castor\Console\Command\ComposerCommand;
 use Castor\Console\Command\DebugCommand;
 use Castor\Console\Command\RepackCommand;
 use Castor\Container;
-use Castor\Descriptor\DescriptorsCollection;
-use Castor\Event\AfterApplicationInitializationEvent;
-use Castor\Event\FunctionsResolvedEvent;
-use Castor\ExpressionLanguage;
 use Castor\Helper\PathHelper;
 use Castor\Helper\PlatformHelper;
 use Castor\Monolog\Processor\ProcessProcessor;
@@ -42,6 +38,7 @@ use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\VarDumper\Cloner\AbstractCloner;
 use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
@@ -86,12 +83,8 @@ class ApplicationFactory
     {
         $errorHandler = ErrorHandler::register();
 
-        AbstractCloner::$defaultCasters[self::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
-        AbstractCloner::$defaultCasters[AfterApplicationInitializationEvent::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
         AbstractCloner::$defaultCasters[Application::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
-        AbstractCloner::$defaultCasters[DescriptorsCollection::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
-        AbstractCloner::$defaultCasters[ExpressionLanguage::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
-        AbstractCloner::$defaultCasters[FunctionsResolvedEvent::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
+        AbstractCloner::$defaultCasters[Event::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
 
         return $errorHandler;
     }
