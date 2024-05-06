@@ -434,7 +434,7 @@ function request(...$args): ResponseInterface
  */
 function http_request(string $method, string $url, array $options = []): ResponseInterface
 {
-    return Container::get()->httpRequester->httpRequest($method, $url, $options);
+    return Container::get()->httpClient->request($method, $url, $options);
 }
 
 /**
@@ -442,12 +442,12 @@ function http_request(string $method, string $url, array $options = []): Respons
  */
 function http_download(string $url, ?string $filePath = null, string $method = 'GET', array $options = [], bool $stream = true): ResponseInterface
 {
-    return Container::get()->httpRequester->httpDownload($url, $filePath, $method, $options, $stream);
+    return Container::get()->httpDownloader->download($url, $filePath, $method, $options, $stream);
 }
 
 function http_client(): HttpClientInterface
 {
-    return Container::get()->httpRequester->httpClient();
+    return Container::get()->httpClient;
 }
 
 /**

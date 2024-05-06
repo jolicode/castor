@@ -7,7 +7,7 @@ use Castor\Console\Output\SectionOutput;
 use Castor\Fingerprint\FingerprintHelper;
 use Castor\Helper\Notifier;
 use Castor\Helper\Waiter;
-use Castor\Http\HttpRequester;
+use Castor\Http\HttpDownloader;
 use Castor\Import\Importer;
 use Castor\Runner\ParallelRunner;
 use Castor\Runner\ProcessRunner;
@@ -22,6 +22,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /** @internal */
 final class Container
@@ -36,7 +37,8 @@ final class Container
         public readonly EventDispatcherInterface $eventDispatcher,
         public readonly Filesystem $fs,
         public readonly FingerprintHelper $fingerprintHelper,
-        public readonly HttpRequester $httpRequester,
+        public readonly HttpClientInterface $httpClient,
+        public readonly HttpDownloader $httpDownloader,
         public readonly Importer $importer,
         public readonly InputInterface $input,
         public readonly Kernel $kernel,

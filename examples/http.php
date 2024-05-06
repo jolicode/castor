@@ -3,7 +3,6 @@
 namespace http;
 
 use Castor\Attribute\AsTask;
-use Symfony\Component\Filesystem\Filesystem;
 
 use function Castor\fs;
 use function Castor\http_download;
@@ -26,13 +25,7 @@ function download(): void
     $downloadUrl = 'http://eu-central-1.linodeobjects.com/speedtest/100MB-speedtest';
 
     if (isset($_SERVER['ENDPOINT'])) {
-        $filesystem = new Filesystem();
-        $data = str_repeat('a', 2 * 1024 * 1024); // 2MB of data
-
-        $downloadedFile = '2MB-dummy-file';
-        $filesystem->dumpFile($dummyFilePath = __DIR__ . '/../tests/Helper/fixtures/http/' . $downloadedFile, $data);
-
-        $downloadUrl = $_SERVER['ENDPOINT'] . '/' . $downloadedFile;
+        $downloadUrl = $_SERVER['ENDPOINT'] . '/big-file.php';
     }
 
     $downloadedFilePath = '/tmp/castor-tests/examples/http-download-dummy-file';
@@ -50,6 +43,6 @@ function download(): void
             )
         );
     } finally {
-        fs()->remove(array_filter([$downloadedFilePath, $dummyFilePath ?? null]));
+        fs()->remove($downloadedFilePath);
     }
 }

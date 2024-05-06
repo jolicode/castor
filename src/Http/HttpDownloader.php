@@ -10,7 +10,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /** @internal */
-class HttpRequester
+class HttpDownloader
 {
     public function __construct(
         private readonly HttpClientInterface $httpClient,
@@ -19,17 +19,12 @@ class HttpRequester
     ) {
     }
 
-    public function httpClient(): HttpClientInterface
-    {
-        return $this->httpClient;
-    }
-
     /**
      * @param string|null          $filePath Path to save the downloaded content. If null, the filename is determined from the URL or content disposition.
      * @param bool                 $stream   Controls whether the download is chunked (`true`), which is useful for large files as it uses less memory, or in one go (`false`)
      * @param array<string, mixed> $options  default values at {@see HttpClientInterface::OPTIONS_DEFAULTS}
      */
-    public function httpDownload(string $url, ?string $filePath = null, string $method = 'GET', array $options = [], bool $stream = true): ResponseInterface
+    public function download(string $url, ?string $filePath = null, string $method = 'GET', array $options = [], bool $stream = true): ResponseInterface
     {
         $this->logger->info('Starting http download', ['url' => $url]);
 
@@ -108,14 +103,6 @@ class HttpRequester
         $this->logger->info('Download finished', ['url' => $url, 'filePath' => $filePath, 'size' => $this->formatSize($totalDownloadedSize)]);
 
         return $response;
-    }
-
-    /**
-     * @param array<string, mixed> $options default values at {@see HttpClientInterface::OPTIONS_DEFAULTS}
-     */
-    public function httpRequest(string $method, string $url, array $options): ResponseInterface
-    {
-        return $this->httpClient->request($method, $url, $options);
     }
 
     private function calculatePercentage(int $downloadedSize, int $totalSize): float

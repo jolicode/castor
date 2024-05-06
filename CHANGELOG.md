@@ -14,6 +14,7 @@
 * Add `context()` function in expression language to enable a task
 * Add `notificationTitle` property to `Context` to set the application name for
   notifications title
+* Add `http_download()` function to simplify the process of downloading files
 
 ### Minor
 
@@ -30,13 +31,12 @@
   functions instead
 * Deprecate `AfterApplicationInitializationEvent` event. Use
   `FunctionsResolvedEvent` instead
+* Deprecate `request()` in favor of `http_request()` for consistency with newly
+  introduced `http_*` function
 
 ### Fixes
 
 * Fix root location when repacking application
-* Add `http_download()` function to simplify the process of downloading files
-* Deprecate `request()` in favor of `http_request()` for consistency with newly 
- introduced `http_*` function
 
 ## 0.15.0 (2024-04-03)
 

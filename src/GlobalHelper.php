@@ -47,7 +47,7 @@ class GlobalHelper
 
     public static function getHttpClient(): HttpClientInterface
     {
-        return Container::get()->httpRequester->httpClient();
+        return Container::get()->httpClient;
     }
 
     public static function getCache(): CacheItemPoolInterface&CacheInterface

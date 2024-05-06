@@ -2,8 +2,8 @@
 
 ## The `http_request()` function
 
-The `http_request()` function allows to make HTTP(S) requests easily. It performs HTTP(S)
-request and returns an instance of
+The `http_request()` function allows to make HTTP(S) requests easily. It
+performs HTTP(S) request and returns an instance of
 `Symfony\Contracts\HttpClient\ResponseInterface`:
 
 ```php
@@ -21,10 +21,13 @@ function foo()
 
 ## The `http_download()` function
 
-The `http_download()` function simplifies the process of downloading files through HTTP(S) protocol. It writes the
-response content directly to a specified file path.
+The `http_download()` function simplifies the process of downloading files
+through HTTP(S) protocol. It writes the response content directly to a specified
+file path.
 
-The `stream` parameter controls whether the download is chunked (`true`), which is useful for large files as it uses less memory, or in one go (`false`). 
+The `stream` parameter controls whether the download is chunked (`true`, default
+value), which is useful for large files as it uses less memory, or in one go
+(`false`).
 
 ```php
 use Castor\Attribute\AsTask;
@@ -40,7 +43,8 @@ function foo()
 }
 ```
 
-When running Castor in verbose mode, `http_download()` outputs useful logs, including a progress indicator to track the download status.
+When running Castor in verbose mode, `http_download()` outputs useful logs,
+including a progress indicator to track the download status.
 
 ```
 18:55:09 INFO      [castor] Filename determined for http download ["filename" => "100MB-speedtest","url" => "http://eu-central-1.linodeobjects.com/speedtest/100MB-speedtest"]
@@ -72,6 +76,6 @@ function foo()
 }
 ```
 
-You can check
-the [Symfony documentation](https://symfony.com/doc/current/http_client.html)
-for more information about this component and how to use it.
+You can check the [Symfony
+documentation](https://symfony.com/doc/current/http_client.html) for more
+information about this component and how to use it.
