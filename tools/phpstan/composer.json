@@ -1,6 +1,10 @@
 {
+    "name": "jolicode/castor-phpstan",
+    "description": "Tooling for linting Castor code",
+    "type": "project",
+    "license": "MIT",
     "require": {
-        "phpstan/phpstan": "^1.10.66"
+        "phpstan/phpstan": "^1.10.67"
     },
     "config": {
         "platform": {

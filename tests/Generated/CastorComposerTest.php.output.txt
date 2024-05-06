@@ -4,7 +4,7 @@
 / /___/ /_/ / / / / / / /_/ / /_/ (__  )  __/ /
 \____/\____/_/ /_/ /_/ .___/\____/____/\___/_/
                     /_/
-Composer version 2.7.5 2024-05-03 16:23:40
+Composer version 1.2.3
 
 Usage:
   command [options] [arguments]
