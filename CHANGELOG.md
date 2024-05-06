@@ -2,24 +2,37 @@
 
 ## Not released yet
 
+### Features
+
 * Totally rework the import feature. Castor use special `castor.composer.json`
   file to handle imports. This fixes many bugs and issues with the previous
-* Marked SSH features as stable
-* Add `?callable $callback = null` param to `ssh_*` functions to manipulate
-  output
-* Add support for SSH connection without specifying a user
+* SSH
+    * Marked SSH features as stable
+    * Add `?callable $callback = null` param to `ssh_*` functions to manipulate
+    output
+    * Add support for SSH connection without specifying a user
 * Add `context()` function in expression language to enable a task
-* Better handling of notification errors and exceptions
-* Deprecate `Castor\GlobalHelper` class. There are no replacements. Use raw
-  functions instead
-* Deprecate `AfterApplicationInitializationEvent` event. Use
-  `FunctionsResolvedEvent` instead.
 * Add `notificationTitle` property to `Context` to set the application name for
   notifications title
+
+### Minor
+
+* Better handling of notification errors and exceptions
+* Better log output in debug mode (`-vvv`)
 * Changed the behavior of `notify` parameter in `Context` to be a nullable boolean.
   - `null` is now the default value (only user notifications are displayed).
   - `true` to enable notifications globally (user and Castor generated notifications)
   - `false` to disable them globally
+
+### Deprecations
+
+* Deprecate `Castor\GlobalHelper` class. There are no replacements. Use raw
+  functions instead
+* Deprecate `AfterApplicationInitializationEvent` event. Use
+  `FunctionsResolvedEvent` instead
+
+### Fixes
+
 * Fix root location when repacking application
 
 ## 0.15.0 (2024-04-03)
