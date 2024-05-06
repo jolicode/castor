@@ -1,0 +1,1 @@
+Successfully downloaded file of size "2097152" from url "http://127.0.0.1:9955/big-file.php" to "/tmp/castor-tests/examples/http-download-dummy-file" with status code "200"

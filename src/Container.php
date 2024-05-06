@@ -7,6 +7,7 @@ use Castor\Console\Output\SectionOutput;
 use Castor\Fingerprint\FingerprintHelper;
 use Castor\Helper\Notifier;
 use Castor\Helper\Waiter;
+use Castor\Http\HttpDownloader;
 use Castor\Import\Importer;
 use Castor\Runner\ParallelRunner;
 use Castor\Runner\ProcessRunner;
@@ -37,6 +38,7 @@ final class Container
         public readonly Filesystem $fs,
         public readonly FingerprintHelper $fingerprintHelper,
         public readonly HttpClientInterface $httpClient,
+        public readonly HttpDownloader $httpDownloader,
         public readonly Importer $importer,
         public readonly InputInterface $input,
         public readonly Kernel $kernel,

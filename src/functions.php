@@ -420,13 +420,29 @@ function get_cache(): CacheItemPoolInterface&CacheInterface
 }
 
 /**
- * @param array<string, mixed> $options
- *
- * @see HttpClientInterface::OPTIONS_DEFAULTS
+ * @deprecated Since castor/castor 0.16. Use Castor\http_request() instead
  */
-function request(string $method, string $url, array $options = []): ResponseInterface
+function request(...$args): ResponseInterface
 {
-    return http_client()->request($method, $url, $options);
+    trigger_deprecation('jolicode/castor', '0.16', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'http_request');
+
+    return http_request(...$args);
+}
+
+/**
+ * @param array<string, mixed> $options default values at {@see HttpClientInterface::OPTIONS_DEFAULTS}
+ */
+function http_request(string $method, string $url, array $options = []): ResponseInterface
+{
+    return Container::get()->httpClient->request($method, $url, $options);
+}
+
+/**
+ * @param array<string, mixed> $options default values at {@see HttpClientInterface::OPTIONS_DEFAULTS}
+ */
+function http_download(string $url, ?string $filePath = null, string $method = 'GET', array $options = [], bool $stream = true): ResponseInterface
+{
+    return Container::get()->httpDownloader->download($url, $filePath, $method, $options, $stream);
 }
 
 function http_client(): HttpClientInterface

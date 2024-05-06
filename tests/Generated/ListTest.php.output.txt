@@ -1,7 +1,6 @@
 completion                                                        Dump the shell completion script
 hello                                                             hello
 help                                                              Display help for a command
-http-request                                                      Make HTTP request
 list                                                              List commands
 no-namespace                                                      Task without a namespace
 args:another-args                                                 Dumps all arguments and options, without configuration
@@ -40,6 +39,8 @@ fingerprint:task-with-a-fingerprint-and-force                     Check if the f
 fingerprint:task-with-complete-fingerprint-check                  Check if the fingerprint has changed before executing some code
 foo:bar                                                           Echo foo bar
 foo:foo                                                           Prints foo
+http:download                                                     Download a file through HTTP
+http:request                                                      Make HTTP request
 log:all-level                                                     Logs some messages with different levels
 log:error                                                         Logs an "error" message
 log:info                                                          Logs an "info" message

@@ -31,7 +31,7 @@ Castor provides the following built-in functions:
 - [`open`](going-further/helpers/open.md)
 - [`output`](going-further/helpers/console-and-io.md#the-output-function)
 - [`parallel`](going-further/helpers/parallel.md#the-parallel-function)
-- [`request`](going-further/helpers/http-request.md#the-request-function)
+- [`http_request`](going-further/helpers/http-request.md#the-http-request-function)
 - [`run`](getting-started/run.md#the-run-function)
 - [`ssh_download`](going-further/helpers/ssh.md#the-ssh_download-function)
 - [`ssh_run`](going-further/helpers/ssh.md#the-ssh_run-function)
