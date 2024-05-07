@@ -88,7 +88,7 @@ final class Kernel
         }
 
         try {
-            $this->requireEntrypoint($mount->path);
+            $this->requireEntrypoint($mount);
         } catch (CouldNotFindEntrypointException $e) {
             if (!$mount->allowEmptyEntrypoint) {
                 throw $e;
@@ -152,8 +152,17 @@ final class Kernel
         );
     }
 
-    private function requireEntrypoint(string $path): void
+    private function requireEntrypoint(Mount $mount): void
     {
+        $path = $mount->path;
+
+        // It's an import, via a remote package, with a file specified
+        if ($mount->file) {
+            $this->importer->importFile($mount->path . '/' . $mount->file);
+
+            return;
+        }
+
         if (file_exists($file = $path . '/castor.php')) {
             $this->importer->importFile($file);
         } elseif (file_exists($file = $path . '/.castor/castor.php')) {
