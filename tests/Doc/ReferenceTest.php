@@ -51,6 +51,11 @@ class ReferenceTest extends TestCase
         foreach ($referencedFunctions as $function) {
             $this->fail("Built-in function \"{$function}\" is listed in the documentation doc/reference.md but does not exist");
         }
+
+        $sortedFunctions = $lists['Functions'];
+        sort($sortedFunctions);
+
+        $this->assertSame($sortedFunctions, $lists['Functions'], 'Functions should be listed in alphabetical order in the documentation doc/reference.md');
     }
 
     public function testAttributesAreReferenced(): void
@@ -83,6 +88,11 @@ class ReferenceTest extends TestCase
         foreach ($referencedAttributes as $attribute) {
             $this->fail("Attribute \"{$attribute}\" is listed in the documentation doc/reference.md but does not exist");
         }
+
+        $sortedFunctions = $lists['Attributes'];
+        sort($sortedFunctions);
+
+        $this->assertSame($sortedFunctions, $lists['Attributes'], 'Attributes should be listed in alphabetical order in the documentation doc/reference.md');
     }
 
     /**
