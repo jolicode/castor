@@ -47,10 +47,7 @@ class ReferenceTest extends TestCase
             unset($referencedFunctions[array_search($function, $referencedFunctions)]);
         }
 
-        // Ensure all referenced functions exist
-        foreach ($referencedFunctions as $function) {
-            $this->fail("Built-in function \"{$function}\" is listed in the documentation doc/reference.md but does not exist");
-        }
+        $this->assertEmpty($referencedFunctions, 'Some functions are listed in the documentation doc/reference.md but do not exist: ' . implode(', ', $referencedFunctions));
 
         $sortedFunctions = $lists['Functions'];
         sort($sortedFunctions);
@@ -85,9 +82,7 @@ class ReferenceTest extends TestCase
         }
 
         // Ensure all referenced attributes exist
-        foreach ($referencedAttributes as $attribute) {
-            $this->fail("Attribute \"{$attribute}\" is listed in the documentation doc/reference.md but does not exist");
-        }
+        $this->assertEmpty($referencedAttributes, 'Some attributes are listed in the documentation doc/reference.md but do not exist: ' . implode(', ', $referencedAttributes));
 
         $sortedFunctions = $lists['Attributes'];
         sort($sortedFunctions);
