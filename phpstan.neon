@@ -8,7 +8,6 @@ parameters:
         - examples
     tmpDir: 'var/phpstan/tmp'
     inferPrivatePropertyTypeFromConstructor: true
-    checkGenericClassInNonGenericObjectType: false
     excludePaths:
         analyse: []
     typeAliases:
@@ -42,3 +41,5 @@ parameters:
             message: "#^Function pyrech\\\\.* not found\\.$#"
             count: 2
             path: examples/
+        -
+            identifier: missingType.generics

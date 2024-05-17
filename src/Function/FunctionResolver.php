@@ -91,7 +91,8 @@ final class FunctionResolver
         if ($this->repacked) {
             return;
         }
-        // Nor in static binary
+
+        // @phpstan-ignore-next-line identical.alwaysFalse (PHP_BINARY is empty in case of static binary)
         if (!\PHP_BINARY) {
             return;
         }
