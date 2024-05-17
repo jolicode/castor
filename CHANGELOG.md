@@ -24,6 +24,7 @@
   - `null` is now the default value (only user notifications are displayed).
   - `true` to enable notifications globally (user and Castor generated notifications)
   - `false` to disable them globally
+* `.castor.stub.php` is now generated in same location where `castor.php` is located
 
 ### Deprecations
 
