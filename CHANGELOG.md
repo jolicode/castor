@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+## 0.16.0 (2024-05-22)
+
 ### Features
 
 * Totally rework the import feature. Castor use special `castor.composer.json`
