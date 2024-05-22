@@ -82,6 +82,8 @@ jobs:
       - uses: ./.github/actions/static
         with:
           os: 'linux'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload the Linux amd64 static binary
         uses: actions/upload-artifact@v4
@@ -113,6 +115,8 @@ jobs:
       - uses: ./.github/actions/static
         with:
           os: 'darwin-amd64'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload the MacOs amd64 static binary
         uses: actions/upload-artifact@v4
@@ -144,6 +148,8 @@ jobs:
       - uses: ./.github/actions/static
         with:
           os: 'darwin-arm64'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload the MacOs arm64 static binary
         uses: actions/upload-artifact@v4
