@@ -20,9 +20,6 @@ project with PHP and Docker, encapsulated by Castor tasks
 - [monsieurbiz/SyliusPluginMaker](https://github.com/monsieurbiz/SyliusPluginMaker/blob/master/castor.php):
 MonsieurBiz created a CLI application based on Castor to ease the creation of
 Sylius plugins
-- [redirectionio/docker-example](https://github.com/redirectionio/docker-example/blob/master/.castor/castor.php):
-redirection.io uses some Castor tasks to build, run and tests their Docker
-examples
 - [lyrixx/twig-include-syntax](https://github.com/lyrixx/twig-include-syntax/blob/main/castor.php): Lyrixx developed a CLI tool to fix Twig
 include syntax
 - [jolicode/JoliTypo](https://github.com/jolicode/JoliTypo/blob/main/website/castor.php): JoliCode uses some Castor tasks to compile the PHP
