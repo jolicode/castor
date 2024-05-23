@@ -1,0 +1,7 @@
+In run.php line 63:
+
+  The command "echo foo; echo bar>&2; exit 1" failed.
+
+
+run:exception
+

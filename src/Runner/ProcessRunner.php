@@ -155,7 +155,7 @@ class ProcessRunner
         if (0 !== $exitCode) {
             $this->logger->notice(sprintf('Command finished with an error (exit code=%d).', $process->getExitCode()));
             if (!$context->allowFailure) {
-                if ($context->verbosityLevel->isVeryVerbose()) {
+                if ($context->verbosityLevel->isVerbose()) {
                     throw new ProcessFailedException($process);
                 }
 

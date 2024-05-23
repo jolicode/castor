@@ -11,7 +11,7 @@ class LogAllLevelTest extends TaskTestCase
     {
         $process = $this->runTask(['log:all-level']);
         $this->assertSame(0, $process->getExitCode());
-        $this->assertStringContainsString('Re-run with -v, -vv, -vvv to different output.', $process->getOutput());
+        $this->assertStringContainsString('Re-run with -v, -vv, -vvv for different output.', $process->getOutput());
         $this->assertStringContainsString('EMERGENCY [castor] level: emergency', $process->getOutput());
         $this->assertStringContainsString('ALERT     [castor] level: alert', $process->getOutput());
         $this->assertStringContainsString('CRITICAL  [castor] level: critical', $process->getOutput());

@@ -18,9 +18,18 @@ final class OutputCleaner
         $string = str_replace("scp: Connection closed\n", '', $string);
         $string = str_replace("lost connection\n", '', $string);
 
+        // Phar, trace
+        $string = str_replace(\dirname(__DIR__, 2), '...', $string);
+        $string = str_replace('phar://', '', $string);
+        $string = str_replace('tools/phar/build/castor/', '', $string);
+        $string = str_replace('.../castor/', '.../', $string);
+        $string = preg_replace("{require\\(\\) at .*/castor:\\d+\n}", '', $string);
+
         // Clean line numbers
         $string = preg_replace('{In ([A-Z]\w+).php line \d+:}m', 'In \1.php line XXXX:', $string);
         $string = preg_replace('{In functions.php line \d+:}m', 'In functions.php line XXXX:', $string);
+        $string = preg_replace('{\.php:\d+}m', '.php:XXXX', $string);
+        $string = preg_replace('{castor:\d+}m', 'castor:XXXX', $string);
 
         // Clean the time
         $string = preg_replace('{^\d\d:\d\d:\d\d }m', 'hh:mm:ss ', $string);
@@ -34,8 +43,6 @@ final class OutputCleaner
         // Avoid spacing issues
         $string = ltrim($string, "\n"); // Trim output start to avoid empty lines (like after removing remote import warnings)
         $string = preg_replace('/ +$/m', '', $string); // Remove trailing space
-
-        $string = str_replace(\dirname(__DIR__, 2), '...', $string);
 
         // Fix the watcher path when running the tests with local project VS in the phar / static
         $string = str_replace('.../src/Runner/../../tools/watcher/bin/watcher-linux-amd64', 'watcher', $string);
