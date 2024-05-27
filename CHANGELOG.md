@@ -2,6 +2,17 @@
 
 ## Not released yet
 
+## 0.17.0 (2024-05-27)
+
+### Features
+
+* Add `Castor\Event\AfterBootEvent` to perform action when the application is ready
+* Add `Symfony\Component\Finder\SplFileInfo` to the stubs
+
+### Fixes
+
+* Map console verbosity level to default context, even when no context is defined
+
 ## 0.16.0 (2024-05-22)
 
 ### Features
