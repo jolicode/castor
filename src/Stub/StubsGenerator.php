@@ -72,6 +72,7 @@ final class StubsGenerator
             \Symfony\Component\Filesystem\Filesystem::class,
             \Symfony\Component\Filesystem\Path::class,
             Finder::class,
+            \Symfony\Component\Finder\SplFileInfo::class,
             \Symfony\Component\Process\Exception\ExceptionInterface::class,
             \Symfony\Component\Process\ExecutableFinder::class,
             \Symfony\Component\Process\Process::class,
