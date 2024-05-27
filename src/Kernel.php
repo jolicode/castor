@@ -215,7 +215,9 @@ final class Kernel
 
         // occurs when running `castor -h`, or if no context is defined
         if (!$input->hasOption('context')) {
-            $this->contextRegistry->setCurrentContext(new Context());
+            $this->contextRegistry->setCurrentContext(new Context(
+                verbosityLevel: VerbosityLevel::fromSymfonyOutput($output)
+            ));
 
             return;
         }
