@@ -7,6 +7,7 @@ use Castor\Console\Output\VerbosityLevel;
 use Castor\Descriptor\DescriptorsCollection;
 use Castor\Descriptor\TaskDescriptorCollection;
 use Castor\Event\AfterApplicationInitializationEvent;
+use Castor\Event\AfterBootEvent;
 use Castor\Event\BeforeBootEvent;
 use Castor\Event\FunctionsResolvedEvent;
 use Castor\Exception\CouldNotFindEntrypointException;
@@ -61,6 +62,8 @@ final class Kernel
 
             $this->load($mount, $currentFunctions, $currentClasses, $input, $output);
         }
+
+        $this->eventDispatcher->dispatch(new AfterBootEvent($this->application));
     }
 
     public function addMount(Mount $mount): void

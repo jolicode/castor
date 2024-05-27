@@ -37,6 +37,9 @@ Here is the built-in events triggered by Castor:
   functions has been resolved. It provides access to an array of
   `TaskDescriptor` and `SymfonyTaskDescriptor` objects;
 
+* `Castor\Event\AfterBootEvent`: This event is triggered when the application is
+  ready to execute task
+
 * `Castor\Event\BeforeExecuteTaskEvent`: This event is triggered before
   executing a task. It provides access to the `TaskCommand` instance;
 
