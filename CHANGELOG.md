@@ -2,6 +2,11 @@
 
 ## Not released yet
 
+## 0.16.1 (2024-05-27)
+
+* Fix stubs to include SplFileInfo class
+* Fix default verbosity when no context is defined
+
 ## 0.16.0 (2024-05-22)
 
 ### Features

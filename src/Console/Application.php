@@ -18,7 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 class Application extends SymfonyApplication
 {
     public const NAME = 'castor';
-    public const VERSION = 'v0.16.0';
+    public const VERSION = 'v0.16.1';
 
     private Command $command;
 
