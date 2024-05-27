@@ -19,7 +19,7 @@ It comes with many features to make your life easier:
 * **[Autocomplete](going-further/interacting-with-castor/autocomplete.md)** support for faster and error-free typing
 * A built-in list of useful functions:
     * [`run()`](getting-started/run.md#the-run-function): Runs external processes, enabling seamless integration with external tools
-    * [`io()`](going-further/helpers/console-and-io/#the-io-function): Displays beautiful output and interacts with the terminal
+    * [`io()`](going-further/helpers/console-and-io.md#the-io-function): Displays beautiful output and interacts with the terminal
     * [`watch()`](going-further/helpers/watch.md): Watches files and automatically triggers actions on file modifications
     * [`fs()`](going-further/helpers/filesystem.md/#the-fs-function): Creates, removes, and manipulates files and directories
     * [And even more advanced functions](reference.md)
