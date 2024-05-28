@@ -66,6 +66,7 @@ qa:phpstan:update                                                 update depende
 quiet:quiet                                                       Executes something but does not output anything
 remote-import:remote-task-class                                   Use a class that extends a class imported from a remote package
 remote-import:remote-tasks                                        Use functions imported from remote packages
+run:exception                                                     Run a command that will fail
 run:ls                                                            Run a sub-process and display information about it
 run:test-file                                                     Run a sub-process and return its exit code, with get_exit_code() function
 run:variables                                                     Run a sub-process with environment variables and display information about it

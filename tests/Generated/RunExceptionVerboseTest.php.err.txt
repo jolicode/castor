@@ -1,0 +1,34 @@
+In ProcessRunner.php line XXXX:
+
+  [Symfony\Component\Process\Exception\ProcessFailedException]
+  The command "echo foo; echo bar>&2; exit 1" failed.
+
+  Exit Code: 1(General error)
+
+  Working directory: ...
+
+  Output:
+  ================
+  foo
+
+
+  Error Output:
+  ================
+  bar
+
+
+Exception trace:
+  at .../src/Runner/ProcessRunner.php:XXXX
+ Castor\Runner\ProcessRunner->run() at .../src/functions.php:XXXX
+ Castor\run() at .../examples/run.php:XXXX
+ run\exception() at .../src/Console/Command/TaskCommand.php:XXXX
+ Castor\Console\Command\TaskCommand->execute() at .../vendor/symfony/console/Command/Command.php:XXXX
+ Symfony\Component\Console\Command\Command->run() at .../vendor/symfony/console/Application.php:XXXX
+ Symfony\Component\Console\Application->doRunCommand() at .../src/Console/Application.php:XXXX
+ Castor\Console\Application->doRunCommand() at .../vendor/symfony/console/Application.php:XXXX
+ Symfony\Component\Console\Application->doRun() at .../src/Console/Application.php:XXXX
+ Castor\Console\Application->doRun() at .../vendor/symfony/console/Application.php:XXXX
+ Symfony\Component\Console\Application->run() at .../bin/castor:XXXX
+
+run:exception
+

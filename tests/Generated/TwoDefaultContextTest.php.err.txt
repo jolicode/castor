@@ -1,7 +1,7 @@
 In ContextRegistry.php line XXXX:
 
   Function "two()" is not properly configured:
-  You cannot define two contexts with the same name "default". There is one already defined in "castor.php:7".
+  You cannot define two contexts with the same name "default". There is one already defined in "castor.php:XXXX".
   Defined in "castor.php" line 13.
 
 

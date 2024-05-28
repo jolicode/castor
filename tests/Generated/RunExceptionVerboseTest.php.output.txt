@@ -1,0 +1,1 @@
+hh:mm:ss NOTICE    [castor] Command finished with an error (exit code=1).

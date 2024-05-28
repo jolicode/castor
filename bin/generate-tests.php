@@ -178,6 +178,7 @@ add_test(['enabled:hello', '--context', 'production'], 'EnabledInProduction');
 add_test(['list', '--raw', '--format', 'txt', '--short'], 'List', needRemote: true, skipOnBinary: true);
 // Transient test, disabled for now
 // add_test(['parallel:sleep', '--sleep5', '0', '--sleep7', '0', '--sleep10', '0'], 'ParallelSleep');
+add_test(['run:exception', '-v'], 'RunExceptionVerbose');
 add_test(['symfony:greet', 'World', '--french', 'COUCOU', '--punctuation', '!'], 'SymfonyGreet', skipOnBinary: true);
 add_test(['symfony:hello'], 'SymfonyHello', skipOnBinary: true);
 // In /tmp

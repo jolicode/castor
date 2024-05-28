@@ -11,7 +11,7 @@ use function Castor\output;
 function info(): void
 {
     if (!output()->isVeryVerbose()) {
-        output()->writeln('Re-run with -vv, -vvv to different output.');
+        output()->writeln('Re-run with -vv, -vvv for different output.');
     }
 
     log('Hello, this is an "info" log message.', 'info');
@@ -27,7 +27,7 @@ function error(): void
 function with_context(): void
 {
     if (!output()->isVerbose()) {
-        output()->writeln('Re-run with -v, -vv, -vvv to different output.');
+        output()->writeln('Re-run with -v, -vv, -vvv for different output.');
     }
 
     log('Hello, I\'have a context!', 'error', context: [
@@ -39,7 +39,7 @@ function with_context(): void
 function all_level(): void
 {
     if (!output()->isVerbose()) {
-        output()->writeln('Re-run with -v, -vv, -vvv to different output.');
+        output()->writeln('Re-run with -v, -vv, -vvv for different output.');
     }
 
     $levels = [
