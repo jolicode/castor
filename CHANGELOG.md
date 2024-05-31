@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Not released yet
+## 0.17.1 (2024-05-31)
 
 ### Fixes
 
