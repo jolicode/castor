@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Fixes
+
+* Fix update instruction
+
 ## 0.17.0 (2024-05-27)
 
 ### Features
