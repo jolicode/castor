@@ -126,7 +126,7 @@ class UpdateCastorListener
 
             if (OsHelper::isUnix()) {
                 $symfonyStyle->block('Run the following command to update Castor:');
-                $symfonyStyle->block(sprintf('<comment>curl "https://castor.jolicode.com/install" | bash --install-dir %s</comment>', basename($pharPath)), escape: false);
+                $symfonyStyle->block(sprintf('<comment>curl "https://castor.jolicode.com/install" | bash -s -- --install-dir %s</comment>', \dirname($pharPath)), escape: false);
             } else {
                 $symfonyStyle->block(sprintf('Download the latest version at <comment>%s</comment>', $latestReleaseUrl), escape: false);
             }

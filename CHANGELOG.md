@@ -1,6 +1,10 @@
 # CHANGELOG
 
-## Not released yet
+## 0.17.1 (2024-05-31)
+
+### Fixes
+
+* Fix update instruction
 
 ## 0.17.0 (2024-05-27)
 
