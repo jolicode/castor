@@ -1,6 +1,5 @@
 # CHANGELOG
 
-<<<<<<< HEAD
 ## Not released yet
 
 ### Fixes

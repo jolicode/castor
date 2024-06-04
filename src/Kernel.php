@@ -117,7 +117,8 @@ final class Kernel
         $this->functionLoader->loadListeners($descriptorsCollection->listenerDescriptors);
 
         // Must load contexts before tasks, because tasks can be disabled
-        // depending on the context.
+        // depending on the context. And it must be before executing
+        // listeners too, to get the context there.
         $this->functionLoader->loadContexts($descriptorsCollection->contextDescriptors, $descriptorsCollection->contextGeneratorDescriptors);
         $this->configureContext($input, $output);
 
