@@ -46,9 +46,13 @@ class UpdateCastorListener
         if (!$command) {
             return;
         }
-        if ('_complete' === $command->getName()) {
+        if (\in_array($command->getName(), [
+            'completion',
+            '_complete',
+        ])) {
             return;
         }
+
         $input = $event->getInput();
         if ($input->hasOption('format') && 'json' === $input->getOption('format')) {
             return;
