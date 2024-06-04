@@ -1,10 +1,15 @@
 # CHANGELOG
 
+<<<<<<< HEAD
 ## Not released yet
 
 ### Fixes
 
 * Fix completion when update is available
+
+### Features
+
+* Add `Castor\Event\ContextCreatedEvent` to allow updating the context after it is created
 
 ## 0.17.1 (2024-05-31)
 

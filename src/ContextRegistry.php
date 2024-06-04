@@ -3,8 +3,10 @@
 namespace Castor;
 
 use Castor\Descriptor\ContextDescriptor;
+use Castor\Event\ContextCreatedEvent;
 use Castor\Exception\FunctionConfigurationException;
 use Castor\Helper\PathHelper;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /** @internal */
 class ContextRegistry
@@ -12,8 +14,14 @@ class ContextRegistry
     /** @var array<string, ContextDescriptor> */
     private array $descriptors = [];
     private ?string $defaultName = null;
+    /** @var array<string, Context> */
+    private array $contexts = [];
 
     private Context $currentContext;
+
+    public function __construct(private EventDispatcherInterface $eventDispatcher)
+    {
+    }
 
     public function addDescriptor(ContextDescriptor $descriptor): void
     {
@@ -75,6 +83,10 @@ class ContextRegistry
             return $this->getCurrentContext();
         }
 
+        if (isset($this->contexts[$name])) {
+            return $this->contexts[$name];
+        }
+
         if (!\array_key_exists($name, $this->descriptors)) {
             throw new \RuntimeException(sprintf('Context "%s" not found.', $name));
         }
@@ -84,7 +96,12 @@ class ContextRegistry
             throw new FunctionConfigurationException(sprintf('The context generator must return an instance of "%s", "%s" returned.', Context::class, get_debug_type($context)), $this->descriptors[$name]->function);
         }
 
-        return $context;
+        $event = new ContextCreatedEvent($name, $context);
+        $this->eventDispatcher->dispatch($event);
+
+        $this->contexts[$name] = $event->context;
+
+        return $this->contexts[$name];
     }
 
     public function hasCurrentContext(): bool
