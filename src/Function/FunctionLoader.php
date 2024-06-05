@@ -50,7 +50,6 @@ final class FunctionLoader
         foreach ($listenerDescriptors as $descriptor) {
             $this->eventDispatcher->addListener(
                 $descriptor->asListener->event,
-                // @phpstan-ignore-next-line
                 $descriptor->reflectionFunction->getClosure(),
                 $descriptor->asListener->priority
             );
