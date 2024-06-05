@@ -791,3 +791,16 @@ function open(string ...$urls): void
 
     parallel(...$parallelCallbacks);
 }
+
+function run_phar(string $pharPath, string ...$arguments): Process
+{
+    $arguments = array_map(
+        fn (string $argument) => escapeshellarg($argument),
+        $arguments,
+    );
+
+    // get program path
+    $castorPath = $_SERVER['argv'][0];
+
+    return run([$castorPath, 'run-phar', $pharPath, ...$arguments]);
+}
