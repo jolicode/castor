@@ -115,6 +115,10 @@ class RepackCommand extends Command
             ...$boxConfig['files'] ?? [],
         ];
 
+        if (file_exists(PathHelper::getRoot() . '/castor.composer.json')) {
+            $boxConfig['files'][] = 'castor.composer.json';
+        }
+
         if (file_exists($appBoxConfigFile = PathHelper::getRoot() . '/box.json')) {
             $appBoxConfig = json_decode((string) file_get_contents($appBoxConfigFile), true, 512, \JSON_THROW_ON_ERROR);
 

@@ -13,6 +13,7 @@ use Castor\Event\FunctionsResolvedEvent;
 use Castor\Exception\CouldNotFindEntrypointException;
 use Castor\Function\FunctionLoader;
 use Castor\Function\FunctionResolver;
+use Castor\Helper\PathHelper;
 use Castor\Helper\PlatformHelper;
 use Castor\Import\Importer;
 use Castor\Import\Mount;
@@ -53,6 +54,15 @@ final class Kernel
         $this->eventDispatcher->dispatch(new BeforeBootEvent($this->application));
 
         $allowRemotePackage = $this->composer->isRemoteAllowed();
+
+        if (class_exists(\RepackedApplication::class) && $allowRemotePackage) {
+            $composerFile = PathHelper::getRoot() . '/castor.composer.json';
+
+            // Copy file from repacked application
+            if (!file_exists($composerFile) && file_exists(\RepackedApplication::ROOT_DIR . '/castor.composer.json')) {
+                copy(\RepackedApplication::ROOT_DIR . '/castor.composer.json', $composerFile);
+            }
+        }
 
         $this->addMount(new Mount($this->rootDir, allowRemotePackage: $allowRemotePackage));
 
