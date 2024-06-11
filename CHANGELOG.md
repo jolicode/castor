@@ -23,6 +23,10 @@
 * Add `Castor\Event\ContextCreatedEvent` to allow updating the context after it is created
 * Add `run_phar()` function to run a phar file in all contexts
 
+### Deprecations
+
+* Deprecate all arguments in `run()` function that are already in the context
+
 ## 0.17.1 (2024-05-31)
 
 ### Fixes

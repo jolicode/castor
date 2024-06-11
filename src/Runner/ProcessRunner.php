@@ -14,8 +14,10 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
+use function Castor\context;
 use function Castor\Internal\fix_exception;
 
+/** @internal */
 class ProcessRunner
 {
     public function __construct(
@@ -48,34 +50,50 @@ class ProcessRunner
         $context ??= $this->contextRegistry->getCurrentContext();
 
         if (null !== $environment) {
+            trigger_deprecation('jolicode/castor', '0.18', 'The "environment" argument is deprecated, use the "Context" object instead.');
+
             $context = $context->withEnvironment($environment);
         }
 
         if ($workingDirectory) {
+            trigger_deprecation('jolicode/castor', '0.18', 'The "workingDirectory" argument is deprecated, use the "Context" object instead.');
+
             $context = $context->withWorkingDirectory($workingDirectory);
         }
 
         if (null !== $tty) {
+            trigger_deprecation('jolicode/castor', '0.18', 'The "tty" argument is deprecated, use the "Context" object instead.');
+
             $context = $context->withTty($tty);
         }
 
         if (null !== $pty) {
+            trigger_deprecation('jolicode/castor', '0.18', 'The "pty" argument is deprecated, use the "Context" object instead.');
+
             $context = $context->withPty($pty);
         }
 
         if (null !== $timeout) {
+            trigger_deprecation('jolicode/castor', '0.18', 'The "timeout" argument is deprecated, use the "Context" object instead.');
+
             $context = $context->withTimeout($timeout);
         }
 
         if (null !== $quiet) {
+            trigger_deprecation('jolicode/castor', '0.18', 'The "quiet" argument is deprecated, use the "Context" object instead.');
+
             $context = $context->withQuiet($quiet);
         }
 
         if (null !== $allowFailure) {
+            trigger_deprecation('jolicode/castor', '0.18', 'The "allowFailure" argument is deprecated, use the "Context" object instead.');
+
             $context = $context->withAllowFailure($allowFailure);
         }
 
         if (null !== $notify) {
+            trigger_deprecation('jolicode/castor', '0.18', 'The "notify" argument is deprecated, use the "Context" object instead.');
+
             $context = $context->withNotify($notify);
         }
 
@@ -184,11 +202,14 @@ class ProcessRunner
         ?Context $context = null,
     ): string {
         $hasOnFailure = null !== $onFailure;
+        $context ??= context();
+
         if ($hasOnFailure) {
             if (null !== $allowFailure) {
                 throw new \LogicException('The "allowFailure" argument cannot be used with "onFailure".');
             }
-            $allowFailure = true;
+
+            $context = $context->withAllowFailure();
         }
 
         $process = $this->run(
@@ -197,8 +218,7 @@ class ProcessRunner
             workingDirectory: $workingDirectory,
             timeout: $timeout,
             allowFailure: $allowFailure,
-            context: $context,
-            quiet: true,
+            context: $context->withQuiet(),
         );
 
         if ($hasOnFailure && !$process->isSuccessful()) {
@@ -225,8 +245,7 @@ class ProcessRunner
             environment: $environment,
             workingDirectory: $workingDirectory,
             timeout: $timeout,
-            allowFailure: true,
-            context: $context,
+            context: ($context ?? context())->withAllowFailure(),
             quiet: $quiet,
         );
 
