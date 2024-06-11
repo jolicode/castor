@@ -791,3 +791,29 @@ function open(string ...$urls): void
 
     parallel(...$parallelCallbacks);
 }
+
+/**
+ * @param array<string|\Stringable>                      $arguments
+ * @param array<string, string|\Stringable|int>|null     $environment
+ * @param (callable(string, string, Process) :void)|null $callback
+ */
+function run_phar(
+    string $pharPath,
+    array $arguments = [],
+    ?array $environment = null,
+    ?string $workingDirectory = null,
+    ?bool $tty = null,
+    ?bool $pty = null,
+    ?float $timeout = null,
+    ?bool $quiet = null,
+    ?bool $allowFailure = null,
+    ?bool $notify = null,
+    ?callable $callback = null,
+    ?Context $context = null,
+    ?string $path = null): Process
+{
+    // get program path
+    $castorPath = $_SERVER['argv'][0];
+
+    return run([$castorPath, 'run-phar', $pharPath, ...$arguments], $environment, $workingDirectory, $tty, $pty, $timeout, $quiet, $allowFailure, $notify, $callback, $context, $path);
+}

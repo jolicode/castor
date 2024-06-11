@@ -1,0 +1,10 @@
+array(4) {
+  [0]=>
+  string(1) "a"
+  [1]=>
+  string(4) "list"
+  [2]=>
+  string(2) "of"
+  [3]=>
+  string(9) "arguments"
+}
