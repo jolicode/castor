@@ -5,6 +5,8 @@ namespace Castor\Runner;
 use Spatie\Ssh\Ssh;
 use Symfony\Component\Process\Process;
 
+use function Castor\context;
+
 /** @internal */
 final class SshRunner
 {
@@ -81,14 +83,12 @@ final class SshRunner
     ): Process {
         return $this->processRunner->run(
             $command,
-            environment: [],
-            tty: false,
-            pty: false,
             timeout: $timeout,
             quiet: $quiet,
             allowFailure: $allowFailure,
             notify: $notify,
-            callback: $callback
+            callback: $callback,
+            context: context()->withPty(false)->withTty(false)->withEnvironment([]),
         );
     }
 

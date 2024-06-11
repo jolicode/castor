@@ -62,8 +62,8 @@ function productionContext(): Context
 function runContext(): Context
 {
     $blankContext = new Context();
-    $production = (bool) trim(run('echo $PRODUCTION', quiet: true, context: $blankContext)->getOutput());
-    $foo = trim(run('echo $FOO', quiet: true, context: $blankContext)->getOutput()) ?: 'no defined';
+    $production = (bool) trim(run('echo $PRODUCTION', context: $blankContext->withQuiet())->getOutput());
+    $foo = trim(run('echo $FOO', context: $blankContext->withQuiet())->getOutput()) ?: 'no defined';
 
     return new Context([
         'name' => 'run',
