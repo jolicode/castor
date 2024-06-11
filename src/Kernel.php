@@ -114,13 +114,13 @@ final class Kernel
             }
         }
 
+        $this->functionLoader->loadListeners($descriptorsCollection->listenerDescriptors);
+
         // Must load contexts before tasks, because tasks can be disabled
-        // depending on the context. And it must be before the listener too, to
-        // get the context there.
+        // depending on the context. And it must be before executing
+        // listeners too, to get the context there.
         $this->functionLoader->loadContexts($descriptorsCollection->contextDescriptors, $descriptorsCollection->contextGeneratorDescriptors);
         $this->configureContext($input, $output);
-
-        $this->functionLoader->loadListeners($descriptorsCollection->listenerDescriptors);
 
         if ($this->eventDispatcher->hasListeners(AfterApplicationInitializationEvent::class)) {
             trigger_deprecation('castor', '0.16', 'The "%s" class is deprecated, use "%s" instead.', AfterApplicationInitializationEvent::class, FunctionsResolvedEvent::class);

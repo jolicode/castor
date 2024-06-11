@@ -174,6 +174,7 @@ add_test(['context:context', '--context', 'no_no_exist'], 'ContextContextDoNotEx
 add_test(['context:context', '--context', 'path'], 'ContextContextPath');
 add_test(['context:context', '--context', 'production'], 'ContextContextProduction');
 add_test(['context:context', '--context', 'run'], 'ContextContextRun');
+add_test(['context:context', '--context', 'updated'], 'ContextContextUpdated');
 add_test(['enabled:hello', '--context', 'production'], 'EnabledInProduction');
 add_test(['list', '--raw', '--format', 'txt', '--short'], 'List', needRemote: true, skipOnBinary: true);
 // Transient test, disabled for now

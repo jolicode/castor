@@ -58,6 +58,10 @@ Here is the built-in events triggered by Castor:
   has been terminated and launched inside the `run` function. It provides access
   to the `Process` instance.
 
+* `Castor\Event\ContextCreatedEvent`: This event is triggered after a context
+  has been created. It allows to update the `Context` that will be used by the
+  application.
+
 ## Console events
 
 Castor also provides a set of events related to the symfony console application,

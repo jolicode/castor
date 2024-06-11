@@ -4,8 +4,10 @@ namespace context;
 
 use Castor\Attribute\AsContext;
 use Castor\Attribute\AsContextGenerator;
+use Castor\Attribute\AsListener;
 use Castor\Attribute\AsTask;
 use Castor\Context;
+use Castor\Event\ContextCreatedEvent;
 
 use function Castor\context;
 use function Castor\io;
@@ -137,4 +139,21 @@ function contextWith(): void
     }, data: ['foo' => 'bar'], context: 'dynamic');
 
     io()->writeln($result);
+}
+
+#[AsContext(name: 'updated')]
+function updatedContext(): Context
+{
+    return new Context();
+}
+
+#[AsListener(ContextCreatedEvent::class)]
+function update_context(ContextCreatedEvent $event): void
+{
+    if ('updated' !== $event->contextName) {
+        return;
+    }
+
+    $context = $event->context;
+    $event->context = $context->withData(['name' => 'updated_context']);
 }
