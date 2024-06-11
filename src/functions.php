@@ -812,11 +812,6 @@ function run_phar(
     ?Context $context = null,
     ?string $path = null): Process
 {
-    $arguments = array_map(
-        fn (string|\Stringable $argument) => escapeshellarg((string) $argument),
-        $arguments,
-    );
-
     // get program path
     $castorPath = $_SERVER['argv'][0];
 

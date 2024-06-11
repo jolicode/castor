@@ -1,10 +1,10 @@
 array(4) {
   [0]=>
-  string(3) "'a'"
+  string(1) "a"
   [1]=>
-  string(6) "'list'"
+  string(4) "list"
   [2]=>
-  string(4) "'of'"
+  string(2) "of"
   [3]=>
-  string(11) "'arguments'"
+  string(9) "arguments"
 }
