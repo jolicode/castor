@@ -115,6 +115,15 @@ class RepackCommand extends Command
             ...$boxConfig['files'] ?? [],
         ];
 
+        // Add .castor directory
+        $boxConfig['directories'] = [
+            '.castor',
+            ...$boxConfig['directories'] ?? [],
+        ];
+
+        // Force discovery
+        $boxConfig['force-autodiscovery'] = true;
+
         if (file_exists($appBoxConfigFile = PathHelper::getRoot() . '/box.json')) {
             $appBoxConfig = json_decode((string) file_get_contents($appBoxConfigFile), true, 512, \JSON_THROW_ON_ERROR);
 
