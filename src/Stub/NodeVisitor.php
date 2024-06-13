@@ -26,7 +26,7 @@ class NodeVisitor extends NodeVisitorAbstract
         }
 
         if ($node instanceof Node\Stmt\ClassMethod) {
-            if ($this->inInterface) {
+            if ($this->inInterface || $node->isAbstract()) {
                 $node->stmts = null;
             } else {
                 $node->stmts = [];
