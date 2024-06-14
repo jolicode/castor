@@ -96,9 +96,9 @@ variable is not set. If you want to use your new context you can use
 the `--context` option:
 
 ```bash
-$ php castor.phar foo
+$ castor foo
 
-$ php castor.phar foo --context=my-context
+$ castor foo --context=my-context
 BAR
 ```
 
@@ -133,6 +133,15 @@ function foo(Context $context): void
     io()->writeln($context['foo']); // will print bar even if you do not use the --context option
     run('pwd'); // will print /tmp
 }
+```
+
+> [!NOTE]
+> You can also define the environment variable `CASTOR_CONTEXT` at runtime to
+> override the default context to be used when no `--context` option is
+> provided.
+
+```bash
+$ CASTOR_CONTEXT=another_context castor foo
 ```
 
 ## Advanced usage
