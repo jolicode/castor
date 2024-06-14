@@ -1,6 +1,6 @@
 bash: line 1: i_do_not_exist: command not found
 
-In failure.php line 12:
+In failure.php line 13:
 
   The command "bash -c i_do_not_exist" failed.
 

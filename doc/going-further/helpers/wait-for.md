@@ -143,7 +143,7 @@ Example:
 wait_for_docker_container(
     container: 'mysql-container',
     containerChecker: function ($containerId) {
-        return run("docker exec $containerId mysql -uroot -proot -e 'SELECT 1'", allowFailure: true)->isSuccessful();
+        return run("docker exec $containerId mysql -uroot -proot -e 'SELECT 1'", context: context()->withAllowFailure()))->isSuccessful();
     },
     portsToCheck: [3306]
     timeout: 30,

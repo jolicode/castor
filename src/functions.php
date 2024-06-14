@@ -65,7 +65,7 @@ function run(
         throw new \LogicException('You cannot use both the "path" and "workingDirectory" arguments at the same time.');
     }
     if ($path) {
-        trigger_deprecation('castor', '0.15', 'The "path" argument is deprecated, use "workingDirectory" instead.');
+        trigger_deprecation('jolicode/castor', '0.15', 'The "path" argument is deprecated, use "workingDirectory" instead.');
 
         $workingDirectory = $path;
     }
@@ -103,7 +103,7 @@ function capture(
         throw new \LogicException('You cannot use both the "path" and "workingDirectory" arguments at the same time.');
     }
     if ($path) {
-        trigger_deprecation('castor', '0.15', 'The "path" argument is deprecated, use "workingDirectory" instead.');
+        trigger_deprecation('jolicode/castor', '0.15', 'The "path" argument is deprecated, use "workingDirectory" instead.');
 
         $workingDirectory = $path;
     }
@@ -136,7 +136,7 @@ function exit_code(
         throw new \LogicException('You cannot use both the "path" and "workingDirectory" arguments at the same time.');
     }
     if ($path) {
-        trigger_deprecation('castor', '0.15', 'The "path" argument is deprecated, use "workingDirectory" instead.');
+        trigger_deprecation('jolicode/castor', '0.15', 'The "path" argument is deprecated, use "workingDirectory" instead.');
 
         $workingDirectory = $path;
     }
@@ -460,7 +460,7 @@ function http_client(): HttpClientInterface
 function import(string $path, ?string $file = null, ?string $version = null, ?string $vcs = null, ?array $source = null): void
 {
     if (null !== $version || null !== $vcs || null !== $source) {
-        @trigger_deprecation('castor/castor', '0.16.0', 'The "version", "vcs" and "source" arguments are deprecated, use the `castor.composer.json` file instead.');
+        trigger_deprecation('jolicode/castor', '0.16.0', 'The "version", "vcs" and "source" arguments are deprecated, use the `castor.composer.json` file instead.');
     }
 
     Container::get()->importer->import($path, $file);
@@ -537,7 +537,7 @@ function with(
         }
     }
     if ($path) {
-        trigger_deprecation('castor', '0.15', 'The "path" argument is deprecated, use "workingDirectory" instead.');
+        trigger_deprecation('jolicode/castor', '0.15', 'The "path" argument is deprecated, use "workingDirectory" instead.');
 
         $context = $context->withWorkingDirectory($path);
     }
@@ -793,27 +793,12 @@ function open(string ...$urls): void
 }
 
 /**
- * @param array<string|\Stringable>                      $arguments
- * @param array<string, string|\Stringable|int>|null     $environment
- * @param (callable(string, string, Process) :void)|null $callback
+ * @param array<string|\Stringable> $arguments
  */
-function run_phar(
-    string $pharPath,
-    array $arguments = [],
-    ?array $environment = null,
-    ?string $workingDirectory = null,
-    ?bool $tty = null,
-    ?bool $pty = null,
-    ?float $timeout = null,
-    ?bool $quiet = null,
-    ?bool $allowFailure = null,
-    ?bool $notify = null,
-    ?callable $callback = null,
-    ?Context $context = null,
-    ?string $path = null): Process
+function run_phar(string $pharPath, array $arguments = [], ?Context $context = null): Process
 {
     // get program path
     $castorPath = $_SERVER['argv'][0];
 
-    return run([$castorPath, 'run-phar', $pharPath, ...$arguments], $environment, $workingDirectory, $tty, $pty, $timeout, $quiet, $allowFailure, $notify, $callback, $context, $path);
+    return run([$castorPath, 'run-phar', $pharPath, ...$arguments], context: $context);
 }
