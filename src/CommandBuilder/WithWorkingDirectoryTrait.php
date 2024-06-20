@@ -2,15 +2,15 @@
 
 namespace Castor\CommandBuilder;
 
-use Castor\Context;
-
 trait WithWorkingDirectoryTrait
 {
+    private ?string $workingDirectory = null;
+
     public function withWorkingDirectory(string $workingDirectory): self
     {
         /** @var self $this */
         $new = clone $this;
-        $new->addContextModifier(fn (Context $context) => $context->withWorkingDirectory($workingDirectory));
+        $new->workingDirectory = $workingDirectory;
 
         return $new;
     }
