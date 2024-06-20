@@ -2,10 +2,12 @@
 
 namespace ls;
 
-use Castor\CommandBuilder\CommandBuilder;
+use Castor\CommandBuilder\CommandBuilderInterface;
+use Castor\CommandBuilder\ContextUpdaterInterface;
 use Castor\CommandBuilder\WithWorkingDirectoryTrait;
+use Castor\Context;
 
-class Ls extends CommandBuilder
+class Ls implements CommandBuilderInterface, ContextUpdaterInterface
 {
     use WithWorkingDirectoryTrait;
 
@@ -53,6 +55,15 @@ class Ls extends CommandBuilder
         }
 
         return $command;
+    }
+
+    public function updateContext(Context $context): Context
+    {
+        if ($this->workingDirectory) {
+            $context = $context->withWorkingDirectory($this->workingDirectory);
+        }
+
+        return $context;
     }
 }
 

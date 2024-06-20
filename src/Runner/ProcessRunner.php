@@ -3,6 +3,7 @@
 namespace Castor\Runner;
 
 use Castor\CommandBuilder\CommandBuilderInterface;
+use Castor\CommandBuilder\ContextUpdaterInterface;
 use Castor\Console\Output\SectionOutput;
 use Castor\Context;
 use Castor\ContextRegistry;
@@ -81,8 +82,8 @@ class ProcessRunner
         }
 
         if ($command instanceof CommandBuilderInterface) {
-            foreach ($command->getContextModifiers() as $modifier) {
-                $context = $modifier($context);
+            if ($command instanceof ContextUpdaterInterface) {
+                $context = $command->updateContext($context);
             }
 
             $command = $command->getCommand();
