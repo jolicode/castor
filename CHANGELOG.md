@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Features
+
+* Add `Context::toInteractive()` method
+
 ### Vendor
 
 * Update SPC version to 2.3.0

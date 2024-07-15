@@ -294,6 +294,15 @@ class Context implements \ArrayAccess
         );
     }
 
+    public function toInteractive(): self
+    {
+        return $this
+            ->withTimeout(null)
+            ->withTty()
+            ->withAllowFailure()
+        ;
+    }
+
     public function offsetExists(mixed $offset): bool
     {
         return \array_key_exists($offset, $this->data);
