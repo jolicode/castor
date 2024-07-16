@@ -9,6 +9,7 @@
 ### Vendor
 
 * Update SPC version to 2.3.0
+* Update all PHP vendor
 
 ### Fixes
 
