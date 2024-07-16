@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Vendor
+
+* Update SPC version to 2.3.0
+
 ### Fixes
 
 * Fix completion when update is available
