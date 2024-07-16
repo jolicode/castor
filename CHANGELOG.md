@@ -4,6 +4,7 @@
 
 ### Features
 
+* Add `Castor\CommandBuilder\CommandBuilderInterface` which allows to build nice API for command line software
 * Add `Context::toInteractive()` method
 
 ### Vendor

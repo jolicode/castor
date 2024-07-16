@@ -4,13 +4,10 @@ namespace ls;
 
 use Castor\CommandBuilder\CommandBuilderInterface;
 use Castor\CommandBuilder\ContextUpdaterInterface;
-use Castor\CommandBuilder\WithWorkingDirectoryTrait;
 use Castor\Context;
 
 class Ls implements CommandBuilderInterface, ContextUpdaterInterface
 {
-    use WithWorkingDirectoryTrait;
-
     private string $flags = '';
 
     public function __construct(private ?string $directory = null)
@@ -59,11 +56,7 @@ class Ls implements CommandBuilderInterface, ContextUpdaterInterface
 
     public function updateContext(Context $context): Context
     {
-        if ($this->workingDirectory) {
-            $context = $context->withWorkingDirectory($this->workingDirectory);
-        }
-
-        return $context;
+        return $context->withWorkingDirectory('/');
     }
 }
 
