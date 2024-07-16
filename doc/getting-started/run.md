@@ -124,7 +124,7 @@ function foo(): void
 }
 ```
 
-You can also fetch the process output by using the 
+You can also fetch the process output by using the
 returned `Symfony\Component\Process\Process` object:
 
 ```php
@@ -209,6 +209,23 @@ This process will have a 2 minutes timeout.
 
 > [!TIP]
 > Related example: [wait_for.php](https://github.com/jolicode/castor/blob/main/examples/wait_for.php)
+
+## Interactive Process
+
+If you want to run an interactive process, you can transform any context into an interactive one:
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\run;
+use function Castor\context;
+
+#[AsTask()]
+function vim(): void
+{
+    run('vim', context: context()->toInteractive());
+}
+```
 
 ## PTY & TTY
 
