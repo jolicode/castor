@@ -95,7 +95,7 @@ jobs:
   static-darwin-amd64:
     needs: phars
     name: Create MacOs amd64 static binary and upload
-    runs-on: macos-latest
+    runs-on: macos-13
     steps:
       - name: Checkout
         uses: actions/checkout@v4
