@@ -22,6 +22,7 @@ function task_with_a_fingerprint(): void
         callback: function () {
             io()->writeln('Cool, no fingerprint! Executing...');
         },
+        id: 'my_fingerprint_check',
         fingerprint: my_fingerprint_check()
     );
 
@@ -33,9 +34,9 @@ function task_with_complete_fingerprint_check(): void
 {
     io()->writeln('Hello Task with Fingerprint!');
 
-    if (!fingerprint_exists(my_fingerprint_check())) {
+    if (!fingerprint_exists('my_fingerprint_check', my_fingerprint_check())) {
         io()->writeln('Cool, no fingerprint! Executing...');
-        fingerprint_save(my_fingerprint_check());
+        fingerprint_save('my_fingerprint_check', my_fingerprint_check());
     }
 
     io()->writeln('Cool! I finished!');
@@ -51,6 +52,7 @@ function task_with_a_fingerprint_and_force(
         callback: function () {
             io()->writeln('Cool, no fingerprint! Executing...');
         },
+        id: 'my_fingerprint_check',
         fingerprint: my_fingerprint_check(),
         force: $force // This option will force the task to run even if the fingerprint has not changed
     );
