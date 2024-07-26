@@ -51,7 +51,7 @@ class PathHelper
         $realpath = realpath($path);
 
         if (false === $realpath) {
-            throw new \RuntimeException(sprintf('Directory "%s" not found.', $path));
+            throw new \RuntimeException(\sprintf('Directory "%s" not found.', $path));
         }
 
         return $realpath;
@@ -60,7 +60,7 @@ class PathHelper
     public static function makeRelative(string $path): string
     {
         if (!Path::isAbsolute($path)) {
-            throw new \RuntimeException(sprintf('Path "%s" is not absolute.', $path));
+            throw new \RuntimeException(\sprintf('Path "%s" is not absolute.', $path));
         }
 
         return Path::makeRelative($path, self::getRoot());

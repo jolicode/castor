@@ -102,7 +102,7 @@ class ApplicationFactory
             $tagAttributes = get_object_vars($attribute);
             if ($reflector instanceof \ReflectionMethod) {
                 if (isset($tagAttributes['method'])) {
-                    throw new \LogicException(sprintf('AsEventListener attribute cannot declare a method on "%s::%s()".', $reflector->class, $reflector->name));
+                    throw new \LogicException(\sprintf('AsEventListener attribute cannot declare a method on "%s::%s()".', $reflector->class, $reflector->name));
                 }
                 $tagAttributes['method'] = $reflector->getName();
             }

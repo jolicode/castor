@@ -12,7 +12,7 @@ function output(): void
 {
     io()->title('This is a title');
 
-    io()->text(sprintf('This is the task "%s"', task()->getName()));
+    io()->text(\sprintf('This is the task "%s"', task()->getName()));
 
     io()->comment('With IO, you can ask questions ...');
     $value = io()->ask('Tell me something');

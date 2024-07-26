@@ -34,7 +34,7 @@ function download(): void
         $response = http_download($downloadUrl, $downloadedFilePath, stream: false);
 
         io()->writeln(
-            sprintf(
+            \sprintf(
                 'Successfully downloaded file of size "%s" from url "%s" to "%s" with status code "%s"',
                 filesize($downloadedFilePath),
                 $downloadUrl,

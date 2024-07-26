@@ -29,7 +29,7 @@ class ContextRegistry
         if (\array_key_exists($name, $this->descriptors)) {
             $alreadyDefined = $this->descriptors[$name]->function;
 
-            throw new FunctionConfigurationException(sprintf('You cannot define two contexts with the same name "%s". There is one already defined in "%s:%d".', $name, PathHelper::makeRelative((string) $alreadyDefined->getFileName()), $alreadyDefined->getStartLine()), $descriptor->function);
+            throw new FunctionConfigurationException(\sprintf('You cannot define two contexts with the same name "%s". There is one already defined in "%s:%d".', $name, PathHelper::makeRelative((string) $alreadyDefined->getFileName()), $alreadyDefined->getStartLine()), $descriptor->function);
         }
 
         $this->descriptors[$name] = $descriptor;
@@ -38,7 +38,7 @@ class ContextRegistry
             if ($this->defaultName) {
                 $alreadyDefined = $this->descriptors[$this->defaultName]->function;
 
-                throw new FunctionConfigurationException(sprintf('You cannot set multiple "default: true" context. There is one already defined in "%s:%d".', PathHelper::makeRelative((string) $alreadyDefined->getFileName()), $alreadyDefined->getStartLine()), $descriptor->function);
+                throw new FunctionConfigurationException(\sprintf('You cannot set multiple "default: true" context. There is one already defined in "%s:%d".', PathHelper::makeRelative((string) $alreadyDefined->getFileName()), $alreadyDefined->getStartLine()), $descriptor->function);
             }
             $this->defaultName = $name;
         }
@@ -66,7 +66,7 @@ class ContextRegistry
         }
 
         if (1 < \count($this->descriptors)) {
-            throw new \RuntimeException(sprintf('Since there are multiple contexts "%s", you must set a "default: true" context.', implode('", "', $this->getNames())));
+            throw new \RuntimeException(\sprintf('Since there are multiple contexts "%s", you must set a "default: true" context.', implode('", "', $this->getNames())));
         }
 
         $this->defaultName = array_key_first($this->descriptors);
@@ -88,12 +88,12 @@ class ContextRegistry
         }
 
         if (!\array_key_exists($name, $this->descriptors)) {
-            throw new \RuntimeException(sprintf('Context "%s" not found.', $name));
+            throw new \RuntimeException(\sprintf('Context "%s" not found.', $name));
         }
 
         $context = $this->descriptors[$name]->function->invoke();
         if (!$context instanceof Context) {
-            throw new FunctionConfigurationException(sprintf('The context generator must return an instance of "%s", "%s" returned.', Context::class, get_debug_type($context)), $this->descriptors[$name]->function);
+            throw new FunctionConfigurationException(\sprintf('The context generator must return an instance of "%s", "%s" returned.', Context::class, get_debug_type($context)), $this->descriptors[$name]->function);
         }
 
         $event = new ContextCreatedEvent($name, $context);

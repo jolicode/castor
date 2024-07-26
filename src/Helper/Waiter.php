@@ -111,7 +111,7 @@ final class Waiter
             timeout: $timeout,
             quiet: $quiet,
             intervalMs: $intervalMs,
-            message: $message ?? sprintf('Waiting for port "%s:%s" to be accessible...', $host, $port),
+            message: $message ?? \sprintf('Waiting for port "%s:%s" to be accessible...', $host, $port),
         );
     }
 
@@ -142,7 +142,7 @@ final class Waiter
             timeout: $timeout,
             quiet: $quiet,
             intervalMs: $intervalMs,
-            message: $message ?? sprintf('Waiting for URL "%s" to be accessible...', $url),
+            message: $message ?? \sprintf('Waiting for URL "%s" to be accessible...', $url),
         );
     }
 
@@ -274,7 +274,7 @@ final class Waiter
             timeout: $timeout,
             quiet: $quiet,
             intervalMs: $intervalMs,
-            message: sprintf($message ?? 'Waiting for docker container "%s" to be available...', $containerName),
+            message: \sprintf($message ?? 'Waiting for docker container "%s" to be available...', $containerName),
         );
     }
 }

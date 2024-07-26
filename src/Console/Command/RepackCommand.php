@@ -91,7 +91,7 @@ class RepackCommand extends Command
         $boxConfig['base-path'] = '.';
         $boxConfig['main'] = '.main.php';
         $boxConfig['alias'] = $alias;
-        $boxConfig['output'] = sprintf('%s.%s.phar', $appName, $os);
+        $boxConfig['output'] = \sprintf('%s.%s.phar', $appName, $os);
         // update all paths to point to the castor source
         foreach (['files', 'files-bin', 'directories', 'directories-bin'] as $key) {
             if (!\array_key_exists($key, $boxConfig)) {

@@ -35,7 +35,7 @@ class ProcessProcessor implements ProcessorInterface
             if ('argv' === $key || 'argc' === $key) {
                 continue;
             }
-            $runnable = sprintf('%s=%s %s ', $key, escapeshellarg($value), $runnable);
+            $runnable = \sprintf('%s=%s %s ', $key, escapeshellarg($value), $runnable);
         }
 
         $runnable = rtrim($runnable, ' ');

@@ -119,7 +119,7 @@ class ProcessRunner
 
         $this->eventDispatcher->dispatch(new Event\ProcessCreatedEvent($process));
 
-        $this->logger->info(sprintf('Running command: "%s".', $process->getCommandLine()), [
+        $this->logger->info(\sprintf('Running command: "%s".', $process->getCommandLine()), [
             'process' => $process,
         ]);
 
@@ -149,11 +149,11 @@ class ProcessRunner
         }
 
         if ($context->notify) {
-            $this->notifier->send(sprintf('The command "%s" has been finished %s.', $process->getCommandLine(), 0 === $exitCode ? 'successfully' : 'with an error'));
+            $this->notifier->send(\sprintf('The command "%s" has been finished %s.', $process->getCommandLine(), 0 === $exitCode ? 'successfully' : 'with an error'));
         }
 
         if (0 !== $exitCode) {
-            $this->logger->notice(sprintf('Command finished with an error (exit code=%d).', $process->getExitCode()));
+            $this->logger->notice(\sprintf('Command finished with an error (exit code=%d).', $process->getExitCode()));
             if (!$context->allowFailure) {
                 if ($context->verbosityLevel->isVerbose()) {
                     throw new ProcessFailedException($process);

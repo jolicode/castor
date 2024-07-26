@@ -104,9 +104,10 @@ class SectionOutput
         if (!$this->sections->contains($process) || ('' === $this->sections[$process]->progressBarSection->getContent())) {
             $progressBarSection = $this->mainOutput->section();
             $section = $this->mainOutput->section();
-            $index = sprintf('%02d', \count($this->sections) + 1);
+            $index = \count($this->sections) + 1;
+            $indexFormatted = \sprintf('%02d', $index);
             $color = self::COLORS[$index % \count(self::COLORS)];
-            $progressBarSection->writeln("<bg={$color}> </>[{$index}] <fg=yellow>{$process->getCommandLine()}</> starting...");
+            $progressBarSection->writeln("<bg={$color}> </>[{$indexFormatted}] <fg=yellow>{$process->getCommandLine()}</> starting...");
             $progressBarSection->setDecorated(true);
             $progressBarSection->setMaxHeight(1);
 
@@ -123,7 +124,7 @@ class SectionDetails
         public ConsoleSectionOutput $section,
         public ConsoleSectionOutput $progressBarSection,
         public float $start,
-        public string $index,
+        public int $index,
     ) {
     }
 }
