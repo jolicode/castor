@@ -17,6 +17,7 @@ assertion:throw-an-exception                                      Throws a Probl
 cache:complex                                                     Cache with usage of CacheItemInterface
 cache:simple                                                      Cache a simple call
 castor:composer                                                   Interact with built-in Composer for castor
+castor:execute                                                    Execute a remote task from a packagist directory
 castor:phar:build                                                 Build phar for all systems
 castor:phar:darwin                                                Build phar for MacOS system
 castor:phar:install                                               install dependencies
