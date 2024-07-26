@@ -20,7 +20,7 @@ class CompileCommand extends Command
     // When something **important** related to the compilation changed, increase
     // this version to invalide the cache
     private const CACHE_VERSION = '2';
-    private const DEFAULT_SPC_VERSION = '2.3.0';
+    private const DEFAULT_SPC_VERSION = '2.3.1';
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,
@@ -179,6 +179,7 @@ class CompileCommand extends Command
                 $spcBinaryPath, 'download',
                 '--for-extensions=' . $phpExtensions,
                 '--with-php=' . $phpVersion,
+                '--prefer-pre-built',
             ],
             cwd: $spcBinaryDir,
             timeout: null,
