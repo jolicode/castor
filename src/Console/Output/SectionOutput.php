@@ -73,7 +73,7 @@ class SectionOutput
         $fg = 0 === $process->getExitCode() ? 'green' : 'red';
         $status = 0 === $process->getExitCode() ? 'success' : 'failure';
 
-        $color = self::COLORS[$sectionDetails->index % \count(self::COLORS)];
+        $color = self::COLORS[((int) $sectionDetails->index) % \count(self::COLORS)];
 
         $this->consoleOutput->writeln("<bg={$color}> </>[{$sectionDetails->index}] <fg={$fg}>{$process->getCommandLine()}</> {$status} after {$time}s");
         $this->consoleOutput->write($outputContent);
@@ -90,7 +90,7 @@ class SectionOutput
 
         $sectionDetails = $this->getSectionDetails($process);
         $time = number_format(microtime(true) - $sectionDetails->start, 2);
-        $color = self::COLORS[$sectionDetails->index % \count(self::COLORS)];
+        $color = self::COLORS[((int) $sectionDetails->index) % \count(self::COLORS)];
 
         $sectionDetails->progressBarSection->writeln("<bg={$color}> </>[{$sectionDetails->index}] <fg=yellow>{$process->getCommandLine()}</> running for {$time}s");
     }
@@ -104,7 +104,7 @@ class SectionOutput
         if (!$this->sections->contains($process) || ('' === $this->sections[$process]->progressBarSection->getContent())) {
             $progressBarSection = $this->mainOutput->section();
             $section = $this->mainOutput->section();
-            $index = sprintf('%02d', \count($this->sections) + 1);
+            $index = \sprintf('%02d', \count($this->sections) + 1);
             $color = self::COLORS[$index % \count(self::COLORS)];
             $progressBarSection->writeln("<bg={$color}> </>[{$index}] <fg=yellow>{$process->getCommandLine()}</> starting...");
             $progressBarSection->setDecorated(true);

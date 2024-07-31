@@ -40,7 +40,7 @@ class HttpDownloader
             $speed = $this->calculateSpeed($downloadedSize, $startTime);
             $formattedRemainingTime = $this->calculateRemainingTime($downloadedSize, $totalSize, (int) $speed);
             $logMessage = $totalSize > 0
-                ? sprintf(
+                ? \sprintf(
                     'Download progress: %s/%s (%.2f%%) at %s/s, ETA: %s',
                     $this->formatSize($downloadedSize),
                     $this->formatSize($totalSize),
@@ -48,7 +48,7 @@ class HttpDownloader
                     $this->formatSize((int) $speed),
                     $formattedRemainingTime
                 )
-                : sprintf(
+                : \sprintf(
                     'Download progress: %s at %s/s',
                     $this->formatSize($downloadedSize),
                     $this->formatSize((int) $speed)
@@ -91,7 +91,7 @@ class HttpDownloader
 
         $fileStream = fopen($filePath, 'w');
         if (false === $fileStream) {
-            throw new \RuntimeException(sprintf('Cannot open file "%s" for writing.', $filePath));
+            throw new \RuntimeException(\sprintf('Cannot open file "%s" for writing.', $filePath));
         }
 
         foreach ($this->httpClient->stream($response) as $chunk) {
@@ -127,19 +127,19 @@ class HttpDownloader
     private function formatTime(float $seconds): string
     {
         if ($seconds < 60) {
-            return sprintf('%ds', $seconds);
+            return \sprintf('%ds', $seconds);
         }
 
         $minutes = floor($seconds / 60);
         $seconds %= 60;
         if ($minutes < 60) {
-            return sprintf('%dm %ds', $minutes, $seconds);
+            return \sprintf('%dm %ds', $minutes, $seconds);
         }
 
         $hours = floor($minutes / 60);
         $minutes %= 60;
 
-        return sprintf('%dh %dm %ds', $hours, $minutes, $seconds);
+        return \sprintf('%dh %dm %ds', $hours, $minutes, $seconds);
     }
 
     private function formatSize(int $bytes): string
@@ -153,7 +153,7 @@ class HttpDownloader
         $pow = floor($log);
         $size = $bytes / (1024 ** $pow);
 
-        return sprintf('%.2f %s', $size, $units[$pow - 1]);
+        return \sprintf('%.2f %s', $size, $units[$pow - 1]);
     }
 
     private function extractFileName(ResponseInterface $response, string $url): string
@@ -164,7 +164,7 @@ class HttpDownloader
         } else {
             $parsedUrl = parse_url($url, \PHP_URL_PATH);
             if (!\is_string($parsedUrl)) {
-                throw new \RuntimeException(sprintf('Could not extract file name from URL: %s', $url));
+                throw new \RuntimeException(\sprintf('Could not extract file name from URL: %s', $url));
             }
             $filename = basename($parsedUrl);
         }

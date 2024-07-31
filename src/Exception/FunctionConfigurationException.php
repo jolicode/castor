@@ -8,7 +8,7 @@ class FunctionConfigurationException extends \InvalidArgumentException
 {
     public function __construct(string $message, \ReflectionFunction|\ReflectionClass $function, ?\Throwable $e = null)
     {
-        $message = sprintf(<<<'TXT'
+        $message = \sprintf(<<<'TXT'
             Function "%s()" is not properly configured:
             %s
             Defined in "%s" line %d.

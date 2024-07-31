@@ -98,7 +98,7 @@ class UpdateCastorListener
 
         $symfonyStyle = new SymfonyStyle($input, $output);
 
-        $symfonyStyle->block(sprintf('<info>A new Castor version is available</info> (<comment>%s</comment>, currently running <comment>%s</comment>).', $latestVersion['tag_name'], Application::VERSION), escape: false);
+        $symfonyStyle->block(\sprintf('<info>A new Castor version is available</info> (<comment>%s</comment>, currently running <comment>%s</comment>).', $latestVersion['tag_name'], Application::VERSION), escape: false);
 
         // Installed via phar
         if ($pharPath = \Phar::running(false)) {
@@ -130,9 +130,9 @@ class UpdateCastorListener
 
             if (OsHelper::isUnix()) {
                 $symfonyStyle->block('Run the following command to update Castor:');
-                $symfonyStyle->block(sprintf('<comment>curl "https://castor.jolicode.com/install" | bash -s -- --install-dir %s</comment>', \dirname($pharPath)), escape: false);
+                $symfonyStyle->block(\sprintf('<comment>curl "https://castor.jolicode.com/install" | bash -s -- --install-dir %s</comment>', \dirname($pharPath)), escape: false);
             } else {
-                $symfonyStyle->block(sprintf('Download the latest version at <comment>%s</comment>', $latestReleaseUrl), escape: false);
+                $symfonyStyle->block(\sprintf('Download the latest version at <comment>%s</comment>', $latestReleaseUrl), escape: false);
             }
 
             $symfonyStyle->newLine();

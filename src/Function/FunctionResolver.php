@@ -118,7 +118,7 @@ final class FunctionResolver
         try {
             $taskAttribute = $attributes[0]->newInstance();
         } catch (\Throwable $e) {
-            throw new FunctionConfigurationException(sprintf('Could not instantiate the attribute "%s".', AsTask::class), $reflectionFunction, $e);
+            throw new FunctionConfigurationException(\sprintf('Could not instantiate the attribute "%s".', AsTask::class), $reflectionFunction, $e);
         }
 
         if ('' === $taskAttribute->name) {
@@ -133,7 +133,7 @@ final class FunctionResolver
 
         foreach ($taskAttribute->onSignals as $signal => $callable) {
             if (!\is_callable($callable)) {
-                throw new FunctionConfigurationException(sprintf('The callable for signal "%s" is not callable.', $signal), $reflectionFunction);
+                throw new FunctionConfigurationException(\sprintf('The callable for signal "%s" is not callable.', $signal), $reflectionFunction);
             }
         }
 
@@ -198,7 +198,7 @@ final class FunctionResolver
             break;
         }
         if ($definition['name'] !== $taskAttribute->originalName) {
-            throw new FunctionConfigurationException(sprintf('Could not find a command named "%s" in the Symfony application', $taskAttribute->name), $reflectionClass);
+            throw new FunctionConfigurationException(\sprintf('Could not find a command named "%s" in the Symfony application', $taskAttribute->name), $reflectionClass);
         }
 
         yield new SymfonyTaskDescriptor($taskAttribute, $reflectionClass, $definition);
@@ -245,11 +245,11 @@ final class FunctionResolver
         $generators = [];
         foreach ($reflectionFunction->invoke() as $name => $generator) {
             if (!$generator instanceof \Closure) {
-                throw new FunctionConfigurationException(sprintf('The context generator "%s" is not callable.', $name), $reflectionFunction);
+                throw new FunctionConfigurationException(\sprintf('The context generator "%s" is not callable.', $name), $reflectionFunction);
             }
             $r = new \ReflectionFunction($generator);
             if ($r->getParameters()) {
-                throw new FunctionConfigurationException(sprintf('The context generator "%s" must not have arguments.', $name), $reflectionFunction);
+                throw new FunctionConfigurationException(\sprintf('The context generator "%s" must not have arguments.', $name), $reflectionFunction);
             }
             $generators[$name] = $generator;
         }

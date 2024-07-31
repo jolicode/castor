@@ -12,7 +12,7 @@ namespace Castor\Internal;
 function castor_require(string $file): void
 {
     if (!is_file($file)) {
-        throw new \RuntimeException(sprintf('Could not find file "%s".', $file));
+        throw new \RuntimeException(\sprintf('Could not find file "%s".', $file));
     }
 
     require_once $file;
