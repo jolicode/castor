@@ -105,7 +105,7 @@ function wait_for_docker_container_task(): void
             timeout: 5,
             containerChecker: function ($containerId): bool {
                 // Check some things (logs, command result, etc.)
-                $output = capture("docker logs {$containerId}", allowFailure: true);
+                $output = capture("docker logs --since 0 {$containerId}", allowFailure: true);
 
                 return u($output)->containsAny(['hello world']);
             },
