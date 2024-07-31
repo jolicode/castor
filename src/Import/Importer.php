@@ -58,7 +58,7 @@ class Importer
         }
 
         if (!file_exists($path)) {
-            throw $this->createImportException($path, sprintf('The file "%s" does not exist.', $path));
+            throw $this->createImportException($path, \sprintf('The file "%s" does not exist.', $path));
         }
 
         if (is_file($path)) {
@@ -102,7 +102,7 @@ class Importer
         /** @var array{file: string, line: int} $caller */
         $caller = debug_backtrace()[$depth + 1];
 
-        return sprintf(
+        return \sprintf(
             'Could not import "%s" in "%s" on line %d. Reason: %s',
             $path,
             $caller['file'],

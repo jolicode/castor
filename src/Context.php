@@ -311,7 +311,7 @@ class Context implements \ArrayAccess
     public function offsetGet(mixed $offset): mixed
     {
         if (!\array_key_exists($offset, $this->data)) {
-            throw new \OutOfBoundsException(sprintf('The property "%s" does not exist in the current context.', $offset));
+            throw new \OutOfBoundsException(\sprintf('The property "%s" does not exist in the current context.', $offset));
         }
 
         return $this->data[$offset];

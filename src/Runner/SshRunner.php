@@ -29,7 +29,7 @@ final class SshRunner
         $ssh = $this->buildSsh($host, $user, $sshOptions);
 
         if ($path) {
-            $command = sprintf('cd %s && %s', $path, $command);
+            $command = \sprintf('cd %s && %s', $path, $command);
         }
 
         return $this->run($ssh->getExecuteCommand($command), $quiet, $allowFailure, $notify, $timeout, $callback);

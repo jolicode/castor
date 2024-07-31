@@ -26,7 +26,7 @@ function complex(): void
 
         return true;
     });
-    io()->writeln(sprintf('First call: %s', $hasBeenCalled ? 'yes' : 'no'));
+    io()->writeln(\sprintf('First call: %s', $hasBeenCalled ? 'yes' : 'no'));
 
     $hasBeenCalled = false;
     cache('another-key', function (CacheItemInterface $item) use (&$hasBeenCalled) {
@@ -35,5 +35,5 @@ function complex(): void
 
         return true;
     });
-    io()->writeln(sprintf('Second call: %s', $hasBeenCalled ? 'yes' : 'no'));
+    io()->writeln(\sprintf('Second call: %s', $hasBeenCalled ? 'yes' : 'no'));
 }

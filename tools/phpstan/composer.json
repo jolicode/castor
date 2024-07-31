@@ -4,7 +4,7 @@
     "type": "project",
     "license": "MIT",
     "require": {
-        "phpstan/phpstan": "^1.11.7"
+        "phpstan/phpstan": "^1.11.8"
     },
     "config": {
         "platform": {

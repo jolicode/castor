@@ -104,7 +104,7 @@ class CompileCommand extends Command
             $io
         );
 
-        $io->success(sprintf('Your Castor app has been compiled into a static binary in "%s"', $binaryPath));
+        $io->success(\sprintf('Your Castor app has been compiled into a static binary in "%s"', $binaryPath));
 
         return Command::SUCCESS;
     }
@@ -122,7 +122,7 @@ class CompileCommand extends Command
         }
 
         if (!is_file($input->getArgument('phar-path'))) {
-            throw new \InvalidArgumentException(sprintf('The phar file "%s" does not exist.', $input->getArgument('phar-path')));
+            throw new \InvalidArgumentException(\sprintf('The phar file "%s" does not exist.', $input->getArgument('phar-path')));
         }
 
         $input->setArgument('phar-path', Path::makeAbsolute($input->getArgument('phar-path'), getcwd() ?: PathHelper::getRoot()));
@@ -138,7 +138,7 @@ class CompileCommand extends Command
         $progressBar = $io->createProgressBar((int) $contentLength);
 
         if (false === $outputStream) {
-            throw new \RuntimeException(sprintf('Failed to open file "%s" for writing.', $spcBinaryDestination));
+            throw new \RuntimeException(\sprintf('Failed to open file "%s" for writing.', $spcBinaryDestination));
         }
 
         foreach ($this->httpClient->stream($response) as $chunk) {
@@ -205,7 +205,7 @@ class CompileCommand extends Command
             cwd: $spcBinaryDir,
             env: ('linux' === $os) ? [
                 'OPENSSL_LIBS' => '-l:libssl.a -l:libcrypto.a -ldl -lpthread',
-                'OPENSSL_CFLAGS' => sprintf('-I%s/source/openssl/include', $spcBinaryDir),
+                'OPENSSL_CFLAGS' => \sprintf('-I%s/source/openssl/include', $spcBinaryDir),
             ] : [],
             timeout: null,
         );
@@ -238,10 +238,10 @@ class CompileCommand extends Command
         $this->fs->mkdir($spcBinaryDir, 0o755);
 
         if ($this->fs->exists($spcBinaryPath)) {
-            $io->text(sprintf('Using the static-php-cli (spc) tool from "%s"', $spcBinaryPath));
+            $io->text(\sprintf('Using the static-php-cli (spc) tool from "%s"', $spcBinaryPath));
         } else {
-            $spcSourceUrl = sprintf('https://github.com/crazywhalecc/static-php-cli/releases/download/%s/spc-%s-%s.tar.gz', $spcVersion, $os, $arch);
-            $io->text(sprintf('Downloading the static-php-cli (spc) tool from "%s" to "%s"', $spcSourceUrl, $spcBinaryPath));
+            $spcSourceUrl = \sprintf('https://github.com/crazywhalecc/static-php-cli/releases/download/%s/spc-%s-%s.tar.gz', $spcVersion, $os, $arch);
+            $io->text(\sprintf('Downloading the static-php-cli (spc) tool from "%s" to "%s"', $spcSourceUrl, $spcBinaryPath));
             $this->downloadSPC($spcSourceUrl, $spcBinaryPath, $io);
             $io->newLine(2);
         }
@@ -262,7 +262,7 @@ class CompileCommand extends Command
         $p->mustRun();
         $appName = json_decode($p->getOutput(), true)['application']['name'];
 
-        return sprintf(
+        return \sprintf(
             '%s/%s.%s.%s',
             $binaryPath,
             $appName,

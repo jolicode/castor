@@ -203,7 +203,7 @@ final class Kernel
                 'context',
                 '_complete' === $input->getFirstArgument() || 'list' === $input->getFirstArgument() ? null : 'c',
                 InputOption::VALUE_REQUIRED,
-                sprintf('The context to use (%s)', implode('|', $contextNames)),
+                \sprintf('The context to use (%s)', implode('|', $contextNames)),
                 $defaultContext,
                 $contextNames,
             ));

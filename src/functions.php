@@ -405,7 +405,7 @@ function finder(): Finder
  */
 function cache(string $key, callable $or): mixed
 {
-    $key = sprintf(
+    $key = \sprintf(
         '%s-%s',
         hash('xxh128', PathHelper::getRoot()),
         $key,
@@ -469,7 +469,7 @@ function import(string $path, ?string $file = null, ?string $version = null, ?st
 function mount(string $path, ?string $namespacePrefix = null): void
 {
     if (!is_dir($path)) {
-        throw fix_exception(new \InvalidArgumentException(sprintf('The directory "%s" does not exist.', $path)));
+        throw fix_exception(new \InvalidArgumentException(\sprintf('The directory "%s" does not exist.', $path)));
     }
 
     Container::get()->kernel->addMount(new Mount($path, namespacePrefix: $namespacePrefix));

@@ -151,7 +151,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
                     );
                 }
             } catch (LogicException $e) {
-                throw new FunctionConfigurationException(sprintf('The argument "%s" cannot be configured: "%s".', $parameter->getName(), $e->getMessage()), $this->taskDescriptor->function, $e);
+                throw new FunctionConfigurationException(\sprintf('The argument "%s" cannot be configured: "%s".', $parameter->getName(), $e->getMessage()), $this->taskDescriptor->function, $e);
             }
         }
     }
@@ -205,7 +205,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
             $castorFunctionsWithoutNamespace = array_map(fn (string $functionName) => substr($functionName, \strlen('castor\\')), $castorFunctions);
             foreach ($castorFunctionsWithoutNamespace as $function) {
                 if ("Call to undefined function {$function}()" === $e->getMessage()) {
-                    throw new \LogicException(sprintf('Call to undefined function %s(). Did you forget to import it? Try to add "use function Castor\%s;" in top of "%s" file.', $function, $function, $this->taskDescriptor->function->getFileName()), 0, $e);
+                    throw new \LogicException(\sprintf('Call to undefined function %s(). Did you forget to import it? Try to add "use function Castor\%s;" in top of "%s" file.', $function, $function, $this->taskDescriptor->function->getFileName()), 0, $e);
                 }
             }
 
@@ -243,7 +243,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
     private function getSuggestedValues(AsArgument|AsOption $attribute): array|\Closure
     {
         if ($attribute->suggestedValues && null !== $attribute->autocomplete) {
-            throw new FunctionConfigurationException(sprintf('You cannot define both "suggestedValues" and "autocomplete" option on parameter "%s".', $attribute->name), $this->taskDescriptor->function);
+            throw new FunctionConfigurationException(\sprintf('You cannot define both "suggestedValues" and "autocomplete" option on parameter "%s".', $attribute->name), $this->taskDescriptor->function);
         }
 
         if (null === $attribute->autocomplete) {
@@ -251,7 +251,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
         }
 
         if (!\is_callable($attribute->autocomplete)) {
-            throw new FunctionConfigurationException(sprintf('The value provided in the "autocomplete" option on parameter "%s" is not callable.', $attribute->name), $this->taskDescriptor->function);
+            throw new FunctionConfigurationException(\sprintf('The value provided in the "autocomplete" option on parameter "%s" is not callable.', $attribute->name), $this->taskDescriptor->function);
         }
 
         return \Closure::fromCallable($attribute->autocomplete);
