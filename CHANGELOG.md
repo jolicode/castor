@@ -15,6 +15,7 @@
 
 * Fix completion when update is available
 * Fix repack when there is composer dependencies to castor
+* Fix wait_for_docker_container example to avoid checking previous docker logs
 
 ### Features
 
