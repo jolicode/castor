@@ -99,13 +99,14 @@ function custom_wait_for_task(string $thing = 'foobar'): void
 function wait_for_docker_container_task(): void
 {
     try {
+        $checkLogSince = (new \DateTimeImmutable())->format(\DateTimeInterface::RFC3339);
         run('docker run -d --rm --name helloworld alpine sh -c "echo hello world ; sleep 10"', quiet: true);
         wait_for_docker_container(
             containerName: 'helloworld',
             timeout: 5,
-            containerChecker: function ($containerId): bool {
+            containerChecker: function ($containerId) use ($checkLogSince): bool {
                 // Check some things (logs, command result, etc.)
-                $output = capture("docker logs --since 0 {$containerId}", allowFailure: true);
+                $output = capture("docker logs --since {$checkLogSince} {$containerId}", allowFailure: true);
 
                 return u($output)->containsAny(['hello world']);
             },
