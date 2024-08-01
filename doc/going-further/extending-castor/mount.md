@@ -46,11 +46,12 @@ kind of code:
 ```php
 use function Castor\Attribute\AsTask;
 
+use function Castor\context;
 use function Castor\run;
 
 #[AsTask()]
 function foobar() {
-    run($command, workingDirectory: __DIR__);
+    run($command, context: context()->withWorkingDirectory(__DIR__));
 }
 ```
 

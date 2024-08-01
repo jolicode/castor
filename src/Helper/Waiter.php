@@ -15,6 +15,8 @@ use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
+use function Castor\context;
+
 /** @internal */
 final class Waiter
 {
@@ -238,9 +240,9 @@ final class Waiter
         $this->waitFor(
             io: $io,
             callback: function () use ($timeout, $io, $portsToCheck, $containerChecker, $containerName) {
-                $containerId = $this->processRunner->capture("docker ps -a -q --filter name={$containerName}", allowFailure: true);
+                $containerId = $this->processRunner->capture("docker ps -a -q --filter name={$containerName}", context: context()->withAllowFailure());
                 $isContainerExist = (bool) $containerId;
-                $isContainerRunning = (bool) $this->processRunner->capture("docker inspect -f '{{.State.Running}}' {$containerId}", allowFailure: true);
+                $isContainerRunning = (bool) $this->processRunner->capture("docker inspect -f '{{.State.Running}}' {$containerId}", context: context()->withAllowFailure());
 
                 if (false === $isContainerExist) {
                     throw new DockerContainerStateException($containerName, 'not exist');
