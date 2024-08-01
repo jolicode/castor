@@ -590,21 +590,39 @@ function hasher(string $algo = 'xxh128'): HasherHelper
     );
 }
 
-function fingerprint_exists(string $fingerprint): bool
+function fingerprint_exists(string $id, ?string $fingerprint = null): bool
 {
-    return Container::get()->fingerprintHelper->verifyFingerprintFromHash($fingerprint);
+    if (null === $fingerprint) {
+        trigger_deprecation('castor/castor', '0.18.0', 'since 0.18 fingerprint functions require an id argument.');
+
+        $fingerprint = $id;
+    }
+
+    return Container::get()->fingerprintHelper->verifyFingerprintFromHash($id, $fingerprint);
 }
 
-function fingerprint_save(string $fingerprint): void
+function fingerprint_save(string $id, ?string $fingerprint = null): void
 {
-    Container::get()->fingerprintHelper->postProcessFingerprintForHash($fingerprint);
+    if (null === $fingerprint) {
+        trigger_deprecation('castor/castor', '0.18.0', 'since 0.18 fingerprint functions require an id argument.');
+
+        $fingerprint = $id;
+    }
+
+    Container::get()->fingerprintHelper->postProcessFingerprintForHash($id, $fingerprint);
 }
 
-function fingerprint(callable $callback, string $fingerprint, bool $force = false): bool
+function fingerprint(callable $callback, string $id, ?string $fingerprint = null, bool $force = false): bool
 {
-    if ($force || !fingerprint_exists($fingerprint)) {
+    if (null === $fingerprint) {
+        trigger_deprecation('castor/castor', '0.18.0', 'since 0.18 fingerprint functions require an id argument.');
+
+        $fingerprint = $id;
+    }
+
+    if ($force || !fingerprint_exists($id, $fingerprint)) {
         $callback();
-        fingerprint_save($fingerprint);
+        fingerprint_save($id, $fingerprint);
 
         return true;
     }

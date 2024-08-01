@@ -15,9 +15,9 @@ class FingerprintHelper
     ) {
     }
 
-    public function verifyFingerprintFromHash(string $fingerprint): bool
+    public function verifyFingerprintFromHash(string $id, string $fingerprint): bool
     {
-        $itemKey = $fingerprint . self::SUFFIX;
+        $itemKey = $id . self::SUFFIX;
 
         if (false === $this->cache->hasItem($itemKey)) {
             return false;
@@ -36,9 +36,9 @@ class FingerprintHelper
         return false;
     }
 
-    public function postProcessFingerprintForHash(string $hash): void
+    public function postProcessFingerprintForHash(string $id, string $hash): void
     {
-        $itemKey = $hash . self::SUFFIX;
+        $itemKey = $id . self::SUFFIX;
 
         $cacheItem = $this->cache->getItem($itemKey);
 
