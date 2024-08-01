@@ -52,7 +52,7 @@ class Composer
         $displayProgress = 'list' !== $this->input->getFirstArgument() || 'txt' === $this->input->getParameterOption('--format', 'txt');
 
         if (!file_exists($composerJsonFile = $entrypointDirectory . '/castor.composer.json') && !file_exists($composerJsonFile = $entrypointDirectory . '/.castor/castor.composer.json')) {
-            $this->logger->debug(sprintf('The castor.composer.json file does not exists in %s or %s/.castor, skipping composer install.', $entrypointDirectory, $entrypointDirectory));
+            $this->logger->debug(\sprintf('The castor.composer.json file does not exists in %s or %s/.castor, skipping composer install.', $entrypointDirectory, $entrypointDirectory));
 
             return;
         }
@@ -111,7 +111,7 @@ class Composer
         }
 
         if (!preg_match('#^(?<organization>[^/]+)/(?<repository>[^/]+)$#', $package)) {
-            throw new InvalidImportFormat(sprintf('The import path must be formatted like this: "%s://<organization>/<repository>".', $scheme));
+            throw new InvalidImportFormat(\sprintf('The import path must be formatted like this: "%s://<organization>/<repository>".', $scheme));
         }
 
         if ('composer' === $scheme || 'package' === $scheme) {
@@ -122,11 +122,11 @@ class Composer
             $packageDirectory = PathHelper::getCastorVendorDir() . '/' . $package;
 
             if (!file_exists($packageDirectory)) {
-                throw new ImportError(sprintf('The package "%s" is not installed, make sure you required it in your castor.composer.json file.', $package));
+                throw new ImportError(\sprintf('The package "%s" is not installed, make sure you required it in your castor.composer.json file.', $package));
             }
 
             if ($file && !file_exists($packageDirectory . '/' . $file)) {
-                throw new ImportError(sprintf('The file "%s" does not exist in the package "%s".', $file, $package));
+                throw new ImportError(\sprintf('The file "%s" does not exist in the package "%s".', $file, $package));
             }
 
             $this->kernel->addMount(new Mount(
@@ -139,7 +139,7 @@ class Composer
             return;
         }
 
-        throw new InvalidImportFormat(sprintf('The import scheme "%s" is not supported.', $scheme));
+        throw new InvalidImportFormat(\sprintf('The import scheme "%s" is not supported.', $scheme));
     }
 
     public function clean(): void
