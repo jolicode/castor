@@ -99,7 +99,7 @@ function custom_wait_for_task(string $thing = 'foobar'): void
 function wait_for_docker_container_task(): void
 {
     try {
-        $checkLogSince = date(DATE_RFC3339);
+        $checkLogSince = date(\DATE_RFC3339);
         run('docker run -d --rm --name helloworld alpine sh -c "echo hello world ; sleep 10"', quiet: true);
         wait_for_docker_container(
             containerName: 'helloworld',
