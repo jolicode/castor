@@ -43,8 +43,28 @@ final class ComposerCommand extends Command
         }
 
         $vendorDirectory = $this->rootDir . '/' . Composer::VENDOR_DIR;
+        $tokens = $this->getRawTokens($input);
 
-        $this->composer->run($file, $vendorDirectory, $this->getRawTokens($input), $output, $input->isInteractive());
+        if (\in_array('init', $tokens)) {
+            $lastDirectory = basename($this->rootDir);
+
+            if (!\in_array('--name', $tokens)) {
+                $tokens[] = '--name';
+                $tokens[] = $lastDirectory . '/castor';
+            }
+
+            if (!\in_array('--description', $tokens)) {
+                $tokens[] = '--description';
+                $tokens[] = "Castor commands for project {$lastDirectory}";
+            }
+
+            if (!\in_array('--type', $tokens)) {
+                $tokens[] = '--type';
+                $tokens[] = 'castor-project';
+            }
+        }
+
+        $this->composer->run($file, $vendorDirectory, $tokens, $output, $input->isInteractive());
 
         return Command::SUCCESS;
     }
