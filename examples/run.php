@@ -8,6 +8,7 @@ use Symfony\Component\Console\Helper\ProcessHelper;
 
 use function Castor\app;
 use function Castor\capture;
+use function Castor\context;
 use function Castor\exit_code;
 use function Castor\io;
 use function Castor\output;
@@ -19,7 +20,7 @@ function ls(): void
     if (OsHelper::isWindows()) {
         $process = run('dir');
     } else {
-        $process = run('ls -alh && echo $foo', quiet: true, environment: ['foo' => 'ba\'"`r']);
+        $process = run('ls -alh && echo $foo', context: context()->withQuiet()->withEnvironment(['foo' => 'ba\'"`r']));
     }
 
     io()->writeln('Output:' . $process->getOutput());
@@ -30,7 +31,7 @@ function ls(): void
 #[AsTask(description: 'Run a sub-process with environment variables and display information about it')]
 function variables(): void
 {
-    $process = run('echo $foo', quiet: true, environment: ['foo' => 'ba\'"`r']);
+    $process = run('echo $foo', context: context()->withQuiet()->withEnvironment(['foo' => 'ba\'"`r']));
 
     io()->writeln('Output: ' . $process->getOutput());
     io()->writeln('Error output: ' . $process->getErrorOutput());
@@ -60,7 +61,7 @@ function exception(): void
         output()->writeln('Re-run with -v, -vv, -vvv for different output.');
     }
 
-    run('echo foo; echo bar>&2; exit 1', pty: false, quiet: true);
+    run('echo foo; echo bar>&2; exit 1', context: context()->withPty(false)->withQuiet());
 }
 
 #[AsTask(description: 'Run a sub-process and display information about it, with ProcessHelper')]

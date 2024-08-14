@@ -21,19 +21,20 @@ function notify()
 
 ## Notify with `run()`
 
-You can use the `notify` argument of the `run()` function to display a
+You can use the `withNotify` method of the `Context` object to display a
 notification when a command has been executed:
 
 ```php
 use Castor\Attribute\AsTask;
 
+use function Castor\context;
 use function Castor\run;
 
 #[AsTask()]
 function notify()
 {
-    run(['echo', 'notify'], notify: true); // will display a success notification
-    run('command_that_does_not_exist', notify: true); // will display a failure notification
+    run(['echo', 'notify'], context: context()->withNotify(true)); // will display a success notification
+    run('command_that_does_not_exist', context: context()->withNotify(true)); // will display a failure notification
 }
 ```
 
@@ -45,6 +46,7 @@ You can set the `notify` property in the context to `false` to disable notificat
 use Castor\Attribute\AsTask;
 
 use Castor\Context;
+use function Castor\context;
 use function Castor\notify;
 use function Castor\run;
 use function Castor\with;
@@ -57,7 +59,7 @@ function notify()
             notify('Hello world!'); // will not display a notification
             run('ls'); // will not display a notification
             
-            run('ls', notify: true); // will display a notification (you override the context value on the fly)
+            run('ls', context: context()->withNotify()); // will display a notification (you override the context value on the fly)
         },
         context: new Context(notify: false),
     );
@@ -72,6 +74,7 @@ You can also set the `notify` property in the context to `null` that mean all us
 use Castor\Attribute\AsTask;
 
 use Castor\Context;
+use function Castor\context;
 use function Castor\notify;
 
 #[AsTask()]
@@ -80,7 +83,7 @@ function notify()
     with(
         callback: function () {
             run('ls'); // will not display a notification
-            run('ls', notify: true); // will display a notification
+            run('ls', context: context()->withNotify()); // will display a notification
             notify('Hello world!'); // will display a notification
         },
         context: new Context(notify: null),

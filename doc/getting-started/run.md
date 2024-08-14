@@ -43,84 +43,22 @@ function foo(): void
 > [!TIP]
 > Related example: [run.php](https://github.com/jolicode/castor/blob/main/examples/run.php)
 
-## Failure
-
-By default, Castor will throw an exception if the process fails. You can disable
-that by setting the `allowFailure` option to `true`:
-
-```php
-use Castor\Attribute\AsTask;
-
-use function Castor\run;
-
-#[AsTask()]
-function foo(): void
-{
-    run('a_command_that_does_not_exist', allowFailure: true);
-}
-```
-
-> [!TIP]
-> Related example: [failure.php](https://github.com/jolicode/castor/blob/main/examples/failure.php)
-
-## Working directory
-
-By default, Castor will execute the process in the same directory as
-the `castor.php` file. You can change that by setting the `workingDirectory`
-argument. It can be either a relative or an absolute path:
-
-```php
-use Castor\Attribute\AsTask;
-
-use function Castor\run;
-
-#[AsTask()]
-function foo(): void
-{
-    run('pwd', workingDirectory: '../'); // run the process in the parent directory of the castor.php file
-    run('pwd', workingDirectory: '/tmp'); // run the process in the /tmp directory
-}
-```
-
-> [!TIP]
-> Related example: [cd.php](https://github.com/jolicode/castor/blob/main/examples/cd.php)
-
-## Environment variables
-
-By default, Castor will use the same environment variables as the current
-process. You can add or override environment variables by setting
-the `environment` argument:
-
-```php
-use Castor\Attribute\AsTask;
-
-use function Castor\run;
-
-#[AsTask()]
-function foo(): void
-{
-    run('echo $FOO', environment: ['FOO' => 'bar']); // will print "bar"
-}
-```
-
-> [!TIP]
-> Related example: [env.php](https://github.com/jolicode/castor/blob/main/examples/env.php)
-
 ## Processing the output
 
 By default, Castor will forward the stdout and stderr to the current terminal.
-If you do not want to print the process output you can set the `quiet`
-option to `true`:
+If you do not want to print the process output you can use a context with the
+`quiet` option to true:
 
 ```php
 use Castor\Attribute\AsTask;
 
+use function Castor\context;
 use function Castor\run;
 
 #[AsTask()]
 function foo(): void
 {
-    run('echo "bar"', quiet: true); // will not print anything
+    run('echo "bar"', context: context()->withQuiet()); // will not print anything
 }
 ```
 
@@ -130,12 +68,13 @@ returned `Symfony\Component\Process\Process` object:
 ```php
 use Castor\Attribute\AsTask;
 
+use function Castor\context;
 use function Castor\run;
 
 #[AsTask()]
 function foo(): void
 {
-    $process = run('echo "bar"', quiet: true); // will not print anything
+    $process = run('echo "bar"', context: context()->withQuiet())); // will not print anything
     $output = $process->getOutput(); // will return "bar\n"
 }
 ```
@@ -186,29 +125,6 @@ function cs(): int
 
 > [!TIP]
 > Related example: [run.php](https://github.com/jolicode/castor/blob/main/examples/run.php)
-
-## Timeout
-
-By default, Castor allow your `run()` calls to go indefinitly.
-
-If you want to tweak that you need to set the `timeout` argument.
-
-```php
-use Castor\Attribute\AsTask;
-
-use function Castor\run;
-
-#[AsTask()]
-function foo(): void
-{
-    run('my-script.sh', timeout: 120);
-}
-```
-
-This process will have a 2 minutes timeout.
-
-> [!TIP]
-> Related example: [wait_for.php](https://github.com/jolicode/castor/blob/main/examples/wait_for.php)
 
 ## Interactive Process
 

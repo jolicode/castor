@@ -8,6 +8,7 @@ use Castor\Exception\WaitFor\TimeoutReachedException;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
 use function Castor\capture;
+use function Castor\context;
 use function Castor\io;
 use function Castor\run;
 use function Castor\wait_for;
@@ -100,13 +101,13 @@ function wait_for_docker_container_task(): void
 {
     try {
         $checkLogSince = date(\DATE_RFC3339);
-        run('docker run -d --rm --name helloworld alpine sh -c "echo hello world ; sleep 10"', quiet: true);
+        run('docker run -d --rm --name helloworld alpine sh -c "echo hello world ; sleep 10"', context: context()->withQuiet());
         wait_for_docker_container(
             containerName: 'helloworld',
             timeout: 5,
             containerChecker: function ($containerId) use ($checkLogSince): bool {
                 // Check some things (logs, command result, etc.)
-                $output = capture("docker logs --since {$checkLogSince} {$containerId}", allowFailure: true);
+                $output = capture("docker logs --since {$checkLogSince} {$containerId}", context: context()->withAllowFailure());
 
                 return u($output)->containsAny(['hello world']);
             },

@@ -124,7 +124,7 @@ use function Castor\run;
 #[AsContext(default: true, name: 'my_context')]
 function create_default_context(): Context
 {
-    return new Context(['foo' => 'bar'], workingDirectory: '/tmp');
+    return new Context(['foo' => 'bar'], context()->withWorkingDirectory('/tmp'));
 }
 
 #[AsTask()]
@@ -142,6 +142,137 @@ function foo(Context $context): void
 
 ```bash
 $ CASTOR_CONTEXT=another_context castor foo
+```
+
+## Failure
+
+By default, Castor will throw an exception if the process fails. You can disable
+that by using the `withAllowFailure` method:
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\context;
+use function Castor\run;
+
+#[AsTask()]
+function foo(): void
+{
+    run('a_command_that_does_not_exist', context: context()->withAllowFailure());
+}
+```
+
+> [!TIP]
+> Related example: [failure.php](https://github.com/jolicode/castor/blob/main/examples/failure.php)
+
+## Working directory
+
+By default, Castor will execute the process in the same directory as
+the `castor.php` file. You can change that by using the `withWorkingDirectory`
+method. It can be either a relative or an absolute path:
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\context;
+use function Castor\run;
+
+#[AsTask()]
+function foo(): void
+{
+    run('pwd', context: context()->withWorkingDirectory('../')); // run the process in the parent directory of the castor.php file
+    run('pwd', context: context()->withWorkingDirectory('/tmp')); // run the process in the /tmp directory
+}
+```
+
+> [!TIP]
+> Related example: [cd.php](https://github.com/jolicode/castor/blob/main/examples/cd.php)
+
+## Environment variables
+
+By default, Castor will use the same environment variables as the current
+process. You can add or override environment variables by using the 
+`withEnvironment()` method:
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\context;
+use function Castor\run;
+
+#[AsTask()]
+function foo(): void
+{
+    run('echo $FOO', context: context()->withEnvironment(['FOO' => 'bar'])); // will print "bar"
+}
+```
+
+> [!TIP]
+> Related example: [env.php](https://github.com/jolicode/castor/blob/main/examples/env.php)
+
+## Timeout
+
+By default, Castor allow your `run()` calls to go indefinitly.
+
+If you want to tweak that you need to use the `withTimeout` method.
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\context;
+use function Castor\run;
+
+#[AsTask()]
+function foo(): void
+{
+    run('my-script.sh', context: context()->withTimeout(120));
+}
+```
+
+This process will have a 2 minutes timeout.
+
+> [!TIP]
+> Related example: [wait_for.php](https://github.com/jolicode/castor/blob/main/examples/wait_for.php)
+
+## PTY & TTY
+
+By default, Castor will use a pseudo terminal (PTY) to run the underlying process,
+which allows to have nice output in most cases.
+For some commands you may want to disable the PTY and use a TTY instead. You can
+do that by using the `withTty` method:
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\context;
+use function Castor\run;
+
+#[AsTask()]
+function foo(): void
+{
+    run('echo "bar"', context: context()->withTty());
+}
+```
+
+> [!WARNING]
+> When using a TTY, the output of the command is empty in the process object
+> (when using `getOutput()` or `getErrorOutput()`).
+
+You can also disable the pty by using the `withPty` method. If `withTty`
+and `withPty` are both used with `false`, the standard input will not be forwarded to
+the process:
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\context;
+use function Castor\run;
+
+#[AsTask()]
+function foo(): void
+{
+    run('echo "bar"', context: context()->withPty(false)->withTty(false)); // print nothing
+}
 ```
 
 ## Advanced usage

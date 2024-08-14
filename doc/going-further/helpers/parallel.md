@@ -8,6 +8,7 @@ so you do not have to wait for a function to finish before starting another one:
 ```php
 use Castor\Attribute\AsTask;
 
+use function Castor\context;
 use function Castor\io;
 use function Castor\parallel;
 
@@ -16,10 +17,10 @@ function foo(): void
 {
     [$foo, $bar] = parallel(
         function () {
-            return run('sleep 2 && echo foo', quiet: true);
+            return run('sleep 2 && echo foo', context: context()->withQuiet());
         },
         function () {
-            return run('sleep 2 && echo bar', quiet: true);
+            return run('sleep 2 && echo bar', context: context()->withQuiet());
         }
     );
 
