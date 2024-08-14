@@ -2,6 +2,8 @@
 
 namespace Castor\Runner;
 
+use Castor\CommandBuilder\CommandBuilderInterface;
+use Castor\CommandBuilder\ContextUpdaterInterface;
 use Castor\Console\Output\SectionOutput;
 use Castor\Context;
 use Castor\ContextRegistry;
@@ -28,12 +30,12 @@ class ProcessRunner
     }
 
     /**
-     * @param string|array<string|\Stringable|int>           $command
-     * @param array<string, string|\Stringable|int>|null     $environment
-     * @param (callable(string, string, Process) :void)|null $callback
+     * @param string|array<string|\Stringable|int>|CommandBuilderInterface $command
+     * @param array<string, string|\Stringable|int>|null                   $environment
+     * @param (callable(string, string, Process) :void)|null               $callback
      */
     public function run(
-        string|array $command,
+        string|array|CommandBuilderInterface $command,
         ?array $environment = null,
         ?string $workingDirectory = null,
         ?bool $tty = null,
@@ -77,6 +79,14 @@ class ProcessRunner
 
         if (null !== $notify) {
             $context = $context->withNotify($notify);
+        }
+
+        if ($command instanceof CommandBuilderInterface) {
+            if ($command instanceof ContextUpdaterInterface) {
+                $context = $command->updateContext($context);
+            }
+
+            $command = $command->getCommand();
         }
 
         if (\is_array($command)) {

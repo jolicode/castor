@@ -3,6 +3,7 @@
 namespace Castor;
 
 use Castor\Attribute\AsContextGenerator;
+use Castor\CommandBuilder\CommandBuilderInterface;
 use Castor\Console\Application;
 use Castor\Exception\ExecutableNotFoundException;
 use Castor\Exception\MinimumVersionRequirementNotMetException;
@@ -43,12 +44,12 @@ function parallel(callable ...$callbacks): array
 }
 
 /**
- * @param string|array<string|\Stringable|int>           $command
- * @param array<string, string|\Stringable|int>|null     $environment
- * @param (callable(string, string, Process) :void)|null $callback
+ * @param string|array<string|\Stringable|int>|CommandBuilderInterface $command
+ * @param array<string, string|\Stringable|int>|null                   $environment
+ * @param (callable(string, string, Process) :void)|null               $callback
  */
 function run(
-    string|array $command,
+    string|array|CommandBuilderInterface $command,
     ?array $environment = null,
     ?string $workingDirectory = null,
     ?bool $tty = null,
