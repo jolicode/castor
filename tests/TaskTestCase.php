@@ -6,6 +6,7 @@ use Castor\Tests\Helper\OutputCleaner;
 use Castor\Tests\Helper\WebServerHelper;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Process\InputStream;
 use Symfony\Component\Process\Process;
 
 abstract class TaskTestCase extends TestCase
@@ -23,7 +24,7 @@ abstract class TaskTestCase extends TestCase
         self::$binary = 'application/x-executable' === mime_content_type(self::$castorBin);
     }
 
-    public function runTask(array $args, ?string $cwd = null, bool $needRemote = false, bool $needResetVendor = false): Process
+    public function runTask(array $args, ?string $cwd = null, bool $needRemote = false, bool $needResetVendor = false, ?string $input = null): Process
     {
         $coverage = $this->getTestResultObject()?->getCodeCoverage();
 
@@ -50,6 +51,8 @@ abstract class TaskTestCase extends TestCase
             (new Filesystem())->remove($workingDirectory . '/.castor/vendor');
         }
 
+        $inputStream = $input ? new InputStream() : null;
+
         $process = new Process(
             [self::$castorBin, '--no-ansi', ...$args],
             cwd: $workingDirectory,
@@ -57,9 +60,18 @@ abstract class TaskTestCase extends TestCase
                 'COLUMNS' => 1000,
                 ...$extraEnv,
             ],
+            input: $inputStream,
         );
 
-        $process->run();
+        if ($inputStream) {
+            $process->start();
+            usleep(500_000);
+            $inputStream->write($input);
+            $inputStream->close();
+            $process->wait();
+        } else {
+            $process->run();
+        }
 
         if ($coverage) {
             $coverage->merge(require $outputFilename);

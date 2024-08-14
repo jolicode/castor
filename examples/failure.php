@@ -18,3 +18,9 @@ function allow_failure(): void
 {
     run('bash -c i_do_not_exist', context: context()->withAllowFailure()->withPty(false));
 }
+
+#[AsTask(description: 'A failing task authorized to fail')]
+function verbose_arguments(): void
+{
+    run('bash -c i_do_not_exist', context: context()->withVerboseArguments(['-x', '-e']));
+}
