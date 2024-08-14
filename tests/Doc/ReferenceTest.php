@@ -99,7 +99,7 @@ class ReferenceTest extends TestCase
 
         $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
 
-        $visitor = new class() extends NodeVisitorAbstract {
+        $visitor = new class extends NodeVisitorAbstract {
             public $functions = [];
 
             public function enterNode(Node $node): int|Node|null
