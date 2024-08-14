@@ -4,6 +4,7 @@ namespace qa\cs;
 
 use Castor\Attribute\AsTask;
 
+use function Castor\context;
 use function Castor\exit_code;
 use function Castor\run;
 
@@ -25,12 +26,12 @@ function cs(bool $dryRun = false): int
 #[AsTask(description: 'install dependencies')]
 function install(): void
 {
-    run(['composer', 'install'], workingDirectory: __DIR__);
+    run(['composer', 'install'], context: context()->withWorkingDirectory(__DIR__));
 }
 
 #[AsTask(description: 'Update dependencies')]
 function update(): void
 {
-    run(['composer', 'update'], workingDirectory: __DIR__);
-    run(['composer', 'bump'], workingDirectory: __DIR__);
+    run(['composer', 'update'], context: context()->withWorkingDirectory(__DIR__));
+    run(['composer', 'bump'], context: context()->withWorkingDirectory(__DIR__));
 }

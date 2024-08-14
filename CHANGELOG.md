@@ -6,6 +6,8 @@
 
 * Add `Castor\CommandBuilder\CommandBuilderInterface` which allows to build nice API for command line software
 * Add `Context::toInteractive()` method
+* Add `Castor\Event\ContextCreatedEvent` to allow updating the context after it is created
+* Add `run_phar()` function to run a phar file in all contexts
 
 ### Vendor
 
@@ -19,14 +21,16 @@
 * Fix repack when there is composer dependencies to castor
 * Fix wait_for_docker_container example to avoid checking previous docker logs
 
-### Features
-
-* Add `Castor\Event\ContextCreatedEvent` to allow updating the context after it is created
-* Add `run_phar()` function to run a phar file in all contexts
-
 ### Deprecations
 
-* Deprecate all arguments in `run()` function that are already in the context
+* Deprecate all arguments in `run()` function that are already in the context.
+    Examples:
+    ```diff
+    {
+    -    run(['composer', 'install'], workingDirectory: __DIR__);
+    +    run(['composer', 'install'], context: context()->withWorkingDirectory(__DIR__));
+    }
+    ```
 
 ## 0.17.1 (2024-05-31)
 
