@@ -58,7 +58,7 @@ way of doing things.
 ```php
 use CommandBuilder\Ls;
 
-function ls(string $directory): void
+function ls(string $directory): Ls
 {
     return new Ls($directory);
 }
