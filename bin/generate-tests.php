@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Process\InputStream;
 use Symfony\Component\Process\Process;
 
 use function Symfony\Component\String\u;
@@ -176,6 +177,7 @@ add_test(['context:context', '--context', 'production'], 'ContextContextProducti
 add_test(['context:context', '--context', 'run'], 'ContextContextRun');
 add_test(['context:context', '--context', 'updated'], 'ContextContextUpdated');
 add_test(['enabled:hello', '--context', 'production'], 'EnabledInProduction');
+add_test(['failure:verbose-arguments'], 'FailureVerboseArgumentsTrue', input: "yes\n");
 add_test(['list', '--raw', '--format', 'txt', '--short'], 'List', needRemote: true, skipOnBinary: true);
 // Transient test, disabled for now
 // add_test(['parallel:sleep', '--sleep5', '0', '--sleep7', '0', '--sleep10', '0'], 'ParallelSleep');
@@ -193,7 +195,7 @@ add_test(['remote-import:remote-task-class'], 'RemoteImportClassWithVendorReset'
 
 echo "\nDone.\n";
 
-function add_test(array $args, string $class, ?string $cwd = null, bool $needRemote = false, bool $skipOnBinary = false, bool $needResetVendor = false)
+function add_test(array $args, string $class, ?string $cwd = null, bool $needRemote = false, bool $skipOnBinary = false, bool $needResetVendor = false, ?string $input = null)
 {
     $class .= 'Test';
     $fp = fopen(__FILE__, 'r');
@@ -206,6 +208,7 @@ function add_test(array $args, string $class, ?string $cwd = null, bool $needRem
         (new Filesystem())->remove($workingDirectory . '/.castor/vendor');
     }
 
+    $inputStream = $input ? new InputStream() : null;
     $process = new Process(
         [\PHP_BINARY,  __DIR__ . '/castor', '--no-ansi', ...$args],
         cwd: $workingDirectory,
@@ -215,9 +218,18 @@ function add_test(array $args, string $class, ?string $cwd = null, bool $needRem
             'CASTOR_NO_REMOTE' => $needRemote ? 0 : 1,
             'CASTOR_TEST' => 'true',
         ],
+        input: $inputStream,
         timeout: null,
     );
-    $process->run();
+    if ($inputStream) {
+        $process->start();
+        usleep(500_000);
+        $inputStream->write($input);
+        $inputStream->close();
+        $process->wait();
+    } else {
+        $process->run();
+    }
 
     $err = OutputCleaner::cleanOutput($process->getErrorOutput());
 
@@ -229,6 +241,7 @@ function add_test(array $args, string $class, ?string $cwd = null, bool $needRem
         '{{ cwd }}' => $cwd ? ', ' . var_export($cwd, true) : '',
         '{{ needRemote }}' => $needRemote ? ', needRemote: true' : '',
         '{{ needResetVendor }}' => $needResetVendor ? ', needResetVendor: true' : '',
+        '{{ input }}' => $input ? ', input: ' . var_export($input, true) : '',
         '{{ skip-on-binary }}' => match ($skipOnBinary) {
             true => <<<'PHP'
 
@@ -274,7 +287,7 @@ class {{ class_name }} extends TaskTestCase
     // {{ task }}
     public function test(): void
     {{{ skip-on-binary }}
-        $process = $this->runTask([{{ args }}]{{ cwd }}{{ needRemote }}{{ needResetVendor }});
+        $process = $this->runTask([{{ args }}]{{ cwd }}{{ needRemote }}{{ needResetVendor }}{{ input }});
 
         if ({{ exitCode }} !== $process->getExitCode()) {
             throw new ProcessFailedException($process);
