@@ -5,13 +5,14 @@ namespace Castor\Runner;
 use Castor\CommandBuilder\CommandBuilderInterface;
 use Castor\CommandBuilder\ContextUpdaterInterface;
 use Castor\Console\Output\SectionOutput;
+use Castor\Console\Output\VerbosityLevel;
 use Castor\Context;
 use Castor\ContextRegistry;
 use Castor\Event;
 use Castor\Helper\Notifier;
 use JoliCode\PhpOsHelper\OsHelper;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
@@ -27,7 +28,8 @@ class ProcessRunner
         private readonly SectionOutput $sectionOutput,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly Notifier $notifier,
-        private readonly LoggerInterface $logger = new NullLogger(),
+        private readonly LoggerInterface $logger,
+        private readonly SymfonyStyle $io,
     ) {
     }
 
@@ -108,8 +110,16 @@ class ProcessRunner
         }
 
         if (\is_array($command)) {
+            if ($context->verbosityLevel->isVerbose() && $context->verboseArguments) {
+                $command = array_merge($command, $context->verboseArguments);
+            }
+
             $process = new Process($command, $context->workingDirectory, $context->environment, null, $context->timeout);
         } else {
+            if ($context->verbosityLevel->isVerbose() && $context->verboseArguments) {
+                $command = \sprintf('%s %s', $command, implode(' ', $context->verboseArguments));
+            }
+
             $process = Process::fromShellCommandline($command, $context->workingDirectory, $context->environment, null, $context->timeout);
         }
 
@@ -182,6 +192,27 @@ class ProcessRunner
 
         if (0 !== $exitCode) {
             $this->logger->notice(\sprintf('Command finished with an error (exit code=%d).', $process->getExitCode()));
+
+            if ($context->verboseArguments && !$context->verbosityLevel->isVerbose()) {
+                $retry = $this->io->confirm('Do you want to retry the command with verbose arguments?', false);
+
+                if ($retry) {
+                    return $this->run(
+                        command: $command,
+                        environment: $environment,
+                        workingDirectory: $workingDirectory,
+                        tty: $tty,
+                        pty: $pty,
+                        timeout: $timeout,
+                        quiet: $quiet,
+                        allowFailure: $allowFailure,
+                        notify: $notify,
+                        callback: $callback,
+                        context: $context->withVerbosityLevel(VerbosityLevel::VERBOSE),
+                    );
+                }
+            }
+
             if (!$context->allowFailure) {
                 if ($context->verbosityLevel->isVerbose()) {
                     throw new ProcessFailedException($process);
