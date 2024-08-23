@@ -31,6 +31,7 @@
     +    run(['composer', 'install'], context: context()->withWorkingDirectory(__DIR__));
     }
     ```
+* Deprecate `suggestedValues` property in `AsArgument` and `AsOption` attributes. Use `autocomplete` property instead.
 
 ## 0.17.1 (2024-05-31)
 

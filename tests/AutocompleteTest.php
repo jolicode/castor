@@ -37,15 +37,15 @@ class AutocompleteTest extends TaskTestCase
 
     public function provideCompletionTests(): \Generator
     {
-        yield [task_with_suggested_values(...), ['a', 'b', 'c']];
+        yield [task_with_static_autocomplete(...), ['a', 'b', 'c']];
         yield [task_with_autocomplete(...), ['d', 'e', 'f']];
         yield [task_with_autocomplete_filtered(...), ['foo', 'bar', 'baz']];
         yield [task_with_autocomplete_filtered(...), ['bar', 'baz'], 'ba'];
     }
 }
 
-function task_with_suggested_values(
-    #[AsArgument(name: 'argument', suggestedValues: ['a', 'b', 'c'])]
+function task_with_static_autocomplete(
+    #[AsArgument(name: 'argument', autocomplete: ['a', 'b', 'c'])]
     string $argument,
 ): void {
 }
