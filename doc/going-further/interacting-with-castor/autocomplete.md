@@ -24,13 +24,13 @@ You have two options to make your arguments autocompleted.
 
 ### Static suggestions
 
-In case your suggestions are fixed, you can pass them in the `suggestedValues`
-property of the `AsArgument` and `AsOption` attributes:
+In case your suggestions are fixed, you can pass them as an array in the
+`autocomplete` property of the `AsArgument` and `AsOption` attributes:
 
 ```php
 #[AsTask()]
 function my_task(
-    #[AsArgument(name: 'argument', suggestedValues: ['foo', 'bar', 'baz'])]
+    #[AsArgument(name: 'argument', autocomplete: ['foo', 'bar', 'baz'])]
     string $argument,
 ): void {
 }
@@ -48,8 +48,9 @@ bar  baz  foo
 
 In case you need some logic to list the suggestions (like suggesting paths or
 docker services, making a database query or HTTP request to determine some
-values, etc.), you can use the `autocomplete` property of the `AsArgument` and
-`AsOption` attributes to provide the function that will return the suggestions:
+values, etc.), you can use the same `autocomplete` property of the `AsArgument`
+and `AsOption` attributes to provide the function that will return the
+suggestions:
 
 ```php
 namespace example;
@@ -91,5 +92,5 @@ argument to allow you to pre-filter the suggestions returned to the shell.
 > user. You do not have to implement any filter logic in the function.
 > 
 > You may use CompletionInput::getCompletionValue() to get the current input if
-> that helps improving performance (e.g. by reducing the number of rows fetched
+> that helps to improve performance (e.g. by reducing the number of rows fetched
 > from the database).

@@ -15,7 +15,7 @@ use function Castor\io;
  */
 #[AsTask(description: 'Dumps all arguments and options, with custom configuration')]
 function args(
-    #[AsArgument(description: 'This is a required argument without any typing', suggestedValues: ['hello', 'bonjour', 'hola'])]
+    #[AsArgument(description: 'This is a required argument without any typing', autocomplete: ['hello', 'bonjour', 'hola'])]
     $word,
     #[AsArgument(name: 'array-of-people', description: 'This is an optional array argument')]
     array $argument2 = ['world', 'PHP community'],

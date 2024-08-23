@@ -242,6 +242,11 @@ class TaskCommand extends Command implements SignalableCommandInterface
      */
     private function getSuggestedValues(AsArgument|AsOption $attribute): array|\Closure
     {
+        if ($attribute->suggestedValues && !\in_array('_complete', $_SERVER['argv'], true)) {
+            // Only trigger deprecation when not in completion mode
+            trigger_deprecation('jolicode/castor', '0.18', \sprintf('The "suggestedValues" property of attribute "%s" is deprecated, use "autocomplete" property instead.', self::class));
+        }
+
         if ($attribute->suggestedValues && null !== $attribute->autocomplete) {
             throw new FunctionConfigurationException(\sprintf('You cannot define both "suggestedValues" and "autocomplete" option on parameter "%s".', $attribute->name), $this->taskDescriptor->function);
         }
@@ -250,6 +255,11 @@ class TaskCommand extends Command implements SignalableCommandInterface
             return $attribute->suggestedValues;
         }
 
+        if (\is_array($attribute->autocomplete)) {
+            return $attribute->autocomplete;
+        }
+
+        // @phpstan-ignore booleanNot.alwaysFalse
         if (!\is_callable($attribute->autocomplete)) {
             throw new FunctionConfigurationException(\sprintf('The value provided in the "autocomplete" option on parameter "%s" is not callable.', $attribute->name), $this->taskDescriptor->function);
         }
