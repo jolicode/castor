@@ -259,6 +259,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
             return $attribute->autocomplete;
         }
 
+        // @phpstan-ignore booleanNot.alwaysFalse
         if (!\is_callable($attribute->autocomplete)) {
             throw new FunctionConfigurationException(\sprintf('The value provided in the "autocomplete" option on parameter "%s" is not callable.', $attribute->name), $this->taskDescriptor->function);
         }
