@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+## 0.18.0 (2024-08-27)
+
 ### Features
 
 * Add `Castor\CommandBuilder\CommandBuilderInterface` which allows to build nice API for command line software
