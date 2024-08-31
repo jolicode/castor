@@ -5,6 +5,7 @@
 ## 0.18.1 (2024-09-03)
 
 * Fix BC layer for `fingerprint()` function
+* Fix repack command work without .castor folder
 
 ## 0.18.0 (2024-08-27)
 
