@@ -624,6 +624,7 @@ function fingerprint(callable $callback, /* string */ $id = null, /* string */ $
     if (null === $fingerprint && null === $id) {
         throw new \LogicException('You must provide "id" and "fingerprint" argument.');
     }
+    // @phpstan-ignore function.impossibleType
     if (\is_bool($fingerprint)) {
         trigger_deprecation('castor/castor', '0.18.0', 'since 0.18 fingerprint functions require an "id" and "fingerprint" argument.');
 

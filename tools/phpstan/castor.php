@@ -12,7 +12,7 @@ use function Castor\run;
 function phpstan(bool $generateBaseline = false): int
 {
     $command = [
-        __DIR__ . '/vendor/bin/phpstan',
+        __DIR__ . '/vendor/bin/phpstan', '-v',
     ];
 
     if ($generateBaseline) {
