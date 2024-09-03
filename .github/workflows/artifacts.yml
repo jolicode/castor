@@ -161,7 +161,7 @@ jobs:
   release:
     name: Upload artifacts to the release
     if: github.event_name == 'release'
-    needs: [phars, static-linux-amd64, static-darwin-amd64, static-darwin-arm64]
+    needs: [phars, static-linux-amd64, static-darwin-amd64]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
