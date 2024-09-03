@@ -177,7 +177,7 @@ jobs:
         run: |
           gh release upload ${{ github.ref_name }} ./build/castor.darwin-amd64
           gh release upload ${{ github.ref_name }} ./build/castor.darwin-amd64.phar
-          gh release upload ${{ github.ref_name }} ./build/castor.darwin-arm64
+          # gh release upload ${{ github.ref_name }} ./build/castor.darwin-arm64
           gh release upload ${{ github.ref_name }} ./build/castor.darwin-arm64.phar
           gh release upload ${{ github.ref_name }} ./build/castor.linux-amd64
           gh release upload ${{ github.ref_name }} ./build/castor.linux-amd64.phar
