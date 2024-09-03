@@ -116,10 +116,12 @@ class RepackCommand extends Command
         ];
 
         // Add .castor directory
-        $boxConfig['directories'] = [
-            '.castor',
-            ...$boxConfig['directories'] ?? [],
-        ];
+        if (file_exists('.castor')) {
+            $boxConfig['directories'] = [
+                '.castor',
+                ...$boxConfig['directories'] ?? [],
+            ];
+        }
 
         // Force discovery
         $boxConfig['force-autodiscovery'] = true;
