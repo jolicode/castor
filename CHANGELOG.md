@@ -6,6 +6,7 @@
 
 * Fix BC layer for `fingerprint()` function
 * Fix repack command work without .castor folder
+* Do not build static-darwin-amd64 binary anymore (may be temporary)
 
 ## 0.18.0 (2024-08-27)
 
