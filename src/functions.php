@@ -613,12 +613,32 @@ function fingerprint_save(string $id, ?string $fingerprint = null): void
     Container::get()->fingerprintHelper->postProcessFingerprintForHash($id, $fingerprint);
 }
 
-function fingerprint(callable $callback, string $id, ?string $fingerprint = null, bool $force = false): bool
+// function fingerprint(callable $callback, string $fingerprint, bool $force = false): bool
+/**
+ * @param string $id
+ * @param string $fingerprint
+ */
+function fingerprint(callable $callback, /*string*/ $id = null, /*string*/ $fingerprint = null, bool $force = false): bool
 {
+    // Could only occur due du BC layer
+    if (null === $fingerprint && null === $id) {
+        throw new \LogicException('You must provide "id" and "fingerprint" argument.');
+    }
+    if (is_bool($fingerprint)) {
+        trigger_deprecation('castor/castor', '0.18.0', 'since 0.18 fingerprint functions require an "id" and "fingerprint" argument.');
+
+        $force = $fingerprint;
+        $fingerprint = $id;
+    }
     if (null === $fingerprint) {
-        trigger_deprecation('castor/castor', '0.18.0', 'since 0.18 fingerprint functions require an id argument.');
+        trigger_deprecation('castor/castor', '0.18.0', 'since 0.18 fingerprint functions require an "fingerprint" argument.');
 
         $fingerprint = $id;
+    }
+    if (null === $id) {
+        trigger_deprecation('castor/castor', '0.18.0', 'since 0.18 fingerprint functions require a "id" argument.');
+
+        $id = $fingerprint;
     }
 
     if ($force || !fingerprint_exists($id, $fingerprint)) {

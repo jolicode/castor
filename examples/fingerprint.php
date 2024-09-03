@@ -23,7 +23,7 @@ function task_with_a_fingerprint(): void
             io()->writeln('Cool, no fingerprint! Executing...');
         },
         id: 'my_fingerprint_check',
-        fingerprint: my_fingerprint_check()
+        fingerprint: my_fingerprint_check(),
     );
 
     io()->writeln('Cool! I finished!');
