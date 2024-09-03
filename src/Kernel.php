@@ -80,7 +80,7 @@ final class Kernel
         array $currentFunctions,
         array $currentClasses,
         InputInterface $input,
-        OutputInterface $output
+        OutputInterface $output,
     ): void {
         if ($mount->allowRemotePackage) {
             $this->composer->install($mount->path);
