@@ -23,7 +23,7 @@ function task_with_a_fingerprint(): void
             io()->writeln('Cool, no fingerprint! Executing...');
         },
         id: 'my_fingerprint_check',
-        fingerprint: my_fingerprint_check()
+        fingerprint: my_fingerprint_check(),
     );
 
     io()->writeln('Cool! I finished!');
@@ -44,7 +44,7 @@ function task_with_complete_fingerprint_check(): void
 
 #[AsTask(description: 'Check if the fingerprint has changed before executing a callback (with force option)')]
 function task_with_a_fingerprint_and_force(
-    #[AsOption(description: 'Force the callback to run even if the fingerprint has not changed')] bool $force = false
+    #[AsOption(description: 'Force the callback to run even if the fingerprint has not changed')] bool $force = false,
 ): void {
     io()->writeln('Hello Task with Fingerprint!');
 

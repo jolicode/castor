@@ -15,7 +15,7 @@ class Notifier
     public function __construct(
         private DefaultNotifier $notifier,
         private LoggerInterface $logger,
-        private ContextRegistry $contextRegistry
+        private ContextRegistry $contextRegistry,
     ) {
     }
 

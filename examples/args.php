@@ -30,7 +30,7 @@ function args(
 #[AsTask(description: 'Dumps all arguments and options, without configuration')]
 function another_args(
     string $required,
-    int $test2 = 1
+    int $test2 = 1,
 ): void {
     io()->writeln($required . ' ' . $test2);
 }

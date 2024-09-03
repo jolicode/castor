@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+## 0.18.1 (2024-09-03)
+
+* Fix BC layer for `fingerprint()` function
+
 ## 0.18.0 (2024-08-27)
 
 ### Features
@@ -18,7 +22,7 @@
 
 ### Fixes
 
-* Add an id parameter to fingerprint to avoid bad cache hit
+* Add an id parameter to `fingerprint()` to avoid bad cache hit
 * Fix completion when update is available
 * Fix repack when there is composer dependencies to castor
 * Fix wait_for_docker_container example to avoid checking previous docker logs
