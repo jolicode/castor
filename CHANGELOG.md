@@ -4,7 +4,7 @@
 
 ## 0.18.2 (2024-09-03)
 
-* Do not build static-darwin-amd64 binary anymore (may be temporary)
+* Do not build static-darwin-arm64 binary anymore (may be temporary)
 
 ## 0.18.1 (2024-09-03)
 
