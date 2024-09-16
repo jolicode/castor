@@ -591,7 +591,7 @@ function hasher(string $algo = 'xxh128'): HasherHelper
     );
 }
 
-function fingerprint_exists(string $id, ?string $fingerprint = null): bool
+function fingerprint_exists(string $id, ?string $fingerprint = null, bool $global = false): bool
 {
     if (null === $fingerprint) {
         trigger_deprecation('castor/castor', '0.18.0', 'since 0.18 fingerprint functions require an id argument.');
@@ -599,10 +599,10 @@ function fingerprint_exists(string $id, ?string $fingerprint = null): bool
         $fingerprint = $id;
     }
 
-    return Container::get()->fingerprintHelper->verifyFingerprintFromHash($id, $fingerprint);
+    return Container::get()->fingerprintHelper->verifyFingerprintFromHash($id, $fingerprint, $global);
 }
 
-function fingerprint_save(string $id, ?string $fingerprint = null): void
+function fingerprint_save(string $id, ?string $fingerprint = null, bool $global = false): void
 {
     if (null === $fingerprint) {
         trigger_deprecation('castor/castor', '0.18.0', 'since 0.18 fingerprint functions require an id argument.');
@@ -610,7 +610,7 @@ function fingerprint_save(string $id, ?string $fingerprint = null): void
         $fingerprint = $id;
     }
 
-    Container::get()->fingerprintHelper->postProcessFingerprintForHash($id, $fingerprint);
+    Container::get()->fingerprintHelper->postProcessFingerprintForHash($id, $fingerprint, $global);
 }
 
 // function fingerprint(callable $callback, string $fingerprint, bool $force = false): bool
@@ -618,7 +618,7 @@ function fingerprint_save(string $id, ?string $fingerprint = null): void
  * @param string $id
  * @param string $fingerprint
  */
-function fingerprint(callable $callback, /* string */ $id = null, /* string */ $fingerprint = null, bool $force = false): bool
+function fingerprint(callable $callback, /* string */ $id = null, /* string */ $fingerprint = null, bool $force = false, bool $global = false): bool
 {
     // Could only occur due du BC layer
     if (null === $fingerprint && null === $id) {
@@ -642,9 +642,9 @@ function fingerprint(callable $callback, /* string */ $id = null, /* string */ $
         $id = $fingerprint;
     }
 
-    if ($force || !fingerprint_exists($id, $fingerprint)) {
+    if ($force || !fingerprint_exists($id, $fingerprint, $global)) {
         $callback();
-        fingerprint_save($id, $fingerprint);
+        fingerprint_save($id, $fingerprint, $global);
 
         return true;
     }
