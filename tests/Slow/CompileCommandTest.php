@@ -38,6 +38,7 @@ class CompileCommandTest extends TestCase
                 '--os', 'linux',
                 '--binary-path', $binary,
                 '--php-extensions', 'mbstring,phar,posix,tokenizer',
+                '--php-ini-file', 'php.ini',
                 '-vvv',
             ],
             cwd: $castorAppDirPath,
@@ -55,5 +56,9 @@ class CompileCommandTest extends TestCase
         // run
         $p = (new Process([$binary, 'hello'], cwd: $castorAppDirPath))->mustRun();
         $this->assertSame('hello', $p->getOutput());
+
+        // Test php.ini
+        $p = (new Process([$binary, 'timezone'], cwd: $castorAppDirPath))->mustRun();
+        $this->assertSame('Arctic/Longyearbyen', $p->getOutput());
     }
 }

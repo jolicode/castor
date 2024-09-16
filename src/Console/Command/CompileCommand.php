@@ -42,6 +42,7 @@ class CompileCommand extends Command
             ->addOption('arch', null, InputOption::VALUE_REQUIRED, 'Target architecture for PHP compilation', 'x86_64', ['x86_64', 'aarch64'])
             ->addOption('php-version', null, InputOption::VALUE_REQUIRED, 'PHP version in major.minor format', '8.3')
             ->addOption('php-extensions', null, InputOption::VALUE_REQUIRED, 'PHP extensions required, in a comma-separated format. Defaults are the minimum required to run a basic "Hello World" task in Castor.', 'mbstring,phar,posix,tokenizer,curl,filter,openssl')
+            ->addOption('php-ini-file', 'N', InputOption::VALUE_REQUIRED, 'ini file to inject into micro.sfx when combining')
             ->addOption('php-rebuild', null, InputOption::VALUE_NONE, 'Ignore cache and force PHP build compilation.')
             ->setHidden(true)
         ;
@@ -101,6 +102,7 @@ class CompileCommand extends Command
             $input->getArgument('phar-path'),
             $binaryPath,
             $spcBinaryDir,
+            $input->getOption('php-ini-file'),
             $io
         );
 
@@ -214,18 +216,27 @@ class CompileCommand extends Command
         $buildProcess->mustRun(fn ($type, $buffer) => print $buffer);
     }
 
-    private function mergePHPandPHARIntoSingleExecutable(string $spcBinaryPath, string $pharFilePath, string $appBinaryFilePath, string $spcBinaryDir, SymfonyStyle $io): void
+    private function mergePHPandPHARIntoSingleExecutable(string $spcBinaryPath, string $pharFilePath, string $appBinaryFilePath, string $spcBinaryDir, ?string $iniFile, SymfonyStyle $io): void
     {
         if (!$this->fs->isAbsolutePath($pharFilePath)) {
             $pharFilePath = PathHelper::getRoot() . '/' . $pharFilePath;
         }
 
+        $command = [
+            $spcBinaryPath,
+            'micro:combine', $pharFilePath,
+            '--output=' . $appBinaryFilePath,
+        ];
+        if ($iniFile) {
+            if (!file_exists($iniFile)) {
+                throw new \InvalidArgumentException(\sprintf('The ini file "%s" does not exist.', $iniFile));
+            }
+            $iniFile = Path::makeAbsolute($iniFile, getcwd() ?: PathHelper::getRoot());
+            $command[] = '--with-ini-file=' . $iniFile;
+        }
+
         $mergePHPandPHARProcess = new Process(
-            [
-                $spcBinaryPath,
-                'micro:combine', $pharFilePath,
-                '--output=' . $appBinaryFilePath,
-            ],
+            $command,
             cwd: $spcBinaryDir,
             timeout: null,
         );
