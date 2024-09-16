@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Features
+
+* Add support for custom php.ini in compile command
+
 ## 0.18.2 (2024-09-03)
 
 * Do not build static-darwin-arm64 binary anymore (may be temporary)

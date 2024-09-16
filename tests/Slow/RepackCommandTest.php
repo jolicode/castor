@@ -73,6 +73,7 @@ class RepackCommandTest extends TestCase
             use Castor\Attribute\AsTask;
 
             use function Castor\import;
+            use function Castor\io;
             use function Castor\run;
 
             import('composer://pyrech/castor-example');
@@ -88,6 +89,12 @@ class RepackCommandTest extends TestCase
             {
                 run(['ls', 'my-app.linux.phar']);
             }
+
+            #[AsTask()]
+            function timezone(): void
+            {
+                io()->write(date_default_timezone_get());
+            }
             PHP
         );
 
@@ -102,6 +109,12 @@ class RepackCommandTest extends TestCase
                 'jolicode/castor' => '*@dev',
             ],
         ]));
+
+        // Only for the compile test
+        $fs->dumpFile($castorAppDirPath . '/php.ini', <<<'INI'
+            date.timezone=Arctic/Longyearbyen
+            INI
+        );
 
         (new Process(['composer', 'install'],
             cwd: $castorAppDirPath,
