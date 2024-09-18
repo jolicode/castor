@@ -1,0 +1,4 @@
+bash: line 1: i_do_not_exist: command not found
+
+ Do you want to retry the command with verbose arguments? (yes/no) [no]:
+ >

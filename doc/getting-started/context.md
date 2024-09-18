@@ -275,6 +275,31 @@ function foo(): void
 }
 ```
 
+## Passing verbose arguments
+
+Castor allow you to pass verbose arguments to the underlying process. You can
+do that by using the `withVerboseArguments` method:
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\context;
+use function Castor\run;
+
+#[AsTask()]
+function foo(): void
+{
+    run('php bin/console do:some:task', context: context()->withVerboseArguments(['-v']));
+}
+```
+
+By default, Castor will not pass any verbose arguments to the command. However
+if you run castor with the `-v` option, it will pass the verbose arguments to this command.
+
+Also if this command fails, castor will ask you if you want to retry the command 
+with the verbose arguments.
+
+
 ## Advanced usage
 
 See [this documentation](../going-further/interacting-with-castor/advanced-context.md) for more usage about

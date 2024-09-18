@@ -15,7 +15,8 @@ class Context implements \ArrayAccess
     /**
      * @phpstan-param ContextData $data The input parameter accepts an array or an Object
      *
-     * @param array<string, string|\Stringable|int> $environment A list of environment variables to add to the task
+     * @param array<string, string|\Stringable|int> $environment      A list of environment variables to add to the task
+     * @param string[]                              $verboseArguments A list of arguments to pass to the command to enable verbose output
      */
     public function __construct(
         public readonly array $data = [],
@@ -31,6 +32,7 @@ class Context implements \ArrayAccess
         // Do not use this argument, it is only used internally by the application
         public readonly string $name = '',
         public readonly string $notificationTitle = '',
+        public readonly array $verboseArguments = [],
     ) {
         $this->workingDirectory = $workingDirectory ?? PathHelper::getRoot();
     }
@@ -85,6 +87,7 @@ class Context implements \ArrayAccess
             $this->verbosityLevel,
             $this->name,
             $this->notificationTitle,
+            $this->verboseArguments,
         );
     }
 
@@ -104,6 +107,7 @@ class Context implements \ArrayAccess
             $this->verbosityLevel,
             $this->name,
             $this->notificationTitle,
+            $this->verboseArguments,
         );
     }
 
@@ -129,6 +133,7 @@ class Context implements \ArrayAccess
             $this->verbosityLevel,
             $this->name,
             $this->notificationTitle,
+            $this->verboseArguments,
         );
     }
 
@@ -147,6 +152,7 @@ class Context implements \ArrayAccess
             $this->verbosityLevel,
             $this->name,
             $this->notificationTitle,
+            $this->verboseArguments,
         );
     }
 
@@ -165,6 +171,7 @@ class Context implements \ArrayAccess
             $this->verbosityLevel,
             $this->name,
             $this->notificationTitle,
+            $this->verboseArguments,
         );
     }
 
@@ -183,6 +190,7 @@ class Context implements \ArrayAccess
             $this->verbosityLevel,
             $this->name,
             $this->notificationTitle,
+            $this->verboseArguments,
         );
     }
 
@@ -201,6 +209,7 @@ class Context implements \ArrayAccess
             $this->verbosityLevel,
             $this->name,
             $this->notificationTitle,
+            $this->verboseArguments,
         );
     }
 
@@ -219,6 +228,7 @@ class Context implements \ArrayAccess
             $this->verbosityLevel,
             $this->name,
             $this->notificationTitle,
+            $this->verboseArguments,
         );
     }
 
@@ -237,6 +247,7 @@ class Context implements \ArrayAccess
             $this->verbosityLevel,
             $this->name,
             $this->notificationTitle,
+            $this->verboseArguments,
         );
     }
 
@@ -255,6 +266,7 @@ class Context implements \ArrayAccess
             $verbosityLevel,
             $this->name,
             $this->notificationTitle,
+            $this->verboseArguments,
         );
     }
 
@@ -273,6 +285,7 @@ class Context implements \ArrayAccess
             $this->verbosityLevel,
             $name,
             $this->notificationTitle,
+            $this->verboseArguments,
         );
     }
 
@@ -291,6 +304,27 @@ class Context implements \ArrayAccess
             $this->verbosityLevel,
             $this->name,
             $notificationTitle,
+            $this->verboseArguments,
+        );
+    }
+
+    /** @param string[] $arguments */
+    public function withVerboseArguments(array $arguments = []): self
+    {
+        return new self(
+            $this->data,
+            $this->environment,
+            $this->workingDirectory,
+            $this->tty,
+            $this->pty,
+            $this->timeout,
+            $this->quiet,
+            $this->allowFailure,
+            $this->notify,
+            $this->verbosityLevel,
+            $this->name,
+            $this->notificationTitle,
+            $arguments,
         );
     }
 
