@@ -55,7 +55,7 @@ Castor supports the use of arguments without any configuration nor validation.
 For example, when you want to call a sub-process:
 
 ```php
-#[AsTask(ignoreValidationErrors: true)]
+#[AsTask()]
 function phpunit(#[AsRawTokens] array $rawTokens): void
 {
     run(['phpunit', ...$rawTokens]);
@@ -66,6 +66,15 @@ Then, you can use it like that:
 
 ```bash
 $ castor phpunit --filter=testName --debug --verbose
+```
+
+You can also disable validation by using the `ignoreValidationErrors` flag:
+
+```php
+#[AsTask(ignoreValidationErrors: true)]
+function do_something(): void
+{
+}
 ```
 
 > [!TIP]

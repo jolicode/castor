@@ -90,6 +90,8 @@ class TaskCommand extends Command implements SignalableCommandInterface
 
         foreach ($this->taskDescriptor->function->getParameters() as $parameter) {
             if ($parameter->getAttributes(AsRawTokens::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null) {
+                $this->ignoreValidationErrors();
+
                 continue;
             }
 
