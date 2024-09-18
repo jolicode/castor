@@ -38,7 +38,7 @@ function another_args(
 /**
  * @param string[] $rawTokens
  */
-#[AsTask(description: 'Dumps all arguments and options, without configuration nor validation', ignoreValidationErrors: true)]
+#[AsTask(description: 'Dumps all arguments and options, without configuration nor validation')]
 function passthru(#[AsRawTokens] array $rawTokens): void
 {
     var_dump($rawTokens);
