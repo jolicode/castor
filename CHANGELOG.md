@@ -4,6 +4,7 @@
 
 ### Features
 
+* Add `Context::withVerboseArguments()` method to pass verbose arguments to the underlying process when needed
 * Add support for custom php.ini in compile command
 
 ## 0.18.2 (2024-09-03)
@@ -23,7 +24,6 @@
 * Add `Context::toInteractive()` method
 * Add `Castor\Event\ContextCreatedEvent` to allow updating the context after it is created
 * Add `run_phar()` function to run a phar file in all contexts
-* Add `Context::withVerboseArguments()` method to pass verbose arguments to the underlying process when needed
 
 ### Vendor
 
