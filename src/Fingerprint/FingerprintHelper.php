@@ -2,6 +2,7 @@
 
 namespace Castor\Fingerprint;
 
+use Castor\Helper\PathHelper;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 
@@ -15,9 +16,9 @@ class FingerprintHelper
     ) {
     }
 
-    public function verifyFingerprintFromHash(string $id, string $fingerprint): bool
+    public function verifyFingerprintFromHash(string $id, string $fingerprint, bool $global = false): bool
     {
-        $itemKey = $id . self::SUFFIX;
+        $itemKey = $this->getItemKey($id, $global);
 
         if (false === $this->cache->hasItem($itemKey)) {
             return false;
@@ -36,9 +37,9 @@ class FingerprintHelper
         return false;
     }
 
-    public function postProcessFingerprintForHash(string $id, string $hash): void
+    public function postProcessFingerprintForHash(string $id, string $hash, bool $global = false): void
     {
-        $itemKey = $id . self::SUFFIX;
+        $itemKey = $this->getItemKey($id, $global);
 
         $cacheItem = $this->cache->getItem($itemKey);
 
@@ -46,5 +47,18 @@ class FingerprintHelper
 
         $cacheItem->expiresAt(new \DateTimeImmutable('+1 month'));
         $this->cache->save($cacheItem);
+    }
+
+    private function getItemKey(string $id, bool $global = false): string
+    {
+        if ($global) {
+            return $id . self::SUFFIX;
+        }
+
+        return \sprintf(
+            '%s-%s',
+            hash('xxh128', PathHelper::getRoot()),
+            $id,
+        );
     }
 }

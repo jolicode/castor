@@ -38,6 +38,7 @@ filesystem:filesystem                                             Performs some 
 filesystem:find                                                   Search files and directories on the filesystem
 fingerprint:task-with-a-fingerprint                               Execute a callback only if the fingerprint has changed
 fingerprint:task-with-a-fingerprint-and-force                     Check if the fingerprint has changed before executing a callback (with force option)
+fingerprint:task-with-a-fingerprint-global                        Execute a callback only if the global fingerprint has changed (Shared across all projects)
 fingerprint:task-with-complete-fingerprint-check                  Check if the fingerprint has changed before executing some code
 foo:bar                                                           Echo foo bar
 foo:foo                                                           Prints foo

@@ -43,6 +43,12 @@ class HasherHelper
             $path = getcwd() . '/' . $path;
         }
 
+        $path = realpath($path);
+
+        if (false === $path) {
+            throw new \InvalidArgumentException(\sprintf('The path "%s" is not a valid path.', $path));
+        }
+
         if (!is_file($path)) {
             throw new \InvalidArgumentException(\sprintf('The path "%s" is not a file.', $path));
         }
@@ -79,11 +85,11 @@ class HasherHelper
         foreach ($finder as $file) {
             switch ($strategy) {
                 case FileHashStrategy::Content:
-                    hash_update_file($this->hashContext, $file->getPathname());
+                    hash_update_file($this->hashContext, $file->getRealPath());
 
                     break;
                 case FileHashStrategy::MTimes:
-                    hash_update($this->hashContext, "{$file->getPathname()}:{$file->getMTime()}");
+                    hash_update($this->hashContext, "{$file->getRealPath()}:{$file->getMTime()}");
 
                     break;
             }
@@ -104,6 +110,9 @@ class HasherHelper
         if (false === $files) {
             throw new \InvalidArgumentException(\sprintf('The pattern "%s" is invalid.', $pattern));
         }
+
+        $files = array_map('realpath', $files);
+        $files = array_filter($files);
 
         foreach ($files as $file) {
             switch ($strategy) {
