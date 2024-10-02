@@ -7,6 +7,7 @@
 * Add `Context::withVerboseArguments()` method to pass verbose arguments to the underlying process when needed
 * Add support for custom php.ini in compile command
 * Do not validate commande options/args as soon as `#[AsRawTokens] is used
+* Update all PHP vendor
 
 ## 0.18.2 (2024-09-03)
 
