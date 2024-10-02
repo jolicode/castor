@@ -34,29 +34,29 @@
     },
     "require": {
         "php": ">=8.1",
-        "composer/composer": "^2.7.7",
-        "jolicode/jolinotif": "^2.7.2",
+        "composer/composer": "^2.8.0",
+        "jolicode/jolinotif": "^3.0.0",
         "jolicode/php-os-helper": "^0.1.0",
         "monolog/monolog": "^3.7",
-        "nikic/php-parser": "^4.19.1",
+        "nikic/php-parser": "^4.19.4",
         "spatie/ssh": "^1.10.1",
-        "symfony/cache": "^6.4.10",
+        "symfony/cache": "^6.4.12",
         "symfony/config": "^6.4.8",
-        "symfony/console": "^6.4.10",
-        "symfony/dependency-injection": "^6.4.10",
+        "symfony/console": "^6.4.12",
+        "symfony/dependency-injection": "^6.4.12",
         "symfony/deprecation-contracts": "^3.5",
-        "symfony/dotenv": "^6.4.10",
+        "symfony/dotenv": "^6.4.12",
         "symfony/error-handler": "^6.4.10",
-        "symfony/expression-language": "^6.4.8",
-        "symfony/filesystem": "^6.4.9",
-        "symfony/finder": "^6.4.10",
-        "symfony/http-client": "^6.4.10",
+        "symfony/expression-language": "^6.4.11",
+        "symfony/filesystem": "^6.4.12",
+        "symfony/finder": "^6.4.11",
+        "symfony/http-client": "^6.4.12",
         "symfony/monolog-bridge": "^6.4.8",
-        "symfony/process": "^6.4.8",
-        "symfony/string": "^6.4.10",
+        "symfony/process": "^6.4.12",
+        "symfony/string": "^6.4.12",
         "symfony/translation-contracts": "^3.5.0",
-        "symfony/var-dumper": "^6.4.10",
-        "symfony/yaml": "^6.4.8"
+        "symfony/var-dumper": "^6.4.11",
+        "symfony/yaml": "^6.4.12"
     },
     "conflict": {
         "symfony/console": "6.4.3"
@@ -71,7 +71,7 @@
         }
     },
     "require-dev": {
-        "phpunit/php-code-coverage": "^9.2.31",
-        "symfony/phpunit-bridge": "^6.4.10"
+        "phpunit/php-code-coverage": "^9.2.32",
+        "symfony/phpunit-bridge": "^6.4.11"
     }
 }
