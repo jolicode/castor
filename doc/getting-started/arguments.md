@@ -45,7 +45,7 @@ function task(
 ```bash
 $ castor task foo
 foo default
-$ castor task --default=bar foo
+$ castor task foo --second-arg=bar
 foo bar
 ```
 
