@@ -5,6 +5,7 @@ namespace Castor\Console;
 use Castor\Console\Command\CompileCommand;
 use Castor\Console\Command\ComposerCommand;
 use Castor\Console\Command\DebugCommand;
+use Castor\Console\Command\ExecuteCommand;
 use Castor\Console\Command\RepackCommand;
 use Castor\Container;
 use Castor\Helper\PathHelper;
@@ -196,6 +197,7 @@ class ApplicationFactory
                     '$containerBuilder' => service(ContainerInterface::class),
                 ])
                 ->call('add', [service(DebugCommand::class)])
+                ->call('add', [service(ExecuteCommand::class)])
                 ->call('setDispatcher', [service(EventDispatcherInterface::class)])
                 ->call('setCatchErrors', [true])
         ;
