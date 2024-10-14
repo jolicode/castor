@@ -125,43 +125,43 @@ jobs:
           path: ./castor.darwin-amd64
           if-no-files-found: error
 
-  # static-darwin-arm64:
-  #   needs: phars
-  #   name: Create MacOs arm64 static binary and upload
-  #   runs-on: macos-14
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
+  static-darwin-arm64:
+    needs: phars
+    name: Create MacOs arm64 static binary and upload
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  #     - uses: ./.github/actions/install
+      - uses: ./.github/actions/install
 
-  #     - uses: ./.github/actions/cache
-  #       with:
-  #         os: 'darwin'
+      - uses: ./.github/actions/cache
+        with:
+          os: "darwin"
 
-  #     - name: retrieve phar artifacts
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         path: tools/phar/build
-  #         merge-multiple: true
+      - name: retrieve phar artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: tools/phar/build
+          merge-multiple: true
 
-  #     - uses: ./.github/actions/static
-  #       with:
-  #         os: 'darwin-arm64'
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: ./.github/actions/static
+        with:
+          os: "darwin-arm64"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  #     - name: Upload the MacOs arm64 static binary
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: 'castor.darwin-arm64'
-  #         path: ./castor.darwin-arm64
-  #         if-no-files-found: error
+      - name: Upload the MacOs arm64 static binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: "castor.darwin-arm64"
+          path: ./castor.darwin-arm64
+          if-no-files-found: error
 
   release:
     name: Upload artifacts to the release
     if: github.event_name == 'release'
-    needs: [phars, static-linux-amd64, static-darwin-amd64]
+    needs: [phars, static-linux-amd64, static-darwin-amd64, static-darwin-arm64]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -177,7 +177,7 @@ jobs:
         run: |
           gh release upload ${{ github.ref_name }} ./build/castor.darwin-amd64
           gh release upload ${{ github.ref_name }} ./build/castor.darwin-amd64.phar
-          # gh release upload ${{ github.ref_name }} ./build/castor.darwin-arm64
+          gh release upload ${{ github.ref_name }} ./build/castor.darwin-arm64
           gh release upload ${{ github.ref_name }} ./build/castor.darwin-arm64.phar
           gh release upload ${{ github.ref_name }} ./build/castor.linux-amd64
           gh release upload ${{ github.ref_name }} ./build/castor.linux-amd64.phar

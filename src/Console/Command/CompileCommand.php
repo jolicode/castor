@@ -20,7 +20,7 @@ class CompileCommand extends Command
     // When something **important** related to the compilation changed, increase
     // this version to invalide the cache
     private const CACHE_VERSION = '2';
-    private const DEFAULT_SPC_VERSION = '2.3.1';
+    private const DEFAULT_SPC_VERSION = '2.3.5';
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,

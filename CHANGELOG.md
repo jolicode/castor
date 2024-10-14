@@ -9,6 +9,14 @@
 * Do not validate commande options/args as soon as `#[AsRawTokens] is used
 * Update all PHP vendor
 
+### Fixes
+
+* Re-active `static-darwin-arm64` binary build
+
+### Vendor
+
+* Update SPC version to v2.3.5
+
 ## 0.18.2 (2024-09-03)
 
 * Do not build static-darwin-arm64 binary anymore (may be temporary)
