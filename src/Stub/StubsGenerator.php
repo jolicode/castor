@@ -4,6 +4,7 @@ namespace Castor\Stub;
 
 use Castor\Console\Application;
 use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard;
 use Psr\Log\LoggerInterface;
@@ -49,6 +50,7 @@ final class StubsGenerator
         $stmts = [];
 
         $traverser = new NodeTraverser();
+        $traverser->addVisitor(new NameResolver());
         $traverser->addVisitor(new NodeVisitor());
 
         foreach ($finder as $file) {

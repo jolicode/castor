@@ -34,21 +34,7 @@ class NodeVisitor extends NodeVisitorAbstract
         }
 
         if ($node instanceof Node\Stmt\Namespace_) {
-            $this->currentUseStatements = [];
             $node->setAttribute('comments', null);
-        }
-
-        if ($node instanceof Node\Stmt\UseUse) {
-            $this->currentUseStatements[$node->getAlias()->name] = $node->name;
-        }
-
-        // replace relative by fqdn
-        if ($node instanceof Node\Name && !$node->isFullyQualified()) {
-            $name = $node->toString();
-
-            if (isset($this->currentUseStatements[$name])) {
-                return new Node\Name\FullyQualified($this->currentUseStatements[$name]->parts);
-            }
         }
 
         return null;
