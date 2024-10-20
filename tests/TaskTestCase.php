@@ -31,6 +31,7 @@ abstract class TaskTestCase extends TestCase
         $extraEnv = [
             'ENDPOINT' => $_SERVER['ENDPOINT'],
             'CASTOR_CACHE_DIR' => self::$castorCacheDir,
+            'CASTOR_TEST' => 'true',
         ];
 
         if (!$needRemote) {
