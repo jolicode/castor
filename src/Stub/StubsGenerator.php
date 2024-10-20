@@ -7,6 +7,11 @@ use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard;
+use PHPStan\PhpDocParser\Ast\NodeTraverser as PhpDocNodeTraverser;
+use PHPStan\PhpDocParser\Lexer\Lexer;
+use PHPStan\PhpDocParser\Parser\ConstExprParser;
+use PHPStan\PhpDocParser\Parser\PhpDocParser;
+use PHPStan\PhpDocParser\Parser\TypeParser;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Finder\Finder;
@@ -46,12 +51,23 @@ final class StubsGenerator
             ->sortByName()
         ;
 
-        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
+        $parser = (new ParserFactory())->createForHostVersion();
+        $nameResolver = new NameResolver();
         $stmts = [];
 
+        $lexer = new Lexer();
+        $constExprParser = new ConstExprParser();
+        $typeParser = new TypeParser($constExprParser);
+        $phpDocParser = new PhpDocParser($typeParser, $constExprParser, usedAttributes: [
+            'lines' => true,
+            'indexes' => true,
+        ]);
+
+        $phpDocNodeTraverser = new PhpDocNodeTraverser([new PhpDocNodeVisitor($nameResolver)]);
+
         $traverser = new NodeTraverser();
-        $traverser->addVisitor(new NameResolver());
-        $traverser->addVisitor(new NodeVisitor());
+        $traverser->addVisitor($nameResolver);
+        $traverser->addVisitor(new NodeVisitor($phpDocNodeTraverser, $lexer, $phpDocParser));
 
         foreach ($finder as $file) {
             $fileStmts = $parser->parse((string) file_get_contents($file->getPathname()));
