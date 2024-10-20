@@ -85,6 +85,13 @@ class NodeVisitor extends NodeVisitorAbstract
             return NodeTraverser::REMOVE_NODE;
         }
 
+        if (($node instanceof Node\Stmt\ClassMethod
+            || $node instanceof Node\Stmt\ClassConst
+            || $node instanceof Node\Stmt\Property) && $node->isPrivate()
+        ) {
+            return NodeTraverser::REMOVE_NODE;
+        }
+
         return null;
     }
 
