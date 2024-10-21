@@ -12,6 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\ErrorHandler\ErrorHandler;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
+/** @internal */
 class ConfigureCastorListener
 {
     public function __construct(

@@ -6,6 +6,7 @@ use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
 use Symfony\Component\Process\Process;
 
+/** @internal  */
 class ProcessProcessor implements ProcessorInterface
 {
     public function __invoke(LogRecord $record): LogRecord

@@ -12,6 +12,7 @@
 ### Fixes
 
 * Re-active `static-darwin-arm64` binary build
+* Fix stubs generation to use fully qualified class names even in phpdoc
 
 ### Vendor
 

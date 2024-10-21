@@ -7,7 +7,10 @@ $finder = PhpCsFixer\Finder::create()
     ->append([
         __FILE__,
     ])
-    ->notPath('.castor.stub.php')
+    ->notPath([
+        '.castor.stub.php',
+        'tests/Stub/fixtures',
+    ])
 ;
 
 return (new PhpCsFixer\Config())

@@ -19,6 +19,7 @@ use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
+/** @internal */
 class UpdateCastorListener
 {
     public function __construct(
