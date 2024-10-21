@@ -19,6 +19,11 @@ use Symfony\Component\DependencyInjection\Attribute\Exclude;
 #[Exclude]
 class NodeVisitor extends NodeVisitorAbstract
 {
+    private const INTERNAL_CLASSES_FORCED = [
+        \Castor\Console\Application::class,
+        \Castor\Console\Command\TaskCommand::class,
+    ];
+
     private bool $inInterface = false;
 
     public function __construct(
@@ -72,7 +77,9 @@ class NodeVisitor extends NodeVisitorAbstract
         $docComment = $node->getDocComment();
 
         if (null !== $docComment && str_contains($docComment->getText(), '@internal')) {
-            return NodeTraverser::REMOVE_NODE;
+            if (!$node instanceof Node\Stmt\Class_ || !$node->namespacedName || !\in_array($node->namespacedName->toString(), self::INTERNAL_CLASSES_FORCED, true)) {
+                return NodeTraverser::REMOVE_NODE;
+            }
         }
 
         if ($node instanceof Node\Stmt\Namespace_) {
