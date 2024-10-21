@@ -28,7 +28,7 @@ class ConfigureCastorListener
             $this->logger->pushHandler(new ConsoleHandler($this->output));
         }
 
-        $this->errorHandler->setDefaultLogger($this->logger, [
+        $map = [
             \E_COMPILE_WARNING => LogLevel::WARNING,
             \E_CORE_WARNING => LogLevel::WARNING,
             \E_USER_WARNING => LogLevel::WARNING,
@@ -43,8 +43,13 @@ class ConfigureCastorListener
             \E_ERROR => LogLevel::ERROR,
             \E_PARSE => LogLevel::ERROR,
             \E_RECOVERABLE_ERROR => LogLevel::ERROR,
-            \E_STRICT => LogLevel::ERROR,
             \E_USER_ERROR => LogLevel::ERROR,
-        ]);
+        ];
+
+        if (\PHP_VERSION_ID < 80400) {
+            $map[\E_STRICT] = LogLevel::ERROR;
+        }
+
+        $this->errorHandler->setDefaultLogger($this->logger, $map);
     }
 }
