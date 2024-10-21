@@ -105,7 +105,7 @@ final class StubsGenerator
             ],
         ]));
 
-        $code = (new Standard())->prettyPrintFile($stmts);
+        $code = (new Standard())->prettyPrintFile($stmts) . \PHP_EOL;
 
         file_put_contents($dest, $code);
     }
