@@ -8,6 +8,7 @@
 * Add support for custom php.ini in compile command
 * Do not validate commande options/args as soon as `#[AsRawTokens] is used
 * Update all PHP vendor
+* Add partial support for PHP 8.4 (`ssh_()` functions are not supported yet)
 
 ### Fixes
 
