@@ -73,6 +73,10 @@ jobs:
             castor:
               bin: 'bin/castor'
               method: 'bin/castor'
+          - php: "8.4"
+            castor:
+              bin: 'bin/castor'
+              method: 'bin/castor'
 
     steps:
       - name: Checkout
