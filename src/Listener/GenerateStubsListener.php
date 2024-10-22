@@ -7,6 +7,7 @@ use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
+/** @internal */
 class GenerateStubsListener
 {
     public function __construct(

@@ -2,27 +2,53 @@
 
 namespace Castor\Stub;
 
+use PhpParser\Comment\Doc;
 use PhpParser\Node;
+use PhpParser\NodeAbstract;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
+use PHPStan\PhpDocParser\Ast\NodeTraverser as PhpDocNodeTraverser;
+use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocNode;
+use PHPStan\PhpDocParser\Lexer\Lexer;
+use PHPStan\PhpDocParser\Parser\PhpDocParser;
+use PHPStan\PhpDocParser\Parser\TokenIterator;
+use PHPStan\PhpDocParser\Printer\Printer;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 /** @internal */
 #[Exclude]
 class NodeVisitor extends NodeVisitorAbstract
 {
-    /** @var array<string, Node\Name> */
-    private array $currentUseStatements = [];
+    private const INTERNAL_CLASSES_FORCED = [
+        \Castor\Console\Application::class,
+        \Castor\Console\Command\TaskCommand::class,
+    ];
+
     private bool $inInterface = false;
+
+    public function __construct(
+        private readonly PhpDocNodeTraverser $phpDocNodeTraverser,
+        private readonly Lexer $lexer,
+        private readonly PhpDocParser $phpDocParser,
+    ) {
+    }
 
     public function enterNode(Node $node): ?Node
     {
         if ($node instanceof Node\Stmt\Interface_) {
             $this->inInterface = true;
+
+            $this->replaceRelativeClassNameByFqcInPhpdoc($node);
+        }
+
+        if ($node instanceof Node\Stmt\Class_) {
+            $this->replaceRelativeClassNameByFqcInPhpdoc($node);
         }
 
         if ($node instanceof Node\Stmt\Function_) {
             $node->stmts = [];
+
+            $this->replaceRelativeClassNameByFqcInPhpdoc($node);
         }
 
         if ($node instanceof Node\Stmt\ClassMethod) {
@@ -31,24 +57,12 @@ class NodeVisitor extends NodeVisitorAbstract
             } else {
                 $node->stmts = [];
             }
+
+            $this->replaceRelativeClassNameByFqcInPhpdoc($node);
         }
 
         if ($node instanceof Node\Stmt\Namespace_) {
-            $this->currentUseStatements = [];
             $node->setAttribute('comments', null);
-        }
-
-        if ($node instanceof Node\Stmt\UseUse) {
-            $this->currentUseStatements[$node->getAlias()->name] = $node->name;
-        }
-
-        // replace relative by fqdn
-        if ($node instanceof Node\Name && !$node->isFullyQualified()) {
-            $name = $node->toString();
-
-            if (isset($this->currentUseStatements[$name])) {
-                return new Node\Name\FullyQualified($this->currentUseStatements[$name]->parts);
-            }
         }
 
         return null;
@@ -63,7 +77,9 @@ class NodeVisitor extends NodeVisitorAbstract
         $docComment = $node->getDocComment();
 
         if (null !== $docComment && str_contains($docComment->getText(), '@internal')) {
-            return NodeTraverser::REMOVE_NODE;
+            if (!$node instanceof Node\Stmt\Class_ || !$node->namespacedName || !\in_array($node->namespacedName->toString(), self::INTERNAL_CLASSES_FORCED, true)) {
+                return NodeTraverser::REMOVE_NODE;
+            }
         }
 
         if ($node instanceof Node\Stmt\Namespace_) {
@@ -76,6 +92,33 @@ class NodeVisitor extends NodeVisitorAbstract
             return NodeTraverser::REMOVE_NODE;
         }
 
+        if (($node instanceof Node\Stmt\ClassMethod
+            || $node instanceof Node\Stmt\ClassConst
+            || $node instanceof Node\Stmt\Property) && $node->isPrivate()
+        ) {
+            return NodeTraverser::REMOVE_NODE;
+        }
+
         return null;
+    }
+
+    private function replaceRelativeClassNameByFqcInPhpdoc(NodeAbstract $node): void
+    {
+        $docComment = $node->getDocComment();
+
+        if (null === $docComment) {
+            return;
+        }
+
+        $tokens = new TokenIterator($this->lexer->tokenize($docComment->getText()));
+        $phpDocNode = $this->phpDocParser->parse($tokens);
+
+        /** @var PhpDocNode $newPhpDocNode */
+        [$newPhpDocNode] = $this->phpDocNodeTraverser->traverse([$phpDocNode]);
+
+        $printer = new Printer();
+        $newPhpDocString = $printer->printFormatPreserving($newPhpDocNode, $phpDocNode, $tokens);
+
+        $node->setDocComment(new Doc($newPhpDocString));
     }
 }
