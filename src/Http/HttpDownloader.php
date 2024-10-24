@@ -26,7 +26,7 @@ class HttpDownloader
      */
     public function download(string $url, ?string $filePath = null, string $method = 'GET', array $options = [], bool $stream = true): ResponseInterface
     {
-        $this->logger->info('Starting http download', ['url' => $url]);
+        $this->logger->notice('Starting HTTP download', ['url' => $url]);
 
         $lastLogTime = time();
         $startTime = microtime(true);

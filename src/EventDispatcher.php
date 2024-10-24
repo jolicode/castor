@@ -20,7 +20,7 @@ class EventDispatcher implements EventDispatcherInterface
 
     public function dispatch(object $event, ?string $eventName = null): object
     {
-        $this->logger->info("Dispatching event {$eventName}", [
+        $this->logger->debug("Dispatching event {$eventName}", [
             'event' => $event,
         ]);
 
@@ -32,7 +32,7 @@ class EventDispatcher implements EventDispatcherInterface
      */
     public function addListener(string $eventName, $listener, int $priority = 0): void
     {
-        $this->logger->info("Adding listener for event {$eventName}", [
+        $this->logger->debug("Adding listener for event {$eventName}", [
             'priority' => $priority,
             'listener' => $listener,
         ]);
