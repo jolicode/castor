@@ -157,7 +157,7 @@ class ProcessRunner
 
         $this->eventDispatcher->dispatch(new Event\ProcessCreatedEvent($process));
 
-        $this->logger->info(\sprintf('Running command: "%s".', $process->getCommandLine()), [
+        $this->logger->notice(\sprintf('Running command: "%s".', $process->getCommandLine()), [
             'process' => $process,
         ]);
 
