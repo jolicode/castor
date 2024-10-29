@@ -60,6 +60,7 @@
         "symfony/yaml": "^6.4.12"
     },
     "conflict": {
+        "symfony/config": "6.4.13",
         "symfony/console": "6.4.3"
     },
     "bin": [
