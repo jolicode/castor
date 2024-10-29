@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Not released yet
+## 0.19.0 (2024-10-29)
 
 ### Features
 
