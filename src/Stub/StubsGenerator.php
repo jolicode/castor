@@ -3,15 +3,11 @@
 namespace Castor\Stub;
 
 use Castor\Console\Application;
+use PhpParser\Node\Stmt;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard;
-use PHPStan\PhpDocParser\Ast\NodeTraverser as PhpDocNodeTraverser;
-use PHPStan\PhpDocParser\Lexer\Lexer;
-use PHPStan\PhpDocParser\Parser\ConstExprParser;
-use PHPStan\PhpDocParser\Parser\PhpDocParser;
-use PHPStan\PhpDocParser\Parser\TypeParser;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Finder\Finder;
@@ -29,11 +25,11 @@ final class StubsGenerator
     {
         if (null !== $dest = $this->shouldGenerate()) {
             $this->logger->debug('Generating stubs...');
-            $this->generateStubs($dest);
+            $this->generateCastorStubs($dest);
         }
     }
 
-    private function generateStubs(string $dest): void
+    private function generateCastorStubs(string $dest): void
     {
         if (!is_writable(\dirname($dest))) {
             $this->logger->warning("Could not generate stubs as the destination \"{$dest}\" is not writeable.");
@@ -51,31 +47,7 @@ final class StubsGenerator
             ->sortByName()
         ;
 
-        $parser = (new ParserFactory())->createForHostVersion();
-        $nameResolver = new NameResolver();
-        $stmts = [];
-
-        $lexer = new Lexer();
-        $constExprParser = new ConstExprParser();
-        $typeParser = new TypeParser($constExprParser);
-        $phpDocParser = new PhpDocParser($typeParser, $constExprParser, usedAttributes: [
-            'lines' => true,
-            'indexes' => true,
-        ]);
-
-        $phpDocNodeTraverser = new PhpDocNodeTraverser([new PhpDocNodeVisitor($nameResolver)]);
-
-        $traverser = new NodeTraverser();
-        $traverser->addVisitor($nameResolver);
-        $traverser->addVisitor(new NodeVisitor($phpDocNodeTraverser, $lexer, $phpDocParser));
-
-        foreach ($finder as $file) {
-            $fileStmts = $parser->parse((string) file_get_contents($file->getPathname()));
-            if (!$fileStmts) {
-                continue;
-            }
-            $stmts = array_merge($stmts, $traverser->traverse($fileStmts));
-        }
+        $files = iterator_to_array($finder);
 
         // Add some very frequently used classes
         $frequentlyUsedClasses = [
@@ -104,12 +76,11 @@ final class StubsGenerator
             if (!$file) {
                 continue;
             }
-            $fileStmts = $parser->parse((string) file_get_contents($file));
-            if (!$fileStmts) {
-                continue;
-            }
-            $stmts = array_merge($stmts, $traverser->traverse($fileStmts));
+
+            $files[] = $file;
         }
+
+        $stmts = $this->doGenerate($files);
 
         array_unshift($stmts, new \PhpParser\Node\Stmt\Nop([
             'comments' => [
@@ -126,6 +97,38 @@ final class StubsGenerator
         $code = (new Standard())->prettyPrintFile($stmts) . \PHP_EOL;
 
         file_put_contents($dest, $code);
+    }
+
+    /**
+     * @param string[]|\SplFileInfo[] $files
+     *
+     * @return Stmt[]
+     */
+    private function doGenerate(array $files): array
+    {
+        $parser = (new ParserFactory())->createForHostVersion();
+        $stmts = [];
+
+        $traverser = new NodeTraverser();
+        $traverser->addVisitor(new NameResolver(null, [
+            'replaceNodes' => false,
+        ]));
+        $traverser->addVisitor(new NodeVisitor());
+
+        // Parse all files one by one, traverse the related AST then merge all statements
+        foreach ($files as $file) {
+            $fileStmts = $parser->parse((string) file_get_contents((string) $file));
+            if (!$fileStmts) {
+                continue;
+            }
+            $stmts = array_merge($stmts, $traverser->traverse($fileStmts));
+        }
+
+        // Traverse the AST containing all statements in once to clean more stuff
+        $traverser = new NodeTraverser();
+        $traverser->addVisitor(new CleanVisitor());
+
+        return $traverser->traverse($stmts);
     }
 
     private function shouldGenerate(): ?string

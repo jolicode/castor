@@ -2,17 +2,8 @@
 
 namespace Castor\Stub;
 
-use PhpParser\Comment\Doc;
 use PhpParser\Node;
-use PhpParser\NodeAbstract;
-use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
-use PHPStan\PhpDocParser\Ast\NodeTraverser as PhpDocNodeTraverser;
-use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocNode;
-use PHPStan\PhpDocParser\Lexer\Lexer;
-use PHPStan\PhpDocParser\Parser\PhpDocParser;
-use PHPStan\PhpDocParser\Parser\TokenIterator;
-use PHPStan\PhpDocParser\Printer\Printer;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 /** @internal */
@@ -25,101 +16,83 @@ class NodeVisitor extends NodeVisitorAbstract
         \Castor\Console\Input\GetRawTokenTrait::class,
     ];
 
+    /** @var array<string, string[]> */
+    private array $usesByNamespace = [];
+
+    private ?string $currentNamespace = null;
     private bool $inInterface = false;
 
-    public function __construct(
-        private readonly PhpDocNodeTraverser $phpDocNodeTraverser,
-        private readonly Lexer $lexer,
-        private readonly PhpDocParser $phpDocParser,
-    ) {
-    }
-
-    public function enterNode(Node $node): ?Node
+    /**
+     * @return null|int|Node
+     */
+    public function enterNode(Node $node)
     {
+        if ($node instanceof Node\Stmt\Namespace_) {
+            $this->currentNamespace = $node->name ? $node->name->toString() : null;
+
+            // Remove comments at namespace level
+            $node->setAttribute('comments', null);
+        }
+
+        if ($node instanceof Node\Stmt\ClassLike || $node instanceof Node\Stmt\Function_) {
+            $docComment = $node->getDocComment();
+
+            if (null !== $docComment && str_contains($docComment->getText(), '@internal')) {
+                if (!$node->namespacedName || !\in_array($node->namespacedName->toString(), self::INTERNAL_CLASSES_FORCED, true)) {
+                    return [];
+                }
+            }
+        }
+
         if ($node instanceof Node\Stmt\Interface_) {
             $this->inInterface = true;
-
-            $this->replaceRelativeClassNameByFqcInPhpdoc($node);
         }
 
-        if ($node instanceof Node\Stmt\Class_) {
-            $this->replaceRelativeClassNameByFqcInPhpdoc($node);
-        }
-
+        // Empty functions body
         if ($node instanceof Node\Stmt\Function_) {
             $node->stmts = [];
-
-            $this->replaceRelativeClassNameByFqcInPhpdoc($node);
         }
 
+        // Empty class/interface methods body
         if ($node instanceof Node\Stmt\ClassMethod) {
             if ($this->inInterface || $node->isAbstract()) {
                 $node->stmts = null;
             } else {
                 $node->stmts = [];
             }
-
-            $this->replaceRelativeClassNameByFqcInPhpdoc($node);
-        }
-
-        if ($node instanceof Node\Stmt\Namespace_) {
-            $node->setAttribute('comments', null);
         }
 
         return null;
     }
 
-    public function leaveNode(Node $node, bool $preserveStack = false): ?int
+    /**
+     * @return null|int|Node|Node[]
+     */
+    public function leaveNode(Node $node, bool $preserveStack = false)
     {
+        // Avoid duplicate use statements
+        if ($node instanceof Node\Stmt\Use_) {
+            $fullNamespace = $node->uses[0]->name->toString();
+
+            if (\in_array($fullNamespace, $this->usesByNamespace[$this->currentNamespace] ?? [], true)) {
+                return self::REMOVE_NODE;
+            }
+
+            $this->usesByNamespace[$this->currentNamespace][] = $fullNamespace;
+        }
+
         if ($node instanceof Node\Stmt\Interface_) {
             $this->inInterface = false;
         }
 
-        $docComment = $node->getDocComment();
-
-        if (null !== $docComment && str_contains($docComment->getText(), '@internal')) {
-            if ((!$node instanceof Node\Stmt\Class_ && !$node instanceof Node\Stmt\Trait_) || !$node->namespacedName || !\in_array($node->namespacedName->toString(), self::INTERNAL_CLASSES_FORCED, true)) {
-                return NodeTraverser::REMOVE_NODE;
-            }
-        }
-
-        if ($node instanceof Node\Stmt\Namespace_) {
-            if (empty($node->stmts)) {
-                return NodeTraverser::REMOVE_NODE;
-            }
-        }
-
-        if ($node instanceof Node\Stmt\Use_) {
-            return NodeTraverser::REMOVE_NODE;
-        }
-
+        // Remove private class members
         if (($node instanceof Node\Stmt\ClassMethod
             || $node instanceof Node\Stmt\ClassConst
             || $node instanceof Node\Stmt\Property) && $node->isPrivate()
         ) {
-            return NodeTraverser::REMOVE_NODE;
+            return self::REMOVE_NODE;
         }
 
         return null;
-    }
-
-    private function replaceRelativeClassNameByFqcInPhpdoc(NodeAbstract $node): void
-    {
-        $docComment = $node->getDocComment();
-
-        if (null === $docComment) {
-            return;
-        }
-
-        $tokens = new TokenIterator($this->lexer->tokenize($docComment->getText()));
-        $phpDocNode = $this->phpDocParser->parse($tokens);
-
-        /** @var PhpDocNode $newPhpDocNode */
-        [$newPhpDocNode] = $this->phpDocNodeTraverser->traverse([$phpDocNode]);
-
-        $printer = new Printer();
-        $newPhpDocString = $printer->printFormatPreserving($newPhpDocNode, $phpDocNode, $tokens);
-
-        $node->setDocComment(new Doc($newPhpDocString));
     }
 }

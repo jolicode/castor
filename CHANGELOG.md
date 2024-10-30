@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Not released yet
+
+### Fixes
+
+* Fix stubs for all PHPDoc cases by keeping use statements in place
+
 ## 0.19.0 (2024-10-29)
 
 ### Features

@@ -1,6 +1,6 @@
 <?php
 
-namespace Castor\Foo;
+namespace Test\Foo;
 
 use Symfony\Component\Console;
 use Symfony\Component\Console\Completion\CompletionInput;

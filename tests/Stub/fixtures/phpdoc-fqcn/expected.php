@@ -1,6 +1,6 @@
 <?php
 
-namespace Castor\CommandBuilder;
+namespace Test\CommandBuilder;
 
 interface CommandBuilderInterface
 {

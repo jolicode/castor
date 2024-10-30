@@ -1,9 +1,11 @@
 <?php
 
-namespace Castor\Foo;
+namespace Test\Foo;
 
+use Symfony\Component\Console;
+use Symfony\Component\Console\Completion\CompletionInput;
 /**
- * @method \Symfony\Component\Console\Input\Input foo(\Symfony\Component\Console\Completion\CompletionInput $input)
+ * @method Console\Input\Input foo(CompletionInput $input)
  */
 class Bar
 {

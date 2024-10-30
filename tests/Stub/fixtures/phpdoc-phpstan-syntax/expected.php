@@ -1,6 +1,6 @@
 <?php
 
-namespace Castor\Foobar;
+namespace Test\Foobar;
 
 /**
  * @param class-string $class
