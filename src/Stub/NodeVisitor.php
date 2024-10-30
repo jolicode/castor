@@ -22,6 +22,7 @@ class NodeVisitor extends NodeVisitorAbstract
     private const INTERNAL_CLASSES_FORCED = [
         \Castor\Console\Application::class,
         \Castor\Console\Command\TaskCommand::class,
+        \Castor\Console\Input\GetRawTokenTrait::class,
     ];
 
     private bool $inInterface = false;
@@ -77,7 +78,7 @@ class NodeVisitor extends NodeVisitorAbstract
         $docComment = $node->getDocComment();
 
         if (null !== $docComment && str_contains($docComment->getText(), '@internal')) {
-            if (!$node instanceof Node\Stmt\Class_ || !$node->namespacedName || !\in_array($node->namespacedName->toString(), self::INTERNAL_CLASSES_FORCED, true)) {
+            if ((!$node instanceof Node\Stmt\Class_ && !$node instanceof Node\Stmt\Trait_) || !$node->namespacedName || !\in_array($node->namespacedName->toString(), self::INTERNAL_CLASSES_FORCED, true)) {
                 return NodeTraverser::REMOVE_NODE;
             }
         }
