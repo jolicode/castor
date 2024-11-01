@@ -14,7 +14,7 @@ class CleanVisitor extends NodeVisitorAbstract
     public array $nodesByNamespace = [];
 
     /**
-     * @return null|int|Node
+     * @return int|Node|null
      */
     public function enterNode(Node $node)
     {
@@ -35,17 +35,19 @@ class CleanVisitor extends NodeVisitorAbstract
 
             $this->nodesByNamespace[$currentNamespace] = $node;
         }
+
+        return null;
     }
 
     /**
-     * @return null|Node[]
+     * @return Node[]|null
      */
     public function afterTraverse(array $nodes)
     {
         $cleanedNodes = [];
 
         foreach ($nodes as $node) {
-            // If namespace only contains "use" statements, let's remove it
+            // If namespace is empty, let's remove it
             if ($node instanceof Node\Stmt\Namespace_) {
                 $stmts = array_filter($node->stmts, static function (Node $stmt): bool {
                     return !$stmt instanceof Node\Stmt\Use_;

@@ -2,12 +2,10 @@
 
 namespace Test\Attribute;
 
-use Castor\Attribute\AsCommandArgument;
-use Symfony\Component\Console\Completion\CompletionInput;
-class AsArgument extends AsCommandArgument
+class AsArgument extends \Castor\Attribute\AsCommandArgument
 {
     /**
-     * @param array<string>|callable(CompletionInput): array<string> $autocomplete
+     * @param array<string>|callable(\Symfony\Component\Console\Completion\CompletionInput): array<string> $autocomplete
      */
     public function test($autocomplete): void
     {

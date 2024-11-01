@@ -2,11 +2,9 @@
 
 namespace Test\Foo;
 
-use Castor\Console\Application;
-use Castor\Kernel;
-function foo2(Application $application, Kernel $kernel): void
+function foo2(\Castor\Console\Application $application, \Castor\Kernel $kernel): void
 {
 }
-function foo3(Application $application): void
+function foo3(\Castor\Console\Application $application): void
 {
 }

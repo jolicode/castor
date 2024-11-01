@@ -4,7 +4,7 @@
 
 ### Fixes
 
-* Fix stubs for all PHPDoc cases by keeping use statements in place
+* Fix stubs to better support templates phpdoc and clean stubs file
 
 ## 0.19.0 (2024-10-29)
 

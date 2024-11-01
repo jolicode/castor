@@ -2,10 +2,8 @@
 
 namespace Test\Foo;
 
-use Symfony\Component\Console;
-use Symfony\Component\Console\Completion\CompletionInput;
 /**
- * @method Console\Input\Input foo(CompletionInput $input)
+ * @method \Symfony\Component\Console\Input\Input foo(\Symfony\Component\Console\Completion\CompletionInput $input)
  */
 class Bar
 {
