@@ -83,12 +83,14 @@ final class SshRunner
     ): Process {
         return $this->processRunner->run(
             $command,
-            timeout: $timeout,
-            quiet: $quiet,
-            allowFailure: $allowFailure,
-            notify: $notify,
             callback: $callback,
-            context: context()->withPty(false)->withTty(false)->withEnvironment([]),
+            context: context()->withPty(false)
+                                ->withTty(false)
+                                ->withEnvironment([])
+                                ->withQuiet($quiet ?? false)
+                                ->withAllowFailure($allowFailure ?? false)
+                                ->withNotify($notify)
+                                ->withTimeout($timeout),
         );
     }
 
