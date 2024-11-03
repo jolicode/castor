@@ -22,11 +22,9 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /** @internal */
-#[Exclude]
 class TaskCommand extends Command implements SignalableCommandInterface
 {
     use GetRawTokenTrait;
