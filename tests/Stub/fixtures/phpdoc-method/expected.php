@@ -1,6 +1,6 @@
 <?php
 
-namespace Castor\Foo;
+namespace Test\Foo;
 
 /**
  * @method \Symfony\Component\Console\Input\Input foo(\Symfony\Component\Console\Completion\CompletionInput $input)

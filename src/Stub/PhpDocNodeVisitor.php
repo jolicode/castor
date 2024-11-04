@@ -15,8 +15,8 @@ use Symfony\Component\DependencyInjection\Attribute\Exclude;
 #[Exclude]
 class PhpDocNodeVisitor extends AbstractNodeVisitor
 {
-    // Taken from https://github.com/phpstan/phpstan-src/blob/2.0.x/src/PhpDoc/TypeNodeResolver.php#L198
     private const SPECIAL_TYPES = [
+        // Taken from https://github.com/phpstan/phpstan-src/blob/2.0.x/src/PhpDoc/TypeNodeResolver.php#L198
         'int',
         'integer',
         'positive-int',
@@ -80,6 +80,14 @@ class PhpDocNodeVisitor extends AbstractNodeVisitor
         'self',
         'static',
         'parent',
+        // More special types from https://github.com/phpstan/phpstan-src/blob/2.0.x/src/PhpDoc/TypeNodeResolver.php#L717
+        'key-of',
+        'value-of',
+        'int-mask-of',
+        'int-mask',
+        '__benevolent',
+        'template-type',
+        'new',
     ];
 
     private PhpVersion $phpVersion;
@@ -96,15 +104,31 @@ class PhpDocNodeVisitor extends AbstractNodeVisitor
         if ($node instanceof IdentifierTypeNode
             && !str_starts_with($node->name, '\\')
             && !\in_array($node->name, self::SPECIAL_TYPES, true)
-            && !$this->phpVersion->supportsBuiltinType($node->name)) {
+            && !$this->phpVersion->supportsBuiltinType($node->name)
+        ) {
+            $resolvedClassName = $this->nameResolver->getNameContext()->getResolvedClassName(new Node\Name($node->name));
+
+            // If the structure does not exist, keep the type as is
+            // This is useful for special types like the ones used in @template phpdoc
+            if (!$this->structureExists($resolvedClassName)) {
+                return null;
+            }
+
             return new IdentifierTypeNode(
                 '\\' . ltrim(
-                    $this->nameResolver->getNameContext()->getResolvedClassName(new Node\Name($node->name)),
+                    $resolvedClassName,
                     '\\',
                 )
             );
         }
 
         return null;
+    }
+
+    private function structureExists(string $name, bool $autoload = true): bool
+    {
+        return class_exists($name, $autoload)
+            || interface_exists($name, $autoload)
+            || trait_exists($name, $autoload);
     }
 }

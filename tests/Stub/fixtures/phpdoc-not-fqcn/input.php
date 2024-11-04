@@ -1,7 +1,8 @@
 <?php
 
-namespace Castor\Attribute;
+namespace Test\Attribute;
 
+use Castor\Attribute\AsCommandArgument;
 use Symfony\Component\Console\Completion\CompletionInput;
 
 class AsArgument extends AsCommandArgument

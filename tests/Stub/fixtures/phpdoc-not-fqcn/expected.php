@@ -1,6 +1,6 @@
 <?php
 
-namespace Castor\Attribute;
+namespace Test\Attribute;
 
 class AsArgument extends \Castor\Attribute\AsCommandArgument
 {
