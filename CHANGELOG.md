@@ -2,9 +2,13 @@
 
 ## Not released yet
 
+## 0.19.1 (2024-11-04)
+
 ### Fixes
 
+* Add GetRawTokenTrait definition in stubs
 * Fix stubs to better support templates phpdoc and clean stubs file
+* Fix deprecations when using ssh functions
 
 ## 0.19.0 (2024-10-29)
 
