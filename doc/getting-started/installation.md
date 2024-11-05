@@ -263,3 +263,16 @@ classes and would not provide any autocompletion in your castor files.
 We suggest you to add this file to your `.gitignore` to not version it in git.
 Castor will automatically update this file the first time you run Castor after
 you install or update it.
+
+> [!TIP]
+> If you want to analyze your tasks with PHPStan, you will need to make PHPStan
+> aware of some classes and functions definitions from Castor and its dependencies.
+> To achieve this, add the stubs file in the `scanFiles` section of your `phpstan.neon`
+> configuration file:
+
+```neon
+parameters:
+    # ...
+    scanFiles:
+        - .castor.stub.php
+```
