@@ -103,3 +103,20 @@ function a_very_long_function_name_that_is_very_painful_to_write(): void
 
 > [!TIP]
 > Related example: [foo.php](https://github.com/jolicode/castor/blob/main/examples/foo.php)
+
+## Setting a default task
+
+The `Castor\Attribute\AsTask` attribute allows you to set a default task when 
+calling `castor` without any arguments:
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\io;
+
+#[AsTask(name: 'bar', namespace: 'foo', default: true)]
+function a_very_long_function_name_that_is_very_painful_to_write(): void
+{
+    io()->writeln('Foo bar');
+}
+```

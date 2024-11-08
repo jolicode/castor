@@ -11,6 +11,7 @@ use Castor\Descriptor\ListenerDescriptor;
 use Castor\Descriptor\SymfonyTaskDescriptor;
 use Castor\Descriptor\TaskDescriptor;
 use Castor\Factory\TaskCommandFactory;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -23,6 +24,7 @@ final class FunctionLoader
         #[Autowire(lazy: true)]
         private readonly Application $application,
         private readonly TaskCommandFactory $taskCommandFactory,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -64,8 +66,31 @@ final class FunctionLoader
         array $taskDescriptors,
         array $symfonyTaskDescriptors,
     ): void {
+        $previousDefault = null;
+
         foreach ($taskDescriptors as $descriptor) {
             $this->application->add($this->taskCommandFactory->createTask($descriptor));
+
+            if ($descriptor->taskAttribute->default) {
+                $taskName = $descriptor->taskAttribute->name;
+
+                if ($descriptor->taskAttribute->namespace) {
+                    $taskName = $descriptor->taskAttribute->namespace . ':' . $taskName;
+                }
+
+                if (null !== $previousDefault) {
+                    $this->logger->warning(
+                        \sprintf(
+                            'Task "%s" is marked as default, but task "%s" is already marked as default',
+                            $taskName,
+                            $previousDefault
+                        )
+                    );
+                }
+
+                $previousDefault = $taskName;
+                $this->application->setDefaultCommand($taskName);
+            }
         }
         foreach ($symfonyTaskDescriptors as $descriptor) {
             $this->application->add(SymfonyTaskCommand::createFromDescriptor($descriptor));

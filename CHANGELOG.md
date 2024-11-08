@@ -6,6 +6,7 @@
 
 * Add support for PHP 8.4
 * Force fetching the last version when guard min is used to display more information for user
+* Add the ability to set a default task when calling `castor` without any arguments
 
 ### Fixes
 
