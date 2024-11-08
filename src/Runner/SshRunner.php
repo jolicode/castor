@@ -102,6 +102,10 @@ final class SshRunner
     ): Ssh {
         $ssh = Ssh::create($user, $host, $sshOptions['port'] ?? null);
 
+        if ($sshOptions['no_bash'] ?? false) {
+            $ssh->removeBash();
+        }
+
         if ($sshOptions['path_private_key'] ?? false) {
             $ssh->usePrivateKey($sshOptions['path_private_key']);
         }
@@ -111,11 +115,15 @@ final class SshRunner
         if ($sshOptions['multiplexing_control_path'] ?? false) {
             $ssh->useMultiplexing($sshOptions['multiplexing_control_path'], $sshOptions['multiplexing_control_persist'] ?? '10m');
         }
-        if ($sshOptions['enable_strict_check'] ?? false) {
+        if (isset($sshOptions['enable_strict_check'])) {
             $sshOptions['enable_strict_check'] ? $ssh->enableStrictHostKeyChecking() : $ssh->disableStrictHostKeyChecking();
         }
-        if ($sshOptions['password_authentication'] ?? false) {
+        if (isset($sshOptions['password_authentication'])) {
             $sshOptions['password_authentication'] ? $ssh->enablePasswordAuthentication() : $ssh->disablePasswordAuthentication();
+        }
+
+        if ($sshOptions['allow_local_connection'] ?? false) {
+            $ssh->allowLocalConnection();
         }
 
         return $ssh;

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3143a238aa9da55e98bfc5b9a3a35bc6",
+    "content-hash": "67b47151ce0967d636f1be8c16fe2b05",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -1482,16 +1482,16 @@
         },
         {
             "name": "spatie/ssh",
-            "version": "1.12.0",
+            "version": "dev-feature/105-local-ssh",
             "source": {
                 "type": "git",
-                "url": "https://github.com/spatie/ssh.git",
-                "reference": "49bc291912d1f100cdfa37b691a0f8df7e87b982"
+                "url": "https://github.com/pierrelemee/ssh.git",
+                "reference": "89f2a8ce542f3bf910e8947042d58489f94c5db9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/ssh/zipball/49bc291912d1f100cdfa37b691a0f8df7e87b982",
-                "reference": "49bc291912d1f100cdfa37b691a0f8df7e87b982",
+                "url": "https://api.github.com/repos/pierrelemee/ssh/zipball/89f2a8ce542f3bf910e8947042d58489f94c5db9",
+                "reference": "89f2a8ce542f3bf910e8947042d58489f94c5db9",
                 "shasum": ""
             },
             "require": {
@@ -1509,7 +1509,19 @@
                     "Spatie\\Ssh\\": "src"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "Spatie\\Ssh\\Tests\\": "tests"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/pest"
+                ],
+                "test-coverage": [
+                    "vendor/bin/pest --coverage-html coverage"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -1528,16 +1540,9 @@
                 "ssh"
             ],
             "support": {
-                "issues": "https://github.com/spatie/ssh/issues",
-                "source": "https://github.com/spatie/ssh/tree/1.12.0"
+                "source": "https://github.com/pierrelemee/ssh/tree/feature/105-local-ssh"
             },
-            "funding": [
-                {
-                    "url": "https://spatie.be/open-source/support-us",
-                    "type": "custom"
-                }
-            ],
-            "time": "2024-11-06T22:10:55+00:00"
+            "time": "2024-11-08T19:58:57+00:00"
         },
         {
             "name": "symfony/cache",
@@ -4755,7 +4760,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "spatie/ssh": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
