@@ -3,12 +3,14 @@
 namespace Castor\Listener;
 
 use Castor\Console\Application;
+use Castor\Exception\MinimumVersionRequirementNotMetException;
 use Castor\Helper\PlatformHelper;
 use JoliCode\PhpOsHelper\OsHelper;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
+use Symfony\Component\Console\Event\ConsoleErrorEvent;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -62,11 +64,22 @@ class UpdateCastorListener
         $this->displayUpdateWarningIfNeeded($input, $event->getOutput());
     }
 
-    private function displayUpdateWarningIfNeeded(InputInterface $input, OutputInterface $output): void
+    // Run this on exception to force the check
+    #[AsEventListener()]
+    public function forceCheckUpdate(ConsoleErrorEvent $event): void
+    {
+        $error = $event->getError();
+
+        if ($error instanceof MinimumVersionRequirementNotMetException) {
+            $this->displayUpdateWarningIfNeeded($event->getInput(), $event->getOutput(), false);
+        }
+    }
+
+    private function displayUpdateWarningIfNeeded(InputInterface $input, OutputInterface $output, bool $useCache = true): void
     {
         $item = $this->cache->getItem('castor-releases');
 
-        if ($item->isHit()) {
+        if ($item->isHit() && $useCache) {
             $latestVersion = $item->get();
         } else {
             $latestVersion = null;

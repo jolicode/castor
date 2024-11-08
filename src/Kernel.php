@@ -17,6 +17,7 @@ use Castor\Helper\PlatformHelper;
 use Castor\Import\Importer;
 use Castor\Import\Mount;
 use Castor\Import\Remote\Composer;
+use Symfony\Component\Console\Event\ConsoleErrorEvent;
 use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -50,20 +51,26 @@ final class Kernel
 
     public function boot(InputInterface $input, OutputInterface $output): void
     {
-        $this->eventDispatcher->dispatch(new BeforeBootEvent($this->application));
+        try {
+            $this->eventDispatcher->dispatch(new BeforeBootEvent($this->application));
 
-        $allowRemotePackage = $this->composer->isRemoteAllowed();
+            $allowRemotePackage = $this->composer->isRemoteAllowed();
 
-        $this->addMount(new Mount($this->rootDir, allowRemotePackage: $allowRemotePackage));
+            $this->addMount(new Mount($this->rootDir, allowRemotePackage: $allowRemotePackage));
 
-        while ($mount = array_shift($this->mounts)) {
-            $currentFunctions = get_defined_functions()['user'];
-            $currentClasses = get_declared_classes();
+            while ($mount = array_shift($this->mounts)) {
+                $currentFunctions = get_defined_functions()['user'];
+                $currentClasses = get_declared_classes();
 
-            $this->load($mount, $currentFunctions, $currentClasses, $input, $output);
+                $this->load($mount, $currentFunctions, $currentClasses, $input, $output);
+            }
+
+            $this->eventDispatcher->dispatch(new AfterBootEvent($this->application));
+        } catch (\Throwable $e) {
+            $this->eventDispatcher->dispatch(new ConsoleErrorEvent($input, $output, $e), 'console.error');
+
+            throw $e;
         }
-
-        $this->eventDispatcher->dispatch(new AfterBootEvent($this->application));
     }
 
     public function addMount(Mount $mount): void
