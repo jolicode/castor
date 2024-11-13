@@ -1,0 +1,7 @@
+In FunctionLoader.php line XXXX:
+
+  Function "about2()" is not properly configured:
+  The task is marked as default, but task "about()" was already marked as default.
+  Defined in "castor.php" line 11.
+
+

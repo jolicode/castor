@@ -17,6 +17,7 @@ class AsTask
         public array $onSignals = [],
         public string|bool $enabled = true,
         public bool $ignoreValidationErrors = false,
+        public bool $default = false,
     ) {
     }
 }

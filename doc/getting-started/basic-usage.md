@@ -103,3 +103,24 @@ function a_very_long_function_name_that_is_very_painful_to_write(): void
 
 > [!TIP]
 > Related example: [foo.php](https://github.com/jolicode/castor/blob/main/examples/foo.php)
+
+## Setting a default task
+
+The `Castor\Attribute\AsTask` attribute allows you to set a default task when
+calling `castor` without any arguments:
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\io;
+
+#[AsTask(description: 'Displays some help and available urls for the current project', default: true)]
+function about(): void
+{
+    io()->title('About this project');
+
+    io()->comment('Run <comment>castor</comment> to display all available commands.');
+    io()->comment('Run <comment>castor about</comment> to display this project help.');
+    io()->comment('Run <comment>castor help [command]</comment> to display Castor help.');
+}
+```

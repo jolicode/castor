@@ -10,6 +10,7 @@ use Castor\Descriptor\ContextGeneratorDescriptor;
 use Castor\Descriptor\ListenerDescriptor;
 use Castor\Descriptor\SymfonyTaskDescriptor;
 use Castor\Descriptor\TaskDescriptor;
+use Castor\Exception\FunctionConfigurationException;
 use Castor\Factory\TaskCommandFactory;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -64,8 +65,25 @@ final class FunctionLoader
         array $taskDescriptors,
         array $symfonyTaskDescriptors,
     ): void {
+        $previousDefault = null;
+
         foreach ($taskDescriptors as $descriptor) {
             $this->application->add($this->taskCommandFactory->createTask($descriptor));
+
+            if ($descriptor->taskAttribute->default) {
+                $taskName = $descriptor->taskAttribute->name;
+
+                if ($descriptor->taskAttribute->namespace) {
+                    $taskName = $descriptor->taskAttribute->namespace . ':' . $taskName;
+                }
+
+                if ($previousDefault) {
+                    throw new FunctionConfigurationException(\sprintf('The task is marked as default, but task "%s()" was already marked as default.', $previousDefault), $descriptor->function);
+                }
+
+                $previousDefault = $taskName;
+                $this->application->setDefaultCommand($taskName);
+            }
         }
         foreach ($symfonyTaskDescriptors as $descriptor) {
             $this->application->add(SymfonyTaskCommand::createFromDescriptor($descriptor));
