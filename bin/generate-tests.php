@@ -63,6 +63,7 @@ $taskFilterList = [
     'watch:stop',
     'open:documentation',
     'open:multiple',
+    'release',
     // Not examples
     'castor:compile',
     'castor:phar:build',

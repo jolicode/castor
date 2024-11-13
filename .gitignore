@@ -10,3 +10,4 @@
 !/castor.composer.json
 !/castor.composer.lock
 site/
+/tools/release/artifacts/

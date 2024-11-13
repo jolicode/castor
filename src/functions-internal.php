@@ -23,7 +23,7 @@ function castor_require(string $file): void
  *
  * @internal
  */
-function fix_exception(\Exception $exception, int $depth = 0): \Exception
+function fix_exception(\Throwable $exception, int $depth = 0): \Throwable
 {
     $lastFrame = $exception->getTrace()[$depth];
     foreach (['file', 'line'] as $key) {

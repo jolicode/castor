@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Internal
+
+* Rework the releasing
+
 ## 0.20.0 (2024-11-13)
 
 ### Features

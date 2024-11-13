@@ -1,4 +1,4 @@
-In Process.php line XXXX:
+In functions.php line XXXX:
 
   TTY mode requires /dev/tty to be read/writable.
 

@@ -1,4 +1,4 @@
-In ProcessRunner.php line XXXX:
+In functions.php line XXXX:
 
   The command "bash -c i_do_not_exist -x -e" failed.
 

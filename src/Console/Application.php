@@ -3,6 +3,7 @@
 namespace Castor\Console;
 
 use Castor\Container;
+use Castor\Exception\ProblemException;
 use Castor\Kernel;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Command\Command;
@@ -10,6 +11,8 @@ use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /** @internal */
@@ -23,6 +26,8 @@ class Application extends SymfonyApplication
     public function __construct(
         private readonly ContainerBuilder $containerBuilder,
         private readonly Kernel $kernel,
+        #[Autowire(lazy: true)]
+        private readonly SymfonyStyle $io,
     ) {
         parent::__construct(static::NAME, static::VERSION);
     }
@@ -51,6 +56,19 @@ class Application extends SymfonyApplication
     public function getHelp(): string
     {
         return $this->getLogo() . parent::getHelp();
+    }
+
+    public function renderThrowable(\Throwable $e, OutputInterface $output): void
+    {
+        if (!$output->isVerbose()) {
+            if ($e instanceof ProblemException) {
+                $this->io->error($e->getMessage());
+
+                return;
+            }
+        }
+
+        parent::renderThrowable($e, $output);
     }
 
     protected function doRunCommand(Command $command, InputInterface $input, OutputInterface $output): int

@@ -18,7 +18,6 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 use function Castor\context;
-use function Castor\Internal\fix_exception;
 
 /** @internal */
 class ProcessRunner
@@ -218,7 +217,7 @@ class ProcessRunner
                     throw new ProcessFailedException($process);
                 }
 
-                throw fix_exception(new \Exception("The command \"{$process->getCommandLine()}\" failed."), 1);
+                throw new \RuntimeException("The command \"{$process->getCommandLine()}\" failed.");
             }
 
             return $process;
