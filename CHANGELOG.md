@@ -5,6 +5,11 @@
 ### Features
 
 * Add support for PHP 8.4
+* Force fetching the last version when guard min is used to display more information for user
+
+### Fixes
+
+* Boot the kernel even when using composer command
 
 ## 0.19.1 (2024-11-04)
 
