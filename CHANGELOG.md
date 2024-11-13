@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+## 0.20.0 (2024-11-13)
+
 ### Features
 
 * Add support for PHP 8.4
