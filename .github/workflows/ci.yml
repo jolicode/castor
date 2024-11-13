@@ -29,10 +29,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: PHP-CS-Fixer
-        uses: docker://ghcr.io/php-cs-fixer/php-cs-fixer:3-php8.3
+      - uses: ./.github/actions/install
         with:
-          args: --config=.php-cs-fixer.php check --diff
+          php-version: "8.3"
+          need_phar: 'false'
+
+      - name: PHP CS Fixer
+        run: bin/castor cs
 
   phpstan:
     name: Static Analysis
@@ -41,10 +44,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - uses: ./.github/actions/install
+        with:
+          php-version: "8.3"
+          need_phar: 'false'
+
       - name: PHPStan
-        uses: docker://oskarstark/phpstan-ga
-        env:
-          REQUIRE_DEV: true
+        run: bin/castor phpstan
 
   phpunit:
     name: "PHPUnit on ${{ matrix.php }} / Castor from ${{ matrix.castor.method }}"

@@ -10,6 +10,10 @@ inputs:
     description: 'Install dev dependencies'
     required: false
     default: ''
+  need_phar:
+    description: 'Install phar dependencies'
+    required: false
+    default: 'true'
 
 runs:
   using: "composite"
@@ -28,3 +32,4 @@ runs:
       run: composer install --prefer-dist --no-progress --optimize-autoloader --classmap-authoritative
       shell: bash
       working-directory: tools/phar
+      if: ${{ inputs.need_phar == 'true' }}
