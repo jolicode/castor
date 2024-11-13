@@ -11,6 +11,10 @@ use function Castor\run;
 #[AsTask(description: 'Fix CS', aliases: ['cs'])]
 function cs(bool $dryRun = false): int
 {
+    if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
+        install();
+    }
+
     $command = [
         __DIR__ . '/vendor/bin/php-cs-fixer',
         'fix',

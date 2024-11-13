@@ -11,6 +11,10 @@ use function Castor\run;
 #[AsTask(description: 'Run PHPStan', aliases: ['phpstan'])]
 function phpstan(bool $generateBaseline = false): int
 {
+    if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
+        install();
+    }
+
     $command = [
         __DIR__ . '/vendor/bin/phpstan', '-v',
     ];
