@@ -12,6 +12,10 @@
 
 * Boot the kernel even when using composer command
 
+### Vendor
+
+* Update all PHP vendor
+
 ## 0.19.1 (2024-11-04)
 
 ### Fixes
