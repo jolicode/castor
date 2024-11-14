@@ -1,10 +1,5 @@
-In castor.php line 5:
+In castor.php line XXXX:
 
-  Could not import "invalid-package-name" in ".../tests/fixtures/broken/import-invalid-format/castor.php" on line 5. Reason: The import path must be formatted like this: "composer://<organization>/<repository>".
-
-
-In Composer.php line XXXX:
-
-  The import path must be formatted like this: "composer://<organization>/<repository>".
+  Could not import "invalid-package-name": The import path must be formatted like this: "composer://<organization>/<repository>".
 
 

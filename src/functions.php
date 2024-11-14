@@ -32,7 +32,6 @@ use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
-use function Castor\Internal\fix_exception;
 use function Symfony\Component\String\u;
 
 /**
@@ -71,26 +70,22 @@ function run(
         $workingDirectory = $path;
     }
 
-    try {
-        return Container::get()
-            ->processRunner
-            ->run(
-                $command,
-                $environment,
-                $workingDirectory,
-                $tty,
-                $pty,
-                $timeout,
-                $quiet,
-                $allowFailure,
-                $notify,
-                $callback,
-                $context,
-            )
-        ;
-    } catch (\Throwable $e) {
-        throw fix_exception($e, 1);
-    }
+    return Container::get()
+        ->processRunner
+        ->run(
+            $command,
+            $environment,
+            $workingDirectory,
+            $tty,
+            $pty,
+            $timeout,
+            $quiet,
+            $allowFailure,
+            $notify,
+            $callback,
+            $context,
+        )
+    ;
 }
 
 /**
@@ -108,7 +103,7 @@ function capture(
     ?string $path = null,
 ): string {
     if ($workingDirectory && $path) {
-        throw fix_exception(new \LogicException('You cannot use both the "path" and "workingDirectory" arguments at the same time.'), 1);
+        throw new \LogicException('You cannot use both the "path" and "workingDirectory" arguments at the same time.');
     }
     if ($path) {
         trigger_deprecation('jolicode/castor', '0.15', 'The "path" argument is deprecated, use "workingDirectory" instead.');
@@ -116,22 +111,18 @@ function capture(
         $workingDirectory = $path;
     }
 
-    try {
-        return Container::get()
-            ->processRunner
-            ->capture(
-                $command,
-                $environment,
-                $workingDirectory,
-                $timeout,
-                $allowFailure,
-                $onFailure,
-                $context,
-            )
-        ;
-    } catch (\Throwable $e) {
-        throw fix_exception($e, 2);
-    }
+    return Container::get()
+        ->processRunner
+        ->capture(
+            $command,
+            $environment,
+            $workingDirectory,
+            $timeout,
+            $allowFailure,
+            $onFailure,
+            $context,
+        )
+    ;
 }
 
 /**
@@ -148,7 +139,7 @@ function exit_code(
     ?string $path = null,
 ): int {
     if ($workingDirectory && $path) {
-        throw fix_exception(new \LogicException('You cannot use both the "path" and "workingDirectory" arguments at the same time.'));
+        throw new \LogicException('You cannot use both the "path" and "workingDirectory" arguments at the same time.');
     }
     if ($path) {
         trigger_deprecation('jolicode/castor', '0.15', 'The "path" argument is deprecated, use "workingDirectory" instead.');
@@ -156,21 +147,17 @@ function exit_code(
         $workingDirectory = $path;
     }
 
-    try {
-        return Container::get()
-            ->processRunner
-            ->exitCode(
-                $command,
-                $environment,
-                $workingDirectory,
-                $timeout,
-                $quiet,
-                $context,
-            )
-        ;
-    } catch (\Throwable $e) {
-        throw fix_exception($e, 2);
-    }
+    return Container::get()
+        ->processRunner
+        ->exitCode(
+            $command,
+            $environment,
+            $workingDirectory,
+            $timeout,
+            $quiet,
+            $context,
+        )
+    ;
 }
 
 /**
@@ -491,7 +478,7 @@ function import(string $path, ?string $file = null, ?string $version = null, ?st
 function mount(string $path, ?string $namespacePrefix = null): void
 {
     if (!is_dir($path)) {
-        throw fix_exception(new \InvalidArgumentException(\sprintf('The directory "%s" does not exist.', $path)));
+        throw new \InvalidArgumentException(\sprintf('The directory "%s" does not exist.', $path));
     }
 
     Container::get()->kernel->addMount(new Mount($path, namespacePrefix: $namespacePrefix));
@@ -828,7 +815,7 @@ function guard_min_version(string $minVersion): void
 
     $minVersion = u($minVersion)->ensureStart('v')->toString();
     if (version_compare($currentVersion, $minVersion, '<')) {
-        throw fix_exception(new MinimumVersionRequirementNotMetException($minVersion, $currentVersion));
+        throw new MinimumVersionRequirementNotMetException($minVersion, $currentVersion);
     }
 }
 
