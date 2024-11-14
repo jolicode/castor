@@ -1,10 +1,5 @@
-In castor.php line 5:
+In castor.php line XXXX:
 
-  Could not import "foo/bar" in ".../tests/fixtures/broken/import-invalid-package/castor.php" on line 5. Reason: The package "foo/bar" is not installed, make sure you required it in your castor.composer.json file.
-
-
-In Composer.php line XXXX:
-
-  The package "foo/bar" is not installed, make sure you required it in your castor.composer.json file.
+  Could not import "foo/bar": The package "foo/bar" is not installed, make sure you required it in your castor.composer.json file.
 
 

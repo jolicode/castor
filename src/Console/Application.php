@@ -61,6 +61,8 @@ class Application extends SymfonyApplication
     public function renderThrowable(\Throwable $e, OutputInterface $output): void
     {
         if (!$output->isVerbose()) {
+            $this->enhanceException($e);
+
             if ($e instanceof ProblemException) {
                 $this->io->error($e->getMessage());
 
@@ -101,6 +103,36 @@ class Application extends SymfonyApplication
         );
 
         return $definition;
+    }
+
+    private function enhanceException(\Throwable $exception): \Throwable
+    {
+        $castorDirs = [
+            \dirname(__DIR__, 1),
+            \dirname(__DIR__, 2) . \DIRECTORY_SEPARATOR . 'vendor',
+            \dirname(__DIR__, 2) . \DIRECTORY_SEPARATOR . 'bin',
+            // Useful for the phar, or static binary
+            $_SERVER['SCRIPT_NAME'],
+        ];
+
+        foreach ($exception->getTrace() as $frame) {
+            if (!\array_key_exists('file', $frame) || !\array_key_exists('line', $frame)) {
+                continue;
+            }
+
+            foreach ($castorDirs as $dir) {
+                if (str_starts_with($frame['file'], $dir)) {
+                    continue 2;
+                }
+            }
+
+            (new \ReflectionProperty(\Exception::class, 'file'))->setValue($exception, $frame['file']);
+            (new \ReflectionProperty(\Exception::class, 'line'))->setValue($exception, $frame['line']);
+
+            break;
+        }
+
+        return $exception;
     }
 
     private function getLogo(): string

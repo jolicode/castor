@@ -10,7 +10,6 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Finder\Finder;
 
 use function Castor\Internal\castor_require;
-use function Castor\Internal\fix_exception;
 
 /** @internal */
 class Importer
@@ -47,9 +46,9 @@ class Importer
 
                 return;
             } catch (ImportError $e) {
-                throw $this->createImportException($package, $e->getMessage(), $e);
+                throw $this->createImportException($package, $e->getMessage());
             } catch (RemoteNotAllowed $e) {
-                $this->logger->warning($this->getImportLocatedMessage($path, $e->getMessage(), 1));
+                $this->logger->warning(\sprintf('Could not import "%s": %s', $path, $e->getMessage()));
 
                 return;
             }
@@ -97,27 +96,8 @@ class Importer
         return array_keys($this->imports);
     }
 
-    private function getImportLocatedMessage(string $path, string $reason, int $depth): string
+    private function createImportException(string $path, string $message): \InvalidArgumentException
     {
-        /** @var array{file: string, line: int} $caller */
-        $caller = debug_backtrace()[$depth + 1];
-
-        return \sprintf(
-            'Could not import "%s" in "%s" on line %d. Reason: %s',
-            $path,
-            $caller['file'],
-            $caller['line'],
-            $reason,
-        );
-    }
-
-    private function createImportException(string $path, string $message, ?\Throwable $e = null): \Throwable
-    {
-        $depth = 2;
-
-        return fix_exception(
-            new \InvalidArgumentException($this->getImportLocatedMessage($path, $message, $depth), previous: $e),
-            $depth
-        );
+        return new \InvalidArgumentException(\sprintf('Could not import "%s": %s', $path, $message));
     }
 }

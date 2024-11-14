@@ -17,22 +17,3 @@ function castor_require(string $file): void
 
     require_once $file;
 }
-
-/**
- * Remove the last internal frames (like the call to run()) to display a nice message to the end user.
- *
- * @internal
- */
-function fix_exception(\Throwable $exception, int $depth = 0): \Throwable
-{
-    $lastFrame = $exception->getTrace()[$depth];
-    foreach (['file', 'line'] as $key) {
-        if (!\array_key_exists($key, $lastFrame)) {
-            continue;
-        }
-        $r = new \ReflectionProperty(\Exception::class, $key);
-        $r->setValue($exception, $lastFrame[$key]);
-    }
-
-    return $exception;
-}

@@ -1,4 +1,4 @@
-In run.php line 64:
+In ProcessRunner.php line XXXX:
 
   [Symfony\Component\Process\Exception\ProcessFailedException]
   The command "echo foo; echo bar>&2; exit 1" failed.
@@ -18,7 +18,7 @@ In run.php line 64:
 
 
 Exception trace:
-  at .../examples/run.php:XXXX
+  at .../src/Runner/ProcessRunner.php:XXXX
  Castor\Runner\ProcessRunner->run() at .../src/functions.php:XXXX
  Castor\run() at .../examples/run.php:XXXX
  run\exception() at .../src/Console/Command/TaskCommand.php:XXXX

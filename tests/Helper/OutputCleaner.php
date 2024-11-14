@@ -26,8 +26,7 @@ final class OutputCleaner
         $string = preg_replace("{require\\(\\) at .*/castor:\\d+\n}", '', $string);
 
         // Clean line numbers
-        $string = preg_replace('{In ([A-Z]\w+).php line \d+:}m', 'In \1.php line XXXX:', $string);
-        $string = preg_replace('{In functions.php line \d+:}m', 'In functions.php line XXXX:', $string);
+        $string = preg_replace('{In (([A-Z]|[a-z])\w+).php line \d+:}m', 'In \1.php line XXXX:', $string);
         $string = preg_replace('{\.php:\d+}m', '.php:XXXX', $string);
         $string = preg_replace('{castor:\d+}m', 'castor:XXXX', $string);
 
@@ -35,7 +34,7 @@ final class OutputCleaner
         $string = preg_replace('{^\d\d:\d\d:\d\d }m', 'hh:mm:ss ', $string);
 
         // Clean the warning on tasks when remote imports are disabled
-        $string = preg_replace('{hh:mm:ss WARNING   \[castor\] Could not import "[\w:/\.-]*" in "[\w:/\.-]*" on line \d+. Reason: Remote imports are disabled\.}m', '', $string);
+        $string = preg_replace('{hh:mm:ss WARNING   \[castor\] Could not import "[\w:/\.-]*": Remote imports are disabled\.}m', '', $string);
 
         // Fix notification logs
         $string = preg_replace('{hh:mm:ss ERROR     \[castor\] Failed to send notification\.}m', '', $string);

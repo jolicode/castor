@@ -1,4 +1,4 @@
-In functions.php line XXXX:
+In failure.php line XXXX:
 
   The command "bash -c i_do_not_exist -x -e" failed.
 
