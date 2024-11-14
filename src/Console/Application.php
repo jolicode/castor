@@ -5,8 +5,10 @@ namespace Castor\Console;
 use Castor\Container;
 use Castor\Exception\ProblemException;
 use Castor\Kernel;
+use Castor\Runner\ProcessRunner;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -14,6 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 /** @internal */
 class Application extends SymfonyApplication
@@ -28,6 +31,8 @@ class Application extends SymfonyApplication
         private readonly Kernel $kernel,
         #[Autowire(lazy: true)]
         private readonly SymfonyStyle $io,
+        #[Autowire(lazy: true)]
+        private readonly ProcessRunner $processRunner,
     ) {
         parent::__construct(static::NAME, static::VERSION);
     }
@@ -65,6 +70,18 @@ class Application extends SymfonyApplication
 
             if ($e instanceof ProblemException) {
                 $this->io->error($e->getMessage());
+
+                return;
+            }
+
+            if ($e instanceof ProcessFailedException) {
+                $process = $e->getProcess();
+                $runnable = $this->processRunner->buildRunnableCommand($process);
+
+                $this->io->writeln(sprintf('<comment>%s</comment>', OutputFormatter::escape(sprintf('In %s line %s:', basename($e->getFile()) ?: 'n/a', $e->getLine() ?: 'n/a'))));
+                $this->io->error('The following process did not finish successfully (exit code ' . $process->getExitCode() . '):');
+                $this->io->writeln("<fg=yellow>{$runnable}</>");
+                $this->io->newLine();
 
                 return;
             }

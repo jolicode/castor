@@ -17,6 +17,6 @@ class FailureVerboseArgumentsTest extends TaskTestCase
         }
 
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());
-        $this->assertStringEqualsFile(__FILE__ . '.err.txt', $process->getErrorOutput());
+        $this->assertSame('', $process->getErrorOutput());
     }
 }

@@ -1,7 +1,0 @@
-In failure.php line XXXX:
-
-  The command "bash -c i_do_not_exist" failed.
-
-
-failure:verbose-arguments
-

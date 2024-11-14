@@ -2,13 +2,21 @@
 
 namespace Castor\Monolog\Processor;
 
+use Castor\Runner\ProcessRunner;
 use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Process\Process;
 
 /** @internal  */
-class ProcessProcessor implements ProcessorInterface
+final class ProcessProcessor implements ProcessorInterface
 {
+    public function __construct(
+        #[Autowire(lazy: true)]
+        private readonly ProcessRunner $processRunner,
+    ) {
+    }
+
     public function __invoke(LogRecord $record): LogRecord
     {
         foreach ($record->context as $key => $value) {
@@ -30,21 +38,10 @@ class ProcessProcessor implements ProcessorInterface
      */
     private function formatProcess(Process $process): array
     {
-        $runnable = $process->getCommandLine();
-
-        foreach ($process->getEnv() as $key => $value) {
-            if ('argv' === $key || 'argc' === $key) {
-                continue;
-            }
-            $runnable = \sprintf('%s=%s %s ', $key, escapeshellarg($value), $runnable);
-        }
-
-        $runnable = rtrim($runnable, ' ');
-
         return [
             'cwd' => $process->getWorkingDirectory(),
             'env' => $process->getEnv(),
-            'runnable' => $runnable,
+            'runnable' => $this->processRunner->buildRunnableCommand($process),
         ];
     }
 }
