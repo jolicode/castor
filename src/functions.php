@@ -71,19 +71,26 @@ function run(
         $workingDirectory = $path;
     }
 
-    return Container::get()->processRunner->run(
-        $command,
-        $environment,
-        $workingDirectory,
-        $tty,
-        $pty,
-        $timeout,
-        $quiet,
-        $allowFailure,
-        $notify,
-        $callback,
-        $context,
-    );
+    try {
+        return Container::get()
+            ->processRunner
+            ->run(
+                $command,
+                $environment,
+                $workingDirectory,
+                $tty,
+                $pty,
+                $timeout,
+                $quiet,
+                $allowFailure,
+                $notify,
+                $callback,
+                $context,
+            )
+        ;
+    } catch (\Throwable $e) {
+        throw fix_exception($e, 1);
+    }
 }
 
 /**
@@ -101,7 +108,7 @@ function capture(
     ?string $path = null,
 ): string {
     if ($workingDirectory && $path) {
-        throw new \LogicException('You cannot use both the "path" and "workingDirectory" arguments at the same time.');
+        throw fix_exception(new \LogicException('You cannot use both the "path" and "workingDirectory" arguments at the same time.'), 1);
     }
     if ($path) {
         trigger_deprecation('jolicode/castor', '0.15', 'The "path" argument is deprecated, use "workingDirectory" instead.');
@@ -109,15 +116,22 @@ function capture(
         $workingDirectory = $path;
     }
 
-    return Container::get()->processRunner->capture(
-        $command,
-        $environment,
-        $workingDirectory,
-        $timeout,
-        $allowFailure,
-        $onFailure,
-        $context,
-    );
+    try {
+        return Container::get()
+            ->processRunner
+            ->capture(
+                $command,
+                $environment,
+                $workingDirectory,
+                $timeout,
+                $allowFailure,
+                $onFailure,
+                $context,
+            )
+        ;
+    } catch (\Throwable $e) {
+        throw fix_exception($e, 2);
+    }
 }
 
 /**
@@ -134,7 +148,7 @@ function exit_code(
     ?string $path = null,
 ): int {
     if ($workingDirectory && $path) {
-        throw new \LogicException('You cannot use both the "path" and "workingDirectory" arguments at the same time.');
+        throw fix_exception(new \LogicException('You cannot use both the "path" and "workingDirectory" arguments at the same time.'));
     }
     if ($path) {
         trigger_deprecation('jolicode/castor', '0.15', 'The "path" argument is deprecated, use "workingDirectory" instead.');
@@ -142,14 +156,21 @@ function exit_code(
         $workingDirectory = $path;
     }
 
-    return Container::get()->processRunner->exitCode(
-        $command,
-        $environment,
-        $workingDirectory,
-        $timeout,
-        $quiet,
-        $context,
-    );
+    try {
+        return Container::get()
+            ->processRunner
+            ->exitCode(
+                $command,
+                $environment,
+                $workingDirectory,
+                $timeout,
+                $quiet,
+                $context,
+            )
+        ;
+    } catch (\Throwable $e) {
+        throw fix_exception($e, 2);
+    }
 }
 
 /**

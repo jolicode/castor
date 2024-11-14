@@ -3,8 +3,6 @@ name: Artifacts
 on:
   push:
     branches: [ "main" ]
-  release:
-      types: [ "created" ]
 
 permissions:
   contents: write
@@ -31,7 +29,7 @@ jobs:
           path: tools/phar/build/castor.linux-amd64.phar
           if-no-files-found: error
 
-      - name: Upload the Linux ARM64 phar
+      - name: Upload the Linux amr64 phar
         uses: actions/upload-artifact@v4
         with:
           name: 'castor.linux-arm64.phar'
@@ -45,7 +43,7 @@ jobs:
           path: tools/phar/build/castor.darwin-amd64.phar
           if-no-files-found: error
 
-      - name: Upload the Darwin ARM64 phar
+      - name: Upload the Darwin amr64 phar
         uses: actions/upload-artifact@v4
         with:
           name: 'castor.darwin-arm64.phar'
@@ -157,31 +155,3 @@ jobs:
           name: "castor.darwin-arm64"
           path: ./castor.darwin-arm64
           if-no-files-found: error
-
-  release:
-    name: Upload artifacts to the release
-    if: github.event_name == 'release'
-    needs: [phars, static-linux-amd64, static-darwin-amd64, static-darwin-arm64]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: retrieve artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: build
-          merge-multiple: true
-
-      - name: Upload files
-        run: |
-          gh release upload ${{ github.ref_name }} ./build/castor.darwin-amd64
-          gh release upload ${{ github.ref_name }} ./build/castor.darwin-amd64.phar
-          gh release upload ${{ github.ref_name }} ./build/castor.darwin-arm64
-          gh release upload ${{ github.ref_name }} ./build/castor.darwin-arm64.phar
-          gh release upload ${{ github.ref_name }} ./build/castor.linux-amd64
-          gh release upload ${{ github.ref_name }} ./build/castor.linux-amd64.phar
-          gh release upload ${{ github.ref_name }} ./build/castor.linux-arm64.phar
-          gh release upload ${{ github.ref_name }} ./build/castor.windows-amd64.phar
-        env:
-          GH_TOKEN: ${{ github.token }}
