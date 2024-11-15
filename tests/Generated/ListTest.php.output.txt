@@ -3,12 +3,10 @@ hello                                                             hello
 help                                                              Display help for a command
 list                                                              List commands
 no-namespace                                                      Task without a namespace
-release                                                           Release a new version of castor
 args:another-args                                                 Dumps all arguments and options, without configuration
 args:args                                                         Dumps all arguments and options, with custom configuration
 args:autocomplete-argument                                        Provides autocomplete for an argument
 args:passthru                                                     Dumps all arguments and options, without configuration nor validation
-bar:bar                                                           Prints bar, but also executes foo
 cache:complex                                                     Cache with usage of CacheItemInterface
 cache:simple                                                      Cache a simple call
 castor:composer                                                   Interact with built-in Composer for castor
@@ -18,6 +16,7 @@ castor:phar:install                                               install depend
 castor:phar:linux                                                 Build phar for Linux system
 castor:phar:update                                                update dependencies
 castor:phar:windows                                               Build phar for Windows system
+castor:release:release                                            Release a new version of castor
 castor:static:darwin-amd64                                        Build static binary for MacOS (amd64) system
 castor:static:darwin-arm64                                        Build static binary for MacOS (arm64) system
 castor:static:linux                                               Build static binary for Linux system
@@ -27,6 +26,9 @@ castor:watcher:linux                                              Build watcher 
 castor:watcher:windows                                            Build watcher for Windows system
 cd:directory                                                      Changes directory
 command-builder:ls                                                Run a sub-process and display information about it
+configuration:bar:bar                                             Prints bar, but also executes foo
+configuration:foo:foo                                             Prints foo
+configuration:renamed                                             Task that was renamed
 context:context                                                   Displays information about the context
 context:context-info-forced                                       Displays information about the context
 context:context-with                                              Displays information about the context, using a specific context
@@ -41,15 +43,12 @@ fingerprint:task-with-a-fingerprint                               Execute a call
 fingerprint:task-with-a-fingerprint-and-force                     Check if the fingerprint has changed before executing a callback (with force option)
 fingerprint:task-with-a-fingerprint-global                        Execute a callback only if the global fingerprint has changed (Shared across all projects)
 fingerprint:task-with-complete-fingerprint-check                  Check if the fingerprint has changed before executing some code
-foo:bar                                                           Echo foo bar
-foo:foo                                                           Prints foo
 http:download                                                     Download a file through HTTP
 http:request                                                      Make HTTP request
 log:all-level                                                     Logs some messages with different levels
 log:error                                                         Logs an "error" message
 log:info                                                          Logs an "info" message
 log:with-context                                                  Logs an "error" message
-not-rename:renamed                                                Task that was renamed
 notify:notify-on-finish                                           Sends a notification when the task finishes
 notify:send-notify                                                Sends a notification
 notify:send-notify-with-custom-title                              Sends a notification with a custom title

@@ -78,7 +78,7 @@ class Application extends SymfonyApplication
                 $process = $e->getProcess();
                 $runnable = $this->processRunner->buildRunnableCommand($process);
 
-                $this->io->writeln(sprintf('<comment>%s</comment>', OutputFormatter::escape(sprintf('In %s line %s:', basename($e->getFile()) ?: 'n/a', $e->getLine() ?: 'n/a'))));
+                $this->io->writeln(\sprintf('<comment>%s</comment>', OutputFormatter::escape(\sprintf('In %s line %s:', basename($e->getFile()) ?: 'n/a', $e->getLine() ?: 'n/a'))));
                 $this->io->error('The following process did not finish successfully (exit code ' . $process->getExitCode() . '):');
                 $this->io->writeln("<fg=yellow>{$runnable}</>");
                 $this->io->newLine();

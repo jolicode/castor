@@ -5,12 +5,12 @@ namespace Castor\Tests\Generated;
 use Castor\Tests\TaskTestCase;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
-class BarBarTest extends TaskTestCase
+class ConfigurationBarBarTest extends TaskTestCase
 {
-    // bar:bar
+    // configuration:bar:bar
     public function test(): void
     {
-        $process = $this->runTask(['bar:bar']);
+        $process = $this->runTask(['configuration:bar:bar']);
 
         if (0 !== $process->getExitCode()) {
             throw new ProcessFailedException($process);
