@@ -7,6 +7,8 @@ args:another-args                                                 Dumps all argu
 args:args                                                         Dumps all arguments and options, with custom configuration
 args:autocomplete-argument                                        Provides autocomplete for an argument
 args:passthru                                                     Dumps all arguments and options, without configuration nor validation
+assertion:ensure-we-are-in-the-future                             Ensure we are in the future
+assertion:throw-an-exception                                      Throws a Problem exception
 cache:complex                                                     Cache with usage of CacheItemInterface
 cache:simple                                                      Cache a simple call
 castor:composer                                                   Interact with built-in Composer for castor

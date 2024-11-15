@@ -1,6 +1,6 @@
 - [Home](index.md)
+- [Installation](installation.md)
 - [Getting started](getting-started/index.md)
-    - [Installation and Autocomplete](getting-started/installation.md)
     - [Basic Usage](getting-started/basic-usage.md)
     - [Executing Processes with `run()`](getting-started/run.md)
     - [Task Arguments](getting-started/arguments.md)

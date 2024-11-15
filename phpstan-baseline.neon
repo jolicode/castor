@@ -6,6 +6,16 @@ parameters:
 			path: examples/args.php
 
 		-
+			message: "#^Negated boolean expression is always true\\.$#"
+			count: 1
+			path: examples/assertion.php
+
+		-
+			message: "#^Result of function usleep \\(void\\) is used\\.$#"
+			count: 1
+			path: examples/assertion.php
+
+		-
 			message: "#^Class RepackedApplication not found\\.$#"
 			count: 1
 			path: src/Console/ApplicationFactory.php

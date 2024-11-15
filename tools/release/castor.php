@@ -9,6 +9,7 @@ use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\Process\ExecutableFinder;
 
 use function Castor\capture;
+use function Castor\check;
 use function Castor\context;
 use function Castor\finder;
 use function Castor\fs;
@@ -106,7 +107,7 @@ function release(): int
     check(
         'Check the number of artifacts',
         'There are not enough files in the artifacts directory.',
-        fn () => EXPECTED_ARTIFACTS === count($files),
+        fn () => EXPECTED_ARTIFACTS === \count($files),
     );
 
     check(
@@ -137,19 +138,6 @@ function release(): int
     io()->success('Release published!');
 
     return 0;
-}
-
-function check(string $title, string $failureMessage, callable $check): void
-{
-    io()->write($title);
-
-    if (!$check()) {
-        io()->writeln(' ❌');
-
-        throw new ProblemException($failureMessage);
-    }
-
-    io()->writeln(' ✅');
 }
 
 function checkCi(array $run): void

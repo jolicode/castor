@@ -198,7 +198,7 @@ ln -s $PWD/bin/castor $HOME/.local/bin/castor
 
 #### Using setup-castor action
 
-Castor provide a [Github Action to install Castor in your workflow](https://github.com/marketplace/actions/setup-castor). 
+Castor provide a [Github Action to install Castor in your workflow](https://github.com/marketplace/actions/setup-castor).
 Here is an example:
 
 ```yaml
