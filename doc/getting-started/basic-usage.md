@@ -43,7 +43,7 @@ namespace then the task will have no namespace.
 From now on, we will omit the leading `<?php` in all doc examples.
 
 > [!TIP]
-> Related example: [foo.php](https://github.com/jolicode/castor/blob/main/examples/foo.php)
+> Related example: [configuration.php](https://github.com/jolicode/castor/blob/main/examples/configuration.php)
 
 Castor will also look for a `.castor/castor.php` file in the current directory,
 or in its parents.
@@ -102,7 +102,7 @@ function a_very_long_function_name_that_is_very_painful_to_write(): void
 ```
 
 > [!TIP]
-> Related example: [foo.php](https://github.com/jolicode/castor/blob/main/examples/foo.php)
+> Related example: [configuration.php](https://github.com/jolicode/castor/blob/main/examples/configuration.php)
 
 ## Setting a default task
 

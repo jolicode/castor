@@ -5,12 +5,12 @@ namespace Castor\Tests\Generated;
 use Castor\Tests\TaskTestCase;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
-class NotRenameRenamedTest extends TaskTestCase
+class ConfigurationFooFooTest extends TaskTestCase
 {
-    // not-rename:renamed
+    // configuration:foo:foo
     public function test(): void
     {
-        $process = $this->runTask(['not-rename:renamed']);
+        $process = $this->runTask(['configuration:foo:foo']);
 
         if (0 !== $process->getExitCode()) {
             throw new ProcessFailedException($process);

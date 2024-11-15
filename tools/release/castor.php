@@ -1,5 +1,7 @@
 <?php
 
+namespace castor\release;
+
 use Castor\Attribute\AsTask;
 use Castor\Console\Application;
 use Castor\Exception\ProblemException;
@@ -16,7 +18,7 @@ use function Castor\run;
 const REPO = 'jolicode/castor';
 const EXPECTED_ARTIFACTS = 8;
 
-#[AsTask(description: 'Release a new version of castor')]
+#[AsTask(description: 'Release a new version of castor', aliases: ['release'])]
 function release(): int
 {
     io()->title('Release a new version of Castor');

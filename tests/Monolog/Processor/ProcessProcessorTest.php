@@ -28,7 +28,8 @@ class ProcessProcessorTest extends TestCase
         $mock = $this->getMockBuilder(ProcessRunner::class)
             ->onlyMethods(['buildRunnableCommand'])
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
 
         $processor = new ProcessProcessor($mock);
 

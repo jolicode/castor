@@ -63,7 +63,6 @@ $taskFilterList = [
     'watch:stop',
     'open:documentation',
     'open:multiple',
-    'release',
     // Not examples
     'castor:compile',
     'castor:phar:build',
@@ -72,6 +71,7 @@ $taskFilterList = [
     'castor:phar:linux',
     'castor:phar:update',
     'castor:phar:windows',
+    'castor:release:release',
     'castor:repack',
     'castor:static:darwin-amd64',
     'castor:static:darwin-arm64',
