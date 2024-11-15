@@ -7,6 +7,7 @@ use Castor\CommandBuilder\CommandBuilderInterface;
 use Castor\Console\Application;
 use Castor\Exception\ExecutableNotFoundException;
 use Castor\Exception\MinimumVersionRequirementNotMetException;
+use Castor\Exception\ProblemException;
 use Castor\Exception\WaitFor\ExitedBeforeTimeoutException;
 use Castor\Exception\WaitFor\TimeoutReachedException;
 use Castor\Helper\HasherHelper;
@@ -158,6 +159,22 @@ function exit_code(
             $context,
         )
     ;
+}
+
+/**
+ * @param callable():bool $check
+ */
+function check(string $title, string $failureMessage, callable $check): void
+{
+    io()->write($title);
+
+    if (!$check()) {
+        io()->writeln(' ❌');
+
+        throw new ProblemException($failureMessage);
+    }
+
+    io()->writeln(' ✅');
 }
 
 /**

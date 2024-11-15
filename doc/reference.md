@@ -9,6 +9,7 @@ Castor provides the following built-in functions:
 - [`app`](going-further/helpers/console-and-io.md#the-app-function)
 - [`cache`](going-further/helpers/cache.md#the-cache-function)
 - [`capture`](getting-started/run.md#the-capture-function)
+- [`check`](going-further/helpers/assertion.md#the-check-function)
 - [`context`](getting-started/context.md#the-context-function)
 - [`exit_code`](getting-started/run.md#the-exit_code-function)
 - [`finder`](going-further/helpers/filesystem.md#the-finder-function)

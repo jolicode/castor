@@ -54,7 +54,7 @@ function hello(): void
 
 Will expose a `greetings:hello` task that you can run with `castor greetings:hello`:
 
-```bash
+```shell
 $ castor greetings:hello
 Hello from castor
 ```
@@ -86,6 +86,7 @@ function destroy(bool $force = false)
 
 Discover more by reading the docs:
 
+* [Installation](installation.md)
 * [Getting started with Castor](getting-started/index.md)
 * [Going further with Castor](going-further/index.md)
 * [Castor reference](reference.md)
