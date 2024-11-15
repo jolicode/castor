@@ -122,8 +122,12 @@ class Application extends SymfonyApplication
         return $definition;
     }
 
-    private function enhanceException(\Throwable $exception): \Throwable
+    private function enhanceException(\Throwable $exception): void
     {
+        if ($exception instanceof \Error) {
+            return;
+        }
+
         $castorDirs = [
             \dirname(__DIR__, 1),
             \dirname(__DIR__, 2) . \DIRECTORY_SEPARATOR . 'vendor',
@@ -148,8 +152,6 @@ class Application extends SymfonyApplication
 
             break;
         }
-
-        return $exception;
     }
 
     private function getLogo(): string

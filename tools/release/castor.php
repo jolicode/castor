@@ -106,7 +106,7 @@ function release(): int
     check(
         'Check the number of artifacts',
         'There are not enough files in the artifacts directory.',
-        fn () => EXPECTED_ARTIFACTS === count($files),
+        fn () => EXPECTED_ARTIFACTS === \count($files),
     );
 
     check(
