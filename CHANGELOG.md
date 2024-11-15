@@ -7,6 +7,7 @@
 * Better rendering of run errors
 * Add `check()` function to ensure requirements are met
 * Add `ProblemException` to handle problems in a more structured way
+* Add official support for symfony/string and symfony/var-dumper functions
 
 ### Internal
 
