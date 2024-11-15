@@ -75,6 +75,12 @@ final class StubsGenerator
             \Symfony\Contracts\HttpClient\Exception\ExceptionInterface::class,
             \Symfony\Contracts\HttpClient\HttpClientInterface::class,
             \Symfony\Contracts\HttpClient\ResponseInterface::class,
+            \Symfony\Component\String\AbstractString::class,
+            \Symfony\Component\String\AbstractUnicodeString::class,
+            \Symfony\Component\String\ByteString::class,
+            \Symfony\Component\String\CodePointString::class,
+            \Symfony\Component\String\Exception\ExceptionInterface::class,
+            \Symfony\Component\String\UnicodeString::class,
         ];
 
         foreach ($frequentlyUsedClasses as $class) {
@@ -85,6 +91,10 @@ final class StubsGenerator
 
             $files[] = $file;
         }
+
+        // Expose some functions provided by vendors
+        $files[] = "{$basePath}/vendor/symfony/string/Resources/functions.php";
+        $files[] = "{$basePath}/vendor/symfony/var-dumper/Resources/functions/dump.php";
 
         $stmts = $this->doGenerate($files);
 
@@ -127,9 +137,11 @@ final class StubsGenerator
 
         $phpDocNodeTraverser = new PhpDocNodeTraverser([new PhpDocNodeVisitor($nameResolver)]);
 
+        $nodeVisitor = new NodeVisitor($phpDocNodeTraverser, $lexer, $phpDocParser);
+
         $traverser = new NodeTraverser();
         $traverser->addVisitor($nameResolver);
-        $traverser->addVisitor(new NodeVisitor($phpDocNodeTraverser, $lexer, $phpDocParser));
+        $traverser->addVisitor($nodeVisitor);
 
         // Parse all files one by one, traverse the related AST then merge all statements
         foreach ($files as $file) {
@@ -137,6 +149,12 @@ final class StubsGenerator
             if (!$fileStmts) {
                 continue;
             }
+
+            $firstStmt = $fileStmts[0];
+            if (!$firstStmt instanceof Stmt\Namespace_) {
+                $fileStmts = [new Stmt\Namespace_(null, $fileStmts)];
+            }
+
             $stmts = array_merge($stmts, $traverser->traverse($fileStmts));
         }
 
