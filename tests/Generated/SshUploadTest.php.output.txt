@@ -1,0 +1,6 @@
+In ssh.php line XXXX:
+
+ [ERROR] The following process did not finish successfully (exit code 1):
+
+scp -r .../examples/ssh.php debian@server-1.example.com:/var/www/index.html
+

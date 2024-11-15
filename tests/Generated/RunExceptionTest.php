@@ -10,13 +10,13 @@ class RunExceptionTest extends TaskTestCase
     // run:exception
     public function test(): void
     {
-        $process = $this->runTask(['run:exception']);
+        $process = $this->runTask(['run:exception', '--repeat', 1]);
 
         if (1 !== $process->getExitCode()) {
             throw new ProcessFailedException($process);
         }
 
         $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());
-        $this->assertStringEqualsFile(__FILE__ . '.err.txt', $process->getErrorOutput());
+        $this->assertSame('', $process->getErrorOutput());
     }
 }

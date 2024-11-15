@@ -1,7 +1,0 @@
-In run.php line XXXX:
-
-  The command "echo foo; echo bar>&2; exit 1" failed.
-
-
-run:exception
-

@@ -1,11 +1,1 @@
 ssh: Could not resolve hostname server-1.example.com: Name or service not known
-
-In ssh.php line XXXX:
-
-  The command "ssh -p 2222 debian@server-1.example.com 'bash -se' << \EOF-SPATIE-SSH
-  cd /var/www && ls -alh
-  EOF-SPATIE-SSH" failed.
-
-
-ssh:ls
-

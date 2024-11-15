@@ -18,6 +18,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 use function Castor\context;
+use function Symfony\Component\String\u;
 
 /** @internal */
 class ProcessRunner
@@ -156,7 +157,7 @@ class ProcessRunner
 
         $this->eventDispatcher->dispatch(new Event\ProcessCreatedEvent($process));
 
-        $this->logger->notice(\sprintf('Running command: "%s".', $process->getCommandLine()), [
+        $this->logger->notice(\sprintf('Running command: "%s".', u($process->getCommandLine())->truncate(40, '...')), [
             'process' => $process,
         ]);
 
@@ -213,11 +214,7 @@ class ProcessRunner
             }
 
             if (!$context->allowFailure) {
-                if ($context->verbosityLevel->isVerbose()) {
-                    throw new ProcessFailedException($process);
-                }
-
-                throw new \RuntimeException("The command \"{$process->getCommandLine()}\" failed.");
+                throw new ProcessFailedException($process);
             }
 
             return $process;
@@ -290,5 +287,19 @@ class ProcessRunner
         );
 
         return $process->getExitCode() ?? 0;
+    }
+
+    public function buildRunnableCommand(Process $process): string
+    {
+        $runnable = $process->getCommandLine();
+
+        foreach ($process->getEnv() as $key => $value) {
+            if ('argv' === $key || 'argc' === $key) {
+                continue;
+            }
+            $runnable = \sprintf('%s=%s %s ', $key, escapeshellarg($value), $runnable);
+        }
+
+        return rtrim($runnable, ' ');
     }
 }

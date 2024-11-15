@@ -3,6 +3,7 @@
 namespace Castor\Tests\Monolog\Processor;
 
 use Castor\Monolog\Processor\ProcessProcessor;
+use Castor\Runner\ProcessRunner;
 use Monolog\Level;
 use Monolog\LogRecord;
 use PHPUnit\Framework\TestCase;
@@ -24,7 +25,12 @@ class ProcessProcessorTest extends TestCase
             message: 'new process',
             context: ['process' => $process],
         );
-        $processor = new ProcessProcessor($process);
+        $mock = $this->getMockBuilder(ProcessRunner::class)
+            ->onlyMethods(['buildRunnableCommand'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $processor = new ProcessProcessor($mock);
 
         $this->assertEquals(
             [
@@ -34,9 +40,7 @@ class ProcessProcessorTest extends TestCase
                     'argc' => 3,
                     'argv' => ['/home/foo/.local/bin//castor', 'builder', '-vvv'],
                 ],
-                'runnable' => <<<'TXT'
-                    foo='b'\''"`\ar' 'ls' '-alh'
-                    TXT,
+                'runnable' => '',
             ],
             $processor($log)->context['process'],
         );

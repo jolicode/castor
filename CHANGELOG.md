@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Features
+
+* Better rendering of run errors
+
 ### Internal
 
 * Rework the releasing
