@@ -134,7 +134,7 @@ The `wait_for_docker_container()` function waits for a Docker container to be
 ready. It checks if the container is running and if the specified port is
 accessible within the specified timeout.
 It can also wait for a specific check to be successful, by providing a
-`$check` callback function.
+`$containerChecker` callback function.
 
 
 Example:
