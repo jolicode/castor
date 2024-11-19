@@ -34,7 +34,7 @@
     },
     "require": {
         "php": ">=8.1",
-        "composer/composer": "^2.8.2",
+        "composer/composer": "^2.8.3",
         "jolicode/jolinotif": "^3.0.0",
         "jolicode/php-os-helper": "^0.1.0",
         "monolog/monolog": "^3.8",
