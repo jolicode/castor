@@ -63,7 +63,7 @@ extra:
     - icon: fontawesome/brands/github-alt
       link: https://github.com/jolicode
     - icon: fontawesome/brands/x-twitter
-      link: https://twitter.com/jolicode
+      link: https://x.com/jolicode
   generator: false
 
 markdown_extensions:
