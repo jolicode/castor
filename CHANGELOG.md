@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+## 0.21.0 (2024-11-19)
+
 ### Features
 
 * Better rendering of run errors
