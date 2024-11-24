@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Fixes
+
+Add more missing vendor classes into stubs
+
 ## 0.21.0 (2024-11-19)
 
 ### Features

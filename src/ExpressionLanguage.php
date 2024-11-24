@@ -5,6 +5,7 @@ namespace Castor;
 use Symfony\Component\ExpressionLanguage\ExpressionFunction;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage as SymfonyExpressionLanguage;
 
+/** @internal */
 class ExpressionLanguage extends SymfonyExpressionLanguage
 {
     public function __construct(

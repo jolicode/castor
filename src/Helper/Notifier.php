@@ -10,6 +10,7 @@ use Psr\Log\LoggerInterface;
 
 use function Castor\context;
 
+/** @internal */
 class Notifier
 {
     public function __construct(
