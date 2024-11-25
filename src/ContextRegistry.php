@@ -6,6 +6,7 @@ use Castor\Descriptor\ContextDescriptor;
 use Castor\Event\ContextCreatedEvent;
 use Castor\Exception\FunctionConfigurationException;
 use Castor\Helper\PathHelper;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /** @internal */
@@ -13,14 +14,16 @@ class ContextRegistry
 {
     /** @var array<string, ContextDescriptor> */
     private array $descriptors = [];
-    private ?string $defaultName = null;
     /** @var array<string, Context> */
     private array $contexts = [];
 
     private Context $currentContext;
 
-    public function __construct(private EventDispatcherInterface $eventDispatcher)
-    {
+    public function __construct(
+        private EventDispatcherInterface $eventDispatcher,
+        #[Autowire('%context%')]
+        private ?string $defaultName = null,
+    ) {
     }
 
     public function addDescriptor(ContextDescriptor $descriptor): void
@@ -35,7 +38,7 @@ class ContextRegistry
         $this->descriptors[$name] = $descriptor;
 
         if ($descriptor->contextAttribute->default) {
-            if ($this->defaultName) {
+            if ($this->defaultName && ($this->descriptors[$this->defaultName] ?? false)) {
                 $alreadyDefined = $this->descriptors[$this->defaultName]->function;
 
                 throw new FunctionConfigurationException(\sprintf('You cannot set multiple "default: true" context. There is one already defined in "%s:%d".', PathHelper::makeRelative((string) $alreadyDefined->getFileName()), $alreadyDefined->getStartLine()), $descriptor->function);

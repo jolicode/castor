@@ -5,6 +5,7 @@ namespace Castor\Console\Output;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Process\Process;
 
 /** @internal */
@@ -17,13 +18,16 @@ class SectionOutput
     /** @var \SplObjectStorage<Process, SectionDetails> */
     private \SplObjectStorage $sections;
 
-    public function __construct(OutputInterface $output)
-    {
+    public function __construct(
+        OutputInterface $output,
+        #[Autowire('%use_output_section%')]
+        bool $useOutputSection,
+    ) {
         $this->consoleOutput = $output;
         $this->mainOutput = null;
         $this->sections = new \SplObjectStorage();
 
-        if ($output instanceof ConsoleOutput && 'true' === getenv('CASTOR_USE_SECTION') && stream_isatty(\STDOUT)) {
+        if ($output instanceof ConsoleOutput && $useOutputSection && stream_isatty(\STDOUT)) {
             $this->mainOutput = $output;
             $this->consoleOutput = $output->section();
         }

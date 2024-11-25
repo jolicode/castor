@@ -14,6 +14,8 @@ class GenerateStubsListener
         private readonly StubsGenerator $stubsGenerator,
         #[Autowire('%repacked%')]
         private readonly bool $repacked,
+        #[Autowire('%generate_stubs%')]
+        private readonly bool $generateStubs,
     ) {
     }
 
@@ -23,6 +25,10 @@ class GenerateStubsListener
     public function generateStubs(ConsoleCommandEvent $event): void
     {
         if ($this->repacked) {
+            return;
+        }
+
+        if (!$this->generateStubs) {
             return;
         }
 

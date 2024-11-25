@@ -66,11 +66,20 @@ class ApplicationFactory
         $container = self::buildContainer($repacked);
         $container->getParameterBag()->add([
             'root_dir' => $rootDir,
-            'cache_dir' => $_SERVER['CASTOR_CACHE_DIR'] ?? PlatformHelper::getDefaultCacheDirectory(),
+            '.default_cache_dir' => PlatformHelper::getDefaultCacheDirectory(),
             'event_dispatcher.event_aliases' => ConsoleEvents::ALIASES,
             'repacked' => $repacked,
+            // UPGRADE: once on Symfony 7.3, remove this and use the new autowiring feature
+            // see https://github.com/symfony/symfony/pull/58986
+            'true' => true,
+            'cache_dir' => '%env(default:.default_cache_dir:CASTOR_CACHE_DIR)%',
+            'composer_no_remote' => '%env(bool:default::CASTOR_NO_REMOTE)%',
+            'context' => '%env(default::CASTOR_CONTEXT)%',
+            'generate_stubs' => '%env(bool:default:true:CASTOR_GENERATE_STUBS)%',
+            'test' => '%env(bool:default::CASTOR_TEST)%',
+            'use_output_section' => '%env(bool:default::CASTOR_USE_SECTION)%',
         ]);
-        $container->compile();
+        $container->compile(true);
 
         $container->set(ContainerInterface::class, $container);
         $container->set(ErrorHandler::class, $errorHandler);

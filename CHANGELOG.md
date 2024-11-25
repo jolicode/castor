@@ -4,7 +4,9 @@
 
 ### Fixes
 
-Add more missing vendor classes into stubs
+* Add more missing vendor classes into stubs
+* Add support for disabling stubs generation (with `CASTOR_GENERATE_STUBS=0`
+  environment variable)
 
 ## 0.21.0 (2024-11-19)
 

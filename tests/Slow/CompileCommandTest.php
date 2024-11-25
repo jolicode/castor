@@ -37,7 +37,7 @@ class CompileCommandTest extends TestCase
                 'compile', $castorAppDirPath . '/my-app.linux.phar',
                 '--os', 'linux',
                 '--binary-path', $binary,
-                '--php-extensions', 'mbstring,phar,posix,tokenizer',
+                '--php-extensions', 'filter,mbstring,phar,posix,tokenizer',
                 '--php-ini-file', 'php.ini',
                 '-vvv',
             ],

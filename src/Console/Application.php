@@ -33,6 +33,8 @@ class Application extends SymfonyApplication
         private readonly SymfonyStyle $io,
         #[Autowire(lazy: true)]
         private readonly ProcessRunner $processRunner,
+        #[Autowire('%test%')]
+        public readonly bool $test,
     ) {
         parent::__construct(static::NAME, static::VERSION);
     }
@@ -156,7 +158,7 @@ class Application extends SymfonyApplication
 
     private function getLogo(): string
     {
-        if (!($_SERVER['CASTOR_TEST'] ?? false)) {
+        if (!$this->test) {
             $now = new \DateTime();
             $year = date('Y');
 

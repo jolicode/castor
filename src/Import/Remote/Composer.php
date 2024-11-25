@@ -16,6 +16,7 @@ use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Filesystem;
 
 /** @internal */
@@ -28,13 +29,15 @@ class Composer
         private readonly InputInterface $input,
         private readonly OutputInterface $output,
         private readonly Filesystem $filesystem,
+        #[Autowire('%composer_no_remote%')]
+        private readonly bool $disableRemote,
         private readonly LoggerInterface $logger = new NullLogger(),
     ) {
     }
 
     public function isRemoteAllowed(): bool
     {
-        if ($_SERVER['CASTOR_NO_REMOTE'] ?? false) {
+        if ($this->disableRemote) {
             return false;
         }
 
