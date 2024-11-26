@@ -276,3 +276,17 @@ parameters:
     scanFiles:
         - .castor.stub.php
 ```
+
+If you don't want to generate stubs, you can use the `CASTOR_GENERATE_STUBS`
+environment variables:
+
+```
+CASTOR_GENERATE_STUBS=0 castorS
+```
+
+For convenience, you can export this variable in your shell configuration file:
+
+```bash
+echo 'export CASTOR_GENERATE_STUBS=0' >> ~/.bashrc
+source ~/.bashrc
+```
