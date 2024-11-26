@@ -281,7 +281,7 @@ If you don't want to generate stubs, you can use the `CASTOR_GENERATE_STUBS`
 environment variables:
 
 ```
-CASTOR_GENERATE_STUBS=0 castorS
+CASTOR_GENERATE_STUBS=0 castor
 ```
 
 For convenience, you can export this variable in your shell configuration file:
