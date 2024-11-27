@@ -11,6 +11,8 @@ Castor provides the following built-in functions:
 - [`capture`](getting-started/run.md#the-capture-function)
 - [`check`](going-further/helpers/assertion.md#the-check-function)
 - [`context`](getting-started/context.md#the-context-function)
+- [`decrypt_with_password`](going-further/helpers/cryto.md#the-decrpty_with_password-function)
+- [`encrypt_with_password`](going-further/helpers/cryto.md#the-encrypt_with_password-function)
 - [`exit_code`](getting-started/run.md#the-exit_code-function)
 - [`finder`](going-further/helpers/filesystem.md#the-finder-function)
 - [`fingerprint`](going-further/helpers/fingerprint.md#the-fingerprint-function)

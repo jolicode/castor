@@ -826,6 +826,16 @@ function yaml_dump(mixed $input, int $inline = 2, int $indent = 4, int $flags = 
     return Yaml::dump($input, $inline, $indent, $flags);
 }
 
+function encrypt_with_password(string $content, string $password): string
+{
+    return Container::get()->symmetricCrypto->encrypt($content, $password);
+}
+
+function decrypt_with_password(string $content, string $password): string
+{
+    return Container::get()->symmetricCrypto->decrypt($content, $password);
+}
+
 function guard_min_version(string $minVersion): void
 {
     $currentVersion = Container::get()->application->getVersion();
