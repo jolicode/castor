@@ -77,3 +77,13 @@ Castor provides the following attributes to register tasks, listener, etc:
 - [`AsRawTokens`](getting-started/arguments.md#arguments-without-configuration-nor-validation)
 - [`AsSymfonyTask`](going-further/interacting-with-castor/symfony-task.md)
 - [`AsTask`](getting-started/basic-usage.md)
+
+## Environment variables
+
+Castor supports the following environment variables:
+
+- [`CASTOR_CACHE_DIR`](going-further/helpers/cache.md#cache-location-on-the-filesystem)
+- [`CASTOR_CONTEXT`](getting-started/context.md#setting-a-default-context)
+- [`CASTOR_GENERATE_STUBS`](installation.md#stubs)
+- [`CASTOR_NO_REMOTE`](going-further/extending-castor/remote-imports.md#preventing-remote-imports)
+- [`CASTOR_USE_SECTION`](going-further/helpers/console-and-io.md#experimental-section-output)

@@ -98,3 +98,19 @@ In some cases there may be no task to return, if an event listener is triggered
 before the task  or during a context initialization for example. In this case,
 `task()` will throw an exception. You can use the optional parameter to allow
 `task(true)` to return `null` in this case.
+
+## Experimental section output
+
+When running commands in parallel, output can be mixed and hard to read. Castor
+provides an experimental feature to display the output of each command in a
+dedicated section of the console.
+
+This feature is disabled by default and can be enabled by setting the
+`CASTOR_USE_SECTION` environment variable to `true`.
+
+```shell
+CASTOR_USE_SECTION=true castor task-running-commands-in-parallel
+```
+
+> [!WARNING]
+> This feature is experimental and may be removed or changed in the future.

@@ -28,14 +28,23 @@ function foo()
 }
 ```
 
-By default, it caches items on the filesystem, in the `<home directory>/.cache/castor`
-directory. The function also prefix the key with a hash of the project directory
-to avoid any collision between different Castor projects.
+The `cache()` function prefix the key with a hash of the project directory to
+avoid any collision between different Castor projects.
 
 > [!NOTE]
 > Under the hood, Castor use Symfony Cache component. You can check the
 > [Symfony documentation](https://symfony.com/doc/current/components/cache.html)
 > for more information about this component and how to use it.
+
+## Cache location on the filesystem
+
+By default, Castor caches items on the filesystem, in the `<home directory>/.cache/castor`
+directory. If you want to change the cache directory, you can set the `CASTOR_CACHE_DIR`
+environment variable.
+
+```shell
+CASTOR_CACHE_DIR=/tmp/castor-cache castor foo
+```
 
 ## The `get_cache()` function
 
