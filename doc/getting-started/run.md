@@ -154,11 +154,12 @@ do that by setting the `tty` option to `true`:
 use Castor\Attribute\AsTask;
 
 use function Castor\run;
+use function Castor\context;
 
 #[AsTask()]
 function foo(): void
 {
-    run('echo "bar"', tty: true);
+    run('echo "bar"', context: context()->withTty(true));
 }
 ```
 
@@ -166,7 +167,7 @@ function foo(): void
 > When using a TTY, the output of the command is empty in the process object
 > (when using `getOutput()` or `getErrorOutput()`).
 
-You can also disable the pty by setting the `pty` option to `false`. If `pty`
+You can also disable the PTY by setting the `pty` option to `false`. If `pty`
 and `tty` are both set to `false`, the standard input will not be forwarded to
 the process:
 
@@ -174,10 +175,11 @@ the process:
 use Castor\Attribute\AsTask;
 
 use function Castor\run;
+use function Castor\context;
 
 #[AsTask()]
 function foo(): void
 {
-    run('echo "bar"', pty: false);
+    run('echo "bar"', context: context()->withPty(false));
 }
 ```
