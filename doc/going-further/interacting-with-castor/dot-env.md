@@ -18,6 +18,7 @@ Example:
 ```php
 use Castor\Attribute\AsTask;
 use Castor\Context;
+
 use function Castor\load_dot_env;
 
 #[AsTask()]
@@ -25,9 +26,15 @@ function show_database_url(): void
 {
     $env = load_dot_env();
 
-    io()->writeln($env['DATABASE_URL']) ?? throw new \RuntimeException('DATABASE_URL is not defined');
+    io()->writeln($_SERVER['DATABASE_URL'] ?? throw new \RuntimeException('DATABASE_URL is not defined'));
 }
 ```
+
+> [!IMPORTANT]
+> Even if the `load_dot_env()` function returns the env variables as an array,
+> it will only return variables defined in the .env file. So if someone overrides
+> one variable with true environment variable, it will not be returned. So it's
+> better to use `$_SERVER` in you code to access env variables.
 
 > [!NOTE]
 > You can find more about how `.env` file loading and overloading works on
@@ -40,6 +47,7 @@ You can also create a context that load a `.env` file:
 ```php
 use Castor\Attribute\AsContext;
 use Castor\Context;
+
 use function Castor\load_dot_env;
 
 #[AsContext()]
