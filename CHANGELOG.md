@@ -4,7 +4,8 @@
 
 ### Features
 
-* Add `encrypt_with_password()` and `decrypt_with_password()` functions to
+* Add `encrypt_with_password()`, `decrypt_with_password()`,
+  `encrypt_file_with_password()`, and `decrypt_file_with_password()` functions to
   encrypt and decrypt data
 
 ### Fixes

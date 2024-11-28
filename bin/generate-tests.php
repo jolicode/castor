@@ -89,6 +89,8 @@ $taskFilterList = [
     // Customized tests
     'crypto:decrypt',
     'crypto:encrypt',
+    'crypto:decrypt-file',
+    'crypto:encrypt-file',
     'fingerprint:task-with-a-fingerprint-and-force',
     'fingerprint:task-with-a-fingerprint-global',
     'fingerprint:task-with-a-fingerprint',

@@ -836,6 +836,54 @@ function decrypt_with_password(string $content, string $password): string
     return Container::get()->symmetricCrypto->decrypt($content, $password);
 }
 
+function encrypt_file_with_password(string $sourcePath, string $password, ?string $destinationPath = null): void
+{
+    if (!file_exists($sourcePath)) {
+        throw new \InvalidArgumentException(\sprintf('The file "%s" does not exist.', $sourcePath));
+    }
+
+    $content = file_get_contents($sourcePath);
+    if (false === $content) {
+        throw new \RuntimeException(\sprintf('Failed to read the file "%s".', $sourcePath));
+    }
+
+    $encrypted = encrypt_with_password($content, $password);
+
+    $destinationPath ??= "{$sourcePath}.dec";
+    Container::get()->fs->dumpFile($destinationPath, $encrypted);
+
+    $sourcePermissions = fileperms($sourcePath);
+    if (false === $sourcePermissions) {
+        throw new \RuntimeException(\sprintf('Failed to get the permissions of the file "%s".', $sourcePath));
+    }
+
+    fs()->chmod($destinationPath, $sourcePermissions);
+}
+
+function decrypt_file_with_password(string $sourcePath, string $password, ?string $destinationPath = null): void
+{
+    if (!file_exists($sourcePath)) {
+        throw new \InvalidArgumentException(\sprintf('The file "%s" does not exist.', $sourcePath));
+    }
+
+    $content = file_get_contents($sourcePath);
+    if (false === $content) {
+        throw new \RuntimeException(\sprintf('Failed to read the file "%s".', $sourcePath));
+    }
+
+    $decrypted = decrypt_with_password($content, $password);
+
+    $destinationPath ??= "{$sourcePath}.dec";
+    Container::get()->fs->dumpFile($destinationPath, $decrypted);
+
+    $sourcePermissions = fileperms($sourcePath);
+    if (false === $sourcePermissions) {
+        throw new \RuntimeException(\sprintf('Failed to get the permissions of the file "%s".', $sourcePath));
+    }
+
+    fs()->chmod($destinationPath, $sourcePermissions);
+}
+
 function guard_min_version(string $minVersion): void
 {
     $currentVersion = Container::get()->application->getVersion();
