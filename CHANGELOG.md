@@ -8,6 +8,10 @@
 * Add support for disabling stubs generation (with `CASTOR_GENERATE_STUBS=0`
   environment variable)
 
+### Documentation
+
+* Document all the environment variables supported by Castor
+
 ## 0.21.0 (2024-11-19)
 
 ### Features
