@@ -2,6 +2,12 @@
 
 ## Not released yet
 
+### Features
+
+* Add `encrypt_with_password()`, `decrypt_with_password()`,
+  `encrypt_file_with_password()`, and `decrypt_file_with_password()` functions to
+  encrypt and decrypt data
+
 ### Fixes
 
 * Add more missing vendor classes into stubs

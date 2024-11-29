@@ -6,6 +6,7 @@ use Castor\Console\Application;
 use Castor\Console\Output\SectionOutput;
 use Castor\Fingerprint\FingerprintHelper;
 use Castor\Helper\Notifier;
+use Castor\Helper\SymmetricCrypto;
 use Castor\Helper\Waiter;
 use Castor\Http\HttpDownloader;
 use Castor\Import\Importer;
@@ -52,6 +53,7 @@ final class Container
         public readonly SymfonyStyle $symfonyStyle,
         public readonly Waiter $waiter,
         public readonly WatchRunner $watchRunner,
+        public readonly SymmetricCrypto $symmetricCrypto,
     ) {
     }
 

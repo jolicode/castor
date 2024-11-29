@@ -34,6 +34,10 @@ configuration:renamed                                             Task that was 
 context:context                                                   Displays information about the context
 context:context-info-forced                                       Displays information about the context
 context:context-with                                              Displays information about the context, using a specific context
+crypto:decrypt                                                    Decrypt content with a password
+crypto:decrypt-file                                               Decrypt file with a password
+crypto:encrypt                                                    Encrypt content with a password
+crypto:encrypt-file                                               Encrypt file with a password
 env:env                                                           Display environment variables
 event-listener:my-task                                            An dummy task with event listeners attached
 failure:allow-failure                                             A failing task authorized to fail
