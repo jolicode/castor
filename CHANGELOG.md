@@ -7,6 +7,8 @@
 * Add `encrypt_with_password()`, `decrypt_with_password()`,
   `encrypt_file_with_password()`, and `decrypt_file_with_password()` functions to
   encrypt and decrypt data
+* Add `AsPathArgument` and `AsPathOption` attributes to handle autocompletion of
+paths in arguments and options
 
 ### Fixes
 

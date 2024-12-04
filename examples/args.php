@@ -4,6 +4,7 @@ namespace args;
 
 use Castor\Attribute\AsArgument;
 use Castor\Attribute\AsOption;
+use Castor\Attribute\AsPathArgument;
 use Castor\Attribute\AsRawTokens;
 use Castor\Attribute\AsTask;
 use Symfony\Component\Console\Completion\CompletionInput;
@@ -62,4 +63,12 @@ function get_argument_autocompletion(CompletionInput $input): array
         'bar',
         'baz',
     ];
+}
+
+#[AsTask(description: 'Provides autocomplete for a path argument')]
+function autocomplete_path(
+    #[AsPathArgument(name: 'argument', description: 'This is a path argument with autocompletion')]
+    string $argument,
+): void {
+    var_dump(\func_get_args());
 }

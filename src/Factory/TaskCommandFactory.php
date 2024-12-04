@@ -8,6 +8,7 @@ use Castor\Descriptor\TaskDescriptor;
 use Castor\ExpressionLanguage;
 use Castor\Helper\Slugger;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Filesystem\Filesystem;
 
 class TaskCommandFactory
 {
@@ -16,6 +17,7 @@ class TaskCommandFactory
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly ContextRegistry $contextRegistry,
         private readonly Slugger $slugger,
+        private readonly Filesystem $fs,
     ) {
     }
 
@@ -27,6 +29,7 @@ class TaskCommandFactory
             $this->eventDispatcher,
             $this->contextRegistry,
             $this->slugger,
+            $this->fs,
         );
     }
 }
