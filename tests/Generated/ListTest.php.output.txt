@@ -6,6 +6,7 @@ no-namespace                                                      Task without a
 args:another-args                                                 Dumps all arguments and options, without configuration
 args:args                                                         Dumps all arguments and options, with custom configuration
 args:autocomplete-argument                                        Provides autocomplete for an argument
+args:autocomplete-path                                            Provides autocomplete for a path argument
 args:passthru                                                     Dumps all arguments and options, without configuration nor validation
 assertion:ensure-we-are-in-the-future                             Ensure we are in the future
 assertion:throw-an-exception                                      Throws a Problem exception

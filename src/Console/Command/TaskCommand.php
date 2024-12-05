@@ -5,6 +5,8 @@ namespace Castor\Console\Command;
 use Castor\Attribute\AsArgument;
 use Castor\Attribute\AsCommandArgument;
 use Castor\Attribute\AsOption;
+use Castor\Attribute\AsPathArgument;
+use Castor\Attribute\AsPathOption;
 use Castor\Attribute\AsRawTokens;
 use Castor\Console\Application;
 use Castor\Console\Input\GetRawTokenTrait;
@@ -14,9 +16,11 @@ use Castor\Event\AfterExecuteTaskEvent;
 use Castor\Event\BeforeExecuteTaskEvent;
 use Castor\Exception\FunctionConfigurationException;
 use Castor\ExpressionLanguage;
+use Castor\Helper\PathHelper;
 use Castor\Helper\Slugger;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\SignalableCommandInterface;
+use Symfony\Component\Console\Completion\CompletionInput;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,6 +28,8 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Filesystem\Filesystem;
+use function Castor\context;
 
 /** @internal */
 #[Exclude]
@@ -42,6 +48,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly ContextRegistry $contextRegistry,
         private readonly Slugger $slugger,
+        private readonly Filesystem $fs,
     ) {
         $this->setDescription($taskDescriptor->taskAttribute->description);
         $this->setAliases($taskDescriptor->taskAttribute->aliases);
@@ -244,6 +251,48 @@ class TaskCommand extends Command implements SignalableCommandInterface
      */
     private function getSuggestedValues(AsArgument|AsOption $attribute): array|\Closure
     {
+        if ($attribute instanceof AsPathArgument || $attribute instanceof AsPathOption) {
+            return \Closure::fromCallable(function (CompletionInput $input) {
+                $value = $input->getCompletionValue();
+
+                // If no value is typed, we suggest items in the root directory
+                if (!$value || '.' === $value) {
+                    return $this->getPathSuggestions(PathHelper::getRoot(), '');
+                }
+
+                $path = $value;
+
+                // If the currently typed value is not an absolute path, we will suggest items in the root directory
+                if (!$this->fs->isAbsolutePath($value)) {
+                    $path = PathHelper::getRoot() . DIRECTORY_SEPARATOR . $value;
+                }
+
+                // If the typed value exists and is a directory, we will suggest items in that directory
+                if ($this->fs->exists($path) && is_dir($path) && is_readable($path) && !str_ends_with($value, '.')) {
+                    return $this->getPathSuggestions($path, rtrim($value, '/\\') . DIRECTORY_SEPARATOR);
+                }
+
+                $parentDir = dirname($path);
+
+                // If the "parent directory" of the currently typed value does not exist, there is nothing to suggest
+                if (!$this->fs->exists($parentDir) || !is_dir($parentDir) || !is_readable($parentDir)) {
+                    return [];
+                }
+
+                // If the user typed "foo/b":
+                // - $value will be "foo/b"
+                // - $path wil be "/path/to/castor/project/foo/b"
+                // - $parentDir will be "/path/to/castor/project/foo"
+                //
+                // So we want to:
+                // - suggest items in the $parentDir directory
+                // - but items should be relative to typed value and start with "foo/"
+                $baseValue = mb_substr($value, 0, 1 + mb_strlen($value) - mb_strlen(str_replace($parentDir, '', $path)));
+
+                return $this->getPathSuggestions($parentDir, $baseValue);
+            });
+        }
+
         if ($attribute->suggestedValues && !\in_array('_complete', $_SERVER['argv'], true)) {
             // Only trigger deprecation when not in completion mode
             trigger_deprecation('jolicode/castor', '0.18', \sprintf('The "suggestedValues" property of attribute "%s" is deprecated, use "autocomplete" property instead.', self::class));
@@ -267,5 +316,25 @@ class TaskCommand extends Command implements SignalableCommandInterface
         }
 
         return \Closure::fromCallable($attribute->autocomplete);
+    }
+
+    /**
+     * @return array<string>
+     */
+    private function getPathSuggestions(string $path, string $baseValue): array
+    {
+        $items = scandir($path);
+
+        if (false === $items) {
+            return [];
+        }
+
+        return array_map(
+            fn (string $item) => $baseValue . $item,
+            array_filter(
+                $items,
+                fn (string $suggestion) => '.' !== $suggestion && '..' !== $suggestion,
+            ),
+        );
     }
 }

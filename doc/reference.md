@@ -78,6 +78,8 @@ Castor provides the following attributes to register tasks, listener, etc:
 - [`AsContextGenerator`](going-further/interacting-with-castor/advanced-context.md#the-ascontextgenerator-attribute)
 - [`AsListener`](going-further/extending-castor/events.md#registering-a-listener)
 - [`AsOption`](getting-started/arguments.md#overriding-the-option-name-and-description)
+- [`AsPathArgument`](getting-started/arguments.md#path-arguments-and-options)
+- [`AsPathOption`](getting-started/arguments.md#path-arguments-and-options)
 - [`AsRawTokens`](getting-started/arguments.md#arguments-without-configuration-nor-validation)
 - [`AsSymfonyTask`](going-further/interacting-with-castor/symfony-task.md)
 - [`AsTask`](getting-started/basic-usage.md)

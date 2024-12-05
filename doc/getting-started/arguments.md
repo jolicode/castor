@@ -166,3 +166,32 @@ command has been forced
 Please refer to the [Symfony
 documentation](https://symfony.com/doc/current/console/input.html#using-command-options)
 for more information.
+
+## Path arguments and options
+
+In some cases, you may want the user to provide a path in an argument or an option.
+In order to ease the use of paths for users, Castor provides the `AsPathArgument`
+and `AsPathOption` attributes alternatives to `AsArgument` and `AsOption`.
+
+When using `AsPathArgument` or `AsPathOption`, the argument or option will be
+autocompleted with suggestions of paths.
+
+```php
+use Castor\Attribute\AsOption;
+use Castor\Attribute\AsTask;
+
+use function Castor\run;
+#[AsTask()]
+function command(
+    #[AsPathArgument()]
+    string $argument,
+): void {
+}
+```
+
+```bash
+$ castor command /var/www/[TAB]
+/var/www/foo  /var/www/bar  /var/www/baz
+```
+
+See the [autocompletion documentation](../going-further/interacting-with-castor/autocomplete.md) for more information about completion.
