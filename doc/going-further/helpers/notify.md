@@ -1,7 +1,7 @@
-# Notification
+# Desktop notification
 
 Castor uses the [JoliNotif](https://github.com/jolicode/jolinotif) library to
-display notifications.
+display desktop notifications.
 
 ## The `notify()` function
 
@@ -22,7 +22,7 @@ function notify()
 ## Notify with `run()`
 
 You can use the `withNotify` method of the `Context` object to display a
-notification when a command has been executed:
+desktop notification when a command has been executed:
 
 ```php
 use Castor\Attribute\AsTask;
@@ -93,7 +93,7 @@ function notify()
 
 Finally, you can set the `notify` property in the context to `true` to enable notifications globally:
 
-In that case, any call to the `notify()` function will display a notification. (user or Castor generated notifications)
+In that case, any call to the `notify()` function will display a desktop notification (user or Castor generated notifications).
 
 ```php
 use Castor\Attribute\AsTask;
