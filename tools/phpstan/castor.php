@@ -16,7 +16,7 @@ function phpstan(bool $generateBaseline = false): int
     }
 
     $command = [
-        __DIR__ . '/vendor/bin/phpstan', '-v',
+        __DIR__ . '/vendor/bin/phpstan', '-v', '--memory-limit=512M',
     ];
 
     if ($generateBaseline) {
