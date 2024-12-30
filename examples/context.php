@@ -99,7 +99,7 @@ function contextFromPath(): Context
 }
 
 #[AsTask(description: 'Displays information about the context', name: 'context')]
-function contextInfo(): void
+function contextInfo(bool $test = false): void
 {
     $context = context();
     io()->writeln('context name: ' . variable('name', 'N/A'));
