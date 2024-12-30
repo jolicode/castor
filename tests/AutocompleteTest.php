@@ -67,19 +67,19 @@ class AutocompleteTest extends TaskTestCase
 
         $suggestions = $tester->complete($input);
 
-        $message = sprintf('%s - Suggestions: %s',
+        $message = \sprintf('%s - Suggestions: %s',
             (new \ReflectionFunction($function))->getName(),
             implode(', ', $suggestions)
         );
 
         if ($exactExpectations) {
-            $this->assertCount(count($expectedItems), $suggestions, $message);
+            $this->assertCount(\count($expectedItems), $suggestions, $message);
             $this->assertSame($expectedItems, $suggestions, $message);
 
             return;
         }
 
-        $this->assertCount(count($expectedItems), array_intersect($suggestions, $expectedItems), $message);
+        $this->assertCount(\count($expectedItems), array_intersect($suggestions, $expectedItems), $message);
     }
 
     public function providePathCompletionTests(): \Generator

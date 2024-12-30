@@ -29,7 +29,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use function Castor\context;
 
 /** @internal */
 #[Exclude]
@@ -264,15 +263,15 @@ class TaskCommand extends Command implements SignalableCommandInterface
 
                 // If the currently typed value is not an absolute path, we will suggest items in the root directory
                 if (!$this->fs->isAbsolutePath($value)) {
-                    $path = PathHelper::getRoot() . DIRECTORY_SEPARATOR . $value;
+                    $path = PathHelper::getRoot() . \DIRECTORY_SEPARATOR . $value;
                 }
 
                 // If the typed value exists and is a directory, we will suggest items in that directory
                 if ($this->fs->exists($path) && is_dir($path) && is_readable($path) && !str_ends_with($value, '.')) {
-                    return $this->getPathSuggestions($path, rtrim($value, '/\\') . DIRECTORY_SEPARATOR);
+                    return $this->getPathSuggestions($path, rtrim($value, '/\\') . \DIRECTORY_SEPARATOR);
                 }
 
-                $parentDir = dirname($path);
+                $parentDir = \dirname($path);
 
                 // If the "parent directory" of the currently typed value does not exist, there is nothing to suggest
                 if (!$this->fs->exists($parentDir) || !is_dir($parentDir) || !is_readable($parentDir)) {
