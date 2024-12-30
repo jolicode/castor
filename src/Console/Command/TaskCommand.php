@@ -330,7 +330,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
         }
 
         return array_map(
-            fn (string $item) => $baseValue . $item,
+            fn (string $item) => $baseValue . $item . (is_dir($baseValue . $item) ? DIRECTORY_SEPARATOR : ''),
             array_filter(
                 $items,
                 fn (string $suggestion) => '.' !== $suggestion && '..' !== $suggestion,
