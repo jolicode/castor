@@ -16,6 +16,16 @@ parameters:
 			path: examples/assertion.php
 
 		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/Console/Application.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: src/Console/Application.php
+
+		-
 			message: "#^Class RepackedApplication not found\\.$#"
 			count: 1
 			path: src/Console/ApplicationFactory.php

@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+* Allows repack without Castor logo e.g. `castor repack --no-logo`
+
 ## 0.24.0 (2025-04-25)
 
 ### Features

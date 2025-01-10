@@ -33,6 +33,7 @@ class RepackCommand extends Command
             ->addOption('app-name', null, InputOption::VALUE_REQUIRED, 'The name of the phar application', 'my-app')
             ->addOption('app-version', null, InputOption::VALUE_REQUIRED, 'The version of the phar application', '1.0.0')
             ->addOption('os', null, InputOption::VALUE_REQUIRED, 'The targeted OS', 'linux', ['linux', 'darwin', 'windows'])
+            ->addOption('no-logo', null, InputOption::VALUE_NONE, 'Hide Castor logo')
             ->setHidden(true)
         ;
     }
@@ -68,6 +69,7 @@ class RepackCommand extends Command
 
         $appName = $input->getOption('app-name');
         $appVersion = $input->getOption('app-version');
+        $hideLogo = (int) $input->getOption('no-logo');
         $alias = 'alias.phar';
         $main = <<<PHP
             <?php
@@ -82,6 +84,7 @@ class RepackCommand extends Command
                 const NAME = '{$appName}';
                 const VERSION = '{$appVersion}';
                 const ROOT_DIR = 'phar://{$alias}';
+                const HIDE_LOGO = {$hideLogo};
             }
 
             ApplicationFactory::create()->run();
