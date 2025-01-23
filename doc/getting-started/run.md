@@ -30,12 +30,13 @@ you can use the API of this class to interact with the underlying process:
 ```php
 use Castor\Attribute\AsTask;
 
+use function Castor\context;
 use function Castor\run;
 
 #[AsTask()]
 function foo(): void
 {
-    $process = run('my-script.sh');
+    $process = run('my-script.sh', context: context()->withAllowFailure());
     $process->isSuccessful(); // will return true if the process exited with code 0.
 }
 ```
