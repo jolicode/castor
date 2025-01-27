@@ -99,6 +99,8 @@ class ContextRegistry
             throw new FunctionConfigurationException(\sprintf('The context generator must return an instance of "%s", "%s" returned.', Context::class, get_debug_type($context)), $this->descriptors[$name]->function);
         }
 
+        $context = $context->withName($name);
+
         $event = new ContextCreatedEvent($name, $context);
         $this->eventDispatcher->dispatch($event);
 
