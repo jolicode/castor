@@ -29,7 +29,10 @@ class Context implements \ArrayAccess
         public readonly bool $allowFailure = false,
         public readonly ?bool $notify = null,
         public readonly VerbosityLevel|LegacyVerbosityLevel $verbosityLevel = VerbosityLevel::NOT_CONFIGURED,
-        // Do not use this argument, it is only used internally by the application
+        /**
+         * @internal
+         * Do not use this argument, it is only used internally by the application
+         */
         public readonly string $name = '',
         public readonly string $notificationTitle = '',
         public readonly array $verboseArguments = [],
@@ -270,6 +273,10 @@ class Context implements \ArrayAccess
         );
     }
 
+    /**
+     * @internal
+     * Do not use this method, it is only used internally by the application
+     */
     public function withName(string $name): self
     {
         return new self(
