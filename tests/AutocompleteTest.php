@@ -67,19 +67,19 @@ class AutocompleteTest extends TaskTestCase
 
         $suggestions = $tester->complete($input);
 
-        $message = sprintf('%s - Suggestions: %s',
+        $message = \sprintf('%s - Suggestions: %s',
             (new \ReflectionFunction($function))->getName(),
             implode(', ', $suggestions)
         );
 
         if ($exactExpectations) {
-            $this->assertCount(count($expectedItems), $suggestions, $message);
+            $this->assertCount(\count($expectedItems), $suggestions, $message);
             $this->assertSame($expectedItems, $suggestions, $message);
 
             return;
         }
 
-        $this->assertCount(count($expectedItems), array_intersect($suggestions, $expectedItems), $message);
+        $this->assertCount(\count($expectedItems), array_intersect($suggestions, $expectedItems), $message);
     }
 
     public function providePathCompletionTests(): \Generator
@@ -91,33 +91,33 @@ class AutocompleteTest extends TaskTestCase
         $fs->mkdir($tmpDir . '/bar');
         $fs->touch($tmpDir . '/foo/baz.txt');
 
-        yield [task_with_path_argument(...), [''], ['bin', 'doc', 'src', 'tools']];
-        yield [task_with_path_argument(...), ['.'], ['bin', 'doc', 'src', 'tools']];
-        yield [task_with_path_argument(...), ['./'], ['./bin', './doc', './src', './tools']];
-        yield [task_with_path_argument(...), ['b'], ['bin', 'doc', 'src', 'tools']];
+        yield [task_with_path_argument(...), [''], ['bin/', 'doc/', 'src/', 'tools/']];
+        yield [task_with_path_argument(...), ['.'], ['bin/', 'doc/', 'src/', 'tools/']];
+        yield [task_with_path_argument(...), ['./'], ['./bin/', './doc/', './src/', './tools/']];
+        yield [task_with_path_argument(...), ['b'], ['bin/', 'doc/', 'src/', 'tools/']];
         yield [task_with_path_argument(...), ['bin'], ['bin/castor']];
         yield [task_with_path_argument(...), ['bin/'], ['bin/castor']];
         yield [task_with_path_argument(...), ['yolooooooooo'], []];
         yield [task_with_path_argument(...), ['yolooooooooo/'], []];
-        yield [task_with_path_argument(...), [$tmpDir], [$tmpDir . '/bar', $tmpDir . '/foo'], true];
-        yield [task_with_path_argument(...), [$tmpDir . '/'], [$tmpDir . '/bar', $tmpDir . '/foo'], true];
-        yield [task_with_path_argument(...), [$tmpDir . '/.'], [$tmpDir . '/bar', $tmpDir . '/foo'], true];
-        yield [task_with_path_argument(...), [$tmpDir . '/./'], [$tmpDir . '/./bar', $tmpDir . '/./foo'], true];
-        yield [task_with_path_argument(...), [$tmpDir . '/f'], [$tmpDir . '/bar', $tmpDir . '/foo'], true];
+        yield [task_with_path_argument(...), [$tmpDir], [$tmpDir . '/bar/', $tmpDir . '/foo/'], true];
+        yield [task_with_path_argument(...), [$tmpDir . '/'], [$tmpDir . '/bar/', $tmpDir . '/foo/'], true];
+        yield [task_with_path_argument(...), [$tmpDir . '/.'], [$tmpDir . '/bar/', $tmpDir . '/foo/'], true];
+        yield [task_with_path_argument(...), [$tmpDir . '/./'], [$tmpDir . '/./bar/', $tmpDir . '/./foo/'], true];
+        yield [task_with_path_argument(...), [$tmpDir . '/f'], [$tmpDir . '/bar/', $tmpDir . '/foo/'], true];
 
-        yield [task_with_path_option(...), ['--option'], ['bin', 'doc', 'src', 'tools']];
-        yield [task_with_path_option(...), ['--option', '.'], ['bin', 'doc', 'src', 'tools']];
-        yield [task_with_path_option(...), ['--option', './'], ['./bin', './doc', './src', './tools']];
-        yield [task_with_path_option(...), ['--option', 'b'], ['bin', 'doc', 'src', 'tools']];
+        yield [task_with_path_option(...), ['--option'], ['bin/', 'doc/', 'src/', 'tools/']];
+        yield [task_with_path_option(...), ['--option', '.'], ['bin/', 'doc/', 'src/', 'tools/']];
+        yield [task_with_path_option(...), ['--option', './'], ['./bin/', './doc/', './src/', './tools/']];
+        yield [task_with_path_option(...), ['--option', 'b'], ['bin/', 'doc/', 'src/', 'tools/']];
         yield [task_with_path_option(...), ['--option', 'bin'], ['bin/castor']];
         yield [task_with_path_option(...), ['--option', 'bin/'], ['bin/castor']];
         yield [task_with_path_option(...), ['--option', 'yolooooooooo'], []];
         yield [task_with_path_option(...), ['--option', 'yolooooooooo/'], []];
-        yield [task_with_path_option(...), ['--option', $tmpDir], [$tmpDir . '/bar', $tmpDir . '/foo'], true];
-        yield [task_with_path_option(...), ['--option', $tmpDir . '/'], [$tmpDir . '/bar', $tmpDir . '/foo'], true];
-        yield [task_with_path_option(...), ['--option', $tmpDir . '/.'], [$tmpDir . '/bar', $tmpDir . '/foo'], true];
-        yield [task_with_path_option(...), ['--option', $tmpDir . '/./'], [$tmpDir . '/./bar', $tmpDir . '/./foo'], true];
-        yield [task_with_path_option(...), ['--option', $tmpDir . '/f'], [$tmpDir . '/bar', $tmpDir . '/foo'], true];
+        yield [task_with_path_option(...), ['--option', $tmpDir], [$tmpDir . '/bar/', $tmpDir . '/foo/'], true];
+        yield [task_with_path_option(...), ['--option', $tmpDir . '/'], [$tmpDir . '/bar/', $tmpDir . '/foo/'], true];
+        yield [task_with_path_option(...), ['--option', $tmpDir . '/.'], [$tmpDir . '/bar/', $tmpDir . '/foo/'], true];
+        yield [task_with_path_option(...), ['--option', $tmpDir . '/./'], [$tmpDir . '/./bar/', $tmpDir . '/./foo/'], true];
+        yield [task_with_path_option(...), ['--option', $tmpDir . '/f'], [$tmpDir . '/bar/', $tmpDir . '/foo/'], true];
     }
 }
 

@@ -2,6 +2,12 @@
 
 ## Not released yet
 
+### Fixes
+
+* Fix context name when getting it from the registry
+
+## 0.22.0 (2024-12-30)
+
 ### Features
 
 * Add `encrypt_with_password()`, `decrypt_with_password()`,

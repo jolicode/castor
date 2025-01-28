@@ -30,15 +30,21 @@ you can use the API of this class to interact with the underlying process:
 ```php
 use Castor\Attribute\AsTask;
 
+use function Castor\context;
 use function Castor\run;
 
 #[AsTask()]
 function foo(): void
 {
-    $process = run('my-script.sh');
+    $process = run('my-script.sh', context: context()->withAllowFailure());
     $process->isSuccessful(); // will return true if the process exited with code 0.
 }
 ```
+
+> [!NOTE]
+> Without the allowFailure option, Castor would throw an exception if the process
+> execution failed. See [this documentation](context.md#failure) for more
+> information about failure handling.
 
 > [!TIP]
 > Related example: [run.php](https://github.com/jolicode/castor/blob/main/examples/run.php)

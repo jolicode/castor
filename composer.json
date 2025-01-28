@@ -34,28 +34,28 @@
     },
     "require": {
         "php": ">=8.1",
-        "composer/composer": "^2.8.3",
+        "composer/composer": "^2.8.4",
         "jolicode/jolinotif": "^3.0.0",
         "jolicode/php-os-helper": "^0.1.0",
-        "monolog/monolog": "^3.8",
-        "nikic/php-parser": "^v5.3.1",
+        "monolog/monolog": "^3.8.1",
+        "nikic/php-parser": "^5.4.0",
         "phpstan/phpdoc-parser": "^1.33",
-        "spatie/ssh": "^1.12.0",
-        "symfony/cache": "^6.4.14",
+        "spatie/ssh": "^1.13.0",
+        "symfony/cache": "^6.4.16",
         "symfony/config": "^6.4.14",
         "symfony/console": "^6.4.15",
-        "symfony/dependency-injection": "^6.4.15",
-        "symfony/deprecation-contracts": "^3.5",
-        "symfony/dotenv": "^6.4.13",
+        "symfony/dependency-injection": "^6.4.16",
+        "symfony/deprecation-contracts": "^3.5.1",
+        "symfony/dotenv": "^6.4.16",
         "symfony/error-handler": "^6.4.14",
         "symfony/expression-language": "^6.4.13",
         "symfony/filesystem": "^6.4.13",
         "symfony/finder": "^6.4.13",
-        "symfony/http-client": "^6.4.15",
+        "symfony/http-client": "^6.4.16",
         "symfony/monolog-bridge": "^6.4.13",
         "symfony/process": "^6.4.15",
         "symfony/string": "^6.4.15",
-        "symfony/translation-contracts": "^3.5.0",
+        "symfony/translation-contracts": "^3.5.1",
         "symfony/var-dumper": "^6.4.15",
         "symfony/yaml": "^6.4.13"
     },
@@ -75,6 +75,6 @@
     },
     "require-dev": {
         "phpunit/php-code-coverage": "^9.2.32",
-        "symfony/phpunit-bridge": "^6.4.13"
+        "symfony/phpunit-bridge": "^6.4.16"
     }
 }
