@@ -125,17 +125,15 @@ final class Kernel
 
         $this->functionLoader->loadListeners($descriptorsCollection->listenerDescriptors);
 
-        $taskCommand = null;
-        foreach ($descriptorsCollection->taskDescriptors as $taskDescriptor) {
-            $namespace = $taskDescriptor->taskAttribute->namespace;
-            $taskName = $taskDescriptor->taskAttribute->name;
-            $fullTaskName = $namespace ? $namespace . ':' . $taskName : $taskName;
-            if ($fullTaskName === $input->getFirstArgument()) {
-                $taskCommand = $this->taskCommandFactory->createTask($taskDescriptor);
-
-                break;
-            }
-        }
+        /**
+         * Resolve the current task command before loading and configuring contexts.
+         * This is necessary because the task command can add options to the application.
+         * If we do not add these options before configuring the context,
+         * binding the input to the application definition will fail.
+         *
+         * @see https://github.com/jolicode/castor/issues/593
+         */
+        $taskCommand = $this->resolveCurrentTaskCommand($descriptorsCollection, $input);
 
         $taskDefinition = $taskCommand?->getDefinition();
 
@@ -262,5 +260,23 @@ final class Kernel
         }
 
         $this->contextRegistry->setCurrentContext($context->withName($input->getOption('context')));
+    }
+
+    private function resolveCurrentTaskCommand(DescriptorsCollection $descriptorsCollection, InputInterface $input): ?Console\Command\TaskCommand
+    {
+        $taskCommand = null;
+
+        foreach ($descriptorsCollection->taskDescriptors as $taskDescriptor) {
+            $namespace = $taskDescriptor->taskAttribute->namespace;
+            $taskName = $taskDescriptor->taskAttribute->name;
+            $fullTaskName = $namespace ? $namespace . ':' . $taskName : $taskName;
+            if ($fullTaskName === $input->getFirstArgument()) {
+                $taskCommand = $this->taskCommandFactory->createTask($taskDescriptor);
+
+                break;
+            }
+        }
+
+        return $taskCommand;
     }
 }
