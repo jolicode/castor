@@ -2,9 +2,12 @@
 
 ## Not released yet
 
+## 0.22.1 (2025-01-31)
+
 ### Fixes
 
 * Fix context name when getting it from the registry
+* Fix `--context` option ignored when another option presence
 
 ## 0.22.0 (2024-12-30)
 
