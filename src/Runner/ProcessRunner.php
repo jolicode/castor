@@ -294,7 +294,7 @@ class ProcessRunner
         $runnable = $process->getCommandLine();
 
         foreach ($process->getEnv() as $key => $value) {
-            if ('argv' === $key || 'argc' === $key) {
+            if (null === $value || 'argv' === $key || 'argc' === $key) {
                 continue;
             }
             $runnable = \sprintf('%s=%s %s ', $key, escapeshellarg($value), $runnable);
