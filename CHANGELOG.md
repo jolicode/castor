@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Fixes
+
+* Ignore `null` env variable when running process
+
 ## 0.22.1 (2025-01-31)
 
 ### Fixes

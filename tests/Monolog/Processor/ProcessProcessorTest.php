@@ -17,6 +17,7 @@ class ProcessProcessorTest extends TestCase
             'foo' => 'b\'"`\ar',
             'argc' => 3,
             'argv' => ['/home/foo/.local/bin//castor', 'builder', '-vvv'],
+            'null' => null,
         ]);
         $log = new LogRecord(
             datetime: new \DateTimeImmutable(),
@@ -25,12 +26,7 @@ class ProcessProcessorTest extends TestCase
             message: 'new process',
             context: ['process' => $process],
         );
-        $mock = $this->getMockBuilder(ProcessRunner::class)
-            ->onlyMethods(['buildRunnableCommand'])
-            ->disableOriginalConstructor()
-            ->getMock()
-        ;
-
+        $mock = $this->createPartialMock(ProcessRunner::class, []);
         $processor = new ProcessProcessor($mock);
 
         $this->assertEquals(
@@ -40,8 +36,11 @@ class ProcessProcessorTest extends TestCase
                     'foo' => 'b\'"`\ar',
                     'argc' => 3,
                     'argv' => ['/home/foo/.local/bin//castor', 'builder', '-vvv'],
+                    'null' => null,
                 ],
-                'runnable' => '',
+                'runnable' => <<<'TXT'
+                    foo='b'\''"`\ar' 'ls' '-alh'
+                    TXT,
             ],
             $processor($log)->context['process'],
         );
