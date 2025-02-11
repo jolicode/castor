@@ -124,7 +124,7 @@ use function Castor\run;
 #[AsContext(default: true, name: 'my_context')]
 function create_default_context(): Context
 {
-    return new Context(['foo' => 'bar'], context()->withWorkingDirectory('/tmp'));
+    return new Context(['foo' => 'bar'], workingDirectory: '/tmp');
 }
 
 #[AsTask()]
