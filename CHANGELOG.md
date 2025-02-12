@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Features
+
+* Add `$force` parameter to the `cache()` function to force recomputing the value
+
 ### Fixes
 
 * Ignore `null` env variable when running process

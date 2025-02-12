@@ -31,6 +31,15 @@ function foo()
 The `cache()` function prefix the key with a hash of the project directory to
 avoid any collision between different Castor projects.
 
+> [!TIP]
+> To force the cached value to be recomputed, you can pass `true` to the `$force`
+> parameter of the `cache()` function.
+
+```php
+// The expansive_call() function will be called even if the value is already in the cache
+$result = cache('a-key', expansive_call(...), true);
+```
+
 > [!NOTE]
 > Under the hood, Castor use Symfony Cache component. You can check the
 > [Symfony documentation](https://symfony.com/doc/current/components/cache.html)
