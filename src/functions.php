@@ -420,8 +420,9 @@ function finder(): Finder
 }
 
 /**
- * @param string                                                                                      $key The key of the item to retrieve from the cache
- * @param (callable(CacheItemInterface,bool):T)|(callable(ItemInterface,bool):T)|CallbackInterface<T> $or  Use this callback to compute the value
+ * @param string                                                                                      $key   The key of the item to retrieve from the cache
+ * @param (callable(CacheItemInterface,bool):T)|(callable(ItemInterface,bool):T)|CallbackInterface<T> $or    Use this callback to compute the value
+ * @param bool                                                                                        $force Force the value to be recomputed
  *
  * @return T
  *
@@ -429,13 +430,17 @@ function finder(): Finder
  *
  * @template T
  */
-function cache(string $key, callable $or): mixed
+function cache(string $key, callable $or, bool $force = false): mixed
 {
     $key = \sprintf(
         '%s-%s',
         hash('xxh128', PathHelper::getRoot()),
         $key,
     );
+
+    if ($force) {
+        Container::get()->cache->delete($key);
+    }
 
     return Container::get()->cache->get($key, $or);
 }
