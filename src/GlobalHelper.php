@@ -16,7 +16,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-trigger_deprecation('castor/castor', '0.16', 'The "%s" class is deprecated and will be removed in castor 1.0. Use the "%s::getContainer()" instead.', __CLASS__, Application::class);
+trigger_deprecation('castor/castor', '0.16', 'The "%s" class is deprecated and will be removed in castor 1.0. Use the "%s::getContainer()" instead.', GlobalHelper::class, Application::class);
 
 #[Exclude]
 class GlobalHelper

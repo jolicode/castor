@@ -26,7 +26,7 @@ class FingerprintTaskWithAFingerprintTest extends FingerprintedTestCase
 
         file_put_contents($filepath, $withFileContent);
 
-        $process = $this->runTask(['fingerprint:task-with-complete-fingerprint-check']);
+        $process = $this->runTask(['fingerprint:task-with-complete-fingerprint-check'], needResetCache: false);
 
         if (file_exists($expectedOutputFilePath)) {
             $this->assertStringEqualsFile($expectedOutputFilePath, $process->getOutput());

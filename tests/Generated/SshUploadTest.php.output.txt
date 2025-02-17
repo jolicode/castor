@@ -1,6 +1,6 @@
 In ssh.php line XXXX:
 
- [ERROR] The following process did not finish successfully (exit code 255):
+ [ERROR] The following process did not finish successfully (exit code XX):
 
 scp -r .../examples/ssh.php debian@server-1.example.com:/var/www/index.html
 

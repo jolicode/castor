@@ -17,6 +17,10 @@ use function Symfony\Component\String\u;
 
 $_SERVER['ENDPOINT'] ??= 'http://127.0.0.1:9955';
 $_SERVER['CASTOR_CACHE_DIR'] ??= '/tmp/castor-tests/cache';
+if (!$_SERVER['CASTOR_CACHE_DIR']) {
+    throw new RuntimeException('CASTOR_CACHE_DIR is not set or empty.');
+}
+
 WebServerHelper::start();
 
 displayTitle('Cleaning');
@@ -111,7 +115,7 @@ $taskFilterList = [
     'pyrech:hello-example',
     'pyrech:foobar',
 ];
-$optionFilterList = array_flip(['help', 'quiet', 'verbose', 'version', 'ansi', 'no-ansi', 'no-interaction', 'context', 'no-remote', 'update-remotes']);
+$optionFilterList = array_flip(['help', 'quiet', 'verbose', 'silent', 'version', 'ansi', 'no-ansi', 'no-interaction', 'context', 'no-remote', 'update-remotes']);
 
 foreach ($applicationDescription['commands'] as $task) {
     if (in_array($task['name'], $taskFilterList, true)) {
@@ -202,7 +206,7 @@ add_test(['remote-import:remote-task-class'], 'RemoteImportClassWithVendorReset'
 
 echo "\nDone.\n";
 
-function add_test(array $args, string $class, ?string $cwd = null, bool $needRemote = false, bool $skipOnBinary = false, bool $needResetVendor = false, ?string $input = null)
+function add_test(array $args, string $class, ?string $cwd = null, bool $needRemote = false, bool $skipOnBinary = false, bool $needResetVendor = false, bool $needResetCache = true, ?string $input = null)
 {
     $class .= 'Test';
     $fp = fopen(__FILE__, 'r');
@@ -211,8 +215,12 @@ function add_test(array $args, string $class, ?string $cwd = null, bool $needRem
 
     $workingDirectory = $cwd ? str_replace('{{ base }}', __DIR__ . '/..', $cwd) : __DIR__ . '/..';
 
+    $fs = new Filesystem();
     if ($needResetVendor) {
-        (new Filesystem())->remove($workingDirectory . '/.castor/vendor');
+        $fs->remove($workingDirectory . '/.castor/vendor');
+    }
+    if ($needResetCache) {
+        $fs->remove($_SERVER['CASTOR_CACHE_DIR']);
     }
 
     $inputStream = $input ? new InputStream() : null;
@@ -224,6 +232,7 @@ function add_test(array $args, string $class, ?string $cwd = null, bool $needRem
             'ENDPOINT' => $_SERVER['ENDPOINT'],
             'CASTOR_NO_REMOTE' => $needRemote ? 0 : 1,
             'CASTOR_TEST' => 'true',
+            'CASTOR_CACHE_DIR' => $_SERVER['CASTOR_CACHE_DIR'],
         ],
         input: $inputStream,
         timeout: null,
@@ -248,6 +257,7 @@ function add_test(array $args, string $class, ?string $cwd = null, bool $needRem
         '{{ cwd }}' => $cwd ? ', ' . var_export($cwd, true) : '',
         '{{ needRemote }}' => $needRemote ? ', needRemote: true' : '',
         '{{ needResetVendor }}' => $needResetVendor ? ', needResetVendor: true' : '',
+        '{{ needResetCache }}' => $needResetCache ? '' : ', needResetCache: false',
         '{{ input }}' => $input ? ', input: ' . var_export($input, true) : '',
         '{{ skip-on-binary }}' => match ($skipOnBinary) {
             true => <<<'PHP'
@@ -294,7 +304,7 @@ class {{ class_name }} extends TaskTestCase
     // {{ task }}
     public function test(): void
     {{{ skip-on-binary }}
-        $process = $this->runTask([{{ args }}]{{ cwd }}{{ needRemote }}{{ needResetVendor }}{{ input }});
+        $process = $this->runTask([{{ args }}]{{ cwd }}{{ needRemote }}{{ needResetVendor }}{{ needResetCache }}{{ input }});
 
         if ({{ exitCode }} !== $process->getExitCode()) {
             throw new ProcessFailedException($process);

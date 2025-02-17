@@ -151,7 +151,7 @@ class Composer
     }
 
     /**
-     * @param string[] $args
+     * @param list<string> $args
      */
     public function run(string $composerJsonFilePath, string $vendorDirectory, array $args, callable|OutputInterface $callback, bool $interactive = false): void
     {

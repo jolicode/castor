@@ -21,10 +21,13 @@ abstract class TaskTestCase extends TestCase
 
         self::$castorBin = $_SERVER['CASTOR_BIN'] ?? __DIR__ . '/../bin/castor';
         self::$castorCacheDir = $_SERVER['CASTOR_CACHE_DIR'] ?? '/tmp/castor-tests/cache';
+        if (!self::$castorCacheDir) {
+            throw new \RuntimeException('CASTOR_CACHE_DIR is not set or empty.');
+        }
         self::$binary = 'application/x-executable' === mime_content_type(self::$castorBin);
     }
 
-    public function runTask(array $args, ?string $cwd = null, bool $needRemote = false, bool $needResetVendor = false, ?string $input = null): Process
+    public function runTask(array $args, ?string $cwd = null, bool $needRemote = false, bool $needResetVendor = false, bool $needResetCache = true, ?string $input = null): Process
     {
         $coverage = $this->getTestResultObject()?->getCodeCoverage();
 
@@ -48,8 +51,12 @@ abstract class TaskTestCase extends TestCase
 
         $workingDirectory = $cwd ? str_replace('{{ base }}', __DIR__ . '/..', $cwd) : __DIR__ . '/..';
 
+        $fs = new Filesystem();
+        if ($needResetCache) {
+            $fs->remove(self::$castorCacheDir);
+        }
         if ($needResetVendor) {
-            (new Filesystem())->remove($workingDirectory . '/.castor/vendor');
+            $fs->remove($workingDirectory . '/.castor/vendor');
         }
 
         $inputStream = $input ? new InputStream() : null;

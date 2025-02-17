@@ -10,6 +10,12 @@
 
 * Ignore `null` env variable when running process
 
+### Internal
+
+* Update all PHP vendor
+* Use Symfony 7.x
+* Drop support for PHP 8.1
+
 ## 0.22.1 (2025-01-31)
 
 ### Fixes

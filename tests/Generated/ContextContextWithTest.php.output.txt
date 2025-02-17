@@ -1,6 +1,6 @@
 context name: dynamic
 Production? no
-verbosity: -1
+verbosity: -10
 context: bar
 nested merge recursive: []
 bar

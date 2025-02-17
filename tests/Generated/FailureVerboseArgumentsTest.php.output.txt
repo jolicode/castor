@@ -3,7 +3,7 @@ bash: line 1: i_do_not_exist: command not found
  Do you want to retry the command with verbose arguments? (yes/no) [no]:
  > In failure.php line XXXX:
 
- [ERROR] The following process did not finish successfully (exit code 127):
+ [ERROR] The following process did not finish successfully (exit code XX):
 
 bash -c i_do_not_exist
 

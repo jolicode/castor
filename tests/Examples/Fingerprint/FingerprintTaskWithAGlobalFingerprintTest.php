@@ -26,7 +26,7 @@ class FingerprintTaskWithAGlobalFingerprintTest extends FingerprintedTestCase
 
         file_put_contents($filepath, $withFileContent);
 
-        $process = $this->runTask(['fingerprint:task-with-a-fingerprint-global']);
+        $process = $this->runTask(['fingerprint:task-with-a-fingerprint-global'], needResetCache: false);
 
         if (file_exists($expectedOutputFilePath)) {
             $this->assertStringEqualsFile($expectedOutputFilePath, $process->getOutput());

@@ -15,9 +15,9 @@ class FingerprintTaskWithAFingerprintAndForceTest extends FingerprintedTestCase
 
         file_put_contents($filepath, 'Hello');
 
-        $processFirstRun = $this->runTask(['fingerprint:task-with-a-fingerprint-and-force']);
-        $processSecondRun = $this->runTask(['fingerprint:task-with-a-fingerprint-and-force', '--force']);
-        $processThirdRun = $this->runTask(['fingerprint:task-with-a-fingerprint-and-force']);
+        $processFirstRun = $this->runTask(['fingerprint:task-with-a-fingerprint-and-force'], needResetCache: false);
+        $processSecondRun = $this->runTask(['fingerprint:task-with-a-fingerprint-and-force', '--force'], needResetCache: false);
+        $processThirdRun = $this->runTask(['fingerprint:task-with-a-fingerprint-and-force'], needResetCache: false);
 
         $this->assertStringEqualsFile(__FILE__ . '.output_runnable.txt', $processFirstRun->getOutput());
         $this->assertStringEqualsFile(__FILE__ . '.output_runnable.txt', $processSecondRun->getOutput());
@@ -25,7 +25,7 @@ class FingerprintTaskWithAFingerprintAndForceTest extends FingerprintedTestCase
 
         file_put_contents($filepath, 'Hello World');
         // If we don't force, it should re-run the task
-        $processFourthRun = $this->runTask(['fingerprint:task-with-a-fingerprint-and-force']);
+        $processFourthRun = $this->runTask(['fingerprint:task-with-a-fingerprint-and-force'], needResetCache: false);
         $this->assertStringEqualsFile(__FILE__ . '.output_runnable.txt', $processFourthRun->getOutput());
 
         foreach ([$processFirstRun, $processSecondRun, $processThirdRun, $processFourthRun] as $process) {

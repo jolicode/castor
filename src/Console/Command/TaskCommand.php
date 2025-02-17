@@ -187,6 +187,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
 
         try {
             $function = $this->taskDescriptor->function->getClosure();
+            // @phpstan-ignore function.alreadyNarrowedType
             if (!\is_callable($function)) {
                 throw new \LogicException('The function is not a callable.');
             }
@@ -329,7 +330,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
         }
 
         return array_map(
-            fn (string $item) => $baseValue . $item . (is_dir($baseValue . $item) ? DIRECTORY_SEPARATOR : ''),
+            fn (string $item) => $baseValue . $item . (is_dir($baseValue . $item) ? \DIRECTORY_SEPARATOR : ''),
             array_filter(
                 $items,
                 fn (string $suggestion) => '.' !== $suggestion && '..' !== $suggestion,
