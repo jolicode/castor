@@ -4,19 +4,54 @@ description: 'Builds phars for all systems'
 runs:
   using: "composite"
   steps:
-    - name: Build Castor phar for Linux
+    - name: Build Castor phar for Linux (linux-amd64 + linux-arm64)
       run: bin/castor castor:phar:linux
       shell: bash
 
-    - name: Build Castor phar for Darwin
+    - name: Ensure phar is OK (linux-amd64)
+      run: |
+        set -e
+        build/castor.linux-amd64.phar --version
+        build/castor.linux-amd64.phar debug
+      shell: bash
+      working-directory: tools/phar
+
+    - name: Ensure phar is OK (linux-arm64)
+      run: |
+        set -e
+        build/castor.linux-arm64.phar --version
+        build/castor.linux-arm64.phar debug
+      shell: bash
+      working-directory: tools/phar
+
+    - name: Build Castor phar for Darwin (darwin-amd64 + darwin-arm64)
       run: bin/castor castor:phar:darwin
       shell: bash
 
-    - name: Build Castor phar for Windows
+    - name: Ensure phar is OK (darwin-amd64)
+      run: |
+        set -e
+        build/castor.darwin-amd64.phar --version
+        build/castor.darwin-amd64.phar debug
+      shell: bash
+      working-directory: tools/phar
+
+    - name: Ensure phar is OK (darwin-arm64)
+      run: |
+        set -e
+        build/castor.darwin-arm64.phar --version
+        build/castor.darwin-arm64.phar debug
+      shell: bash
+      working-directory: tools/phar
+
+    - name: Build Castor phar for Windows (windows-amd64)
       run: bin/castor castor:phar:windows
       shell: bash
 
-    - name: Ensure phar is OK
-      run: build/castor.linux-amd64.phar --version
+    - name: Ensure phar is OK (windows-amd64)
+      run: |
+        set -e
+        build/castor.windows-amd64.phar --version
+        build/castor.windows-amd64.phar debug
       shell: bash
       working-directory: tools/phar
