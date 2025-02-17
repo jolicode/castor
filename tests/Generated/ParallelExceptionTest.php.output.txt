@@ -1,6 +1,6 @@
 In parallel.php line XXXX:
 
- [ERROR] The following process did not finish successfully (exit code 1):
+ [ERROR] The following process did not finish successfully (exit code XX):
 
 exit 1
 

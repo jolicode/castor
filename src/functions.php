@@ -817,6 +817,8 @@ function wait_for_docker_container(
 
 /**
  * @see Yaml::parse()
+ *
+ * @param int-mask-of<Yaml::PARSE_*> $flags A bit field of DUMP_* constants to customize the dumped YAML string
  */
 function yaml_parse(string $content, int $flags = 0): mixed
 {
@@ -825,6 +827,8 @@ function yaml_parse(string $content, int $flags = 0): mixed
 
 /**
  * @see Yaml::dump()
+ *
+ * @param int-mask-of<Yaml::DUMP_*> $flags A bit field of DUMP_* constants to customize the dumped YAML string
  */
 function yaml_dump(mixed $input, int $inline = 2, int $indent = 4, int $flags = 0): string
 {

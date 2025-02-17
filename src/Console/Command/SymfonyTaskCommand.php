@@ -24,6 +24,7 @@ class SymfonyTaskCommand extends Command
         '--quiet',
         '--verbose',
         '--version',
+        '--silent',
         '--ansi',
         '--no-ansi',
         '--no-interaction',

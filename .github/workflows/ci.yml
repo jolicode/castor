@@ -59,22 +59,18 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - php: "8.1"
-            castor:
-              bin: 'bin/castor'
-              method: 'bin/castor'
-          - php: "8.1"
-            castor:
-              bin: 'tools/phar/build/castor.linux-amd64.phar'
-              method: 'phar'
-          - php: "8.1"
-            castor:
-              bin: 'castor'
-              method: 'static'
           - php: "8.2"
             castor:
               bin: 'bin/castor'
               method: 'bin/castor'
+          - php: "8.2"
+            castor:
+              bin: 'tools/phar/build/castor.linux-amd64.phar'
+              method: 'phar'
+          - php: "8.2"
+            castor:
+              bin: 'castor'
+              method: 'static'
           - php: "8.3"
             castor:
               bin: 'bin/castor'

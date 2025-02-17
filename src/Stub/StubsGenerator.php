@@ -14,6 +14,7 @@ use PHPStan\PhpDocParser\Lexer\Lexer;
 use PHPStan\PhpDocParser\Parser\ConstExprParser;
 use PHPStan\PhpDocParser\Parser\PhpDocParser;
 use PHPStan\PhpDocParser\Parser\TypeParser;
+use PHPStan\PhpDocParser\ParserConfig;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Finder\Finder;
@@ -158,13 +159,14 @@ final class StubsGenerator
 
         $nameResolver = new NameResolver();
 
-        $lexer = new Lexer();
-        $constExprParser = new ConstExprParser();
-        $typeParser = new TypeParser($constExprParser);
-        $phpDocParser = new PhpDocParser($typeParser, $constExprParser, usedAttributes: [
+        $parserConfig = new ParserConfig([
             'lines' => true,
             'indexes' => true,
         ]);
+        $lexer = new Lexer($parserConfig);
+        $constExprParser = new ConstExprParser($parserConfig);
+        $typeParser = new TypeParser($parserConfig, $constExprParser);
+        $phpDocParser = new PhpDocParser($parserConfig, $typeParser, $constExprParser);
 
         $phpDocNodeTraverser = new PhpDocNodeTraverser([new PhpDocNodeVisitor($nameResolver)]);
 

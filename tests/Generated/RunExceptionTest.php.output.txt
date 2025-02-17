@@ -1,7 +1,7 @@
 Re-run with -v, -vv, -vvv for different output.
 In run.php line XXXX:
 
- [ERROR] The following process did not finish successfully (exit code 1):
+ [ERROR] The following process did not finish successfully (exit code XX):
 
 foo='bar' echo $foo; echo bar>&2; exit 1
 

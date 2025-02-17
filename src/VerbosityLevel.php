@@ -11,7 +11,8 @@ trigger_deprecation('castor/console', '0.15', 'The "%s" enum is deprecated and w
  */
 enum VerbosityLevel: int
 {
-    case NOT_CONFIGURED = -1;
+    case NOT_CONFIGURED = -10;
+    case SILENT = -1;
     case QUIET = 0;
     case NORMAL = 1;
     case VERBOSE = 2;
@@ -21,6 +22,7 @@ enum VerbosityLevel: int
     public static function fromSymfonyOutput(OutputInterface $output): self
     {
         return match ($output->getVerbosity()) {
+            OutputInterface::VERBOSITY_SILENT => self::SILENT,
             OutputInterface::VERBOSITY_QUIET => self::QUIET,
             OutputInterface::VERBOSITY_NORMAL => self::NORMAL,
             OutputInterface::VERBOSITY_VERBOSE => self::VERBOSE,

@@ -5,7 +5,7 @@ inputs:
   php-version:
     description: 'The PHP version to use'
     required: true
-    default: '8.1'
+    default: '8.2'
   composer-flags:
     description: 'Install dev dependencies'
     required: false

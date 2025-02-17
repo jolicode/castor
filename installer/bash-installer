@@ -107,10 +107,10 @@ else
     exit 1
 fi
 
-if [[ "1" == "$(php -r 'echo version_compare(PHP_VERSION, "8.1", ">=");')" ]]; then
+if [[ "1" == "$(php -r 'echo version_compare(PHP_VERSION, "8.2", ">=");')" ]]; then
     output "  [*] PHP version: $(php -r 'echo PHP_VERSION;')" "success"
 else
-    output "  [ ] ERROR: PHP version $(php -r 'echo PHP_VERSION;') is not 8.1 or greater" "error"
+    output "  [ ] ERROR: PHP version $(php -r 'echo PHP_VERSION;') is not 8.2 or greater" "error"
     exit 1
 fi
 

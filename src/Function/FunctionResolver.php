@@ -132,6 +132,7 @@ final class FunctionResolver
         }
 
         foreach ($taskAttribute->onSignals as $signal => $callable) {
+            // @phpstan-ignore function.alreadyNarrowedType
             if (!\is_callable($callable)) {
                 throw new FunctionConfigurationException(\sprintf('The callable for signal "%s" is not callable.', $signal), $reflectionFunction);
             }

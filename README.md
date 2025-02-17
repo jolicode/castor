@@ -89,7 +89,7 @@ watch [some examples](https://castor.jolicode.com/examples/).
 ### With the installer
 
 > [!TIP]
-> This is the recommended way to install Castor on Linux and macOS. It requires PHP >= 8.1.
+> This is the recommended way to install Castor on Linux and macOS. It requires PHP >= 8.2.
 
 ```bash
 curl "https://castor.jolicode.com/install" | bash

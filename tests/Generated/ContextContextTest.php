@@ -10,7 +10,7 @@ class ContextContextTest extends TaskTestCase
     // context:context
     public function test(): void
     {
-        $process = $this->runTask(['context:context']);
+        $process = $this->runTask(['context:context', '--test']);
 
         if (0 !== $process->getExitCode()) {
             throw new ProcessFailedException($process);
