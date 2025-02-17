@@ -10,32 +10,41 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Build Castor static binary for Linux
+    - name: Build Castor static binary for Linux (linux-amd64)
       run: bin/castor castor:static:linux
       shell: bash
       if: ${{ inputs.os == 'linux' }}
 
-    - name: Ensure Linux binary is OK
-      run: ./castor.linux-amd64 --version
+    - name: Ensure binary is OK (linux-amd64)
+      run: |
+        set -e
+        ./castor.linux-amd64 --version
+        ./castor.linux-amd64 debug
       shell: bash
       if: ${{ inputs.os == 'linux' }}
 
-    - name: Build Castor static binary for MacOS - amd64
+    - name: Build Castor static binary for Darwin (darwin-amd64)
       run: bin/castor castor:static:darwin-amd64
       shell: bash
       if: ${{ inputs.os == 'darwin-amd64' }}
 
     - name: Ensure MacOs - amd64 binary is OK
-      run: ./castor.darwin-amd64 --version
+      run: |
+        set -e
+        ./castor.darwin-amd64 --version
+        ./castor.darwin-amd64 debug
       shell: bash
       if: ${{ inputs.os == 'darwin-amd64' }}
 
-    - name: Build Castor static binary for MacOS - arm64
+    - name: Build Castor static binary for Darwin (darwin-arm64)
       run: bin/castor castor:static:darwin-arm64
       shell: bash
       if: ${{ inputs.os == 'darwin-arm64' }}
 
     - name: Ensure MacOs - arm64 binary is OK
-      run: ./castor.darwin-arm64 --version
+      run: |
+        set -e
+        ./castor.darwin-arm64 --version
+        ./castor.darwin-arm64 debug
       shell: bash
       if: ${{ inputs.os == 'darwin-arm64' }}

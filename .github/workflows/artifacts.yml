@@ -22,35 +22,35 @@ jobs:
 
       - uses: ./.github/actions/phar
 
-      - name: Upload the Linux amd64 phar
+      - name: Upload the Linux phar (linux-amd64)
         uses: actions/upload-artifact@v4
         with:
           name: 'castor.linux-amd64.phar'
           path: tools/phar/build/castor.linux-amd64.phar
           if-no-files-found: error
 
-      - name: Upload the Linux amr64 phar
+      - name: Upload the Linux phar (linux-arm64)
         uses: actions/upload-artifact@v4
         with:
           name: 'castor.linux-arm64.phar'
           path: tools/phar/build/castor.linux-arm64.phar
           if-no-files-found: error
 
-      - name: Upload the Darwin amd64 phar
+      - name: Upload the Darwin phar (darwin-amd64)
         uses: actions/upload-artifact@v4
         with:
           name: 'castor.darwin-amd64.phar'
           path: tools/phar/build/castor.darwin-amd64.phar
           if-no-files-found: error
 
-      - name: Upload the Darwin amr64 phar
+      - name: Upload the Darwin phar (darwin-arm64)
         uses: actions/upload-artifact@v4
         with:
           name: 'castor.darwin-arm64.phar'
           path: tools/phar/build/castor.darwin-arm64.phar
           if-no-files-found: error
 
-      - name: Upload the Windows phar
+      - name: Upload the Windows phar (windows-amd64)
         uses: actions/upload-artifact@v4
         with:
           name: 'castor-windows-amd64.phar'
