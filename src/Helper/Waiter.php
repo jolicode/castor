@@ -18,12 +18,12 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 use function Castor\context;
 
 /** @internal */
-final class Waiter
+final readonly class Waiter
 {
     public function __construct(
-        private readonly HttpClientInterface $httpClient,
-        private readonly ProcessRunner $processRunner,
-        private readonly LoggerInterface $logger = new NullLogger(),
+        private HttpClientInterface $httpClient,
+        private ProcessRunner $processRunner,
+        private LoggerInterface $logger = new NullLogger(),
     ) {
     }
 
@@ -100,7 +100,7 @@ final class Waiter
     ): void {
         $this->waitFor(
             io: $io,
-            callback: function () use ($host, $port) {
+            callback: function () use ($host, $port): bool {
                 $fp = @fsockopen($host, $port, $errno, $errstr, 1);
                 if ($fp) {
                     fclose($fp);
@@ -131,7 +131,7 @@ final class Waiter
     ): void {
         $this->waitFor(
             io: $io,
-            callback: function () use ($url) {
+            callback: function () use ($url): bool {
                 $fp = @fopen($url, 'r');
                 if ($fp) {
                     fclose($fp);
@@ -164,9 +164,7 @@ final class Waiter
         $this->waitForHttpResponse(
             io: $io,
             url: $url,
-            responseChecker: function (ResponseInterface $response) use ($status) {
-                return $response->getStatusCode() === $status;
-            },
+            responseChecker: fn (ResponseInterface $response): bool => $response->getStatusCode() === $status,
             timeout: $timeout,
             quiet: $quiet,
             intervalMs: $intervalMs,
@@ -239,7 +237,7 @@ final class Waiter
         }
         $this->waitFor(
             io: $io,
-            callback: function () use ($timeout, $io, $portsToCheck, $containerChecker, $containerName) {
+            callback: function () use ($timeout, $io, $portsToCheck, $containerChecker, $containerName): bool {
                 $containerId = $this->processRunner->capture("docker ps -a -q --filter name={$containerName}", context: context()->withAllowFailure());
                 $isContainerExist = (bool) $containerId;
                 $isContainerRunning = (bool) $this->processRunner->capture("docker inspect -f '{{.State.Running}}' {$containerId}", context: context()->withAllowFailure());
@@ -260,9 +258,7 @@ final class Waiter
                     try {
                         $this->waitFor(
                             io: $io,
-                            callback: function () use ($containerChecker, $containerId) {
-                                return $containerChecker($containerId);
-                            },
+                            callback: fn () => $containerChecker($containerId),
                             timeout: $timeout,
                             quiet: true,
                         );

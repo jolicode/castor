@@ -23,14 +23,14 @@ use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
 /** @internal */
-final class FunctionResolver
+final readonly class FunctionResolver
 {
     public function __construct(
-        private readonly Slugger $slugger,
-        private readonly CacheInterface $cache,
-        private readonly string $rootDir,
+        private Slugger $slugger,
+        private CacheInterface $cache,
+        private string $rootDir,
         #[Autowire('%repacked%')]
-        private readonly bool $repacked,
+        private bool $repacked,
     ) {
     }
 

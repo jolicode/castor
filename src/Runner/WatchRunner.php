@@ -9,7 +9,7 @@ use JoliCode\PhpOsHelper\OsHelper;
 use Symfony\Component\Process\Process;
 
 /** @internal */
-final class WatchRunner
+final readonly class WatchRunner
 {
     public function __construct(
         private ContextRegistry $contextRegistry,
@@ -70,7 +70,7 @@ final class WatchRunner
         $command = [$binaryPath, $path];
         $buffer = '';
 
-        $this->processRunner->run($command, callback: function ($type, $bytes, $process) use ($function, &$buffer) {
+        $this->processRunner->run($command, callback: function ($type, $bytes, $process) use ($function, &$buffer): void {
             if (Process::OUT === $type) {
                 $data = $buffer . $bytes;
                 $lines = explode("\n", $data);

@@ -2,7 +2,7 @@
 
 namespace Castor\Stub;
 
-use PhpParser\Node;
+use PhpParser\Node\Name;
 use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\PhpVersion;
 use PHPStan\PhpDoc\TypeNodeResolver;
@@ -90,10 +90,10 @@ class PhpDocNodeVisitor extends AbstractNodeVisitor
         'new',
     ];
 
-    private PhpVersion $phpVersion;
+    private readonly PhpVersion $phpVersion;
 
     public function __construct(
-        private NameResolver $nameResolver,
+        private readonly NameResolver $nameResolver,
     ) {
         $this->phpVersion = PhpVersion::getHostVersion();
     }
@@ -106,7 +106,7 @@ class PhpDocNodeVisitor extends AbstractNodeVisitor
             && !\in_array($node->name, self::SPECIAL_TYPES, true)
             && !$this->phpVersion->supportsBuiltinType($node->name)
         ) {
-            $resolvedClassName = $this->nameResolver->getNameContext()->getResolvedClassName(new Node\Name($node->name));
+            $resolvedClassName = $this->nameResolver->getNameContext()->getResolvedClassName(new Name($node->name));
 
             // If the structure does not exist, keep the type as is
             // This is useful for special types like the ones used in @template phpdoc

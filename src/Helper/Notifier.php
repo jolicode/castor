@@ -14,9 +14,9 @@ use function Castor\context;
 class Notifier
 {
     public function __construct(
-        private DefaultNotifier $notifier,
-        private LoggerInterface $logger,
-        private ContextRegistry $contextRegistry,
+        private readonly DefaultNotifier $notifier,
+        private readonly LoggerInterface $logger,
+        private readonly ContextRegistry $contextRegistry,
     ) {
     }
 

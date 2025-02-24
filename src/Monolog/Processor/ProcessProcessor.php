@@ -9,11 +9,11 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Process\Process;
 
 /** @internal  */
-final class ProcessProcessor implements ProcessorInterface
+final readonly class ProcessProcessor implements ProcessorInterface
 {
     public function __construct(
         #[Autowire(lazy: true)]
-        private readonly ProcessRunner $processRunner,
+        private ProcessRunner $processRunner,
     ) {
     }
 

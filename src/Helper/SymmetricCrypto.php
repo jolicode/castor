@@ -10,7 +10,7 @@ use Psr\Log\LoggerInterface;
 class SymmetricCrypto
 {
     public function __construct(
-        private LoggerInterface $logger,
+        private readonly LoggerInterface $logger,
     ) {
     }
 

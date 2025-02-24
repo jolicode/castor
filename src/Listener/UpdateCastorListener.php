@@ -117,9 +117,9 @@ class UpdateCastorListener
         // Installed via phar
         if ($pharPath = \Phar::running(false)) {
             $assets = match (true) {
-                OsHelper::isWindows() || OsHelper::isWindowsSubsystemForLinux() => array_filter($latestVersion['assets'], fn (array $asset) => str_contains($asset['name'], 'windows')),
-                OsHelper::isMacOS() => array_filter($latestVersion['assets'], fn (array $asset) => str_contains($asset['name'], 'darwin')),
-                OsHelper::isUnix() => array_filter($latestVersion['assets'], fn (array $asset) => str_contains($asset['name'], 'linux')),
+                OsHelper::isWindows() || OsHelper::isWindowsSubsystemForLinux() => array_filter($latestVersion['assets'], fn (array $asset): bool => str_contains((string) $asset['name'], 'windows')),
+                OsHelper::isMacOS() => array_filter($latestVersion['assets'], fn (array $asset): bool => str_contains((string) $asset['name'], 'darwin')),
+                OsHelper::isUnix() => array_filter($latestVersion['assets'], fn (array $asset): bool => str_contains((string) $asset['name'], 'linux')),
                 default => [],
             };
 
@@ -132,7 +132,7 @@ class UpdateCastorListener
             $latestReleaseUrl = reset($assets)['browser_download_url'] ?? null;
             // Fow now, we force the phar since it has more capabilities than
             // the static binary, and it's more tested
-            if (!str_ends_with($latestReleaseUrl, '.phar')) {
+            if (!str_ends_with((string) $latestReleaseUrl, '.phar')) {
                 $latestReleaseUrl .= '.phar';
             }
 

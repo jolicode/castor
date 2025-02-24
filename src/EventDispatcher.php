@@ -13,8 +13,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class EventDispatcher implements EventDispatcherInterface
 {
     public function __construct(
-        private EventDispatcherInterface $eventDispatcher = new SymfonyEventDispatcher(),
-        private LoggerInterface $logger = new NullLogger(),
+        private readonly EventDispatcherInterface $eventDispatcher = new SymfonyEventDispatcher(),
+        private readonly LoggerInterface $logger = new NullLogger(),
     ) {
     }
 

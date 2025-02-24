@@ -3,6 +3,7 @@
 namespace Castor;
 
 use Castor\Console\Application;
+use Castor\Console\Command\TaskCommand;
 use Castor\Console\Output\VerbosityLevel;
 use Castor\Descriptor\DescriptorsCollection;
 use Castor\Descriptor\TaskDescriptorCollection;
@@ -262,7 +263,7 @@ final class Kernel
         $this->contextRegistry->setCurrentContext($context->withName($input->getOption('context')));
     }
 
-    private function resolveCurrentTaskCommand(DescriptorsCollection $descriptorsCollection, InputInterface $input): ?Console\Command\TaskCommand
+    private function resolveCurrentTaskCommand(DescriptorsCollection $descriptorsCollection, InputInterface $input): ?TaskCommand
     {
         $taskCommand = null;
 

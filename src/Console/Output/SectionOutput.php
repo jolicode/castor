@@ -13,23 +13,21 @@ class SectionOutput
 {
     private const COLORS = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', 'default'];
 
-    private OutputInterface $consoleOutput;
     private ?ConsoleOutput $mainOutput;
     /** @var \SplObjectStorage<Process, SectionDetails> */
     private \SplObjectStorage $sections;
 
     public function __construct(
-        OutputInterface $output,
+        private OutputInterface $consoleOutput,
         #[Autowire('%use_output_section%')]
         bool $useOutputSection,
     ) {
-        $this->consoleOutput = $output;
         $this->mainOutput = null;
         $this->sections = new \SplObjectStorage();
 
-        if ($output instanceof ConsoleOutput && $useOutputSection && stream_isatty(\STDOUT)) {
-            $this->mainOutput = $output;
-            $this->consoleOutput = $output->section();
+        if ($this->consoleOutput instanceof ConsoleOutput && $useOutputSection && stream_isatty(\STDOUT)) {
+            $this->mainOutput = $this->consoleOutput;
+            $this->consoleOutput = $this->consoleOutput->section();
         }
     }
 
@@ -77,7 +75,7 @@ class SectionOutput
         $fg = 0 === $process->getExitCode() ? 'green' : 'red';
         $status = 0 === $process->getExitCode() ? 'success' : 'failure';
 
-        $color = self::COLORS[((int) $sectionDetails->index) % \count(self::COLORS)];
+        $color = self::COLORS[$sectionDetails->index % \count(self::COLORS)];
 
         $this->consoleOutput->writeln("<bg={$color}> </>[{$sectionDetails->index}] <fg={$fg}>{$process->getCommandLine()}</> {$status} after {$time}s");
         $this->consoleOutput->write($outputContent);
@@ -94,7 +92,7 @@ class SectionOutput
 
         $sectionDetails = $this->getSectionDetails($process);
         $time = number_format(microtime(true) - $sectionDetails->start, 2);
-        $color = self::COLORS[((int) $sectionDetails->index) % \count(self::COLORS)];
+        $color = self::COLORS[$sectionDetails->index % \count(self::COLORS)];
 
         $sectionDetails->progressBarSection->writeln("<bg={$color}> </>[{$sectionDetails->index}] <fg=yellow>{$process->getCommandLine()}</> running for {$time}s");
     }

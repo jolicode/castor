@@ -45,21 +45,21 @@ class InitCommand extends Command
         file_put_contents(
             'castor.php',
             <<<'PHP'
-            <?php
+                <?php
 
-            use Castor\Attribute\AsTask;
+                use Castor\Attribute\AsTask;
 
-            use function Castor\io;
-            use function Castor\capture;
+                use function Castor\io;
+                use function Castor\capture;
 
-            #[AsTask(description: 'Welcome to Castor!')]
-            function hello(): void
-            {
-                $currentUser = capture('whoami');
+                #[AsTask(description: 'Welcome to Castor!')]
+                function hello(): void
+                {
+                    $currentUser = capture('whoami');
 
-                io()->title(sprintf('Hello %s!', $currentUser));
-            }
-            PHP
+                    io()->title(sprintf('Hello %s!', $currentUser));
+                }
+                PHP
         );
 
         $io->success('Project created. You can edit "castor.php" and write your own tasks.');
