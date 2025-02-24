@@ -8,7 +8,7 @@ use Symfony\Component\Process\Process;
 use function Castor\context;
 
 /** @internal */
-final class SshRunner
+final readonly class SshRunner
 {
     public function __construct(
         private ProcessRunner $processRunner,

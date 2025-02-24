@@ -36,6 +36,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\String\Slugger\AsciiSlugger;
+use Symfony\Component\VarDumper\Caster\StubCaster;
 use Symfony\Component\VarDumper\Cloner\AbstractCloner;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\EventDispatcher\Event;
@@ -90,8 +91,8 @@ class ApplicationFactory
     {
         $errorHandler = ErrorHandler::register();
 
-        AbstractCloner::$defaultCasters[Application::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
-        AbstractCloner::$defaultCasters[Event::class] = ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'];
+        AbstractCloner::$defaultCasters[Application::class] = StubCaster::cutInternals(...);
+        AbstractCloner::$defaultCasters[Event::class] = StubCaster::cutInternals(...);
 
         return $errorHandler;
     }
@@ -105,7 +106,7 @@ class ApplicationFactory
         ;
         $container->addCompilerPass(new RegisterListenersPass());
         // from https://github.com/symfony/symfony/blob/6.4/src/Symfony/Bundle/FrameworkBundle/DependencyInjection/FrameworkExtension.php#L676-L685
-        $container->registerAttributeForAutoconfiguration(AsEventListener::class, static function (ChildDefinition $definition, AsEventListener $attribute, \Reflector $reflector) {
+        $container->registerAttributeForAutoconfiguration(AsEventListener::class, static function (ChildDefinition $definition, AsEventListener $attribute, \Reflector $reflector): void {
             $tagAttributes = get_object_vars($attribute);
             if ($reflector instanceof \ReflectionMethod) {
                 if (isset($tagAttributes['method'])) {

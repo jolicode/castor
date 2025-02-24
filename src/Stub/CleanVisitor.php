@@ -3,6 +3,8 @@
 namespace Castor\Stub;
 
 use PhpParser\Node;
+use PhpParser\Node\Stmt\Namespace_;
+use PhpParser\Node\Stmt\Use_;
 use PhpParser\NodeVisitorAbstract;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
@@ -10,7 +12,7 @@ use Symfony\Component\DependencyInjection\Attribute\Exclude;
 #[Exclude]
 class CleanVisitor extends NodeVisitorAbstract
 {
-    /** @var array<string, Node\Stmt\Namespace_> */
+    /** @var array<string, Namespace_> */
     public array $nodesByNamespace = [];
 
     /**
@@ -19,7 +21,7 @@ class CleanVisitor extends NodeVisitorAbstract
     public function enterNode(Node $node)
     {
         // Merge namespaces with the same name together
-        if ($node instanceof Node\Stmt\Namespace_) {
+        if ($node instanceof Namespace_) {
             $currentNamespace = $node->name ? $node->name->toString() : null;
 
             if (!$currentNamespace) {
@@ -48,10 +50,8 @@ class CleanVisitor extends NodeVisitorAbstract
 
         foreach ($nodes as $node) {
             // If namespace is empty, let's remove it
-            if ($node instanceof Node\Stmt\Namespace_) {
-                $stmts = array_filter($node->stmts, static function (Node $stmt): bool {
-                    return !$stmt instanceof Node\Stmt\Use_;
-                });
+            if ($node instanceof Namespace_) {
+                $stmts = array_filter($node->stmts, static fn (Node $stmt): bool => !$stmt instanceof Use_);
 
                 if (!$stmts) {
                     continue;

@@ -12,8 +12,8 @@ use function Castor\yaml_parse;
 function parse(): void
 {
     $data = yaml_parse(<<<'YAML'
-foo: bar
-YAML);
+        foo: bar
+        YAML);
     io()->writeln($data['foo']);
 }
 

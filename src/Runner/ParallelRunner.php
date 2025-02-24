@@ -7,11 +7,11 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /** @internal */
-final class ParallelRunner
+final readonly class ParallelRunner
 {
     public function __construct(
-        private readonly Application $app,
-        private readonly OutputInterface $output,
+        private Application $app,
+        private OutputInterface $output,
     ) {
     }
 
@@ -71,6 +71,6 @@ final class ParallelRunner
             throw new \RuntimeException('One or more exceptions were thrown in parallel.');
         }
 
-        return array_map(fn ($fiber) => $fiber->getReturn(), $fibers);
+        return array_map(fn ($fiber): mixed => $fiber->getReturn(), $fibers);
     }
 }

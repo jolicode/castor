@@ -83,7 +83,7 @@ class Composer
 
         $command = $update ? 'update' : 'install';
 
-        $this->run($composerJsonFile, $vendorDirectory, [$command], callback: function () use ($progressIndicator) {
+        $this->run($composerJsonFile, $vendorDirectory, [$command], callback: function () use ($progressIndicator): void {
             if ($progressIndicator) {
                 $progressIndicator->advance();
             }

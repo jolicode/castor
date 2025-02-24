@@ -20,11 +20,11 @@ use Psr\Log\NullLogger;
 use Symfony\Component\Finder\Finder;
 
 /** @internal */
-final class StubsGenerator
+final readonly class StubsGenerator
 {
     public function __construct(
-        private readonly string $rootDir,
-        private readonly LoggerInterface $logger = new NullLogger(),
+        private string $rootDir,
+        private LoggerInterface $logger = new NullLogger(),
     ) {
     }
 

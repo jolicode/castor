@@ -31,10 +31,10 @@ class HttpDownloader
         $lastLogTime = time();
         $startTime = microtime(true);
         $finalLogDone = false;
-        $userProvidedOnProgress = $options['on_progress'] ?? function (int $downloadedSize, int $totalSize) {};
+        $userProvidedOnProgress = $options['on_progress'] ?? function (int $downloadedSize, int $totalSize): void {};
         $totalDownloadedSize = 0;
 
-        $options['on_progress'] = function (int $downloadedSize, int $totalSize) use ($userProvidedOnProgress, &$totalDownloadedSize, &$lastLogTime, &$finalLogDone, $url, $startTime) {
+        $options['on_progress'] = function (int $downloadedSize, int $totalSize) use ($userProvidedOnProgress, &$totalDownloadedSize, &$lastLogTime, &$finalLogDone, $url, $startTime): void {
             $totalDownloadedSize = $downloadedSize;
             $percentage = $this->calculatePercentage($downloadedSize, $totalSize);
             $speed = $this->calculateSpeed($downloadedSize, $startTime);

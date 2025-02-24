@@ -288,15 +288,15 @@ class CompileCommand extends Command
         $c = hash_init('sha256');
 
         foreach (['os', 'arch', 'php-version', 'php-extensions'] as $phpBuildOption) {
-            hash_update($c, $input->getOption($phpBuildOption));
+            hash_update($c, (string) $input->getOption($phpBuildOption));
         }
 
-        $phpExtensions = explode(',', $input->getOption('php-extensions'));
+        $phpExtensions = explode(',', (string) $input->getOption('php-extensions'));
         sort($phpExtensions);
         hash_update($c, implode(',', $phpExtensions));
 
         hash_update($c, self::CACHE_VERSION);
-        hash_update($c, $input->getOption('spc-version'));
+        hash_update($c, (string) $input->getOption('spc-version'));
 
         return hash_final($c);
     }

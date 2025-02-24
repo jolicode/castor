@@ -14,6 +14,7 @@ use Castor\Helper\HasherHelper;
 use Castor\Helper\PathHelper;
 use Castor\Import\Mount;
 use JoliCode\PhpOsHelper\OsHelper;
+use Monolog\Level;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
@@ -290,7 +291,7 @@ function watch(string|array $path, callable $function, ?Context $context = null)
 /**
  * @param array<string, mixed> $context
  *
- * @phpstan-param \Monolog\Level|\Psr\Log\LogLevel::* $level
+ * @phpstan-param Level|\Psr\Log\LogLevel::* $level
  */
 function log(string|\Stringable $message, mixed $level = 'info', array $context = []): void
 {
@@ -918,7 +919,7 @@ function open(string ...$urls): void
     $parallelCallbacks = [];
 
     foreach ($urls as $url) {
-        $parallelCallbacks[] = fn () => run([$command, $url], context: context()->withQuiet(true));
+        $parallelCallbacks[] = fn (): Process => run([$command, $url], context: context()->withQuiet(true));
     }
 
     parallel(...$parallelCallbacks);

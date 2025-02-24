@@ -2,6 +2,7 @@
 
 namespace Castor;
 
+use Castor\Attribute\AsContext;
 use Castor\Descriptor\ContextDescriptor;
 use Castor\Event\ContextCreatedEvent;
 use Castor\Exception\FunctionConfigurationException;
@@ -20,7 +21,7 @@ class ContextRegistry
     private Context $currentContext;
 
     public function __construct(
-        private EventDispatcherInterface $eventDispatcher,
+        private readonly EventDispatcherInterface $eventDispatcher,
         #[Autowire('%context%')]
         private ?string $defaultName = null,
     ) {
@@ -53,7 +54,7 @@ class ContextRegistry
     public function addContext(string $name, callable $callable, bool $default = false): void
     {
         $this->addDescriptor(new ContextDescriptor(
-            new Attribute\AsContext(name: $name, default: $default),
+            new AsContext(name: $name, default: $default),
             new \ReflectionFunction($callable),
         ));
     }

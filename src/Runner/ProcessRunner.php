@@ -8,7 +8,9 @@ use Castor\Console\Output\SectionOutput;
 use Castor\Console\Output\VerbosityLevel;
 use Castor\Context;
 use Castor\ContextRegistry;
-use Castor\Event;
+use Castor\Event\ProcessCreatedEvent;
+use Castor\Event\ProcessStartEvent;
+use Castor\Event\ProcessTerminateEvent;
 use Castor\Helper\Notifier;
 use JoliCode\PhpOsHelper\OsHelper;
 use Psr\Log\LoggerInterface;
@@ -150,12 +152,12 @@ class ProcessRunner
         }
 
         if (!$context->quiet && !$callback) {
-            $callback = function ($type, $bytes, $process) {
+            $callback = function ($type, $bytes, $process): void {
                 $this->sectionOutput->writeProcessOutput($type, $bytes, $process);
             };
         }
 
-        $this->eventDispatcher->dispatch(new Event\ProcessCreatedEvent($process));
+        $this->eventDispatcher->dispatch(new ProcessCreatedEvent($process));
 
         $this->logger->notice(\sprintf('Running command: "%s".', u($process->getCommandLine())->truncate(40, '...')), [
             'process' => $process,
@@ -163,13 +165,13 @@ class ProcessRunner
 
         $this->sectionOutput->initProcess($process);
 
-        $process->start(function ($type, $bytes) use ($callback, $process) {
+        $process->start(function ($type, $bytes) use ($callback, $process): void {
             if ($callback) {
                 $callback($type, $bytes, $process);
             }
         });
 
-        $this->eventDispatcher->dispatch(new Event\ProcessStartEvent($process));
+        $this->eventDispatcher->dispatch(new ProcessStartEvent($process));
 
         if (\Fiber::getCurrent()) {
             while ($process->isRunning()) {
@@ -183,7 +185,7 @@ class ProcessRunner
             $exitCode = $process->wait();
         } finally {
             $this->sectionOutput->finishProcess($process);
-            $this->eventDispatcher->dispatch(new Event\ProcessTerminateEvent($process));
+            $this->eventDispatcher->dispatch(new ProcessTerminateEvent($process));
         }
 
         if ($context->notify) {
@@ -297,7 +299,7 @@ class ProcessRunner
             if (null === $value || 'argv' === $key || 'argc' === $key) {
                 continue;
             }
-            $runnable = \sprintf('%s=%s %s ', $key, escapeshellarg($value), $runnable);
+            $runnable = \sprintf('%s=%s %s ', $key, escapeshellarg((string) $value), $runnable);
         }
 
         return rtrim($runnable, ' ');

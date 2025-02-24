@@ -16,14 +16,14 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /** @internal */
-final class FunctionLoader
+final readonly class FunctionLoader
 {
     public function __construct(
-        private readonly ContextRegistry $contextRegistry,
-        private readonly EventDispatcherInterface $eventDispatcher,
+        private ContextRegistry $contextRegistry,
+        private EventDispatcherInterface $eventDispatcher,
         #[Autowire(lazy: true)]
-        private readonly Application $application,
-        private readonly TaskCommandFactory $taskCommandFactory,
+        private Application $application,
+        private TaskCommandFactory $taskCommandFactory,
     ) {
     }
 

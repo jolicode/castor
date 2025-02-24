@@ -7,10 +7,10 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
 use function Symfony\Component\String\u;
 
 /** @internal */
-final class Slugger
+final readonly class Slugger
 {
     public function __construct(
-        private readonly AsciiSlugger $slugger,
+        private AsciiSlugger $slugger,
     ) {
     }
 

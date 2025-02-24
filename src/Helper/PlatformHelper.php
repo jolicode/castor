@@ -33,7 +33,7 @@ final class PlatformHelper
         try {
             $home = self::getUserDirectory();
             $directory = $home ? $home . '/.cache' : sys_get_temp_dir();
-        } catch (\RuntimeException $e) {
+        } catch (\RuntimeException) {
             $directory = sys_get_temp_dir();
         }
 

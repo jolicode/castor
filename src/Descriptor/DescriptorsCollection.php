@@ -2,7 +2,7 @@
 
 namespace Castor\Descriptor;
 
-final class DescriptorsCollection
+final readonly class DescriptorsCollection
 {
     /**
      * @param list<ContextDescriptor>          $contextDescriptors
@@ -12,11 +12,11 @@ final class DescriptorsCollection
      * @param list<SymfonyTaskDescriptor>      $symfonyTaskDescriptors
      */
     public function __construct(
-        public readonly array $contextDescriptors,
-        public readonly array $contextGeneratorDescriptors,
-        public readonly array $listenerDescriptors,
-        public readonly array $taskDescriptors,
-        public readonly array $symfonyTaskDescriptors,
+        public array $contextDescriptors,
+        public array $contextGeneratorDescriptors,
+        public array $listenerDescriptors,
+        public array $taskDescriptors,
+        public array $symfonyTaskDescriptors,
     ) {
     }
 }

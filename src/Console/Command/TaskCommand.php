@@ -210,8 +210,8 @@ class TaskCommand extends Command implements SignalableCommandInterface
                 $this->contextRegistry->setCurrentContext($initialContext);
             }
         } catch (\Error $e) {
-            $castorFunctions = array_filter(get_defined_functions()['user'], fn (string $functionName) => str_starts_with($functionName, 'castor\\'));
-            $castorFunctionsWithoutNamespace = array_map(fn (string $functionName) => substr($functionName, \strlen('castor\\')), $castorFunctions);
+            $castorFunctions = array_filter(get_defined_functions()['user'], fn (string $functionName): bool => str_starts_with($functionName, 'castor\\'));
+            $castorFunctionsWithoutNamespace = array_map(fn (string $functionName): string => substr($functionName, \strlen('castor\\')), $castorFunctions);
             foreach ($castorFunctionsWithoutNamespace as $function) {
                 if ("Call to undefined function {$function}()" === $e->getMessage()) {
                     throw new \LogicException(\sprintf('Call to undefined function %s(). Did you forget to import it? Try to add "use function Castor\%s;" in top of "%s" file.', $function, $function, $this->taskDescriptor->function->getFileName()), 0, $e);
@@ -252,7 +252,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
     private function getSuggestedValues(AsArgument|AsOption $attribute): array|\Closure
     {
         if ($attribute instanceof AsPathArgument || $attribute instanceof AsPathOption) {
-            return \Closure::fromCallable(function (CompletionInput $input) {
+            return \Closure::fromCallable(function (CompletionInput $input): array {
                 $value = $input->getCompletionValue();
 
                 // If no value is typed, we suggest items in the root directory
@@ -330,10 +330,10 @@ class TaskCommand extends Command implements SignalableCommandInterface
         }
 
         return array_map(
-            fn (string $item) => $baseValue . $item . (is_dir($baseValue . $item) ? \DIRECTORY_SEPARATOR : ''),
+            fn (string $item): string => $baseValue . $item . (is_dir($baseValue . $item) ? \DIRECTORY_SEPARATOR : ''),
             array_filter(
                 $items,
-                fn (string $suggestion) => '.' !== $suggestion && '..' !== $suggestion,
+                fn (string $suggestion): bool => '.' !== $suggestion && '..' !== $suggestion,
             ),
         );
     }
