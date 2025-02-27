@@ -3,6 +3,7 @@ hello                                                             hello
 help                                                              Display help for a command
 list                                                              List commands
 no-namespace                                                      Task without a namespace
+update                                                            Update all dependencies
 args:another-args                                                 Dumps all arguments and options, without configuration
 args:args                                                         Dumps all arguments and options, with custom configuration
 args:autocomplete-argument                                        Provides autocomplete for an argument

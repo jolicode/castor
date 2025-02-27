@@ -6,6 +6,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\context;
 use function Castor\exit_code;
+use function Castor\io;
 use function Castor\run;
 
 #[AsTask(description: 'Fix CS', aliases: ['cs'])]
@@ -36,6 +37,6 @@ function install(): void
 #[AsTask(description: 'Update dependencies')]
 function update(): void
 {
+    io()->section('Update php-cs-fixer dependencies');
     run(['composer', 'update'], context: context()->withWorkingDirectory(__DIR__));
-    run(['composer', 'bump'], context: context()->withWorkingDirectory(__DIR__));
 }

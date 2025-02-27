@@ -6,6 +6,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\context;
 use function Castor\exit_code;
+use function Castor\io;
 use function Castor\run;
 
 #[AsTask(description: 'Run PHPStan', aliases: ['phpstan'])]
@@ -35,6 +36,6 @@ function install(): void
 #[AsTask(description: 'update dependencies')]
 function update(): void
 {
+    io()->section('Update phpstan dependencies');
     run(['composer', 'update'], context: context()->withWorkingDirectory(__DIR__));
-    run(['composer', 'bump'], context: context()->withWorkingDirectory(__DIR__));
 }
