@@ -1,1 +1,2 @@
+Task configuration:foo:foo is loggable
 foo

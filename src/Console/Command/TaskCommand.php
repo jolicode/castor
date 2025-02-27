@@ -88,6 +88,21 @@ class TaskCommand extends Command implements SignalableCommandInterface
         return $this->expressionLanguage->evaluate($this->taskDescriptor->taskAttribute->enabled);
     }
 
+    /**
+     * @template T of object
+     *
+     * Returns an array of function attributes.
+     *
+     * @param class-string<T>|null $name  Name of an attribute class
+     * @param int                  $flags сriteria by which the attribute is searched
+     *
+     * @return \ReflectionAttribute<T>[]
+     */
+    public function getAttributes(?string $name = null, int $flags = 0): array
+    {
+        return $this->taskDescriptor->function->getAttributes($name, $flags);
+    }
+
     protected function configure(): void
     {
         if ($this->taskDescriptor->taskAttribute->ignoreValidationErrors) {

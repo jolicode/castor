@@ -5,10 +5,12 @@
 namespace configuration\foo;
 
 use Castor\Attribute\AsTask;
+use Loggable;
 
 use function Castor\io;
 
 #[AsTask(description: 'Prints foo')]
+#[Loggable]
 function foo(): void
 {
     io()->writeln('foo');
