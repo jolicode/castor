@@ -90,6 +90,7 @@ $taskFilterList = [
     'qa:phpstan:install',
     'qa:phpstan:phpstan',
     'qa:phpstan:update',
+    'update',
     // Customized tests
     'crypto:decrypt',
     'crypto:encrypt',

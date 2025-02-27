@@ -4,6 +4,7 @@ namespace castor\phar;
 
 use Castor\Attribute\AsTask;
 
+use function Castor\io;
 use function Castor\parallel;
 use function Castor\run;
 
@@ -42,8 +43,8 @@ function install(): void
 #[AsTask(description: 'update dependencies')]
 function update(): void
 {
+    io()->section('Update phar dependencies');
     run(['composer', 'update']);
-    run(['composer', 'bump']);
 }
 
 function compile(callable $compiler)
