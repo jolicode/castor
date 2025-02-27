@@ -15,6 +15,7 @@ use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use function Castor\io;
 use function Castor\run;
 use function Castor\task;
+use function configuration\foo\foo;
 
 #[AsTask(description: 'An dummy task with event listeners attached')]
 function my_task(): void
@@ -39,6 +40,21 @@ function my_listener_that_has_higher_priority(BeforeExecuteTaskEvent|AfterExecut
 
     if ('event-listener:my-task' === $taskName) {
         io()->writeln('Hello from listener! (higher priority) before task execution');
+    }
+}
+
+/**
+ * @see foo() as #[Loggable] attribute, so foo() call will be logged
+ */
+#[AsListener(event: BeforeExecuteTaskEvent::class, priority: 10)]
+function access_attributes_of_task(BeforeExecuteTaskEvent $event): void
+{
+    $taskName = $event->task->getName();
+
+    $isLoggable = [] !== $event->task->getAttributes(\Loggable::class);
+
+    if ($isLoggable) {
+        io()->writeln("Task {$taskName} is loggable");
     }
 }
 

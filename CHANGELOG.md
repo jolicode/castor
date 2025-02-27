@@ -5,6 +5,7 @@
 ### Features
 
 * Add `$force` parameter to the `cache()` function to force recomputing the value
+* Add `getAttributes()` method to `TaskCommand` to get all or specific attributes
 
 ### Fixes
 
