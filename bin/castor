@@ -3,10 +3,10 @@
 
 use Castor\Console\ApplicationFactory;
 
-$runPhar = getenv('CASTOR_RUN_PHAR');
+$phpFile = $_SERVER['CASTOR_PHP_REPLACE'] ?? false;
 
-if ($runPhar) {
-    require $runPhar;
+if ($phpFile) {
+    require $phpFile;
 
     exit(0);
 }

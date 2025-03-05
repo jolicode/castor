@@ -10,6 +10,8 @@
 ### Fixes
 
 * Ignore `null` env variable when running process
+* Use an env var when using `run_php()` to avoid conflict with php script reexecution
+* Rename `run_phar()` to `run_php()` to express better that it can run any PHP file
 
 ### Internal
 

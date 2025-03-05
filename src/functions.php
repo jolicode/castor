@@ -928,13 +928,25 @@ function open(string ...$urls): void
 /**
  * @param array<string|\Stringable> $arguments
  */
-function run_phar(string $pharPath, array $arguments = [], ?Context $context = null): Process
+function run_php(string $pharPath, array $arguments = [], ?Context $context = null): Process
 {
     // get program path
     $castorPath = $_SERVER['argv'][0];
-    $context = $context ?? context();
+    $context ??= context();
 
     return run([$castorPath, ...$arguments], context: $context->withEnvironment([
-        'CASTOR_RUN_PHAR' => $pharPath,
+        'CASTOR_PHP_REPLACE' => $pharPath,
     ]));
+}
+
+/**
+ * @param array<string|\Stringable> $arguments
+ *
+ * @deprecated
+ */
+function run_phar(string $pharPath, array $arguments = [], ?Context $context = null): Process
+{
+    trigger_deprecation('jolicode/castor', '0.23', 'The "%s()" function is deprecated, use "Castor\%s()" instead.', __FUNCTION__, 'run_php');
+
+    return run_php($pharPath, $arguments, $context);
 }
