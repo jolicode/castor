@@ -3,24 +3,10 @@
 
 use Castor\Console\ApplicationFactory;
 
-$argv = $_SERVER['argv'];
+$runPhar = getenv('CASTOR_RUN_PHAR');
 
-if (count($argv) > 2 && $argv[1] === 'run-phar') {
-    $phar = $argv[2];
-
-    if (!file_exists($phar)) {
-        echo "Phar file not found: $phar\n";
-        exit(1);
-    }
-
-    // override the argv
-    $_SERVER['argv'] = array_merge(
-        array($argv[0]),
-        array_slice($argv, 3)
-    );
-    $_SERVER['argc'] = count($_SERVER['argv']);
-
-    require $phar;
+if ($runPhar) {
+    require $runPhar;
 
     exit(0);
 }

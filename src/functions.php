@@ -932,6 +932,9 @@ function run_phar(string $pharPath, array $arguments = [], ?Context $context = n
 {
     // get program path
     $castorPath = $_SERVER['argv'][0];
+    $context = $context ?? context();
 
-    return run([$castorPath, 'run-phar', $pharPath, ...$arguments], context: $context);
+    return run([$castorPath, ...$arguments], context: $context->withEnvironment([
+        'CASTOR_RUN_PHAR' => $pharPath,
+    ]));
 }
