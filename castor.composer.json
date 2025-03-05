@@ -6,6 +6,7 @@
         "castor/castor": "v0.15.0"
     },
     "require": {
+        "castor-php/php-qa": "^0.2.0",
         "doctrine/collections": "=2.2.2",
         "pyrech/castor-example": "=1.2",
         "pyrech/castor-example-package-not-published": "=1",
