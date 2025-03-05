@@ -38,8 +38,4 @@ parameters:
        '''
     ignoreErrors:
         -
-            message: "#^Function pyrech\\\\.* not found\\.$#"
-            count: 2
-            path: examples/
-        -
             identifier: missingType.generics
