@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8e175f4bccedf20e32b6f5058e87e777",
+    "content-hash": "40bea63d069f7f52e35149a2e4cbed62",
     "packages": [
         {
             "name": "amphp/amp",
@@ -1283,16 +1283,16 @@
         },
         {
             "name": "humbug/box",
-            "version": "4.6.3",
+            "version": "4.6.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/box-project/box.git",
-                "reference": "9ec22a45d48ec412db963d35cd37bc73c23a6b80"
+                "reference": "09646041cb2e0963ab6ca109e1b366337617a0f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/box-project/box/zipball/9ec22a45d48ec412db963d35cd37bc73c23a6b80",
-                "reference": "9ec22a45d48ec412db963d35cd37bc73c23a6b80",
+                "url": "https://api.github.com/repos/box-project/box/zipball/09646041cb2e0963ab6ca109e1b366337617a0f2",
+                "reference": "09646041cb2e0963ab6ca109e1b366337617a0f2",
                 "shasum": ""
             },
             "require": {
@@ -1320,7 +1320,7 @@
                 "symfony/polyfill-mbstring": "^1.28",
                 "symfony/process": "^6.4.0 || ^7.0.0",
                 "symfony/var-dumper": "^6.4.0 || ^7.0.0",
-                "thecodingmachine/safe": "^2.5 || 3.0",
+                "thecodingmachine/safe": "^2.5 || ^3.0",
                 "webmozart/assert": "^1.11"
             },
             "replace": {
@@ -1388,9 +1388,9 @@
             ],
             "support": {
                 "issues": "https://github.com/box-project/box/issues",
-                "source": "https://github.com/box-project/box/tree/4.6.3"
+                "source": "https://github.com/box-project/box/tree/4.6.6"
             },
-            "time": "2025-02-19T20:30:32+00:00"
+            "time": "2025-03-02T18:20:45+00:00"
         },
         {
             "name": "humbug/php-scoper",
@@ -3820,16 +3820,16 @@
         },
         {
             "name": "thecodingmachine/safe",
-            "version": "v3.0.0",
+            "version": "v3.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thecodingmachine/safe.git",
-                "reference": "1b99e649415872997e43c771c55ba9b08d601329"
+                "reference": "22ffad3248982a784f9870a37aeb2e522bd19645"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thecodingmachine/safe/zipball/1b99e649415872997e43c771c55ba9b08d601329",
-                "reference": "1b99e649415872997e43c771c55ba9b08d601329",
+                "url": "https://api.github.com/repos/thecodingmachine/safe/zipball/22ffad3248982a784f9870a37aeb2e522bd19645",
+                "reference": "22ffad3248982a784f9870a37aeb2e522bd19645",
                 "shasum": ""
             },
             "require": {
@@ -3939,7 +3939,7 @@
             "description": "PHP core functions that throw exceptions instead of returning FALSE on error",
             "support": {
                 "issues": "https://github.com/thecodingmachine/safe/issues",
-                "source": "https://github.com/thecodingmachine/safe/tree/v3.0.0"
+                "source": "https://github.com/thecodingmachine/safe/tree/v3.0.2"
             },
             "funding": [
                 {
@@ -3955,7 +3955,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-02-11T00:27:22+00:00"
+            "time": "2025-02-19T19:23:00+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -4019,11 +4019,11 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
-    "platform-dev": [],
+    "platform": {},
+    "platform-dev": {},
     "platform-overrides": {
         "php": "8.2.27"
     },

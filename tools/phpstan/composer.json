@@ -4,7 +4,7 @@
     "type": "project",
     "license": "MIT",
     "require": {
-        "phpstan/phpstan": "^2.1.6"
+        "phpstan/phpstan": "^2.1.7"
     },
     "config": {
         "bump-after-update": true,
