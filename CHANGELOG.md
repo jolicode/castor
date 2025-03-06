@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+## 0.23.0 (2025-03-06)
+
 ### Features
 
 * Add `$force` parameter to the `cache()` function to force recomputing the value
