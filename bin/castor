@@ -6,6 +6,12 @@ use Castor\Console\ApplicationFactory;
 $phpFile = $_SERVER['CASTOR_PHP_REPLACE'] ?? false;
 
 if ($phpFile) {
+    $memoryLimit = $_SERVER['CASTOR_MEMORY_LIMIT'] ?? false;
+
+    if ($memoryLimit && function_exists('ini_set')) {
+        ini_set('memory_limit', $memoryLimit);
+    }
+
     require $phpFile;
 
     exit(0);

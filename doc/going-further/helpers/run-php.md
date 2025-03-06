@@ -18,3 +18,19 @@ the static binary and without conflicts between the external script and internal
 php code of Castor.
 
 The `run_php()` takes exactly the same options as the `run()` function.
+
+### Script requiring more memory
+
+If you need to execute a script that requires more memory than the default
+provided by PHP or castor static binary, you can use the `CASTOR_MEMORY_LIMIT` 
+environment variable to increase the memory limit within the context: 
+
+```php
+#[AsTask()]
+function exec_something()
+{
+    run_php('path/to/my.phar', ['arg1', 'arg2'], context: context()->withEnvironment(['CASTOR_MEMORY_LIMIT' => '512M']));
+}
+```
+
+`CASTOR_MEMORY_LIMIT` supports the same values as the [`memory_limit` directive in PHP](https://www.php.net/manual/fr/ini.core.php#ini.memory-limit).
