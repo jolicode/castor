@@ -2,6 +2,19 @@
 
 ## Not released yet
 
+### Features
+
+* Improve `decrypt_file_with_password()` with smart `.enc` extension handling
+  and file overwrite protection
+
+### Fixes
+
+* Add proper `.enc` extension to files encrypted with `encrypt_file_with_password()`
+
+### Internal
+
+* Add tests for `decrypt_file_with_password()` and `encrypt_file_with_password()`
+
 ## 0.23.0 (2025-03-06)
 
 ### Features
