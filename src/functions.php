@@ -859,7 +859,7 @@ function encrypt_file_with_password(string $sourcePath, string $password, ?strin
 
     $encrypted = encrypt_with_password($content, $password);
 
-    $destinationPath ??= "{$sourcePath}.dec";
+    $destinationPath ??= "{$sourcePath}.enc";
     Container::get()->fs->dumpFile($destinationPath, $encrypted);
 
     $sourcePermissions = fileperms($sourcePath);
@@ -883,7 +883,20 @@ function decrypt_file_with_password(string $sourcePath, string $password, ?strin
 
     $decrypted = decrypt_with_password($content, $password);
 
-    $destinationPath ??= "{$sourcePath}.dec";
+    if (null === $destinationPath) {
+        if (str_ends_with($sourcePath, '.enc')) {
+            $baseDestinationPath = substr($sourcePath, 0, -4);
+
+            // If a file with the same name (without '.enc') already exists,
+            // append '.dec' to avoid overwriting and prevent data loss
+            $destinationPath = file_exists($baseDestinationPath)
+                ? \sprintf('%s.dec', $baseDestinationPath)
+                : $baseDestinationPath;
+        } else {
+            $destinationPath = \sprintf('%s.dec', $sourcePath);
+        }
+    }
+
     Container::get()->fs->dumpFile($destinationPath, $decrypted);
 
     $sourcePermissions = fileperms($sourcePath);
