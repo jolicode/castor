@@ -5,6 +5,7 @@
 /var/
 /vendor/
 /tests/Examples/fixtures/**/.castor.stub.php
+/tests/fixtures/crypto
 /castor.*
 !/castor.php
 !/castor.composer.json

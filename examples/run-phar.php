@@ -11,6 +11,6 @@ use function Castor\run_php;
 function phar(): void
 {
     run_php('examples/run.phar', ['a', 'list', 'of', 'arguments'], context: context()->withEnvironment([
-        'CASTOR_MEMORY_LIMIT' => '16M'
+        'CASTOR_MEMORY_LIMIT' => '16M',
     ]));
 }
