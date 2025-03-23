@@ -58,8 +58,15 @@ So it could be green on your local php version but fail on CI.
 
 ### Testing functions
 
-When your changes are related to Castor's provided functions, run the `bin/generate-tests.php` 
-to generate tests that would reflect your changes.
+When making changes to Castor's provided functions run the test generator to ensure test coverage reflects your changes:
+```bash
+bin/generate-tests.php
+```
+
+If you have XDEBUG installed, disable it during test generation to prevent unexpected output:
+```bash
+XDEBUG_MODE=off bin/generate-tests.php
+```
 
 ## Coding Standards
 
