@@ -55,6 +55,9 @@ Castor provides the following built-in functions:
 - [`with`](going-further/interacting-with-castor/advanced-context.md#the-with-function)
 - [`yaml_dump`](going-further/helpers/yaml.md)
 - [`yaml_parse`](going-further/helpers/yaml.md)
+- [`zip`](going-further/helpers/archive.md)
+- [`zip_binary`](going-further/helpers/archive.md)
+- [`zip_php`](going-further/helpers/archive.md)
 
 ## Vendor helpers
 
