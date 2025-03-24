@@ -234,6 +234,7 @@ function add_test(array $args, string $class, ?string $cwd = null, bool $needRem
             'CASTOR_NO_REMOTE' => $needRemote ? 0 : 1,
             'CASTOR_TEST' => 'true',
             'CASTOR_CACHE_DIR' => $_SERVER['CASTOR_CACHE_DIR'],
+            'XDEBUG_MODE' => 'off',
         ],
         input: $inputStream,
         timeout: null,
