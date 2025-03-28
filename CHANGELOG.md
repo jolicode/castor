@@ -6,6 +6,8 @@
 
 * Improve `decrypt_file_with_password()` with smart `.enc` extension handling
   and file overwrite protection
+* Add `zip()`, `zip_binary()`, and `zip_php()` functions to create password-protected
+  zip archives with various compression methods and configurable compression levels
 
 ### Fixes
 

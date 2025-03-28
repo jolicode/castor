@@ -10,6 +10,7 @@ use Castor\Exception\MinimumVersionRequirementNotMetException;
 use Castor\Exception\ProblemException;
 use Castor\Exception\WaitFor\ExitedBeforeTimeoutException;
 use Castor\Exception\WaitFor\TimeoutReachedException;
+use Castor\Helper\CompressionMethod;
 use Castor\Helper\HasherHelper;
 use Castor\Helper\PathHelper;
 use Castor\Import\Mount;
@@ -936,6 +937,39 @@ function open(string ...$urls): void
     }
 
     parallel(...$parallelCallbacks);
+}
+
+function zip(
+    string $source,
+    string $destination,
+    #[\SensitiveParameter] ?string $password = null,
+    CompressionMethod $compressionMethod = CompressionMethod::DEFLATE,
+    int $compressionLevel = 6,
+    bool $overwrite = false,
+): void {
+    Container::get()->zipArchiver->zip($source, $destination, $password, $compressionMethod, $compressionLevel, $overwrite);
+}
+
+function zip_binary(
+    string $source,
+    string $destination,
+    #[\SensitiveParameter] ?string $password = null,
+    CompressionMethod $compressionMethod = CompressionMethod::DEFLATE,
+    int $compressionLevel = 6,
+    bool $overwrite = false,
+): void {
+    Container::get()->zipArchiver->zipWithBinary($source, $destination, $password, $compressionMethod, $compressionLevel, $overwrite);
+}
+
+function zip_php(
+    string $source,
+    string $destination,
+    #[\SensitiveParameter] ?string $password = null,
+    CompressionMethod $compressionMethod = CompressionMethod::DEFLATE,
+    int $compressionLevel = 6,
+    bool $overwrite = false,
+): void {
+    Container::get()->zipArchiver->zipWithPhp($source, $destination, $password, $compressionMethod, $compressionLevel, $overwrite);
 }
 
 /**
