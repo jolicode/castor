@@ -92,6 +92,9 @@ $taskFilterList = [
     'qa:phpstan:update',
     'update',
     // Customized tests
+    'archive:zip',
+    'archive:zip-binary',
+    'archive:zip-php',
     'crypto:decrypt',
     'crypto:encrypt',
     'crypto:decrypt-file',

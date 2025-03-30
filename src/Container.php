@@ -8,6 +8,7 @@ use Castor\Fingerprint\FingerprintHelper;
 use Castor\Helper\Notifier;
 use Castor\Helper\SymmetricCrypto;
 use Castor\Helper\Waiter;
+use Castor\Helper\ZipArchiver;
 use Castor\Http\HttpDownloader;
 use Castor\Import\Importer;
 use Castor\Runner\ParallelRunner;
@@ -54,6 +55,7 @@ final class Container
         public readonly Waiter $waiter,
         public readonly WatchRunner $watchRunner,
         public readonly SymmetricCrypto $symmetricCrypto,
+        public readonly ZipArchiver $zipArchiver,
     ) {
     }
 
