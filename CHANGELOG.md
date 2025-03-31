@@ -25,7 +25,7 @@
 * Add `getAttributes()` method to `TaskCommand` to get all or specific attributes
 * Add `CASTOR_MEMORY_LIMIT` environment variable to set the memory limit when
   using the `run_php()` function
-* Add support for static binaries when install castor with the installer
+* Add support for static binaries when installing castor with the installer
 
 ### Fixes
 
