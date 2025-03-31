@@ -103,44 +103,12 @@ If you don't have PHP installed on your system, Castor can also be installed
 with a static binary that embeds PHP, so it can be run anywhere. The static
 binaries are available for Linux and MacOS only.
 
-You can download the binaries in the [releases
+```bash
+curl "https://castor.jolicode.com/install" | bash -s -- --static
+```
+
+You can also download the binaries in the [releases
 page](https://github.com/jolicode/castor/releases):
-
-=== "Linux AMD64 (x86-64)"
-
-    ```bash
-    curl "https://github.com/jolicode/castor/releases/latest/download/castor.linux-amd64" -Lfso $HOME/.local/bin/castor && \
-        chmod u+x $HOME/.local/bin/castor && \
-        castor --version || \
-        (echo "Could not install castor. Is the target directory writeable?" && (exit 1))
-    ```
-
-=== "Linux ARM64"
-
-    ```bash
-    curl "https://github.com/jolicode/castor/releases/latest/download/castor.linux-arm64" -Lfso $HOME/.local/bin/castor && \
-        chmod u+x $HOME/.local/bin/castor && \
-        castor --version || \
-        (echo "Could not install castor. Is the target directory writeable?" && (exit 1))
-    ```
-
-=== "macOS with Apple Silicon (M1, M2, M3)"
-
-    ```bash
-    curl "https://github.com/jolicode/castor/releases/latest/download/castor.darwin-arm64" -Lfso /usr/local/bin/castor && \
-        chmod u+x /usr/local/bin/castor && \
-        castor --version || \
-        (echo "Could not install castor. Is the target directory writeable?" && (exit 1))
-    ```
-
-=== "macOS with Intel"
-
-    ```bash
-    curl "https://github.com/jolicode/castor/releases/latest/download/castor.darwin-amd64" -Lfso /usr/local/bin/castor && \
-        chmod u+x /usr/local/bin/castor && \
-        castor --version || \
-        (echo "Could not install castor. Is the target directory writeable?" && (exit 1))
-    ```
 
 ### Globally with Composer
 
