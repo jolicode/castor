@@ -159,7 +159,7 @@ latest_url=${CASTOR_DOWNLOAD_URL_PATTERN/~platform~/${platform}}
 output "  Downloading ${latest_url}...";
 case $downloader in
     "curl")
-        curl --fail --location "${latest_url}" > "${CASTOR_TMPDIR}/${CASTOR_TMP_NAME}"
+        curl -s --fail --location "${latest_url}" > "${CASTOR_TMPDIR}/${CASTOR_TMP_NAME}"
         ;;
     "wget")
         wget -q --show-progress "${latest_url}" -O "${CASTOR_TMPDIR}/${CASTOR_TMP_NAME}"
