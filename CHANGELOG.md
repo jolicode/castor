@@ -23,8 +23,9 @@
 
 * Add `$force` parameter to the `cache()` function to force recomputing the value
 * Add `getAttributes()` method to `TaskCommand` to get all or specific attributes
-* Add `CASTOR_MEMORY_LIMIT` environment variable to set the memory limit when 
+* Add `CASTOR_MEMORY_LIMIT` environment variable to set the memory limit when
   using the `run_php()` function
+* Add support for static binaries when installing castor with the installer
 
 ### Fixes
 

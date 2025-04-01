@@ -27,6 +27,7 @@ CASTOR_EXECUTABLE="castor"
 CASTOR_TMP_NAME="$CASTOR_EXECUTABLE-"$(date +"%s")
 CASTOR_NAME="🦫  Castor"
 CASTOR_DOWNLOAD_URL_PATTERN="https://github.com/jolicode/castor/releases/latest/download/castor.~platform~.phar"
+CASTOR_DOWNLOAD_STATIC_URL_PATTERN="https://github.com/jolicode/castor/releases/latest/download/castor.~platform~"
 CASTOR_TMPDIR="${TMPDIR:-/tmp}"
 
 function output {
@@ -50,6 +51,10 @@ function output {
             style_start="\033[1;33m"
             style_end="\033[22;39m"
             ;;
+        "important")
+            style_start="\033[3;35m"
+            style_end="\033[0;39m"
+            ;;
     esac
     fi
 
@@ -60,6 +65,7 @@ output "${CASTOR_NAME} installer" "heading"
 
 binary_dest="${HOME}/.local/bin"
 custom_dir="false"
+static="false"
 
 # Getops does not support long option names
 while [[ $# -gt 0 ]]; do
@@ -74,6 +80,10 @@ case $1 in
         custom_dir="true"
         shift # past argument
         shift # past value
+        ;;
+    --static)
+        static="true"
+        shift # past argument
         ;;
     *)
         output "Unknown option $1" "error"
@@ -99,22 +109,22 @@ else
     exit 1
 fi
 
-# Check that PHP is installed.
-if command -v php >/dev/null 2>&1; then
-    output "  [*] PHP is installed" "success"
-else
-    output "  [ ] ERROR: PHP is required for installation" "error"
-    exit 1
-fi
+if [ "${static}" == "false" ]; then
+    # Check that PHP is installed.
+    if command -v php >/dev/null 2>&1; then
+        output "  [*] PHP is installed" "success"
+    else
+        output "  [ ] ERROR: PHP is required for installation" "error"
+        exit 1
+    fi
 
-if [[ "1" == "$(php -r 'echo version_compare(PHP_VERSION, "8.2", ">=");')" ]]; then
-    output "  [*] PHP version: $(php -r 'echo PHP_VERSION;')" "success"
-else
-    output "  [ ] ERROR: PHP version $(php -r 'echo PHP_VERSION;') is not 8.2 or greater" "error"
-    exit 1
+    if [[ "1" == "$(php -r 'echo version_compare(PHP_VERSION, "8.2", ">=");')" ]]; then
+        output "  [*] PHP version: $(php -r 'echo PHP_VERSION;')" "success"
+    else
+        output "  [ ] ERROR: PHP version $(php -r 'echo PHP_VERSION;') is not 8.2 or greater" "error"
+        exit 1
+    fi
 fi
-
-# todo: add support for static binary?
 
 kernel=$(uname -s 2>/dev/null || /usr/bin/uname -s)
 case ${kernel} in
@@ -155,7 +165,12 @@ platform="${kernel}-${machine}"
 # The necessary checks have passed. Start downloading the right version.
 output "\nDownload" "heading"
 
-latest_url=${CASTOR_DOWNLOAD_URL_PATTERN/~platform~/${platform}}
+if [ "${static}" == "true" ]; then
+    latest_url=${CASTOR_DOWNLOAD_STATIC_URL_PATTERN/~platform~/${platform}}
+else
+    latest_url=${CASTOR_DOWNLOAD_URL_PATTERN/~platform~/${platform}}
+fi
+
 output "  Downloading ${latest_url}...";
 case $downloader in
     "curl")
@@ -198,6 +213,11 @@ chmod u+x "${binary_dest}/${CASTOR_EXECUTABLE}"
 output "\n🦫  $("${binary_dest}/${CASTOR_EXECUTABLE}" --version) was installed successfully!" "success"
 
 if [ "${custom_dir}" == "false" ]; then
+    output "\n" "important"
+    output "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" "important"
+    output "!! It's almost done. Please read the following instructions carefully !!" "important"
+    output "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" "important"
+
     output "\nUse it as a local file:" "info"
     output "  ${binary_dest}/${CASTOR_EXECUTABLE}"
     output "\nOr add the following line to your shell configuration file:" "info"
