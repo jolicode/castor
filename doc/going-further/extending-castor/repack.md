@@ -40,9 +40,15 @@ vendor/bin/castor repack --help
 > repack task to avoid including useless files in the phar.
 
 > [!NOTE]
-> If a `box.json` file exists in your application directory, 
-> it will be merged with the config file used by Castor.  
-> None of this keys `base-path`, `main`, `alias` or `output` keys can be defined in your application box config.
+> If a `box.json` file exists in your application directory,
+> it will be merged with the config file used by Castor.
+> None of theses keys `base-path`, `main`, `alias` or `output` keys can be
+> defined in your application box config.
+
+> [!CAUTION]
+>  If some classes are missing in your phar, it might be because they are
+> excluded by castor's `box.json` file. In this case, you should override the
+> default configuration with a local `box.json` file
 
 ## Going further
 
