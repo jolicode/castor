@@ -84,14 +84,10 @@ class Composer
         $command = $update ? 'update' : 'install';
 
         $this->run($composerJsonFile, $vendorDirectory, [$command], callback: function () use ($progressIndicator): void {
-            if ($progressIndicator) {
-                $progressIndicator->advance();
-            }
+            $progressIndicator?->advance();
         });
 
-        if ($progressIndicator) {
-            $progressIndicator->finish('<info>Remote packages imported</info>');
-        }
+        $progressIndicator?->finish('<info>Remote packages imported</info>');
 
         $this->writeInstalled($vendorDirectory, $composerLockFile);
     }

@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+## 0.24.0 (2025-04-25)
+
 ### Features
 
 * Improve `decrypt_file_with_password()` with smart `.enc` extension handling
