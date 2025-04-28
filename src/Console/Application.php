@@ -49,6 +49,11 @@ class Application extends SymfonyApplication
 
     public function doRun(InputInterface $input, OutputInterface $output): int
     {
+        if ($input->hasParameterOption(['--version', '-V'], true)) {
+            // skip the boot process
+            return parent::doRun($input, $output);
+        }
+
         $this->containerBuilder->set(InputInterface::class, $input);
         $this->containerBuilder->set(OutputInterface::class, $output);
 
