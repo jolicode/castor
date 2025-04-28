@@ -8,11 +8,13 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Filesystem;
 
 use function Castor\run_phar;
+use function Castor\run_php;
 
 /** @internal */
 #[AsCommand(
@@ -34,6 +36,7 @@ final class ExecuteCommand extends Command
     protected function configure(): void
     {
         $this
+            ->addOption('deps', 'd', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Additional dependencies to install')
             ->addArgument('package', InputArgument::REQUIRED, 'Package to execute')
             ->ignoreValidationErrors()
         ;
@@ -52,14 +55,15 @@ final class ExecuteCommand extends Command
 
         // format of execute is
         // vendor/package:version@binary
+        $deps = $input->getOption('deps') ?? [];
         $name = $input->getArgument('package');
         $nameSplitted = explode('@', $name);
 
         if (\count($nameSplitted) >= 2) {
-            $package = $nameSplitted[0];
+            $deps[] = $nameSplitted[0];
             $binary = $nameSplitted[1];
         } else {
-            $package = $name;
+            $deps[] = $name;
             $binary = null;
         }
 
@@ -83,8 +87,9 @@ final class ExecuteCommand extends Command
 
         try {
             $fs->mkdir($tmpDir, 0o755);
-            $this->composer->run($composerJsonPath, $vendorDirectory, ['require', $package, '--no-interaction'], $output, $input->isInteractive());
-            run_phar($vendorDirectory . '/bin/' . $binary, $args);
+            $this->composer->run($composerJsonPath, $vendorDirectory, ['require', ...$deps, '--no-interaction'], $output, $input->isInteractive());
+
+            run_php($vendorDirectory . '/bin/' . $binary, $args);
         } finally {
             $fs->remove($tmpDir);
         }

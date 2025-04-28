@@ -33,5 +33,6 @@ Available commands:
   list                  List commands
  castor
   castor:composer       [composer] Interact with built-in Composer for castor
+  castor:execute        [execute] Execute a remote task from a packagist directory
  pyrech
   pyrech:hello-example  Hello from example!
