@@ -49,6 +49,16 @@ function parallel(callable ...$callbacks): array
  * @param string|array<string|\Stringable|int>|CommandBuilderInterface $command
  * @param array<string, string|\Stringable|int>|null                   $environment
  * @param (callable(string, string, Process) :void)|null               $callback
+ * @param Context|array{
+ *    "environment"?: array<string, string>,
+ *    "workingDirectory"?: string,
+ *    "tty"?: bool,
+ *    "pty"?: bool,
+ *    "timeout"?: float,
+ *    "quiet"?: bool,
+ *    "allowFailure"?: bool,
+ *    "notify"?: bool,
+ *  }|null                                                              $context
  */
 function run(
     string|array|CommandBuilderInterface $command,
@@ -61,7 +71,7 @@ function run(
     ?bool $allowFailure = null,
     ?bool $notify = null,
     ?callable $callback = null,
-    ?Context $context = null,
+    Context|array|null $context = null,
     ?string $path = null,
 ): Process {
     if ($workingDirectory && $path) {

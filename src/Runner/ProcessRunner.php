@@ -22,7 +22,11 @@ use Symfony\Component\Process\Process;
 use function Castor\context;
 use function Symfony\Component\String\u;
 
-/** @internal */
+/**
+ * @internal
+ *
+ * @phpstan-import-type ContextArray from Context
+ */
 class ProcessRunner
 {
     public function __construct(
@@ -39,6 +43,7 @@ class ProcessRunner
      * @param string|array<string|\Stringable|int>|CommandBuilderInterface $command
      * @param array<string, string|\Stringable|int>|null                   $environment
      * @param (callable(string, string, Process) :void)|null               $callback
+     * @param Context|ContextArray|null                                    $context
      */
     public function run(
         string|array|CommandBuilderInterface $command,
@@ -51,9 +56,13 @@ class ProcessRunner
         ?bool $allowFailure = null,
         ?bool $notify = null,
         ?callable $callback = null,
-        ?Context $context = null,
+        Context|array|null $context = null,
     ): Process {
         $context ??= $this->contextRegistry->getCurrentContext();
+
+        if (\is_array($context)) {
+            $context = $this->contextRegistry->getCurrentContext()->with($context);
+        }
 
         if (null !== $environment) {
             trigger_deprecation('jolicode/castor', '0.18', 'The "environment" argument is deprecated, use the "Context" object instead.');
