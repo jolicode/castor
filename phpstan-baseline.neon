@@ -1,56 +1,67 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Function args\\\\args\\(\\) has parameter \\$word with no type specified\\.$#"
+			message: '#^Function args\\args\(\) has parameter \$word with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: examples/args.php
 
 		-
-			message: "#^Negated boolean expression is always true\\.$#"
+			message: '#^Negated boolean expression is always true\.$#'
+			identifier: booleanNot.alwaysTrue
 			count: 1
 			path: examples/assertion.php
 
 		-
-			message: "#^Result of function usleep \\(void\\) is used\\.$#"
+			message: '#^Result of function usleep \(void\) is used\.$#'
+			identifier: function.void
 			count: 1
 			path: examples/assertion.php
 
 		-
-			message: "#^Class RepackedApplication not found\\.$#"
+			message: '#^Class RepackedApplication not found\.$#'
+			identifier: class.notFound
 			count: 1
 			path: src/Console/ApplicationFactory.php
 
 		-
-			message: "#^Default value of the parameter \\#1 \\$data \\(array\\{\\}\\) of method Castor\\\\Context\\:\\:__construct\\(\\) is incompatible with type array\\{name\\: string, production\\: bool, foo\\?\\: string\\}\\.$#"
+			message: '#^Default value of the parameter \#1 \$data \(array\{\}\) of method Castor\\Context\:\:__construct\(\) is incompatible with type array\{name\: string, production\: bool, foo\?\: string\}\.$#'
+			identifier: parameter.defaultValue
 			count: 1
 			path: src/Context.php
 
 		-
-			message: "#^Parameter \\#1 \\$data of class Castor\\\\Context constructor expects array\\{name\\: string, production\\: bool, foo\\?\\: string\\}, array\\<int\\|string, mixed\\> given\\.$#"
+			message: '#^Parameter \#1 \$data of class Castor\\Context constructor expects array\{name\: string, production\: bool, foo\?\: string\}, array\<int\|string, mixed\> given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Context.php
 
 		-
-			message: "#^Class Castor\\\\HasherHelper extends @final class Castor\\\\Helper\\\\HasherHelper\\.$#"
+			message: '#^Class Castor\\HasherHelper extends @final class Castor\\Helper\\HasherHelper\.$#'
+			identifier: class.extendsFinalByPhpDoc
 			count: 1
 			path: src/HasherHelper.php
 
 		-
-			message: "#^Class Castor\\\\PathHelper extends @final class Castor\\\\Helper\\\\PathHelper\\.$#"
+			message: '#^Class Castor\\PathHelper extends @final class Castor\\Helper\\PathHelper\.$#'
+			identifier: class.extendsFinalByPhpDoc
 			count: 1
 			path: src/PathHelper.php
 
 		-
-			message: "#^Function Castor\\\\get_exit_code\\(\\) has parameter \\$args with no type specified\\.$#"
+			message: '#^Function Castor\\get_exit_code\(\) has parameter \$args with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: src/functions.php
 
 		-
-			message: "#^Function Castor\\\\request\\(\\) has parameter \\$args with no type specified\\.$#"
+			message: '#^Function Castor\\request\(\) has parameter \$args with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: src/functions.php
 
 		-
-			message: "#^Function Castor\\\\ssh\\(\\) has parameter \\$args with no type specified\\.$#"
+			message: '#^Function Castor\\ssh\(\) has parameter \$args with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
 			path: src/functions.php

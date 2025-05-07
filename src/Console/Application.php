@@ -23,6 +23,7 @@ class Application extends SymfonyApplication
 {
     public const NAME = 'castor';
     public const VERSION = 'v0.24.0';
+    public const HIDE_LOGO = false;
 
     private Command $command;
 
@@ -163,6 +164,10 @@ class Application extends SymfonyApplication
 
     private function getLogo(): string
     {
+        if (static::HIDE_LOGO) {
+            return '';
+        }
+
         if (!$this->test) {
             $now = new \DateTime();
             $year = date('Y');
