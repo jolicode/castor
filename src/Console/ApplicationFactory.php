@@ -5,7 +5,9 @@ namespace Castor\Console;
 use Castor\Console\Command\CompileCommand;
 use Castor\Console\Command\ComposerCommand;
 use Castor\Console\Command\DebugCommand;
+use Castor\Console\Command\McpMonitorCommand;
 use Castor\Console\Command\RepackCommand;
+use Castor\Console\Command\RunMcpServerCommand;
 use Castor\Container;
 use Castor\Helper\PathHelper;
 use Castor\Helper\PlatformHelper;
@@ -204,9 +206,12 @@ class ApplicationFactory
                     '$containerBuilder' => service(ContainerInterface::class),
                 ])
                 ->call('add', [service(DebugCommand::class)])
+                ->call('add', [service(RunMcpServerCommand::class)])
+                ->call('add', [service(McpMonitorCommand::class)])
                 ->call('setDispatcher', [service(EventDispatcherInterface::class)])
                 ->call('setCatchErrors', [true])
         ;
+
         if (!$repacked) {
             $app
                 ->call('add', [service(ComposerCommand::class)])
