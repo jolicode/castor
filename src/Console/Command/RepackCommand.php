@@ -69,7 +69,7 @@ class RepackCommand extends Command
 
         $appName = $input->getOption('app-name');
         $appVersion = $input->getOption('app-version');
-        $hideLogo = (int) $input->getOption('no-logo');
+        $hideLogo = $input->getOption('no-logo') ? 'true' : 'false';
         $alias = 'alias.phar';
         $main = <<<PHP
             <?php
