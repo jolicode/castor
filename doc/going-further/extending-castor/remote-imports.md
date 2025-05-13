@@ -21,7 +21,7 @@ more information about the `composer.json` file.
 
 ## Importing file from a remote package
 
-Third party functions may not be autoloaded by Composer, as there may be 
+Third party functions may not be autoloaded by Composer, as they may be 
 optional. To import them, you can use the `import()` function.
 
 ```php
@@ -55,7 +55,7 @@ them), you can prevent Castor from importing and running any of them. Add the
 `--no-remote` option when calling any Castor tasks:
 
 ```bash
-$ castor --no-remote my-task
+castor --no-remote my-task
 ```
 
 This will trigger a warning to remind you that the remote imports are disabled.
@@ -66,8 +66,8 @@ If you want to disable remote imports every time, you can define the
 `CASTOR_NO_REMOTE` environment variable to 1:
 
 ```bash
-$ export CASTOR_NO_REMOTE=1
-$ castor my-task # will not import any remote functions
+export CASTOR_NO_REMOTE=1
+castor my-task # will not import any remote functions
 ```
 
 ## Lock file
