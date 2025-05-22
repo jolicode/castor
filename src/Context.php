@@ -7,6 +7,20 @@ use Castor\Helper\PathHelper;
 use Castor\VerbosityLevel as LegacyVerbosityLevel;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
+/**
+ * Context for running commands.
+ *
+ * @phpstan-type ContextArray array{
+ *   "environment"?: array<string, string>,
+ *   "workingDirectory"?: string,
+ *   "tty"?: bool,
+ *   "pty"?: bool,
+ *   "timeout"?: float,
+ *   "quiet"?: bool,
+ *   "allowFailure"?: bool,
+ *   "notify"?: bool,
+ * }
+ */
 #[Exclude]
 class Context implements \ArrayAccess
 {
@@ -56,6 +70,48 @@ class Context implements \ArrayAccess
             'verbosityLevel' => $this->verbosityLevel,
             'notificationTitle' => $this->notificationTitle,
         ];
+    }
+
+    /**
+     * @param ContextArray $contextData
+     */
+    public function with(array $contextData): self
+    {
+        $context = $this;
+
+        if (\array_key_exists('environment', $contextData)) {
+            $context = $context->withEnvironment($contextData['environment']);
+        }
+
+        if (\array_key_exists('workingDirectory', $contextData)) {
+            $context = $context->withWorkingDirectory($contextData['workingDirectory']);
+        }
+
+        if (\array_key_exists('tty', $contextData)) {
+            $context = $context->withTty($contextData['tty']);
+        }
+
+        if (\array_key_exists('pty', $contextData)) {
+            $context = $context->withPty($contextData['pty']);
+        }
+
+        if (\array_key_exists('timeout', $contextData)) {
+            $context = $context->withTimeout($contextData['timeout']);
+        }
+
+        if (\array_key_exists('quiet', $contextData)) {
+            $context = $context->withQuiet($contextData['quiet']);
+        }
+
+        if (\array_key_exists('allowFailure', $contextData)) {
+            $context = $context->withAllowFailure($contextData['allowFailure']);
+        }
+
+        if (\array_key_exists('notify', $contextData)) {
+            $context = $context->withNotify($contextData['notify']);
+        }
+
+        return $context;
     }
 
     /**
