@@ -3,6 +3,7 @@
 ## Not released yet
 
 * Allows repack without Castor logo e.g. `castor repack --no-logo`
+* Add static build for the Linux arm64 architecture
 
 ## 0.24.0 (2025-04-25)
 

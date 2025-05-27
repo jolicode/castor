@@ -144,10 +144,6 @@ machine=$(uname -m 2>/dev/null || /usr/bin/uname -m)
 case ${machine} in
     aarch64*|armv8*|arm64)
         machine="arm64"
-        if [ "linux" = "${kernel}" ]; then
-            output "  [ ] Your architecture (${machine}) is not currently supported" "error"
-            exit 1
-        fi
         ;;
     x86_64)
         machine="amd64"
