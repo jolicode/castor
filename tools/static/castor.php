@@ -8,10 +8,16 @@ use function Castor\run;
 
 // Extensions should be in sync with .github/actions/cache/action.yaml
 
-#[AsTask(description: 'Build static binary for Linux system')]
-function linux()
+#[AsTask(description: 'Build static binary for Linux (amd64) system')]
+function linuxAmd64()
 {
     run('bin/castor compile tools/phar/build/castor.linux-amd64.phar --os=linux --arch=x86_64 --binary-path=castor.linux-amd64 --php-extensions=mbstring,phar,posix,tokenizer,pcntl,curl,filter,openssl,sodium,ctype,zip,bz2', timeout: 0);
+}
+
+#[AsTask(description: 'Build static binary for Linux (arm64) system')]
+function linuxArm64()
+{
+    run('bin/castor compile tools/phar/build/castor.linux-arm64.phar --os=linux --arch=aarch64 --binary-path=castor.linux-arm64 --php-extensions=mbstring,phar,posix,tokenizer,pcntl,curl,filter,openssl,sodium,ctype,zip,bz2', timeout: 0);
 }
 
 #[AsTask(description: 'Build static binary for MacOS (amd64) system')]

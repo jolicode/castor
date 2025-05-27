@@ -26,7 +26,8 @@ castor:phar:windows                                               Build phar for
 castor:release:release                                            Release a new version of castor
 castor:static:darwin-amd64                                        Build static binary for MacOS (amd64) system
 castor:static:darwin-arm64                                        Build static binary for MacOS (arm64) system
-castor:static:linux                                               Build static binary for Linux system
+castor:static:linux-amd64                                         Build static binary for Linux (amd64) system
+castor:static:linux-arm64                                         Build static binary for Linux (arm64) system
 castor:watcher:build                                              Build watcher for all systems
 castor:watcher:darwin                                             Build watcher for MacOS system
 castor:watcher:linux                                              Build watcher for Linux system
