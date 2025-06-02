@@ -2,7 +2,13 @@
 
 ## Not released yet
 
+### Features
+
 * Allows repack without Castor logo e.g. `castor repack --no-logo`
+
+### Internal
+
+* Update all PHP vendor
 
 ## 0.24.0 (2025-04-25)
 
