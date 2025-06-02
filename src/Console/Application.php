@@ -58,7 +58,7 @@ class Application extends SymfonyApplication
         $this->containerBuilder->set(InputInterface::class, $input);
         $this->containerBuilder->set(OutputInterface::class, $output);
 
-        // @phpstan-ignore-next-line
+        // @phpstan-ignore argument.type
         Container::set($this->containerBuilder->get(Container::class));
 
         $this->kernel->boot($input, $output);
@@ -68,6 +68,11 @@ class Application extends SymfonyApplication
 
     public function getHelp(): string
     {
+        // @phpstan-ignore if.alwaysFalse
+        if (self::HIDE_LOGO) {
+            return parent::getHelp();
+        }
+
         return $this->getLogo() . parent::getHelp();
     }
 
