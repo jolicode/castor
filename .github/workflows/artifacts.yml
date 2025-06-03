@@ -69,7 +69,7 @@ jobs:
 
       - uses: ./.github/actions/cache
         with:
-          os: 'linux'
+          os: 'linux-amd64'
 
       - name: retrieve phar artifacts
         uses: actions/download-artifact@v4
@@ -79,7 +79,7 @@ jobs:
 
       - uses: ./.github/actions/static
         with:
-          os: 'linux'
+          os: 'linux-amd64'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -88,6 +88,39 @@ jobs:
         with:
           name: 'castor.linux-amd64'
           path: ./castor.linux-amd64
+          if-no-files-found: error
+
+  static-linux-arm64:
+    needs: phars
+    name: Create Linux arm64 static binary and upload
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/install
+
+      - uses: ./.github/actions/cache
+        with:
+          os: 'linux-arm64'
+
+      - name: retrieve phar artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: tools/phar/build
+          merge-multiple: true
+
+      - uses: ./.github/actions/static
+        with:
+          os: 'linux-arm64'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload the Linux arm64 static binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'castor.linux-arm64'
+          path: ./castor.linux-arm64
           if-no-files-found: error
 
   static-darwin-amd64:
