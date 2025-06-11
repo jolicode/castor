@@ -3,7 +3,6 @@
 namespace Castor;
 
 use Castor\Console\Application;
-use Castor\Console\Command\TaskCommand;
 use Castor\Console\Output\VerbosityLevel;
 use Castor\Descriptor\DescriptorsCollection;
 use Castor\Descriptor\TaskDescriptorCollection;
@@ -12,7 +11,6 @@ use Castor\Event\AfterBootEvent;
 use Castor\Event\BeforeBootEvent;
 use Castor\Event\FunctionsResolvedEvent;
 use Castor\Exception\CouldNotFindEntrypointException;
-use Castor\Factory\TaskCommandFactory;
 use Castor\Function\FunctionLoader;
 use Castor\Function\FunctionResolver;
 use Castor\Helper\PlatformHelper;
@@ -20,7 +18,6 @@ use Castor\Import\Importer;
 use Castor\Import\Mount;
 use Castor\Import\Remote\Composer;
 use Symfony\Component\Console\Event\ConsoleErrorEvent;
-use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -48,7 +45,6 @@ final class Kernel
         private readonly FunctionResolver $functionResolver,
         private readonly FunctionLoader $functionLoader,
         private readonly ContextRegistry $contextRegistry,
-        private readonly TaskCommandFactory $taskCommandFactory,
     ) {
     }
 
@@ -125,22 +121,6 @@ final class Kernel
         }
 
         $this->functionLoader->loadListeners($descriptorsCollection->listenerDescriptors);
-
-        /**
-         * Resolve the current task command before loading and configuring contexts.
-         * This is necessary because the task command can add options to the application.
-         * If we do not add these options before configuring the context,
-         * binding the input to the application definition will fail.
-         *
-         * @see https://github.com/jolicode/castor/issues/593
-         */
-        $taskCommand = $this->resolveCurrentTaskCommand($descriptorsCollection, $input);
-
-        $taskDefinition = $taskCommand?->getDefinition();
-
-        if (null !== $taskDefinition) {
-            $this->application->getDefinition()->addOptions($taskDefinition->getOptions());
-        }
 
         // Must load contexts before tasks, because tasks can be disabled
         // depending on the context. And it must be before executing
@@ -220,30 +200,8 @@ final class Kernel
         $this->contextRegistry->setDefaultIfEmpty();
 
         $contextNames = $this->contextRegistry->getNames();
-        $applicationDefinition = $this->application->getDefinition();
 
-        if ($contextNames) {
-            $defaultContext = PlatformHelper::getEnv('CASTOR_CONTEXT') ?: $this->contextRegistry->getDefaultName();
-
-            $applicationDefinition->addOption(new InputOption(
-                'context',
-                '_complete' === $input->getFirstArgument() || 'list' === $input->getFirstArgument() ? null : 'c',
-                InputOption::VALUE_REQUIRED,
-                \sprintf('The context to use (%s)', implode('|', $contextNames)),
-                $defaultContext,
-                $contextNames,
-            ));
-        }
-
-        try {
-            $input->bind($applicationDefinition);
-        } catch (ExceptionInterface) {
-            // not an issue if parsing gone wrong, we'll just use the default
-            // context and it will fail later anyway
-        }
-
-        // occurs when running `castor -h`, or if no context is defined
-        if (!$input->hasOption('context')) {
+        if (!$contextNames || ('_complete' === $input->getFirstArgument() || 'list' === $input->getFirstArgument())) {
             $this->contextRegistry->setCurrentContext(new Context(
                 verbosityLevel: VerbosityLevel::fromSymfonyOutput($output)
             ));
@@ -251,33 +209,29 @@ final class Kernel
             return;
         }
 
+        $currentContextName = PlatformHelper::getEnv('CASTOR_CONTEXT')
+            ?: $input->getParameterOption(['--context', '-c'])
+            ?: $this->contextRegistry->getDefaultName();
+
+        $applicationDefinition = $this->application->getDefinition();
+        $applicationDefinition->addOption(new InputOption(
+            'context',
+            'c',
+            InputOption::VALUE_REQUIRED,
+            \sprintf('The context to use (%s)', implode('|', $contextNames)),
+            $currentContextName,
+            $contextNames,
+        ));
+
         $context = $this
             ->contextRegistry
-            ->get($input->getOption('context'))
+            ->get($currentContextName)
         ;
 
         if ($context->verbosityLevel->isNotConfigured()) {
             $context = $context->withVerbosityLevel(VerbosityLevel::fromSymfonyOutput($output));
         }
 
-        $this->contextRegistry->setCurrentContext($context->withName($input->getOption('context')));
-    }
-
-    private function resolveCurrentTaskCommand(DescriptorsCollection $descriptorsCollection, InputInterface $input): ?TaskCommand
-    {
-        $taskCommand = null;
-
-        foreach ($descriptorsCollection->taskDescriptors as $taskDescriptor) {
-            $namespace = $taskDescriptor->taskAttribute->namespace;
-            $taskName = $taskDescriptor->taskAttribute->name;
-            $fullTaskName = $namespace ? $namespace . ':' . $taskName : $taskName;
-            if ($fullTaskName === $input->getFirstArgument()) {
-                $taskCommand = $this->taskCommandFactory->createTask($taskDescriptor);
-
-                break;
-            }
-        }
-
-        return $taskCommand;
+        $this->contextRegistry->setCurrentContext($context->withName($currentContextName));
     }
 }

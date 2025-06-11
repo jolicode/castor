@@ -191,6 +191,7 @@ add_test(['context:context', '--context', 'path'], 'ContextContextPath');
 add_test(['context:context', '--context', 'production'], 'ContextContextProduction');
 add_test(['context:context', '--context', 'run'], 'ContextContextRun');
 add_test(['context:context', '--context', 'updated'], 'ContextContextUpdated');
+add_test(['context-info', '-c', 'run', '--test'], 'ContextIsParsedAnywhereOnTheCommandLine');
 add_test(['enabled:hello', '--context', 'production'], 'EnabledInProduction');
 add_test(['failure:verbose-arguments'], 'FailureVerboseArgumentsTrue', input: "yes\n");
 add_test(['list', '--raw', '--format', 'txt', '--short'], 'List', needRemote: true, skipOnBinary: true);

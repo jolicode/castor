@@ -98,7 +98,7 @@ function contextFromPath(): Context
     return new Context($data);
 }
 
-#[AsTask(description: 'Displays information about the context', name: 'context')]
+#[AsTask(description: 'Displays information about the context', name: 'context', aliases: ['context-info'])]
 function contextInfo(bool $test = false): void
 {
     $context = context();

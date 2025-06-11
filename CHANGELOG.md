@@ -16,6 +16,7 @@
 ### Fixes
 
 * Add proper `.enc` extension to files encrypted with `encrypt_file_with_password()`
+* Fix context parsing, especially when using a task alias
 
 ### Internal
 
