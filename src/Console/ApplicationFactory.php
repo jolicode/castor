@@ -10,6 +10,7 @@ use Castor\Container;
 use Castor\Helper\PathHelper;
 use Castor\Helper\PlatformHelper;
 use Castor\Monolog\Processor\ProcessProcessor;
+use Castor\💩\FixLazyServicePass;
 use Joli\JoliNotif\DefaultNotifier;
 use Monolog\Logger;
 use Psr\Cache\CacheItemPoolInterface;
@@ -24,6 +25,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use Symfony\Component\DependencyInjection\ChildDefinition;
+use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
@@ -78,6 +80,7 @@ class ApplicationFactory
             'test' => '%env(bool:default::CASTOR_TEST)%',
             'use_output_section' => '%env(bool:default::CASTOR_USE_SECTION)%',
         ]);
+        $container->addCompilerPass(new FixLazyServicePass(), PassConfig::TYPE_OPTIMIZE);
         $container->compile(true);
 
         $container->set(ContainerInterface::class, $container);

@@ -55,6 +55,8 @@ jobs:
   phpunit:
     name: "PHPUnit on ${{ matrix.php }} / Castor from ${{ matrix.castor.method }}"
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     strategy:
       fail-fast: false
       matrix:

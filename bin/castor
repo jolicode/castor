@@ -1,6 +1,7 @@
 #!/usr/bin/env php
 <?php
 
+use Castor\Console\Application;
 use Castor\Console\ApplicationFactory;
 
 $phpFile = $_SERVER['CASTOR_PHP_REPLACE'] ?? false;
@@ -24,5 +25,14 @@ if (file_exists($file = __DIR__ . '/../vendor/autoload.php')) {
 } else {
     throw new \RuntimeException('Unable to find autoloader.');
 }
+
+// // to debug repacked applications, uncomment the following line
+// class RepackedApplication extends Application
+// {
+//     public const NAME = 'my-app';
+//     public const VERSION = '1.0.0';
+//     public const ROOT_DIR = __DIR__ . '/../tests/fixtures/valid/layout-with-folder/';
+//     public const HIDE_LOGO = false;
+// }
 
 ApplicationFactory::create()->run();
