@@ -26,7 +26,7 @@ if (file_exists($file = __DIR__ . '/../vendor/autoload.php')) {
     throw new \RuntimeException('Unable to find autoloader.');
 }
 
-// // to debug repacked applications, uncomment the following line
+// // to debug repacked applications, uncomment the following lines
 // class RepackedApplication extends Application
 // {
 //     public const NAME = 'my-app';
