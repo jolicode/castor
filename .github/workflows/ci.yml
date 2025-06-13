@@ -99,7 +99,7 @@ jobs:
       - name: Compile Custom Built PHP along Castor phar for Linux
         run: |
           set -e
-          bin/castor castor:static:linux
+          bin/castor castor:static:linux-amd64
           mv castor.linux-amd64 ${{ github.workspace }}/${{ matrix.castor.bin }}
         if: matrix.castor.method == 'static'
 

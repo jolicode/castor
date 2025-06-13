@@ -5,6 +5,7 @@
 ### Features
 
 * Allows repack without Castor logo e.g. `castor repack --no-logo`
+* Add static build for the Linux arm64 architecture
 
 ### Internal
 

@@ -5,15 +5,15 @@ inputs:
   os:
     description: 'The operating system to build for'
     required: true
-    default: 'linux'
+    default: 'linux-amd64'
 
 runs:
   using: "composite"
   steps:
     - name: Build Castor static binary for Linux (linux-amd64)
-      run: bin/castor castor:static:linux
+      run: bin/castor castor:static:linux-amd64
       shell: bash
-      if: ${{ inputs.os == 'linux' }}
+      if: ${{ inputs.os == 'linux-amd64' }}
 
     - name: Ensure binary is OK (linux-amd64)
       run: |
@@ -21,7 +21,20 @@ runs:
         ./castor.linux-amd64 --version
         ./castor.linux-amd64 debug
       shell: bash
-      if: ${{ inputs.os == 'linux' }}
+      if: ${{ inputs.os == 'linux-amd64' }}
+
+    - name: Build Castor static binary for Linux (linux-arm64)
+      run: bin/castor castor:static:linux-arm64
+      shell: bash
+      if: ${{ inputs.os == 'linux-arm64' }}
+
+    - name: Ensure binary is OK (linux-arm64)
+      run: |
+          set -e
+          ./castor.linux-arm64 --version
+          ./castor.linux-arm64 debug
+      shell: bash
+      if: ${{ inputs.os == 'linux-arm64' }}
 
     - name: Build Castor static binary for Darwin (darwin-amd64)
       run: bin/castor castor:static:darwin-amd64
