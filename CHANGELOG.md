@@ -2,13 +2,22 @@
 
 ## Not released yet
 
+## 0.25.0 (2025-06-13)
+
 ### Features
 
 * Allows repack without Castor logo e.g. `castor repack --no-logo`
 
+### Fixes
+
+* Fix context parsing, especially when using a task alias
+* Do not load user files when displaying version
+* Add a workaround to fix a bug in PHP 8.4, proxy object, and repacked application
+
 ### Internal
 
 * Update all PHP vendor
+* Fix some CI issues (use github tokens)
 
 ## 0.24.0 (2025-04-25)
 
@@ -22,7 +31,6 @@
 ### Fixes
 
 * Add proper `.enc` extension to files encrypted with `encrypt_file_with_password()`
-* Fix context parsing, especially when using a task alias
 
 ### Internal
 
