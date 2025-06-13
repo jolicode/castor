@@ -22,7 +22,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 class Application extends SymfonyApplication
 {
     public const NAME = 'castor';
-    public const VERSION = 'v0.24.0';
+    public const VERSION = 'v0.25.0';
     public const HIDE_LOGO = false;
 
     private Command $command;
