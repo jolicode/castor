@@ -17,7 +17,7 @@ use function Castor\io;
 use function Castor\run;
 
 const REPO = 'jolicode/castor';
-const EXPECTED_ARTIFACTS = 8;
+const EXPECTED_ARTIFACTS = 9;
 
 #[AsTask(description: 'Release a new version of castor', aliases: ['release'])]
 function release(): int
