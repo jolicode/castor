@@ -1,4 +1,4 @@
-site_name: The DX oriented task runner in PHP
+site_name: PHP task runner
 site_url: https://castor.jolicode.com/
 repo_url: https://github.com/jolicode/castor
 copyright: 'Castor is licensed under <a href="https://github.com/jolicode/castor/blob/main/LICENSE">MIT license</a>'
@@ -52,6 +52,7 @@ theme:
     - navigation.instant
     - navigation.instant.prefetch
     - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.top
     - navigation.tracking
     - search.highlight

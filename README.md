@@ -4,6 +4,24 @@
 </h1>
 
 <p align="center">
+    <i>Automate anything with PHP. Simply. Efficiently. Elegantly.</i>
+</p>
+
+## 🚀 TL;DR
+
+Castor is a lightweight, modern task runner for PHP.<br/>
+No need for Bash, Makefiles or YAML.<br/>
+Write your automation scripts in PHP, run them from the CLI.<br/>
+
+* ✅ 100% PHP — define tasks as simple PHP functions
+* ⚡ Fast & native — no configuration, no boilerplate
+* 🔧 Provided with a bunch of [useful built-in functions](reference.md)
+* 🧠 [Autocompletion](going-further/interacting-with-castor/autocomplete.md) & descriptions for each task
+* 🧰 Easy to integrate in your dev workflows
+
+## 🤓 Presentation
+
+<p align="center">
     <i>Castor is a <strong><abbr title="Developer eXperience">DX</abbr>-oriented task
     runner</strong> built in PHP featuring a range of functions for common task processing.</i>
 </p>
@@ -27,7 +45,7 @@ It comes with many features to make your life easier:
 > it is unlikely, it is still possible that it will change in the
 > future.
 
-## Usage
+## 🧑‍🔬 Usage
 
 In Castor, tasks are set up as typical PHP functions marked with the `#[AsTask()]` attribute in a `castor.php` file.
 
@@ -84,21 +102,17 @@ If you want to read more about usage, you can read the
 [basic usage](https://castor.jolicode.com/getting-started/) documentation, or
 watch [some examples](https://castor.jolicode.com/examples/).
 
-## Installation
-
-### With the installer
-
-> [!TIP]
-> This is the recommended way to install Castor on Linux and macOS. It requires PHP >= 8.2.
+## 🧰 Get started in 10 seconds
 
 ```bash
 curl "https://castor.jolicode.com/install" | bash
+
+castor
 ```
 
-There are other ways to install Castor, please refer to the
-[documentation](https://castor.jolicode.com/getting-started/installation/).
+<small>There are also others ways to install Castor, see the [installation documentation](installation.md).</small>
 
-## Further documentation
+## 📚 Want more?
 
 Discover more by reading the docs:
 
