@@ -1,14 +1,30 @@
-# The DX oriented task runner in PHP
+# Castor - Automate everything. In PHP.
 
 <div align="center">
     <img width="450" height="117" src="https://jolicode.com/media/original/castor-logo-line.svg?cool" alt="castor logo" />
 </div>
 
-## Presentation
+<div align="center">
+    <strong>Automate anything with PHP. Simply. Efficiently. Elegantly.</strong>
+</div>
+
+## 🚀 TL;DR
+
+Castor is a lightweight, modern task runner for PHP.<br/>
+No need for Bash, Makefiles or YAML.<br/>
+Write your automation scripts in PHP, run them from the CLI.<br/>
+
+* ✅ 100% PHP — define tasks as simple PHP functions
+* ⚡ Fast & native — no configuration, no boilerplate
+* 🔧 Provided with a bunch of [useful built-in functions](reference.md)
+* 🧠 [Autocompletion](going-further/interacting-with-castor/autocomplete.md) & descriptions for each task
+* 🧰 Easy to integrate in your dev workflows
+
+## 🤓 Presentation
 
 Castor is a <strong><abbr title="Developer eXperience">DX</abbr> oriented task
-runner</strong> built in PHP featuring a range of functions for common task
-processing.
+runner</strong>, that is designed to help you automate your development tasks
+and workflows in a simple and efficient way.
 
 It can be viewed as an alternative to Makefile, Fabric, Invoke, Shell scripts,
 etc., but it leverages PHP's scripting capabilities and its extensive library ecosystem.
@@ -29,7 +45,7 @@ It comes with many features to make your life easier:
 > it is unlikely to change, it is still possible that it will change in the
 > future.
 
-## Usage
+## 🧑‍🔬 Usage
 
 In Castor, tasks are set up as typical PHP functions marked with the `#[AsTask()]` attribute in a `castor.php` file.
 
@@ -82,7 +98,46 @@ function destroy(bool $force = false)
 }
 ```
 
-## Further documentation
+## 🧪 Real-world use cases
+
+* Run database migrations
+* Deploy your app with one command
+* Manage assets or translations
+* Bootstrap environments
+* Automate internal tools
+
+Want more examples from the community? [Checkout this](examples.md#real-world-examples).
+
+## 💬 What developers say
+
+> "Finally a task runner that feels like PHP. No weird DSL, just functions."<br>
+> — Every Castor user, probably
+<!-- -->
+> "I thought I needed Bash, Make, and half a DevOps degree. Turns out I just needed Castor."<br>
+> — A surprisingly relieved developer
+<!-- -->
+> "We migrated from Make to Castor and nobody cried. That's a win."<br>
+> — Senior Developer, now less grumpy
+
+## 🤔 Why not Robo / Make / Symfony Console?
+
+Because:
+
+* Robo is too verbose and OOP-heavy
+* Make is not PHP, and is hard to maintain in large projects
+* Symfony Console is a great base — but Castor is built on top of it and gives you superpowers
+
+## 🧰 Get started in 10 seconds
+
+```bash
+curl "https://castor.jolicode.com/install" | bash
+
+castor
+```
+
+<small>There are also others ways to install Castor, see the [installation documentation](installation.md).</small>
+
+## 📚 Want more?
 
 Discover more by reading the docs:
 
