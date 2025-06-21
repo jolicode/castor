@@ -1,11 +1,11 @@
-# Castor - Automate everything. In PHP.
-
 <div align="center">
     <img width="450" height="117" src="https://jolicode.com/media/original/castor-logo-line.svg?cool" alt="castor logo" />
 </div>
 
+# Automate everything. In PHP.
+
 <div align="center">
-    <strong>Automate anything with PHP. Simply. Efficiently. Elegantly.</strong>
+    <strong>Simply. Efficiently. Elegantly.</strong>
 </div>
 
 ## 🚀 TL;DR
@@ -41,34 +41,28 @@ It comes with many features to make your life easier:
     * [And even more advanced functions](reference.md)
 
 > [!NOTE]
-> Castor is still in early development, and the API is not stable yet. Even if
-> it is unlikely to change, it is still possible that it will change in the
-> future.
+> While Castor hasn't reached v1.0 yet, any API changes are carefully managed
+> with deprecation warnings and compatibility bridges.
 
-## 🧑‍🔬 Usage
+## 🧑‍🔬 Basic usage
 
 In Castor, tasks are set up as typical PHP functions marked with the `#[AsTask()]` attribute in a `castor.php` file.
 
 These tasks can run any PHP code but also make use of various [functions for standard operations](reference.md) that come pre-packaged with Castor.
 
-For example:
+For example, the following castor.php file:
 
 ```php
-<?php
-
-namespace greetings;
-
 use Castor\Attribute\AsTask;
-use function Castor\io;
 
 #[AsTask()]
 function hello(): void
 {
-    io()->write('Hello from castor');
+    echo 'Hello from castor';
 }
 ```
 
-Will expose a `greetings:hello` task that you can run with `castor greetings:hello`:
+Will expose a `hello` task that you can run with `castor hello`:
 
 ```shell
 $ castor greetings:hello
@@ -98,6 +92,8 @@ function destroy(bool $force = false)
 }
 ```
 
+→ Want to see basic usages and main features of Castor? Read the [Getting started documentation](getting-started/index.md)
+
 ## 🧪 Real-world use cases
 
 * Run database migrations
@@ -106,7 +102,7 @@ function destroy(bool $force = false)
 * Bootstrap environments
 * Automate internal tools
 
-Want more examples from the community? [Checkout this](examples.md#real-world-examples).
+→ See [more examples from the community](examples.md#real-world-examples).
 
 ## 💬 What developers say
 
@@ -127,6 +123,8 @@ Because:
 * Make is not PHP, and is hard to maintain in large projects
 * Symfony Console is a great base — but Castor is built on top of it and gives you superpowers
 
+→ See detailed comparisons in our [FAQ](faq.md)
+
 ## 🧰 Get started in 10 seconds
 
 ```bash
@@ -135,11 +133,11 @@ curl "https://castor.jolicode.com/install" | bash
 castor
 ```
 
-<small>There are also others ways to install Castor, see the [installation documentation](installation.md).</small>
+→ Castor can also be installed in other ways (phar, static binaries, Composer), see [the installation documentation](installation.md).
 
 ## 📚 Want more?
 
-Discover more by reading the docs:
+Discover more by reading all the docs:
 
 * [Installation](installation.md)
 * [Getting started with Castor](getting-started/index.md)
