@@ -40,24 +40,6 @@ class Context implements \ArrayAccess
         $this->workingDirectory = $workingDirectory ?? PathHelper::getRoot();
     }
 
-    public function __debugInfo()
-    {
-        return [
-            'name' => $this->name,
-            'data' => $this->data,
-            'environment' => $this->environment,
-            'workingDirectory' => $this->workingDirectory,
-            'tty' => $this->tty,
-            'pty' => $this->pty,
-            'timeout' => $this->timeout,
-            'quiet' => $this->quiet,
-            'allowFailure' => $this->allowFailure,
-            'notify' => $this->notify,
-            'verbosityLevel' => $this->verbosityLevel,
-            'notificationTitle' => $this->notificationTitle,
-        ];
-    }
-
     /**
      * @param array<(int|string), mixed> $data
      *
