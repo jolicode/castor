@@ -40,7 +40,8 @@ class Context implements \ArrayAccess
         $this->workingDirectory = $workingDirectory ?? PathHelper::getRoot();
     }
 
-    public function __debugInfo()
+    // @phpstan-ignore missingType.iterableValue
+    public function getDebugInfo(): array
     {
         return [
             'name' => $this->name,

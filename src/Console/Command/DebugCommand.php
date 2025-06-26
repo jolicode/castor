@@ -37,7 +37,7 @@ final class DebugCommand extends Command
             'Root directory' => $this->rootDir,
             'Cache directory' => $this->cacheDir,
             'Current context name' => $this->contextRegistry->getCurrentContext()->name,
-            'Current context data' => json_encode($this->contextRegistry->getCurrentContext()->__debugInfo(), \JSON_THROW_ON_ERROR | \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES),
+            'Current context data' => json_encode($this->contextRegistry->getCurrentContext()->getDebugInfo(), \JSON_THROW_ON_ERROR | \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES),
         ];
 
         $io->horizontalTable(array_keys($table), [array_values($table)]);
