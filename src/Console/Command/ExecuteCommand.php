@@ -14,6 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Filesystem;
 
+use function Castor\context;
 use function Castor\run_php;
 
 /** @internal */
@@ -116,7 +117,7 @@ final class ExecuteCommand extends Command
                 }
             }
 
-            return run_php($binaryDirectory . '/' . $binary, $args)->wait();
+            return run_php($binaryDirectory . '/' . $binary, $args, context()->withAllowFailure())->wait();
         } finally {
             $this->filesystem->remove($tmpDir);
         }
