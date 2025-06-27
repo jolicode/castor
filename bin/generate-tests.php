@@ -69,6 +69,7 @@ $taskFilterList = [
     'watch:stop',
     // Not examples
     'castor:compile',
+    'castor:execute',
     'castor:phar:build',
     'castor:phar:darwin',
     'castor:phar:install',

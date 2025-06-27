@@ -149,7 +149,7 @@ class Composer
     /**
      * @param list<string> $args
      */
-    public function run(string $composerJsonFilePath, string $vendorDirectory, array $args, callable|OutputInterface $callback, bool $interactive = false): void
+    public function run(string $composerJsonFilePath, string $vendorDirectory, array $args, callable|OutputInterface $callback, bool $interactive = false, ?string $binDir = null): void
     {
         $this->filesystem->mkdir($vendorDirectory);
 
@@ -163,6 +163,12 @@ class Composer
         putenv('COMPOSER=' . $composerJsonFilePath);
         $_ENV['COMPOSER'] = $composerJsonFilePath;
         $_SERVER['COMPOSER'] = $composerJsonFilePath;
+
+        if ($binDir) {
+            putenv('COMPOSER_BIN_DIR=' . $binDir);
+            $_ENV['COMPOSER_BIN_DIR'] = $binDir;
+            $_SERVER['COMPOSER_BIN_DIR'] = $binDir;
+        }
 
         $composerApplication = new ComposerApplication();
         $composerApplication->setAutoExit(false);
@@ -197,6 +203,11 @@ class Composer
 
         putenv('COMPOSER=');
         unset($_ENV['COMPOSER'], $_SERVER['COMPOSER']);
+
+        if ($binDir) {
+            putenv('COMPOSER_BIN_DIR=');
+            unset($_ENV['COMPOSER_BIN_DIR'], $_SERVER['COMPOSER_BIN_DIR']);
+        }
 
         if (0 !== $exitCode) {
             throw new ComposerError('The Composer process failed: ' . $bufferedOutput);

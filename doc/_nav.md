@@ -5,6 +5,7 @@
     - [Executing Processes with `run()`](getting-started/run.md)
     - [Task Arguments](getting-started/arguments.md)
     - [Using the Context](getting-started/context.md)
+    - [Remote execution](getting-started/remote.md)
 - [Going further](going-further/index.md)
     - Helpers
         - [Manipulating the input and output and interacting with the Console](going-further/helpers/console-and-io.md)
