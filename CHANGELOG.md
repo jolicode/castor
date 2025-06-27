@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Features
+
+* Introduce remote execution command
+
 ## 0.25.0 (2025-06-13)
 
 ### Features
