@@ -205,10 +205,13 @@ class Composer
             }
         };
 
-        $exitCode = $composerApplication->run($argvInput, $output);
-
-        putenv('COMPOSER=');
-        unset($_ENV['COMPOSER'], $_SERVER['COMPOSER']);
+        try {
+            $exitCode = $composerApplication->run($argvInput, $output);
+        } finally {
+            putenv('COMPOSER=');
+            putenv('SHELL_VERBOSITY=');
+            unset($_ENV['COMPOSER'], $_SERVER['COMPOSER'], $_ENV['SHELL_VERBOSITY'], $_SERVER['SHELL_VERBOSITY']);
+        }
 
         if ($binDir) {
             putenv('COMPOSER_BIN_DIR=');
