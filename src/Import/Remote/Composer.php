@@ -2,7 +2,6 @@
 
 namespace Castor\Import\Remote;
 
-use Castor\Console\Output\VerbosityLevel;
 use Castor\Helper\PathHelper;
 use Castor\Import\Exception\ComposerError;
 use Castor\Import\Exception\ImportError;
@@ -159,11 +158,6 @@ class Composer
 
         if (!$interactive) {
             $args[] = '--no-interaction';
-        }
-
-        $verbosityLevel = VerbosityLevel::fromSymfonyOutput($this->output);
-        if (!$verbosityLevel->isVerbose()) {
-            $args[] = '--quiet';
         }
 
         putenv('COMPOSER=' . $composerJsonFilePath);

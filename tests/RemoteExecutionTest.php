@@ -27,7 +27,7 @@ class RemoteExecutionTest extends TaskTestCase
         }
 
         $this->assertStringNotContainsString('Installing composer/composer', $process->getErrorOutput());
-        $this->assertStringNotContainsString('Composer version', $process->getOutput());
+        $this->assertStringContainsString('Composer version', $process->getOutput());
     }
 
     public function testVersion(): void

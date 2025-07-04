@@ -3,6 +3,7 @@
 namespace Castor\Console\Command;
 
 use Castor\Console\Input\GetRawTokenTrait;
+use Castor\Console\Output\VerbosityLevel;
 use Castor\Exception\ProblemException;
 use Castor\Import\Remote\Composer;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -92,6 +93,10 @@ final class ExecuteCommand extends Command
             $this->filesystem->mkdir($tmpDir, 0o755);
             /** @var list<string> $composerArgs */
             $composerArgs = ['require', ...$deps, '--no-interaction'];
+            $verbosityLevel = VerbosityLevel::fromSymfonyOutput($output);
+            if (!$verbosityLevel->isVerbose()) {
+                $composerArgs[] = '--quiet';
+            }
             $this->composer->run($composerJsonPath, $vendorDirectory, $composerArgs, $output, $input->isInteractive(), $binaryDirectory);
 
             if (null === $binary) {
