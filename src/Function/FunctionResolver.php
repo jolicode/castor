@@ -171,7 +171,7 @@ final readonly class FunctionResolver
             try {
                 return json_decode($p->getOutput(), true, 512, \JSON_THROW_ON_ERROR);
             } catch (\JsonException $e) {
-                throw new FunctionConfigurationException('Could not run the Symfony console.', $reflectionClass, $e);
+                throw new FunctionConfigurationException(\sprintf("Could not run the Symfony console.\nSTDOUT: %s\nSTDERR: %s\n", $p->getOutput(), $p->getErrorOutput()), $reflectionClass, $e);
             }
         });
 
