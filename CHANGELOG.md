@@ -5,6 +5,7 @@
 ### Features
 
 * Introduce remote execution command
+* Load castor context is autocomplete mode
 
 ## 0.25.0 (2025-06-13)
 
