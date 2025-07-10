@@ -13,10 +13,10 @@ class Context implements \ArrayAccess
     public readonly string $workingDirectory;
 
     /**
-     * @phpstan-param ContextData $data The input parameter accepts an array or an Object
-     *
      * @param array<string, string|\Stringable|int> $environment      A list of environment variables to add to the task
      * @param string[]                              $verboseArguments A list of arguments to pass to the command to enable verbose output
+     *
+     * @phpstan-param ContextData $data The input parameter accepts an array or an Object
      */
     public function __construct(
         public readonly array $data = [],
