@@ -201,7 +201,7 @@ final class Kernel
 
         $contextNames = $this->contextRegistry->getNames();
 
-        if (!$contextNames || ('_complete' === $input->getFirstArgument() || 'list' === $input->getFirstArgument())) {
+        if (!$contextNames || 'list' === $input->getFirstArgument()) {
             $this->contextRegistry->setCurrentContext(new Context(
                 verbosityLevel: VerbosityLevel::fromSymfonyOutput($output)
             ));
@@ -209,14 +209,22 @@ final class Kernel
             return;
         }
 
+        // autocomplete command already defined a -c option
+        $isAutocomplete = '_complete' === $input->getFirstArgument();
+
+        $contextOptions = ['--context'];
+        if (!$isAutocomplete) {
+            $contextOptions[] = '-c';
+        }
+
         $currentContextName = PlatformHelper::getEnv('CASTOR_CONTEXT')
-            ?: $input->getParameterOption(['--context', '-c'])
+            ?: $input->getParameterOption($contextOptions)
             ?: $this->contextRegistry->getDefaultName();
 
         $applicationDefinition = $this->application->getDefinition();
         $applicationDefinition->addOption(new InputOption(
             'context',
-            'c',
+            $isAutocomplete ? null : 'c',
             InputOption::VALUE_REQUIRED,
             \sprintf('The context to use (%s)', implode('|', $contextNames)),
             $currentContextName,
