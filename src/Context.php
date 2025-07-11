@@ -350,6 +350,13 @@ class Context implements \ArrayAccess
         return \array_key_exists($offset, $this->data);
     }
 
+    /**
+     * @template TKey of key-of<ContextData>
+     *
+     * @param TKey $offset
+     *
+     * @phpstan-return ContextData[TKey]
+     */
     public function offsetGet(mixed $offset): mixed
     {
         if (!\array_key_exists($offset, $this->data)) {
