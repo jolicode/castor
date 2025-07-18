@@ -1,4 +1,2 @@
- [WARNING] Could not find root "castor.php" file.
-
  Do you want to create a new project? (yes/no) [no]:
  >

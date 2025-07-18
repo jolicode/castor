@@ -15,7 +15,7 @@ class PathHelper
         return class_exists(\RepackedApplication::class) ? \RepackedApplication::ROOT_DIR . '/' . Composer::VENDOR_DIR : self::getRoot() . '/' . Composer::VENDOR_DIR;
     }
 
-    public static function getRoot(): string
+    public static function getRoot(bool $throw = true): string
     {
         static $root;
 
@@ -34,7 +34,11 @@ class PathHelper
             while (!(file_exists($path . '/castor.php') || file_exists($path . '/.castor/castor.php'))) {
                 $parent = Path::getDirectory($path);
                 if ($parent === $path) {
-                    throw new \RuntimeException('Could not find root "castor.php" file.');
+                    if ($throw) {
+                        throw new \RuntimeException('Could not find root "castor.php" file.');
+                    }
+
+                    return getcwd() ?: '/';
                 }
 
                 $path = $parent;
