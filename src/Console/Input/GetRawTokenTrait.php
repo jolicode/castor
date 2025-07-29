@@ -28,6 +28,11 @@ trait GetRawTokenTrait
 
                 continue;
             }
+
+            if ($value === '--') {
+                continue;
+            }
+
             if ($keep) {
                 $parameters[] = $value;
             }
