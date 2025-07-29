@@ -28,7 +28,7 @@ Exception trace:
  Castor\Console\Application->doRunCommand() at .../vendor/symfony/console/Application.php:XXXX
  Symfony\Component\Console\Application->doRun() at .../src/Console/Application.php:XXXX
  Castor\Console\Application->doRun() at .../vendor/symfony/console/Application.php:XXXX
- Symfony\Component\Console\Application->run() at .../bin/castor:XXXX
+ Symfony\Component\Console\Application->run() at castor:XXXX
 
 run:exception [--repeat [REPEAT]]
 

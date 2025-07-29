@@ -160,9 +160,12 @@ class Composer
             $args[] = '--no-interaction';
         }
 
+        $self = $_SERVER['PHP_SELF'] ?? '';
+
         putenv('COMPOSER=' . $composerJsonFilePath);
         $_ENV['COMPOSER'] = $composerJsonFilePath;
         $_SERVER['COMPOSER'] = $composerJsonFilePath;
+        $_SERVER['PHP_SELF'] = $self . ' composer';
 
         if ($binDir) {
             putenv('COMPOSER_BIN_DIR=' . $binDir);
@@ -204,6 +207,8 @@ class Composer
         } finally {
             putenv('COMPOSER=');
             putenv('SHELL_VERBOSITY=');
+            $_SERVER['PHP_SELF'] = $self;
+
             unset($_ENV['COMPOSER'], $_SERVER['COMPOSER'], $_ENV['SHELL_VERBOSITY'], $_SERVER['SHELL_VERBOSITY']);
         }
 

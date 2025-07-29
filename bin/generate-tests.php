@@ -210,6 +210,8 @@ add_test(['unknown:task'], 'NoConfigUnknown', '/tmp');
 add_test([], 'NewProject', '/tmp');
 // remote special test
 add_test(['remote-import:remote-task-class'], 'RemoteImportClassWithVendorReset', needRemote: true, needResetVendor: true);
+// composer help test
+add_test(['composer', 'list', '--', '--help'], 'ComposerHelp');
 
 echo "\nDone.\n";
 

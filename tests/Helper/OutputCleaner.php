@@ -56,6 +56,12 @@ final class OutputCleaner
         // castor version
         $string = preg_replace('{you are using v\d+.\d+.\d+.}m', 'you are using vX.Y.Z.', $string);
 
+        // binary
+        $string = str_replace('tests/../', '', $string);
+        $string = str_replace('.../bin/castor', 'castor', $string);
+        $string = str_replace('.../castor', 'castor', $string);
+        $string = preg_replace('#\S+?tools/phar/build/castor\S*#', 'castor', $string);
+
         return preg_replace('{castor v\d+.\d+.\d+}m', 'castor v.X.Y.Z', $string);
     }
 }
