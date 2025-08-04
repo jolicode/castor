@@ -2,6 +2,11 @@
 
 ## Not released yet
 
+### Features
+
+* Add `iconv` extension to the static binary
+* Support having `--` option with raw tokens which avoid interpretation of the next arguments
+
 ## 0.25.0 (2025-07-11)
 
 ### Features
