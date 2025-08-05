@@ -16,27 +16,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class InitCommand extends Command
 {
-    public function __construct(
-        private readonly \RuntimeException $e,
-    ) {
-        parent::__construct();
-    }
-
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-
-        $message = $this->e->getMessage();
-
-        if ($input->getFirstArgument() && 'init' !== $input->getFirstArgument()) {
-            $message .= ' Did you run castor in the right directory?';
-
-            $io->error($message);
-
-            return self::FAILURE;
-        }
-
-        $io->warning($message);
 
         if (!$io->confirm('Do you want to create a new project?', false)) {
             return Command::SUCCESS;

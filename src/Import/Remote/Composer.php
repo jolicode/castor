@@ -94,7 +94,11 @@ class Composer
 
     public function requireAutoload(): void
     {
-        $autoloadPath = PathHelper::getCastorVendorDir() . '/autoload.php';
+        try {
+            $autoloadPath = PathHelper::getCastorVendorDir() . '/autoload.php';
+        } catch (\RuntimeException $e) {
+            return;
+        }
 
         if (!file_exists($autoloadPath)) {
             return;

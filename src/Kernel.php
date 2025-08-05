@@ -45,6 +45,7 @@ final class Kernel
         private readonly FunctionResolver $functionResolver,
         private readonly FunctionLoader $functionLoader,
         private readonly ContextRegistry $contextRegistry,
+        private readonly bool $hasCastorFile,
     ) {
     }
 
@@ -55,7 +56,7 @@ final class Kernel
 
             $allowRemotePackage = $this->composer->isRemoteAllowed();
 
-            $this->addMount(new Mount($this->rootDir, allowRemotePackage: $allowRemotePackage));
+            $this->addMount(new Mount($this->rootDir, allowRemotePackage: $allowRemotePackage, allowEmptyEntrypoint: !$this->hasCastorFile));
 
             while ($mount = array_shift($this->mounts)) {
                 $currentFunctions = get_defined_functions()['user'];
