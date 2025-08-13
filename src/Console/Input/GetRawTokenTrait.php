@@ -29,7 +29,7 @@ trait GetRawTokenTrait
                 continue;
             }
 
-            if ($value === '--') {
+            if ('--' === $value) {
                 continue;
             }
 

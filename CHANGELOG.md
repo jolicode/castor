@@ -6,6 +6,7 @@
 
 * Add `iconv` extension to the static binary
 * Support having `--` option with raw tokens which avoid interpretation of the next arguments
+* Allow to set `memory_limit` dynamically via `CASTOR_MEMORY_LIMIT` environment variable
 
 ## 0.25.0 (2025-07-11)
 
