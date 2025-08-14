@@ -1,9 +1,9 @@
-# Executing a phar file
+# Executing a PHP script
 
 ## The `run_php()` function
 
-The `run_php()` function provides a way to execute a php or phar file in all scenarios,
-whether castor is executed as a phar, as a static binary, or as a script.
+The `run_php()` function provides a way to execute a PHP or phar file in all scenarios,
+whether castor is executed as a phar, as a static binary, or as a script:
 
 ```php
 #[AsTask()]
@@ -22,8 +22,8 @@ The `run_php()` takes exactly the same options as the `run()` function.
 ### Script requiring more memory
 
 If you need to execute a script that requires more memory than the default
-provided by PHP or castor static binary, you can use the `CASTOR_MEMORY_LIMIT` 
-environment variable to increase the memory limit within the context: 
+provided by PHP or castor static binary, you can use the `CASTOR_MEMORY_LIMIT`
+environment variable to increase the memory limit within the context:
 
 ```php
 #[AsTask()]
@@ -33,4 +33,5 @@ function exec_something()
 }
 ```
 
-`CASTOR_MEMORY_LIMIT` supports the same values as the [`memory_limit` directive in PHP](https://www.php.net/manual/fr/ini.core.php#ini.memory-limit).
+`CASTOR_MEMORY_LIMIT` supports the same values as the [`memory_limit` directive
+in PHP](https://www.php.net/manual/en/ini.core.php#ini.memory-limit).

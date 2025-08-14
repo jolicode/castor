@@ -42,3 +42,16 @@ phpstan with extensions, you can do this by running the following command:
 ```bash
 castor execute --deps phpstan/phpstan-symfony phpstan/phpstan
 ```
+
+## More memory
+
+If the script requires more memory than the default provided by PHP or castor static binary,
+you can use the `CASTOR_MEMORY_LIMIT` environment variable to increase the memory limit within the
+context:
+
+```bash
+CASTOR_MEMORY_LIMIT=512M castor execute friendsofphp/php-cs-fixer fix
+```
+
+`CASTOR_MEMORY_LIMIT` supports the same values as the [`memory_limit` directive
+in PHP](https://www.php.net/manual/en/ini.core.php#ini.memory-limit).

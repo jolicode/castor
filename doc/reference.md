@@ -94,5 +94,9 @@ Castor supports the following environment variables:
 - [`CASTOR_CACHE_DIR`](going-further/helpers/cache.md#cache-location-on-the-filesystem)
 - [`CASTOR_CONTEXT`](getting-started/context.md#setting-a-default-context)
 - [`CASTOR_GENERATE_STUBS`](installation.md#stubs)
+- [`CASTOR_MEMORY_LIMIT`](going-further/helpers/run-php.md#script-requiring-more-memory)
+  in context of running PHP script, and
+  [`CASTOR_MEMORY_LIMIT`](getting-started/remote.md#more-memory) in context of
+  remote execution
 - [`CASTOR_NO_REMOTE`](going-further/extending-castor/remote-imports.md#preventing-remote-imports)
 - [`CASTOR_USE_SECTION`](going-further/helpers/console-and-io.md#experimental-section-output)
