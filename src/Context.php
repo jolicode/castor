@@ -37,7 +37,7 @@ class Context implements \ArrayAccess
         public readonly string $notificationTitle = '',
         public readonly array $verboseArguments = [],
     ) {
-        $this->workingDirectory = $workingDirectory ?? PathHelper::getRoot();
+        $this->workingDirectory = $workingDirectory ?? PathHelper::getRoot(false);
     }
 
     // @phpstan-ignore missingType.iterableValue
