@@ -25,28 +25,31 @@ jobs:
     name: Build documentation website with MkDocs
     runs-on: ubuntu-latest
     steps:
-      - name: Configure Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - name: Install mkdocs
-        run: pip install mkdocs mkdocs-material markdown-callouts mkdocs-literate-nav
       - name: Checkout
         uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0
+
+      - uses: ./.github/actions/install
+        with:
+          php-version: "8.3"
+          need_phar: 'false'
+
+      - name: Build docker image for MkDocs
+        run: bin/castor castor:mkdocs:docker-build
+
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v4
-      - name: Build with mkdocs
-        run: mkdocs build
-      - name: copy the installer
-        run: cp installer/bash-installer site/install
+
+      - name: Build site with mkdocs
+        run: castor castor:mkdocs:build
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./site
+          path: ./tools/mkdocs/site
 
   deploy:
     name: Deploy to GitHub Pages

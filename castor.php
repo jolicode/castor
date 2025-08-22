@@ -10,6 +10,7 @@ use function Castor\run;
 use function Castor\with;
 
 import(__DIR__ . '/examples');
+import(__DIR__ . '/tools/mkdocs/castor.php');
 import(__DIR__ . '/tools/php-cs-fixer/castor.php');
 import(__DIR__ . '/tools/phpstan/castor.php');
 import(__DIR__ . '/tools/static/castor.php');
