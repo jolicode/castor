@@ -1,3 +1,7 @@
+---
+description: All the installation methods for Castor.
+---
+
 # Installation and Autocomplete
 
 ## Installation

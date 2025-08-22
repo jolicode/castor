@@ -1,6 +1,6 @@
 {
     "name": "jolicode/castor",
-    "description": "DX oriented task runner and command launcher built with PHP",
+    "description": "A lightweight and modern task runner. Automate everything. In PHP.",
     "keywords": ["task", "runner", "async", "parallel", "process", "castor"],
     "license": "MIT",
     "type": "project",

@@ -1,3 +1,7 @@
+---
+description: Exhaustive list of built-in Castor functions, attributes, and environment variables supported.
+---
+
 # Castor reference
 
 Here is a reference of all the functions and attributes provided by Castor.

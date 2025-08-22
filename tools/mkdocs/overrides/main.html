@@ -1,11 +1,47 @@
 {% extends "base.html" %}
 
 {% block htmltitle %}
-    {% if page.meta and page.meta.title %}
-    <title>{{ page.meta.title }} - Castor</title>
-    {% elif page.title and not page.is_homepage %}
-    <title>{{ page.title | striptags }} - Castor</title>
+    {% if page.is_homepage %}
+    <title>Castor - Lightweight and modern task runner</title>
+    {% elif page.meta and page.meta.title %}
+    <title>{{ page.meta.title }} - Castor task runner</title>
     {% else %}
-    <title>Castor - {{ config.site_name }}</title>
+    <title>{{ page.title | striptags }} - Castor task runner</title>
     {% endif %}
+{% endblock %}
+
+{% block extrahead %}
+    <meta property="og:title" content="{% if page.meta and page.meta.title %}{{ page.meta.title }}{% else %}{{ page.title | striptags }}{% endif %}">
+    <meta property="og:description" content="{% if page.meta and page.meta.description %}{{ page.meta.description }}{% else %}{{ page.description | striptags }}{% endif %}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ config.site_url }}">
+    <meta property="og:image" content="{{ config.site_url }}assets/logo_CASTOR_square@2x.png">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% if page.meta and page.meta.title %}{{ page.meta.title }}{% else %}{{ page.title | striptags }}{% endif %}">
+    <meta name="twitter:description" content="{% if page.meta and page.meta.description %}{{ page.meta.description }}{% else %}{{ config.site_description }}{% endif %}">
+    <meta name="twitter:image" content="{{ config.site_url }}assets/logo_CASTOR_square@2x.png">
+
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": "Castor",
+            "url": "{{ config.site_url }}",
+            "description": "Castor is a lightweight and modern task runner. Automate everything in PHP.",
+            "applicationCategory": "DeveloperTool",
+            "operatingSystem": "All",
+            "programmingLanguage": "PHP",
+            "license": "https://opensource.org/licenses/MIT",
+            "author": {
+                "@type": "Organization",
+                "name": "JoliCode"
+            },
+            "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD"
+            }
+        }
+    </script>
 {% endblock %}
