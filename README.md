@@ -1,19 +1,19 @@
+<div align="center">
+    <img width="450" height="117" src="https://jolicode.com/media/original/castor-logo-line.svg?cool" alt="castor logo" />
+</div>
 
 <h1 align="center">
-    <img width="450" height="117" src="https://jolicode.com/media/original/castor-logo-line.svg?cool" alt="castor logo" />
+    A lightweight and modern task runner for PHP.
 </h1>
 
-# Automate everything. In PHP.
-
 <div align="center">
-    <strong>Simply. Efficiently. Elegantly.</strong>
+    <strong>Automate everything. In PHP. Simply. Efficiently. Elegantly.</strong>
 </div>
 
 ## 🚀 TL;DR
 
-Castor is a lightweight, modern task runner for PHP.<br/>
-No need for Bash, Makefiles or YAML.<br/>
 Write your automation scripts in PHP, run them from the CLI.<br/>
+No need for Bash, Makefiles or YAML.<br/>
 
 * ✅ 100% PHP — define tasks as simple PHP functions
 * ⚡ Fast & native — no configuration, no boilerplate
@@ -96,12 +96,12 @@ function destroy(bool $force = false)
 
 → Want to see basic usages and main features of Castor? Read the [Getting started documentation](https://castor.jolicode.com/getting-started/)
 
-## 🤔 Why not Robo / Make / Symfony Console?
+## 🤔 Why not Make / Robo / Phing / Deployer / Symfony Console?
 
 Because:
 
-* Robo is too verbose and OOP-heavy
 * Make is not PHP, and is hard to maintain in large projects
+* Others are either too verbose, OOP-heavy, requiring YML or XML configurations or are specialized in deployment only.
 * Symfony Console is a great base — but Castor is built on top of it and gives you superpowers
 
 → See detailed comparisons in our [FAQ](https://castor.jolicode.com/faq/)
