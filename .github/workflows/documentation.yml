@@ -44,7 +44,7 @@ jobs:
         uses: actions/configure-pages@v4
 
       - name: Build site with mkdocs
-        run: castor castor:mkdocs:build
+        run: bin/castor castor:mkdocs:build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
