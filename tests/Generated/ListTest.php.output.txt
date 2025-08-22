@@ -18,6 +18,9 @@ cache:complex                                                     Cache with usa
 cache:simple                                                      Cache a simple call
 castor:composer                                                   Interact with built-in Composer for castor
 castor:execute                                                    Execute a remote task from a packagist directory
+castor:mkdocs:build                                               Build documentation
+castor:mkdocs:docker-build                                        Build mkdocs docker image
+castor:mkdocs:serve                                               Serve documentation and watches for changes
 castor:phar:build                                                 Build phar for all systems
 castor:phar:darwin                                                Build phar for MacOS system
 castor:phar:install                                               install dependencies
