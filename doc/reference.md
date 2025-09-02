@@ -68,13 +68,13 @@ Castor provides the following built-in functions:
 Some vendor helpers are also included natively in Castor:
 
 - Functions from symfony/string:
-  - [`u`](https://symfony.com/doc/current/string.html#method-reference)
-  - [`b`](https://symfony.com/doc/current/string.html#method-reference)
-  - [`s`](https://symfony.com/doc/current/string.html#method-reference)
+    - [`u`](https://symfony.com/doc/current/string.html#method-reference)
+    - [`b`](https://symfony.com/doc/current/string.html#method-reference)
+    - [`s`](https://symfony.com/doc/current/string.html#method-reference)
 
 - Functions from symfony/var-dumper:
-  - [`dump`](https://symfony.com/doc/current/components/var_dumper.html#the-dump-function)
-  - [`dd`](https://symfony.com/doc/current/components/var_dumper.html#the-dump-function)
+    - [`dump`](https://symfony.com/doc/current/components/var_dumper.html#the-dump-function)
+    - [`dd`](https://symfony.com/doc/current/components/var_dumper.html#the-dump-function)
 
 ## Attributes
 

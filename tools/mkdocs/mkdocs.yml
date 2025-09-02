@@ -66,6 +66,7 @@ extra:
     - icon: fontawesome/brands/x-twitter
       link: https://x.com/jolicode
   generator: false
+  version: !ENV CASTOR_VERSION
 
 markdown_extensions:
   - admonition

@@ -3,6 +3,7 @@
 namespace castor\mkdocs;
 
 use Castor\Attribute\AsTask;
+use Castor\Console\Application;
 use Castor\Context;
 use Symfony\Component\Process\Process;
 
@@ -28,7 +29,11 @@ function build(): void
 {
     io()->title('Building MkDocs documentation');
 
-    docker_run('mkdocs build');
+    docker_run(['mkdocs', 'build'], context()->withData([
+        'docker_run_environment' => [
+            'CASTOR_VERSION' => get_castor_version(),
+        ],
+    ]));
 
     $installerPath = __DIR__ . '/../../installer/bash-installer';
 
@@ -44,10 +49,14 @@ function serve(): void
 {
     io()->title('Building and watching MkDocs documentation');
 
-    docker_run('mkdocs serve');
+    docker_run(['mkdocs', 'serve'], context()->withData([
+        'docker_run_environment' => [
+            'CASTOR_VERSION' => get_castor_version(),
+        ],
+    ]));
 }
 
-function docker_run(string $command, ?Context $c = null): Process
+function docker_run(array $runCommand, ?Context $c = null): Process
 {
     $c ??= context();
 
@@ -58,6 +67,19 @@ function docker_run(string $command, ?Context $c = null): Process
 
     if (false === $process->isSuccessful()) {
         throw new \LogicException(\sprintf('Unable to find %s image. Did you forget to run castor mkdocs:docker-build ?', get_image_name()));
+    }
+
+    $command = [
+        'docker',
+        'run',
+        '--init',
+        '--rm',
+        '-t',
+        '--network=host',
+    ];
+
+    if (!$c->quiet && false !== $c->tty && false !== $c->pty) {
+        $command[] = '-i';
     }
 
     $userId = posix_geteuid();
@@ -74,24 +96,37 @@ function docker_run(string $command, ?Context $c = null): Process
         $groupId = 1000;
     }
 
+    $command[] = '--user';
+    $command[] = \sprintf('%s:%s', $userId, $groupId);
+
     $volumes = [
-        \sprintf('-v %s:/mkdocs:cached', realpath(__DIR__)),
-        \sprintf('-v %s:/mkdocs/CHANGELOG.md:cached', realpath(__DIR__) . '/../../CHANGELOG.md'),
-        \sprintf('-v %s:/mkdocs/doc:cached', realpath(__DIR__ . '/../../doc')),
+        \sprintf('%s:/mkdocs:cached', realpath(__DIR__)),
+        \sprintf('%s:/mkdocs/CHANGELOG.md:cached', realpath(__DIR__) . '/../../CHANGELOG.md'),
+        \sprintf('%s:/mkdocs/doc:cached', realpath(__DIR__ . '/../../doc')),
     ];
 
-    return run(\sprintf(
-        'docker run --init --rm %s-t --network=host --user %s:%s %s %s %s',
-        $c->quiet || false === $c->tty && false === $c->pty ? '' : '-i ',
-        $userId,
-        $groupId,
-        implode(' ', $volumes),
-        get_image_name(),
-        $command,
-    ), context: $c);
+    foreach ($volumes as $volume) {
+        $command[] = '-v';
+        $command[] = $volume;
+    }
+
+    foreach ($c['docker_run_environment'] as $key => $value) {
+        $command[] = '-e';
+        $command[] = "{$key}={$value}";
+    }
+
+    $command[] = get_image_name();
+    $command = array_merge($command, $runCommand);
+
+    return run($command, context: $c);
 }
 
 function get_image_name()
 {
     return 'castor-mkdocs';
+}
+
+function get_castor_version()
+{
+    return Application::VERSION;
 }

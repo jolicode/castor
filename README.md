@@ -3,7 +3,7 @@
 </div>
 
 <h1 align="center">
-    A lightweight and modern task runner for PHP.
+    A lightweight and modern task runner for Automation, CI/CD & DevOps.
 </h1>
 
 <div align="center">
