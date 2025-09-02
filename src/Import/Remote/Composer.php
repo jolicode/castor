@@ -206,10 +206,9 @@ class Composer
             $exitCode = $composerApplication->run($argvInput, $output);
         } finally {
             putenv('COMPOSER=');
-            putenv('SHELL_VERBOSITY=');
             $_SERVER['PHP_SELF'] = $self;
 
-            unset($_ENV['COMPOSER'], $_SERVER['COMPOSER'], $_ENV['SHELL_VERBOSITY'], $_SERVER['SHELL_VERBOSITY']);
+            unset($_ENV['COMPOSER'], $_SERVER['COMPOSER']);
         }
 
         if ($binDir) {
