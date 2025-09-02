@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Fixes
+
+* Fix using `castor exec` without a `castor.php` file
+
 ### Features
 
 * Add `iconv` extension to the static binary

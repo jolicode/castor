@@ -8,6 +8,7 @@ use Castor\Kernel;
 use Castor\Runner\ProcessRunner;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Exception\CommandNotFoundException;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
@@ -36,6 +37,7 @@ class Application extends SymfonyApplication
         private readonly ProcessRunner $processRunner,
         #[Autowire('%test%')]
         public readonly bool $test,
+        public readonly bool $hasCastorFile,
     ) {
         parent::__construct(static::NAME, static::VERSION);
     }
@@ -63,7 +65,15 @@ class Application extends SymfonyApplication
 
         $this->kernel->boot($input, $output);
 
-        return parent::doRun($input, $output);
+        try {
+            return parent::doRun($input, $output);
+        } catch (CommandNotFoundException $e) {
+            if (!$this->hasCastorFile) {
+                $this->io->warning('Could not find root "castor.php" file. Did you run castor in the right directory?');
+            }
+
+            throw $e;
+        }
     }
 
     public function getHelp(): string

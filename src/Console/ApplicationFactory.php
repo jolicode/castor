@@ -6,6 +6,7 @@ use Castor\Console\Command\CompileCommand;
 use Castor\Console\Command\ComposerCommand;
 use Castor\Console\Command\DebugCommand;
 use Castor\Console\Command\ExecuteCommand;
+use Castor\Console\Command\InitCommand;
 use Castor\Console\Command\RepackCommand;
 use Castor\Container;
 use Castor\Helper\PathHelper;
@@ -59,15 +60,21 @@ class ApplicationFactory
             $rootDir = \RepackedApplication::ROOT_DIR;
             $repacked = true;
         } else {
-            try {
-                $rootDir = PathHelper::getRoot();
-            } catch (\RuntimeException $e) {
-                return new CastorFileNotFoundApplication($e);
-            }
             $repacked = false;
         }
 
-        $container = self::buildContainer($repacked);
+        $hasCastorFile = true;
+
+        if (!$repacked) {
+            try {
+                $rootDir = PathHelper::getRoot();
+            } catch (\RuntimeException $e) {
+                $rootDir = getcwd();
+                $hasCastorFile = false;
+            }
+        }
+
+        $container = self::buildContainer($repacked, $hasCastorFile);
         $container->getParameterBag()->add([
             'root_dir' => $rootDir,
             '.default_cache_dir' => PlatformHelper::getDefaultCacheDirectory(),
@@ -80,7 +87,9 @@ class ApplicationFactory
             'generate_stubs' => '%env(bool:CASTOR_GENERATE_STUBS)%',
             'test' => '%env(bool:default::CASTOR_TEST)%',
             'use_output_section' => '%env(bool:default::CASTOR_USE_SECTION)%',
+            'has_castor_file' => $hasCastorFile,
         ]);
+
         $container->addCompilerPass(new FixLazyServicePass(), PassConfig::TYPE_OPTIMIZE);
         $container->compile(true);
 
@@ -101,7 +110,7 @@ class ApplicationFactory
         return $errorHandler;
     }
 
-    private static function buildContainer(bool $repacked): ContainerBuilder
+    private static function buildContainer(bool $repacked, bool $hasCastorFile): ContainerBuilder
     {
         $container = new ContainerBuilder();
 
@@ -124,12 +133,12 @@ class ApplicationFactory
         $phpLoader = new PhpFileLoader($container, new FileLocator());
         $instanceof = [];
         $configurator = new ContainerConfigurator($container, $phpLoader, $instanceof, __DIR__, __FILE__);
-        self::configureContainer($configurator, $repacked);
+        self::configureContainer($configurator, $repacked, $hasCastorFile);
 
         return $container;
     }
 
-    private static function configureContainer(ContainerConfigurator $c, bool $repacked): void
+    private static function configureContainer(ContainerConfigurator $c, bool $repacked, bool $hasCastorFile): void
     {
         $services = $c->services();
 
@@ -139,6 +148,7 @@ class ApplicationFactory
                 ->autoconfigure()
                 ->bind('string $rootDir', '%root_dir%')
                 ->bind('string $cacheDir', '%cache_dir%')
+                ->bind('bool $hasCastorFile', '%has_castor_file%')
 
             ->load('Castor\\', __DIR__ . '/../*')
                 ->exclude([
@@ -212,11 +222,18 @@ class ApplicationFactory
                 ->call('setDispatcher', [service(EventDispatcherInterface::class)])
                 ->call('setCatchErrors', [true])
         ;
-        if (!$repacked) {
+        if (!$repacked && $hasCastorFile) {
             $app
                 ->call('add', [service(ComposerCommand::class)])
                 ->call('add', [service(RepackCommand::class)])
                 ->call('add', [service(CompileCommand::class)])
+            ;
+        }
+
+        if (!$hasCastorFile) {
+            $app
+                ->call('add', [service(InitCommand::class)])
+                ->call('setDefaultCommand', ['init'])
             ;
         }
     }
