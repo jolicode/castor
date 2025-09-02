@@ -2,7 +2,7 @@
 
 {% block htmltitle %}
     {% if page.is_homepage %}
-    <title>Castor - Lightweight and modern task runner</title>
+    <title>Castor - Modern PHP Task Runner for Automation, CI/CD & DevOps</title>
     {% elif page.meta and page.meta.title %}
     <title>{{ page.meta.title }} - Castor task runner</title>
     {% else %}
@@ -41,7 +41,10 @@
                 "@type": "Offer",
                 "price": "0",
                 "priceCurrency": "USD"
-            }
+            },
+            "softwareVersion": "{{ config.extra.version }}",
+            "downloadUrl": "https://github.com/jolicode/castor",
+            "sameAs": [ "{{ config.repo_url }}", "https://packagist.org/packages/jolicode/castor" ]
         }
     </script>
 {% endblock %}
