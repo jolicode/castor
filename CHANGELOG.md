@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+## 0.27.0 (2025-09-02)
+
 ### Fixes
 
 * Fix using `castor exec` without a `castor.php` file
@@ -12,7 +14,7 @@
 * Support having `--` option with raw tokens which avoid interpretation of the next arguments
 * Allow to set `memory_limit` dynamically via `CASTOR_MEMORY_LIMIT` environment variable
 
-## 0.25.0 (2025-07-11)
+## 0.26.0 (2025-07-11)
 
 ### Features
 
