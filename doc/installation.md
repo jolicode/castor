@@ -114,6 +114,18 @@ curl "https://castor.jolicode.com/install" | bash -s -- --static
 You can also download the binaries in the [releases
 page](https://github.com/jolicode/castor/releases):
 
+### With specific version
+
+You can install a specific version of Castor with the installer using the
+`--version` option:
+
+```bash
+curl "https://castor.jolicode.com/install" | bash -s -- --version=v0.25.0
+```
+
+You can also download the binaries in the [releases
+page](https://github.com/jolicode/castor/releases):
+
 ### Globally with Composer
 
 > [!WARNING]
