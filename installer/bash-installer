@@ -26,8 +26,8 @@ set -euo pipefail
 CASTOR_EXECUTABLE="castor"
 CASTOR_TMP_NAME="$CASTOR_EXECUTABLE-"$(date +"%s")
 CASTOR_NAME="🦫  Castor"
-CASTOR_DOWNLOAD_URL_PATTERN="https://github.com/jolicode/castor/releases/latest/download/castor.~platform~.phar"
-CASTOR_DOWNLOAD_STATIC_URL_PATTERN="https://github.com/jolicode/castor/releases/latest/download/castor.~platform~"
+CASTOR_DOWNLOAD_URL_PATTERN="https://github.com/jolicode/castor/releases/~versionPath~/castor.~platform~.phar"
+CASTOR_DOWNLOAD_STATIC_URL_PATTERN="https://github.com/jolicode/castor/releases/~versionPath~/castor.~platform~"
 CASTOR_TMPDIR="${TMPDIR:-/tmp}"
 
 function output {
@@ -66,6 +66,7 @@ output "${CASTOR_NAME} installer" "heading"
 binary_dest="${HOME}/.local/bin"
 custom_dir="false"
 static="false"
+version="latest"
 
 # Getops does not support long option names
 while [[ $# -gt 0 ]]; do
@@ -81,13 +82,22 @@ case $1 in
         shift # past argument
         shift # past value
         ;;
+    --version=*)
+        version="${1#*=}"
+        shift # past argument=value
+        ;;
+    --version)
+        version="${2:-}"
+        shift # past argument
+        shift # past value
+        ;;
     --static)
         static="true"
         shift # past argument
         ;;
     *)
         output "Unknown option $1" "error"
-        output "Usage: ${0} [--install-dir=dir]"
+        output "Usage: ${0} [--install-dir=dir] [--version=version]"
         exit 1
         ;;
 esac
@@ -161,25 +171,32 @@ platform="${kernel}-${machine}"
 # The necessary checks have passed. Start downloading the right version.
 output "\nDownload" "heading"
 
-if [ "${static}" == "true" ]; then
-    latest_url=${CASTOR_DOWNLOAD_STATIC_URL_PATTERN/~platform~/${platform}}
-else
-    latest_url=${CASTOR_DOWNLOAD_URL_PATTERN/~platform~/${platform}}
-fi
+versionPath="latest/download"
+[ "$version" != "latest" ] && versionPath="download/${version}"
 
-output "  Downloading ${latest_url}...";
+download_url=$CASTOR_DOWNLOAD_URL_PATTERN
+[ "$static" = "true" ] && download_url=$CASTOR_DOWNLOAD_STATIC_URL_PATTERN
+download_url=${download_url/~platform~/${platform}}
+download_url=${download_url/~versionPath~/${versionPath}}
+
+output "  Downloading ${download_url}...";
 case $downloader in
     "curl")
-        curl -s --fail --location "${latest_url}" > "${CASTOR_TMPDIR}/${CASTOR_TMP_NAME}"
+        http_code=$(curl -s -o "${CASTOR_TMPDIR}/${CASTOR_TMP_NAME}" -w "%{http_code}" --location "${download_url}")
         ;;
     "wget")
-        wget -q --show-progress "${latest_url}" -O "${CASTOR_TMPDIR}/${CASTOR_TMP_NAME}"
+        http_code=$(wget -q --show-progress --server-response -O "${CASTOR_TMPDIR}/${CASTOR_TMP_NAME}" "${download_url}" 2>&1 | awk '/^  HTTP/{print $2}' | tail -1) || true
         ;;
 esac
 
 # shellcheck disable=SC2181
-if [ $? != 0 ]; then
-    output "  The download failed." "error"
+if [ $http_code != 200 ]; then
+    if [[ "${http_code}" = "404" ]]; then
+        output "[castor-installer] Error: version '${version}' does not seem to exist for this platform '${platform}'." "error"
+        output "[castor-installer] Try another version or leave empty for 'latest'." "error"
+    else
+        output "  The download failed. http_code=${http_code}" "error"
+    fi
     exit 1
 fi
 
