@@ -122,6 +122,7 @@ You can install a specific version of Castor with the installer using the
 ```bash
 curl "https://castor.jolicode.com/install" | bash -s -- --version=v0.25.0
 ```
+by default the latest version will be installed
 
 You can also download the binaries in the [releases
 page](https://github.com/jolicode/castor/releases):
