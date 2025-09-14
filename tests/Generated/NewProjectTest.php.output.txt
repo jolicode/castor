@@ -1,2 +1,5 @@
- Do you want to create a new project? (yes/no) [no]:
+ Do you want to initialize current directory with castor? (yes/no) [no]:
  >
+
+ ! [NOTE] Doing nothing.
+
