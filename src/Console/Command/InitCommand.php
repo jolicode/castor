@@ -20,7 +20,9 @@ class InitCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        if (!$io->confirm('Do you want to create a new project?', false)) {
+        if (!$io->confirm('Do you want to initialize current directory with castor?', false)) {
+            $io->note('Doing nothing.');
+
             return Command::SUCCESS;
         }
 
