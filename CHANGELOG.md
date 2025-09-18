@@ -2,6 +2,12 @@
 
 ## Not released yet
 
+### Features
+
+* Add version parameter to installer
+* Improve init command with more clear messages
+* Fill gitignore with castor stub on init
+
 ## 0.27.0 (2025-09-02)
 
 ### Fixes
