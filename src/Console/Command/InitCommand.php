@@ -45,10 +45,7 @@ class InitCommand extends Command
         );
 
         if (is_file('.gitignore')) {
-            file_put_contents(
-                '.gitignore',
-                file_get_contents('.gitignore') . "\n.castor.stub.php\n"
-            );
+            file_put_contents('.gitignore', "\n.castor.stub.php\n", FILE_APPEND);
         }
 
         $io->success('Project created. You can edit "castor.php" and write your own tasks.');
