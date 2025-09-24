@@ -8,8 +8,8 @@ use Symfony\Component\Console\Completion\CompletionInput;
 class AsArgument extends AsCommandArgument
 {
     /**
-     * @param array<string>                                          $suggestedValues
-     * @param array<string>|callable(CompletionInput): array<string> $autocomplete
+     * @param array<string> $suggestedValues
+     * @param array<string>|callable(CompletionInput): array<string>|null $autocomplete
      */
     public function __construct(
         ?string $name = null,
