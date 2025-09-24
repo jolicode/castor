@@ -8,9 +8,9 @@ use Symfony\Component\Console\Completion\CompletionInput;
 class AsOption extends AsCommandArgument
 {
     /**
-     * @param string|array<string>|null                              $shortcut
-     * @param array<string>                                          $suggestedValues
-     * @param array<string>|callable(CompletionInput): array<string> $autocomplete
+     * @param string|array<string>|null $shortcut
+     * @param array<string>             $suggestedValues
+     * @param array<string>|callable(CompletionInput): array<string>|null $autocomplete
      */
     public function __construct(
         ?string $name = null,
