@@ -2,11 +2,21 @@
 
 ## Not released yet
 
+## 0.28.0 (2025-09-24)
+
 ### Features
 
 * Add version parameter to installer
 * Improve init command with more clear messages
 * Fill gitignore with castor stub on init
+
+### Fixes
+
+* Do not use 💩 in namespace
+
+### Internal
+
+* Update all PHP vendor
 
 ## 0.27.0 (2025-09-02)
 
