@@ -25,6 +25,7 @@ class Application extends SymfonyApplication
     public const NAME = 'castor';
     public const VERSION = 'v0.28.0';
     public const HIDE_LOGO = false;
+    public const EXTERNAL_LOGO = '';
 
     private Command $command;
 
@@ -181,6 +182,10 @@ class Application extends SymfonyApplication
     {
         if (static::HIDE_LOGO) {
             return '';
+        }
+
+        if (static::EXTERNAL_LOGO) {
+            return static::EXTERNAL_LOGO;
         }
 
         if (!$this->test) {

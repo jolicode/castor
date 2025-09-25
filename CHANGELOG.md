@@ -9,6 +9,7 @@
 * Add version parameter to installer
 * Improve init command with more clear messages
 * Fill gitignore with castor stub on init
+* Add capability to repack with a custom logo from external PHP file
 
 ### Fixes
 
