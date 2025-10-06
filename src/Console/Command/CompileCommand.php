@@ -19,8 +19,8 @@ class CompileCommand extends Command
 {
     // When something **important** related to the compilation changed, increase
     // this version to invalide the cache
-    private const CACHE_VERSION = '2';
-    private const DEFAULT_SPC_VERSION = '2.3.5';
+    private const CACHE_VERSION = '3';
+    private const DEFAULT_SPC_VERSION = '2.7.4';
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,
@@ -87,8 +87,7 @@ class CompileCommand extends Command
             $this->buildPHP(
                 $spcBinaryPath,
                 $phpExtensions,
-                $os = $input->getOption('os'),
-                ('macos' === $os && 'aarch64' === $arch) ? 'arm64' : $arch,
+                $os,
                 $spcBinaryDir,
                 $io,
                 $output->getVerbosity() >= OutputInterface::VERBOSITY_DEBUG,
@@ -190,13 +189,12 @@ class CompileCommand extends Command
         $downloadProcess->mustRun(fn ($type, $buffer) => print $buffer);
     }
 
-    private function buildPHP(string $spcBinaryPath, mixed $phpExtensions, mixed $os, mixed $arch, string $spcBinaryDir, SymfonyStyle $io, bool $debug = false): void
+    private function buildPHP(string $spcBinaryPath, mixed $phpExtensions, mixed $os, string $spcBinaryDir, SymfonyStyle $io, bool $debug = false): void
     {
         $command = [
             $spcBinaryPath, 'build', $phpExtensions,
             '--build-micro',
             '--with-micro-fake-cli',
-            '--arch=' . $arch,
         ];
 
         if ($debug) {
