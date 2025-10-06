@@ -9,7 +9,6 @@ use Castor\Console\Command\ExecuteCommand;
 use Castor\Console\Command\InitCommand;
 use Castor\Console\Command\RepackCommand;
 use Castor\Container;
-use Castor\Hackerman\FixLazyServicePass;
 use Castor\Helper\PathHelper;
 use Castor\Helper\PlatformHelper;
 use Castor\Monolog\Processor\ProcessProcessor;
@@ -90,7 +89,6 @@ class ApplicationFactory
             'has_castor_file' => $hasCastorFile,
         ]);
 
-        $container->addCompilerPass(new FixLazyServicePass(), PassConfig::TYPE_OPTIMIZE);
         $container->compile(true);
 
         $container->set(ContainerInterface::class, $container);
