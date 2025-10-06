@@ -34,6 +34,7 @@ class RepackCommand extends Command
             ->addOption('app-version', null, InputOption::VALUE_REQUIRED, 'The version of the phar application', '1.0.0')
             ->addOption('os', null, InputOption::VALUE_REQUIRED, 'The targeted OS', 'linux', ['linux', 'darwin', 'windows'])
             ->addOption('no-logo', null, InputOption::VALUE_NONE, 'Hide Castor logo')
+            ->addOption('logo-file', null, InputOption::VALUE_OPTIONAL, 'Path to a PHP file that returns a logo as a string, or a closure that returns a logo as a string')
             ->setHidden(true)
         ;
     }
@@ -70,6 +71,8 @@ class RepackCommand extends Command
         $appName = $input->getOption('app-name');
         $appVersion = $input->getOption('app-version');
         $hideLogo = $input->getOption('no-logo') ? 'true' : 'false';
+        $externalLogo = $this->getExternalLogo($input->getOption('logo-file'), $appName, $appVersion);
+
         $alias = 'alias.phar';
         $main = <<<PHP
             <?php
@@ -85,6 +88,7 @@ class RepackCommand extends Command
                 const VERSION = '{$appVersion}';
                 const ROOT_DIR = 'phar://{$alias}';
                 const HIDE_LOGO = {$hideLogo};
+                const EXTERNAL_LOGO = '{$externalLogo}';
             }
 
             ApplicationFactory::create()->run();
@@ -160,5 +164,28 @@ class RepackCommand extends Command
         }
 
         return Command::SUCCESS;
+    }
+
+    protected function getExternalLogo(?string $logoFile, string $appName, string $appVersion): string
+    {
+        if (null === $logoFile) {
+            return '';
+        }
+
+        $logoFilePath = $logoFile;
+        if (!file_exists($logoFilePath)) {
+            $logoFilePath = PathHelper::getRoot() . '/' . ltrim($logoFile, '/');
+            if (!file_exists($logoFilePath)) {
+                throw new \RuntimeException(sprintf('The logo file %s does not exist.', $logoFile));
+            }
+        }
+
+        $externalLogo = require $logoFilePath;
+
+        return match (true) {
+            \is_string($externalLogo) => $externalLogo,
+            \is_callable($externalLogo) => $externalLogo($appName, $appVersion),
+            default => throw new \RuntimeException(sprintf('The logo file %s returns an unsupported format. Had to be a string or closure.', $logoFile)),
+        };
     }
 }

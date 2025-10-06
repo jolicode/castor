@@ -50,6 +50,52 @@ vendor/bin/castor repack --help
 > excluded by castor's `box.json` file. In this case, you should override the
 > default configuration with a local `box.json` file
 
+## Repack with your logo
+
+When you repack, you can use the `--no-logo` option to hide the Castor logo.   
+
+Alternatively, you can replace the Castor logo with your own.  
+Use the `--logo-file` option and provide the absolute path (or a path relative 
+to the working directory) of a `.php` file.   
+
+This file must return a string or a closure that returns a string.  
+The closure will receive the application name and version as string parameters.
+
+#### Example
+
+```php
+// repack/my-logo.php
+
+<?php
+
+return '❤️ My LOGO ❤️';
+```
+
+```
+vendor/bin/castor repack --logo-file repack/my-logo.php
+```
+
+or
+
+```php
+// repack/my-complex-logo.php
+
+<?php
+
+return function (string $appName, string $appVersion) {
+    return <<<LOGO
+
+    ❤️ My LOGO for {$appName} in Version {$appVersion} ❤️
+     
+    LOGO;
+};
+```
+
+```
+vendor/bin/castor repack --logo-file repack/my-complex-logo.php
+```
+
+![img.png](../../assets/custom-logo.png)
 ## Going further
 
 Packaging your Castor app as a phar simplifies distribution but requires PHP
