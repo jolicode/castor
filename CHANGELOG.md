@@ -18,6 +18,7 @@
 ### Internal
 
 * Update all PHP vendor
+* Upgrade supported version of SPC > 2.5.0
 
 ## 0.27.0 (2025-09-02)
 
