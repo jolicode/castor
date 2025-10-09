@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+## 0.29.0 (2025-10-09)
+
 ### Features
 
 * Add capability to repack with a custom logo from external PHP file
