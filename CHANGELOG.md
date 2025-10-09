@@ -2,6 +2,14 @@
 
 ## Not released yet
 
+### Features
+
+* Add capability to repack with a custom logo from external PHP file
+
+### Internal
+
+* Upgrade supported version of SPC > 2.5.0
+
 ## 0.28.0 (2025-09-24)
 
 ### Features
@@ -9,7 +17,6 @@
 * Add version parameter to installer
 * Improve init command with more clear messages
 * Fill gitignore with castor stub on init
-* Add capability to repack with a custom logo from external PHP file
 
 ### Fixes
 
@@ -18,7 +25,6 @@
 ### Internal
 
 * Update all PHP vendor
-* Upgrade supported version of SPC > 2.5.0
 
 ## 0.27.0 (2025-09-02)
 
