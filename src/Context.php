@@ -4,7 +4,6 @@ namespace Castor;
 
 use Castor\Console\Output\VerbosityLevel;
 use Castor\Helper\PathHelper;
-use Castor\VerbosityLevel as LegacyVerbosityLevel;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 #[Exclude]
@@ -28,7 +27,7 @@ class Context implements \ArrayAccess
         public readonly bool $quiet = false,
         public readonly bool $allowFailure = false,
         public readonly ?bool $notify = null,
-        public readonly VerbosityLevel|LegacyVerbosityLevel $verbosityLevel = VerbosityLevel::NOT_CONFIGURED,
+        public readonly VerbosityLevel $verbosityLevel = VerbosityLevel::NOT_CONFIGURED,
         /**
          * @internal
          * Do not use this argument, it is only used internally by the application
@@ -113,13 +112,6 @@ class Context implements \ArrayAccess
             $this->notificationTitle,
             $this->verboseArguments,
         );
-    }
-
-    public function withPath(string $path): self
-    {
-        trigger_deprecation('castor', '0.15', 'The method "%s()" is deprecated, use "%s::withWorkingDirectory()" instead.', __METHOD__, self::class);
-
-        return $this->withWorkingDirectory($path);
     }
 
     public function withWorkingDirectory(string $workingDirectory): self
@@ -255,7 +247,7 @@ class Context implements \ArrayAccess
         );
     }
 
-    public function withVerbosityLevel(VerbosityLevel|LegacyVerbosityLevel $verbosityLevel): self
+    public function withVerbosityLevel(VerbosityLevel $verbosityLevel): self
     {
         return new self(
             $this->data,

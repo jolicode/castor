@@ -117,11 +117,7 @@ class Composer
             throw new InvalidImportFormat(\sprintf('The import path must be formatted like this: "%s://<organization>/<repository>".', $scheme));
         }
 
-        if ('composer' === $scheme || 'package' === $scheme) {
-            if ('package' === $scheme) {
-                trigger_deprecation('castor/castor', '0.16.0', 'The "package" scheme is deprecated, use "composer" instead.');
-            }
-
+        if ('composer' === $scheme) {
             $packageDirectory = PathHelper::getCastorVendorDir() . '/' . $package;
 
             if (!file_exists($packageDirectory)) {
