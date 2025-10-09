@@ -11,6 +11,7 @@
 ### Internal
 
 * Upgrade supported version of SPC > 2.5.0
+* Upgrade GitHub action runner to MacOS 14
 
 ## 0.28.0 (2025-09-24)
 
