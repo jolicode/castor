@@ -176,7 +176,7 @@ class RepackCommand extends Command
         if (!file_exists($logoFilePath)) {
             $logoFilePath = PathHelper::getRoot() . '/' . ltrim($logoFile, '/');
             if (!file_exists($logoFilePath)) {
-                throw new \RuntimeException(sprintf('The logo file %s does not exist.', $logoFile));
+                throw new \RuntimeException(\sprintf('The logo file %s does not exist.', $logoFile));
             }
         }
 
@@ -185,7 +185,7 @@ class RepackCommand extends Command
         return match (true) {
             \is_string($externalLogo) => $externalLogo,
             \is_callable($externalLogo) => $externalLogo($appName, $appVersion),
-            default => throw new \RuntimeException(sprintf('The logo file %s returns an unsupported format. Had to be a string or closure.', $logoFile)),
+            default => throw new \RuntimeException(\sprintf('The logo file %s returns an unsupported format. Had to be a string or closure.', $logoFile)),
         };
     }
 }

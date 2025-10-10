@@ -1,1 +1,0 @@
-hh:mm:ss WARNING   [castor] User Deprecated: Since castor/castor 0.16.0: The "package" scheme is deprecated, use "composer" instead. ["exception" => ErrorException { …}]

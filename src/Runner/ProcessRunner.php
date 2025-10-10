@@ -37,71 +37,14 @@ class ProcessRunner
 
     /**
      * @param string|array<string|\Stringable|int>|CommandBuilderInterface $command
-     * @param array<string, string|\Stringable|int>|null                   $environment
      * @param (callable(string, string, Process) :void)|null               $callback
      */
     public function run(
         string|array|CommandBuilderInterface $command,
-        ?array $environment = null,
-        ?string $workingDirectory = null,
-        ?bool $tty = null,
-        ?bool $pty = null,
-        ?float $timeout = null,
-        ?bool $quiet = null,
-        ?bool $allowFailure = null,
-        ?bool $notify = null,
-        ?callable $callback = null,
         ?Context $context = null,
+        ?callable $callback = null,
     ): Process {
         $context ??= $this->contextRegistry->getCurrentContext();
-
-        if (null !== $environment) {
-            trigger_deprecation('jolicode/castor', '0.18', 'The "environment" argument is deprecated, use the "Context" object instead.');
-
-            $context = $context->withEnvironment($environment);
-        }
-
-        if ($workingDirectory) {
-            trigger_deprecation('jolicode/castor', '0.18', 'The "workingDirectory" argument is deprecated, use the "Context" object instead.');
-
-            $context = $context->withWorkingDirectory($workingDirectory);
-        }
-
-        if (null !== $tty) {
-            trigger_deprecation('jolicode/castor', '0.18', 'The "tty" argument is deprecated, use the "Context" object instead.');
-
-            $context = $context->withTty($tty);
-        }
-
-        if (null !== $pty) {
-            trigger_deprecation('jolicode/castor', '0.18', 'The "pty" argument is deprecated, use the "Context" object instead.');
-
-            $context = $context->withPty($pty);
-        }
-
-        if (null !== $timeout) {
-            trigger_deprecation('jolicode/castor', '0.18', 'The "timeout" argument is deprecated, use the "Context" object instead.');
-
-            $context = $context->withTimeout($timeout);
-        }
-
-        if (null !== $quiet) {
-            trigger_deprecation('jolicode/castor', '0.18', 'The "quiet" argument is deprecated, use the "Context" object instead.');
-
-            $context = $context->withQuiet($quiet);
-        }
-
-        if (null !== $allowFailure) {
-            trigger_deprecation('jolicode/castor', '0.18', 'The "allowFailure" argument is deprecated, use the "Context" object instead.');
-
-            $context = $context->withAllowFailure($allowFailure);
-        }
-
-        if (null !== $notify) {
-            trigger_deprecation('jolicode/castor', '0.18', 'The "notify" argument is deprecated, use the "Context" object instead.');
-
-            $context = $context->withNotify($notify);
-        }
 
         if ($command instanceof CommandBuilderInterface) {
             if ($command instanceof ContextUpdaterInterface) {
@@ -128,12 +71,6 @@ class ProcessRunner
         // When quiet is set, it means we want to capture the output.
         // So we disable TTY and PTY because it does not make sens otherwise (and it's buggy).
         if ($context->quiet) {
-            if ($tty) {
-                throw new \LogicException('The "tty" argument cannot be used with "quiet".');
-            }
-            if ($pty) {
-                throw new \LogicException('The "pty" argument cannot be used with "quiet".');
-            }
             $context = $context
                 ->withTty(false)
                 ->withPty(false)
@@ -201,16 +138,8 @@ class ProcessRunner
                 if ($retry) {
                     return $this->run(
                         command: $command,
-                        environment: $environment,
-                        workingDirectory: $workingDirectory,
-                        tty: $tty,
-                        pty: $pty,
-                        timeout: $timeout,
-                        quiet: $quiet,
-                        allowFailure: $allowFailure,
-                        notify: $notify,
-                        callback: $callback,
                         context: $context->withVerbosityLevel(VerbosityLevel::VERBOSE),
+                        callback: $callback,
                     );
                 }
             }
@@ -228,35 +157,22 @@ class ProcessRunner
     }
 
     /**
-     * @param string|array<string|\Stringable|int>       $command
-     * @param array<string, string|\Stringable|int>|null $environment
+     * @param string|array<string|\Stringable|int> $command
      */
     public function capture(
         string|array $command,
-        ?array $environment = null,
-        ?string $workingDirectory = null,
-        ?float $timeout = null,
-        ?bool $allowFailure = null,
-        ?string $onFailure = null,
         ?Context $context = null,
+        ?string $onFailure = null,
     ): string {
         $hasOnFailure = null !== $onFailure;
         $context ??= context();
 
         if ($hasOnFailure) {
-            if (null !== $allowFailure) {
-                throw new \LogicException('The "allowFailure" argument cannot be used with "onFailure".');
-            }
-
             $context = $context->withAllowFailure();
         }
 
         $process = $this->run(
             command: $command,
-            environment: $environment,
-            workingDirectory: $workingDirectory,
-            timeout: $timeout,
-            allowFailure: $allowFailure,
             context: $context->withQuiet(),
         );
 
@@ -268,24 +184,15 @@ class ProcessRunner
     }
 
     /**
-     * @param string|array<string|\Stringable|int>       $command
-     * @param array<string, string|\Stringable|int>|null $environment
+     * @param string|array<string|\Stringable|int> $command
      */
     public function exitCode(
         string|array $command,
-        ?array $environment = null,
-        ?string $workingDirectory = null,
-        ?float $timeout = null,
-        ?bool $quiet = null,
         ?Context $context = null,
     ): int {
         $process = $this->run(
             command: $command,
-            environment: $environment,
-            workingDirectory: $workingDirectory,
-            timeout: $timeout,
             context: ($context ?? context())->withAllowFailure(),
-            quiet: $quiet,
         );
 
         return $process->getExitCode() ?? 0;

@@ -1,6 +1,8 @@
 # CHANGELOG
 
-## Not released yet
+## 1.0.0 (2025-10-10)
+
+* Remove BC-layer for Castor 0.x
 
 ## 0.29.0 (2025-10-09)
 

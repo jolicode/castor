@@ -45,10 +45,6 @@ It comes with many features to make your life easier:
     * [`fs()`](going-further/helpers/filesystem.md/#the-fs-function): Creates, removes, and manipulates files and directories
     * [And even more advanced functions](reference.md)
 
-> [!NOTE]
-> While Castor hasn't reached v1.0 yet, any API changes are carefully managed
-> with deprecation warnings and compatibility bridges.
-
 ## 🧑‍🔬 Basic usage
 
 In Castor, tasks are set up as typical PHP functions marked with the `#[AsTask()]` attribute in a `castor.php` file.

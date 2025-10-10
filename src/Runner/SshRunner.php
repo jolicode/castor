@@ -83,7 +83,6 @@ final readonly class SshRunner
     ): Process {
         return $this->processRunner->run(
             $command,
-            callback: $callback,
             context: context()->withPty(false)
                                 ->withTty(false)
                                 ->withEnvironment([])
@@ -91,6 +90,7 @@ final readonly class SshRunner
                                 ->withAllowFailure($allowFailure ?? false)
                                 ->withNotify($notify)
                                 ->withTimeout($timeout),
+            callback: $callback,
         );
     }
 

@@ -10,9 +10,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use Symfony\Component\Finder\Finder;
 
-/** @final */
 #[Exclude]
-class HasherHelper
+final class HasherHelper
 {
     private readonly \HashContext $hashContext;
 

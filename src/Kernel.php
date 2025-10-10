@@ -4,9 +4,6 @@ namespace Castor;
 
 use Castor\Console\Application;
 use Castor\Console\Output\VerbosityLevel;
-use Castor\Descriptor\DescriptorsCollection;
-use Castor\Descriptor\TaskDescriptorCollection;
-use Castor\Event\AfterApplicationInitializationEvent;
 use Castor\Event\AfterBootEvent;
 use Castor\Event\BeforeBootEvent;
 use Castor\Event\FunctionsResolvedEvent;
@@ -23,7 +20,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Finder\Finder;
 
 /** @internal */
 final class Kernel
@@ -129,27 +125,6 @@ final class Kernel
         $this->functionLoader->loadContexts($descriptorsCollection->contextDescriptors, $descriptorsCollection->contextGeneratorDescriptors);
         $this->configureContext($input, $output);
 
-        if ($this->eventDispatcher->hasListeners(AfterApplicationInitializationEvent::class)) {
-            trigger_deprecation('castor', '0.16', 'The "%s" class is deprecated, use "%s" instead.', AfterApplicationInitializationEvent::class, FunctionsResolvedEvent::class);
-            $event = new AfterApplicationInitializationEvent(
-                $this->application,
-                new TaskDescriptorCollection(
-                    $descriptorsCollection->taskDescriptors,
-                    $descriptorsCollection->symfonyTaskDescriptors
-                ),
-            );
-            $this->eventDispatcher->dispatch($event);
-            $taskDescriptorCollection = $event->taskDescriptorCollection;
-
-            $descriptorsCollection = new DescriptorsCollection(
-                $descriptorsCollection->contextDescriptors,
-                $descriptorsCollection->contextGeneratorDescriptors,
-                $descriptorsCollection->listenerDescriptors,
-                $taskDescriptorCollection->taskDescriptors,
-                $taskDescriptorCollection->symfonyTaskDescriptors,
-            );
-        }
-
         $event = new FunctionsResolvedEvent(
             $descriptorsCollection->taskDescriptors,
             $descriptorsCollection->symfonyTaskDescriptors
@@ -179,20 +154,6 @@ final class Kernel
             $this->importer->importFile($file);
         } else {
             throw new CouldNotFindEntrypointException();
-        }
-
-        $castorDirectory = $path . '/castor';
-        if (is_dir($castorDirectory)) {
-            trigger_deprecation('castor', '0.15', 'Autoloading functions from the "/castor/" directory is deprecated. Import files by yourself with the "castor\import()" function.');
-            $files = Finder::create()
-                ->files()
-                ->name('*.php')
-                ->in($castorDirectory)
-            ;
-
-            foreach ($files as $file) {
-                $this->importer->importFile($file->getPathname());
-            }
         }
     }
 

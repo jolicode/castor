@@ -35,33 +35,3 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/Context.php
-
-		-
-			message: '#^Class Castor\\HasherHelper extends @final class Castor\\Helper\\HasherHelper\.$#'
-			identifier: class.extendsFinalByPhpDoc
-			count: 1
-			path: src/HasherHelper.php
-
-		-
-			message: '#^Class Castor\\PathHelper extends @final class Castor\\Helper\\PathHelper\.$#'
-			identifier: class.extendsFinalByPhpDoc
-			count: 1
-			path: src/PathHelper.php
-
-		-
-			message: '#^Function Castor\\get_exit_code\(\) has parameter \$args with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/functions.php
-
-		-
-			message: '#^Function Castor\\request\(\) has parameter \$args with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/functions.php
-
-		-
-			message: '#^Function Castor\\ssh\(\) has parameter \$args with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/functions.php

@@ -70,7 +70,7 @@ final readonly class WatchRunner
         $command = [$binaryPath, $path];
         $buffer = '';
 
-        $this->processRunner->run($command, callback: function ($type, $bytes, $process) use ($function, &$buffer): void {
+        $this->processRunner->run($command, context: $watchContext, callback: function ($type, $bytes, $process) use ($function, &$buffer): void {
             if (Process::OUT === $type) {
                 $data = $buffer . $bytes;
                 $lines = explode("\n", $data);
@@ -103,6 +103,6 @@ final readonly class WatchRunner
             } else {
                 $this->sectionOutput->writeProcessOutput($type, $bytes, $process);
             }
-        }, context: $watchContext);
+        });
     }
 }

@@ -1,5 +1,5 @@
 In castor.php line XXXX:
 
-  Could not import "foo/bar": The package "foo/bar" is not installed, make sure you required it in your castor.composer.json file.
+  Could not import "foo/bar": The import scheme "package" is not supported.
 
 

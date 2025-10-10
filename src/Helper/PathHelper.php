@@ -6,9 +6,8 @@ use Castor\Import\Remote\Composer;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use Symfony\Component\Filesystem\Path;
 
-/** @final */
 #[Exclude]
-class PathHelper
+final class PathHelper
 {
     public static function getCastorVendorDir(): string
     {

@@ -179,7 +179,6 @@ echo "\nDone.\n";
 displayTitle('Generating tests for valid fixtures');
 
 add_test(['list'], 'LayoutWithFolder', '{{ base }}/tests/fixtures/valid/layout-with-folder');
-add_test(['list'], 'LayoutWithOldFolder', '{{ base }}/tests/fixtures/valid/layout-with-old-folder');
 add_test([], 'ImportSamePackageWithDefaultVersion', '{{ base }}/tests/fixtures/valid/import-same-package-with-default-version', needRemote: true, needResetVendor: true);
 add_test(['fs-watch'], 'WatchWithForcedTimeout', '{{ base }}/tests/fixtures/valid/watch-with-forced-timeout');
 add_test([], 'DefaultTask', '{{ base }}/tests/fixtures/valid/default-task');
