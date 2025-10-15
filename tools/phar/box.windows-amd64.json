@@ -2,7 +2,7 @@
   "base-path": "../../",
   "files-bin": [
     "tools/watcher/bin/watcher-linux-amd64",
-    "tools/watcher/bin/watcher-windows.exe"
+    "tools/watcher/bin/watcher-windows-amd64.exe"
   ],
   "finder-bin": [
     {

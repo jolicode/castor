@@ -4,6 +4,7 @@ namespace castor\phar;
 
 use Castor\Attribute\AsTask;
 
+use function Castor\fs;
 use function Castor\io;
 use function Castor\parallel;
 use function Castor\run;

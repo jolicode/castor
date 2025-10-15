@@ -28,7 +28,7 @@ function darwin()
 #[AsTask(description: 'Build watcher for Windows system')]
 function windows()
 {
-    run('go build -o bin/watcher-windows.exe -ldflags="-s -w" main.go', context: context()->withEnvironment(['GOOS' => 'windows', 'CGO_ENABLED' => '0']));
+    run('go build -o bin/watcher-windows-amd64.exe -ldflags="-s -w" main.go', context: context()->withEnvironment(['GOOS' => 'windows', 'GOARCH' => 'amd64', 'CGO_ENABLED' => '0']));
 }
 
 #[AsTask(description: 'Build watcher for all systems')]

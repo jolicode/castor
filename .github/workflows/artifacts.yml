@@ -2,7 +2,7 @@ name: Artifacts
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "*" ]
 
 permissions:
   contents: write
@@ -187,4 +187,42 @@ jobs:
         with:
           name: "castor.darwin-arm64"
           path: ./castor.darwin-arm64
+          if-no-files-found: error
+
+  static-windows-amd64:
+    needs: phars
+    name: Create Windows amd64 static binary and upload
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/install
+
+      - uses: ./.github/actions/cache
+        with:
+          os: 'windows'
+
+      - name: retrieve phar artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: tools/phar/build
+          merge-multiple: true
+
+      - name: Setup VS Build Environment
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - uses: ./.github/actions/static
+        with:
+          os: 'windows-amd64'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload the Windows amd64 static binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: 'castor.windows-amd64.exe'
+          path: ./castor.windows-amd64.exe
           if-no-files-found: error

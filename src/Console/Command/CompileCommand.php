@@ -62,6 +62,10 @@ class CompileCommand extends Command
         $os = $input->getOption('os');
         $arch = $input->getOption('arch');
 
+        if ('windows' === $os) {
+            $spcBinaryPath .= '.exe';
+        }
+
         $this->setupSPC(
             $spcBinaryDir,
             $spcBinaryPath,
@@ -113,13 +117,17 @@ class CompileCommand extends Command
     private function validateInput(InputInterface $input): void
     {
         $os = $input->getOption('os');
-        if (!\in_array($os, ['linux', 'macos'])) {
-            throw new \InvalidArgumentException('Currently supported target OS are one of "linux" or "macos"');
+        if (!\in_array($os, ['linux', 'macos', 'windows'])) {
+            throw new \InvalidArgumentException('Currently supported target OS are one of "linux", "macos", "windows"');
         }
 
         $arch = $input->getOption('arch');
         if (!\in_array($arch, ['x86_64', 'aarch64'])) {
             throw new \InvalidArgumentException('Target architecture must be one of "x86_64" or "aarch64"');
+        }
+
+        if ('windows' === $os && 'aarch64' === $arch) {
+            throw new \InvalidArgumentException('Windows on ARM (aarch64) is not supported yet.');
         }
 
         if (!is_file($input->getArgument('phar-path'))) {
@@ -129,13 +137,18 @@ class CompileCommand extends Command
         $input->setArgument('phar-path', Path::makeAbsolute($input->getArgument('phar-path'), getcwd() ?: PathHelper::getRoot()));
     }
 
-    private function downloadSPC(string $spcSourceUrl, string $spcBinaryDestination, SymfonyStyle $io): void
+    private function downloadSPC(string $spcSourceUrl, string $spcBinaryDestination, bool $unarchive, SymfonyStyle $io): void
     {
         $response = $this->httpClient->request('GET', $spcSourceUrl);
         $contentLength = $response->getHeaders()['content-length'][0] ?? 0;
 
-        $spcTarGzDestination = $spcBinaryDestination . '.tar.gz';
-        $outputStream = fopen($spcTarGzDestination, 'w');
+        if ($unarchive) {
+            $spcTarGzDestination = $spcBinaryDestination . '.tar.gz';
+            $outputStream = fopen($spcTarGzDestination, 'w');
+        } else {
+            $outputStream = fopen($spcBinaryDestination, 'w');
+        }
+
         $progressBar = $io->createProgressBar((int) $contentLength);
 
         if (false === $outputStream) {
@@ -149,14 +162,17 @@ class CompileCommand extends Command
 
         fclose($outputStream);
 
-        $extractProcess = new Process(
-            command: ['tar', 'xf', $spcTarGzDestination],
-            cwd: \dirname($spcBinaryDestination),
-            timeout: null,
-        );
+        if ($unarchive) {
+            $extractProcess = new Process(
+                command: ['tar', 'xf', $spcTarGzDestination],
+                cwd: \dirname($spcBinaryDestination),
+                timeout: null,
+            );
 
-        $io->text('Running command: ' . $extractProcess->getCommandLine());
-        $extractProcess->mustRun(fn ($type, $buffer) => print $buffer);
+            $io->text('Running command: ' . $extractProcess->getCommandLine());
+            $extractProcess->mustRun(fn ($type, $buffer) => print $buffer);
+        }
+
         chmod($spcBinaryDestination, 0o755);
 
         $progressBar->finish();
@@ -247,12 +263,21 @@ class CompileCommand extends Command
     {
         $this->fs->mkdir($spcBinaryDir, 0o755);
 
+        $extension = 'tar.gz';
+        $unarchive = true;
+
+        if ($os === 'windows') {
+            $arch = 'x64';
+            $extension = 'exe';
+            $unarchive = false;
+        }
+
         if ($this->fs->exists($spcBinaryPath)) {
             $io->text(\sprintf('Using the static-php-cli (spc) tool from "%s"', $spcBinaryPath));
         } else {
-            $spcSourceUrl = \sprintf('https://github.com/crazywhalecc/static-php-cli/releases/download/%s/spc-%s-%s.tar.gz', $spcVersion, $os, $arch);
+            $spcSourceUrl = \sprintf('https://github.com/crazywhalecc/static-php-cli/releases/download/%s/spc-%s-%s.%s', $spcVersion, $os, $arch, $extension);
             $io->text(\sprintf('Downloading the static-php-cli (spc) tool from "%s" to "%s"', $spcSourceUrl, $spcBinaryPath));
-            $this->downloadSPC($spcSourceUrl, $spcBinaryPath, $io);
+            $this->downloadSPC($spcSourceUrl, $spcBinaryPath, $unarchive, $io);
             $io->newLine(2);
         }
     }
@@ -273,11 +298,12 @@ class CompileCommand extends Command
         $appName = json_decode($p->getOutput(), true)['application']['name'];
 
         return \sprintf(
-            '%s/%s.%s.%s',
+            '%s/%s.%s.%s%s',
             $binaryPath,
             $appName,
             $input->getOption('os'),
             $input->getOption('arch'),
+            ('windows' === $input->getOption('os')) ? '.exe' : '',
         );
     }
 
