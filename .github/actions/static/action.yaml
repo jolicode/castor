@@ -63,7 +63,7 @@ runs:
       if: ${{ inputs.os == 'darwin-arm64' }}
 
     - name: Build Castor static binary for Windows (windows-amd64)
-      run: php bin/castor castor:static:windows-amd64
+      run: php bin/castor castor:static:windows-amd64 -vvv
       shell: cmd
       if: ${{ inputs.os == 'windows-amd64' }}
 
