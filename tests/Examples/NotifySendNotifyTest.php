@@ -1,16 +1,20 @@
 <?php
 
-namespace Castor\Tests\Generated;
+namespace Castor\Tests\Examples;
 
 use Castor\Tests\TaskTestCase;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
-class NotifyNotifyOnFinishTest extends TaskTestCase
+class NotifySendNotifyTest extends TaskTestCase
 {
-    // notify:notify-on-finish
+    // notify:send-notify
     public function test(): void
     {
-        $process = $this->runTask(['notify:notify-on-finish']);
+        if (self::$binary) {
+            $this->markTestSkipped('This test can not be ran with the binary version of Castor inside Github Action.');
+        }
+
+        $process = $this->runTask(['notify:send-notify']);
 
         if (0 !== $process->getExitCode()) {
             throw new ProcessFailedException($process);
