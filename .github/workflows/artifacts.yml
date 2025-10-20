@@ -69,7 +69,7 @@ jobs:
 
       - uses: ./.github/actions/cache
         with:
-          os: 'linux-amd64'
+          target: 'linux-amd64'
 
       - name: retrieve phar artifacts
         uses: actions/download-artifact@v4
@@ -102,7 +102,7 @@ jobs:
 
       - uses: ./.github/actions/cache
         with:
-          os: 'linux-arm64'
+          target: 'linux-arm64'
 
       - name: retrieve phar artifacts
         uses: actions/download-artifact@v4
@@ -135,7 +135,7 @@ jobs:
 
       - uses: ./.github/actions/cache
         with:
-          os: 'darwin'
+          target: 'darwin-amd64'
 
       - name: retrieve phar artifacts
         uses: actions/download-artifact@v4
@@ -168,7 +168,7 @@ jobs:
 
       - uses: ./.github/actions/cache
         with:
-          os: "darwin"
+          target: 'darwin-arm64'
 
       - name: retrieve phar artifacts
         uses: actions/download-artifact@v4
@@ -178,13 +178,13 @@ jobs:
 
       - uses: ./.github/actions/static
         with:
-          os: "darwin-arm64"
+          os: 'darwin-arm64'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload the MacOs arm64 static binary
         uses: actions/upload-artifact@v4
         with:
-          name: "castor.darwin-arm64"
+          name: 'castor.darwin-arm64'
           path: ./castor.darwin-arm64
           if-no-files-found: error

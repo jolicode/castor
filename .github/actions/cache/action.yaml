@@ -2,10 +2,9 @@ name: 'Compute cache keys'
 description: 'Export cache keys for the build process to env vars'
 
 inputs:
-  os:
-    description: 'The OS to compute the cache key for'
+  target:
+    description: 'The target to compute the cache key for'
     required: true
-    default: 'linux'
 
 runs:
   using: "composite"
@@ -22,10 +21,22 @@ runs:
         echo cache_key_linux_amd64=$cache_key_linux_amd64 >> $GITHUB_ENV
 
         # Should be the same command as the one in tools/static/castor.php
+        cache_dirname_linux_arm64=$(tests/bin/compile-get-cache-key phar-location-is-not-used-in-cache-key --os=linux --arch=aarch64 --php-extensions=mbstring,phar,posix,tokenizer,pcntl,curl,filter,openssl,sodium,ctype,zip,bz2,iconv)
+        cache_key_linux_arm64=$(basename $cache_dirname_linux_arm64)
+        echo cache_dirname_linux_arm64=$cache_dirname_linux_arm64 >> $GITHUB_ENV
+        echo cache_key_linux_arm64=$cache_key_linux_arm64 >> $GITHUB_ENV
+
+        # Should be the same command as the one in tools/static/castor.php
         cache_dirname_darwin_amd64=$(tests/bin/compile-get-cache-key phar-location-is-not-used-in-cache-key --os=macos --arch=x86_64 --php-extensions=mbstring,phar,posix,tokenizer,pcntl,curl,filter,openssl,sodium,ctype,zip,bz2,iconv)
         cache_key_darwin_amd64=$(basename $cache_dirname_darwin_amd64)
         echo cache_dirname_darwin_amd64=$cache_dirname_darwin_amd64 >> $GITHUB_ENV
         echo cache_key_darwin_amd64=$cache_key_darwin_amd64 >> $GITHUB_ENV
+
+        # Should be the same command as the one in tools/static/castor.php
+        cache_dirname_darwin_arm64=$(tests/bin/compile-get-cache-key phar-location-is-not-used-in-cache-key --os=macos --arch=aarch64 --php-extensions=mbstring,phar,posix,tokenizer,pcntl,curl,filter,openssl,sodium,ctype,zip,bz2,iconv)
+        cache_key_darwin_arm64=$(basename $cache_dirname_darwin_arm64)
+        echo cache_dirname_darwin_arm64=$cache_dirname_darwin_arm64 >> $GITHUB_ENV
+        echo cache_key_darwin_arm64=$cache_key_darwin_arm64 >> $GITHUB_ENV
 
         # And should be the same command as the one in CompileCommandTest
         cache_dirname_test=$(tests/bin/compile-get-cache-key phar-location-is-not-used-in-cache-key --os linux --php-extensions filter,mbstring,phar,posix,tokenizer)
@@ -38,18 +49,32 @@ runs:
       with:
         path: ${{ env.cache_dirname_linux_amd64 }}
         key: php-static-${{ env.cache_key_linux_amd64 }}
-      if: ${{ inputs.os == 'linux' }}
+      if: ${{ inputs.target == 'linux-amd64' }}
+
+    - name: Restore PHP static building artifacts cache for linux-arm64
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.cache_dirname_linux_arm64 }}
+        key: php-static-${{ env.cache_key_linux_arm64 }}
+      if: ${{ inputs.target == 'linux-arm64' }}
 
     - name: Restore PHP static building artifacts cache for darwin-amd64
       uses: actions/cache@v4
       with:
         path: ${{ env.cache_dirname_darwin_amd64 }}
         key: php-static-${{ env.cache_key_darwin_amd64 }}
-      if: ${{ inputs.os == 'darwin' }}
+      if: ${{ inputs.target == 'darwin-amd64' }}
+
+    - name: Restore PHP static building artifacts cache for darwin-arm64
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.cache_dirname_darwin_arm64 }}
+        key: php-static-${{ env.cache_key_darwin_arm64}}
+      if: ${{ inputs.target == 'darwin-arm64' }}
 
     - name: Restore PHP static building artifacts cache for test job
       uses: actions/cache@v4
       with:
         path: ${{ env.cache_dirname_test }}
         key: php-static-${{ env.cache_key_test }}
-      if: ${{ inputs.os == 'linux' }}
+      if: ${{ inputs.target == 'test' }}
