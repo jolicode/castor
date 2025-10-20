@@ -107,6 +107,10 @@ jobs:
       - name: Link box
         run: sudo ln -s $GITHUB_WORKSPACE/tools/phar/vendor/bin/box /usr/local/bin/box
 
+      - name: Install libnotify4 to make jolinotif use LibNotifyDriver
+        run: |
+          sudo apt-get install -y --no-install-recommends --no-install-suggests libnotify4
+
       - name: Install PHPUnit
         run: vendor/bin/simple-phpunit install
 

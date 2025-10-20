@@ -150,7 +150,7 @@ class HttpDownloader
 
         $units = ['KB', 'MB', 'GB', 'TB'];
         $log = log($bytes, 1024);
-        $pow = floor($log);
+        $pow = (int) floor($log);
         $size = $bytes / (1024 ** $pow);
 
         return \sprintf('%.2f %s', $size, $units[$pow - 1]);

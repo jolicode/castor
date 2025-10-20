@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Not released yet
+
+### Internal
+
+* Update all PHP vendor
+
 ## 1.0.0 (2025-10-10)
 
 * Remove BC-layer for Castor 0.x
