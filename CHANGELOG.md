@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Features
+
+* Allow to specify directory where to output repacked phar
+
 ### Internal
 
 * Update all PHP vendor

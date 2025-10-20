@@ -10,6 +10,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
@@ -21,6 +23,8 @@ class RepackCommand extends Command
         private readonly Importer $importer,
         #[Autowire(lazy: true)]
         private readonly Composer $composer,
+        #[Autowire(lazy: true)]
+        private readonly Filesystem $fs,
     ) {
         parent::__construct();
     }
@@ -35,6 +39,7 @@ class RepackCommand extends Command
             ->addOption('os', null, InputOption::VALUE_REQUIRED, 'The targeted OS', 'linux', ['linux', 'darwin', 'windows'])
             ->addOption('no-logo', null, InputOption::VALUE_NONE, 'Hide Castor logo')
             ->addOption('logo-file', null, InputOption::VALUE_OPTIONAL, 'Path to a PHP file that returns a logo as a string, or a closure that returns a logo as a string')
+            ->addOption('output-directory', null, InputOption::VALUE_REQUIRED, 'Path to the directory where the phar will be generated', '')
             ->setHidden(true)
         ;
     }
@@ -54,6 +59,17 @@ class RepackCommand extends Command
         $box = $finder->find('box');
         if (!$box) {
             throw new \RuntimeException('Could not find box. Please install it: https://github.com/box-project/box/blob/main/doc/installation.md#installation.');
+        }
+
+        $outputDirectory = (string) $input->getOption('output-directory');
+        if ($outputDirectory) {
+            if (Path::isRelative($outputDirectory)) {
+                $outputDirectory = PathHelper::getRoot() . '/' . $outputDirectory;
+            }
+
+            $outputDirectory = rtrim($outputDirectory, '/\\') . '/';
+
+            $this->fs->mkdir($outputDirectory);
         }
 
         // Install the dependencies
@@ -98,7 +114,7 @@ class RepackCommand extends Command
         $boxConfig['base-path'] = '.';
         $boxConfig['main'] = '.main.php';
         $boxConfig['alias'] = $alias;
-        $boxConfig['output'] = \sprintf('%s.%s.phar', $appName, $os);
+        $boxConfig['output'] = \sprintf('%s%s.%s.phar', $outputDirectory, $appName, $os);
         // update all paths to point to the castor source
         foreach (['files', 'files-bin', 'directories', 'directories-bin'] as $key) {
             if (!\array_key_exists($key, $boxConfig)) {
