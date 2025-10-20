@@ -126,7 +126,7 @@ jobs:
   static-darwin-amd64:
     needs: phars
     name: Create MacOs amd64 static binary and upload
-    runs-on: macos-14
+    runs-on: macos-15-intel
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -159,7 +159,7 @@ jobs:
   static-darwin-arm64:
     needs: phars
     name: Create MacOs arm64 static binary and upload
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
