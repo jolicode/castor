@@ -18,9 +18,9 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class CompileCommand extends Command
 {
     // When something **important** related to the compilation changed, increase
-    // this version to invalide the cache
-    private const CACHE_VERSION = '3';
-    private const DEFAULT_SPC_VERSION = '2.7.4';
+    // this version to invalidate the cache
+    private const CACHE_VERSION = '4';
+    private const DEFAULT_SPC_VERSION = '2.7.5';
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,
