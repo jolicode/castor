@@ -6,6 +6,10 @@
 
 * Allow to specify directory where to output repacked phar
 
+### Fixes
+
+* Use correct working directory when using the `castor execute` command.
+
 ### Internal
 
 * Update all PHP vendor
