@@ -14,6 +14,7 @@
 
 * Provide PHP 8.4 in the static binaries
 * Update all PHP vendor
+* Upgrade SPC version to v2.7.5
 
 ## 1.0.0 (2025-10-10)
 

@@ -91,6 +91,8 @@ jobs:
           php-version: "${{ matrix.php }}"
 
       - uses: ./.github/actions/cache
+        with:
+          target: 'test'
 
       - name: Build Castor phar for Linux
         run: bin/castor castor:phar:linux
@@ -131,6 +133,8 @@ jobs:
         with:
           composer-flags: "--no-dev"
       - uses: ./.github/actions/cache
+        with:
+          target: 'test'
       - uses: ./.github/actions/phar
       - uses: ./.github/actions/static
         env:
