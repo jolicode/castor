@@ -12,6 +12,7 @@ use Castor\Helper\ZipArchiver;
 use Castor\Http\HttpDownloader;
 use Castor\Import\Importer;
 use Castor\Runner\ParallelRunner;
+use Castor\Runner\PhpRunner;
 use Castor\Runner\ProcessRunner;
 use Castor\Runner\SshRunner;
 use Castor\Runner\WatchRunner;
@@ -48,6 +49,7 @@ final class Container
         public readonly Notifier $notifier,
         public readonly OutputInterface $output,
         public readonly ParallelRunner $parallelRunner,
+        public readonly PhpRunner $phpRunner,
         public readonly ProcessRunner $processRunner,
         public readonly SectionOutput $sectionOutput,
         public readonly SshRunner $sshRunner,
