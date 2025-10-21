@@ -122,7 +122,15 @@ final class ExecuteCommand extends Command
                 }
             }
 
-            return run_php($binaryDirectory . '/' . $binary, $args, context()->withAllowFailure())->wait();
+            $context = context()->withAllowFailure();
+
+            // By default the run command will use the directory of the root castor.php file
+            // but this command should be executed in the same directory as where it was launched
+            if (($workingDir = getcwd()) !== false) {
+                $context = $context->withWorkingDirectory($workingDir);
+            }
+
+            return run_php($binaryDirectory . '/' . $binary, $args, $context)->wait();
         } finally {
             $this->filesystem->remove($tmpDir);
         }
