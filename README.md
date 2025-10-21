@@ -1,13 +1,15 @@
-<div align="center">
-    <img width="450" height="117" src="https://jolicode.com/media/original/castor-logo-line.svg?cool" alt="castor logo" />
-</div>
-
 <h1 align="center">
-    A lightweight and modern task runner for Automation, CI/CD & DevOps.
+  <a href="https://github.com/jolicode/castor"><img src="https://jolicode.com/media/original/oss/headers/castor.png" alt="Castor"></a>
+  <br />
+  A lightweight and modern task runner for Automation, CI/CD & DevOps.<br>
+  <sub><em><h6>Automate everything. In PHP. Simply. Efficiently. Elegantly.</h6></em></sub>
 </h1>
 
 <div align="center">
-    <strong>Automate everything. In PHP. Simply. Efficiently. Elegantly.</strong>
+
+[![PHP Version Require](http://poser.pugx.org/jolicode/castor/require/php)](https://packagist.org/packages/jolicode/castor)
+[![Monthly Downloads](http://poser.pugx.org/jolicode/castor/d/monthly)](https://packagist.org/packages/jolicode/castor)
+
 </div>
 
 ## 🚀 TL;DR
@@ -126,3 +128,7 @@ Discover more by reading the docs:
 * [Castor reference](https://castor.jolicode.com/reference/)
 * [Examples](https://castor.jolicode.com/examples/)
 * [Frequently asked questions](https://castor.jolicode.com/faq/)
+
+<div align="center">
+<a href="https://jolicode.com/"><img src="https://jolicode.com/media/original/oss/footer-github.png?v2" alt="JoliCode is sponsoring this project"></a>
+</div>
