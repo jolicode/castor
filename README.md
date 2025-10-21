@@ -5,8 +5,6 @@
   <sub><em><h6>Automate everything. In PHP. Simply. Efficiently. Elegantly.</h6></em></sub>
 </h1>
 
-## 🚀 TL;DR
-
 Write your automation scripts in PHP, run them from the CLI.<br/>
 No need for Bash, Makefiles or YAML.<br/>
 
