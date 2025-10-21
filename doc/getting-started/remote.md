@@ -1,7 +1,7 @@
 # Remote execution
 
 Castor allows you to run any php package without installing it on your machine or
-withing your dependencies. This is done by using the `castor execute` command
+adding them to your dependencies. This is done by using the `castor execute` command
 
 As an example, let's say you want to run the `friendsofphp/php-cs-fixer` package
 to fix your code style. You can do this by running the following command:
