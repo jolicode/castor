@@ -19,7 +19,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
-use function Castor\context;
 use function Symfony\Component\String\u;
 
 /** @internal */
@@ -165,7 +164,7 @@ class ProcessRunner
         ?string $onFailure = null,
     ): string {
         $hasOnFailure = null !== $onFailure;
-        $context ??= context();
+        $context ??= $this->contextRegistry->getCurrentContext();
 
         if ($hasOnFailure) {
             $context = $context->withAllowFailure();
@@ -192,7 +191,7 @@ class ProcessRunner
     ): int {
         $process = $this->run(
             command: $command,
-            context: ($context ?? context())->withAllowFailure(),
+            context: ($context ?? $this->contextRegistry->getCurrentContext())->withAllowFailure(),
         );
 
         return $process->getExitCode() ?? 0;

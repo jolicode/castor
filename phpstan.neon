@@ -6,6 +6,7 @@ parameters:
     paths:
         - src
         - examples
+        - tools/phpstan/src
     tmpDir: 'var/phpstan/tmp'
     inferPrivatePropertyTypeFromConstructor: true
     excludePaths:
@@ -43,3 +44,9 @@ parameters:
             path: examples/
         -
             identifier: missingType.generics
+
+services:
+    -
+        class: Castor\PHPStan\ProhibitCastorFunctionInClass
+        tags:
+            - phpstan.rules.rule
