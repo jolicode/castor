@@ -758,15 +758,13 @@ function zip_php(
 }
 
 /**
- * @param array<string|\Stringable> $arguments
+ * @param array<string|\Stringable>                      $arguments
+ * @param (callable(string, string, Process) :void)|null $callback
  */
-function run_php(string $pharPath, array $arguments = [], ?Context $context = null): Process
+function run_php(string $pharPath, array $arguments = [], ?Context $context = null, ?callable $callback = null): Process
 {
-    // get program path
-    $castorPath = $_SERVER['argv'][0];
-    $context ??= context();
-
-    return run([$castorPath, ...$arguments], context: $context->withEnvironment([
-        'CASTOR_PHP_REPLACE' => $pharPath,
-    ]));
+    return Container::get()
+        ->phpRunner
+        ->run($pharPath, $arguments, $context, $callback)
+    ;
 }

@@ -4,8 +4,10 @@ namespace Castor\Console\Command;
 
 use Castor\Console\Input\GetRawTokenTrait;
 use Castor\Console\Output\VerbosityLevel;
+use Castor\ContextRegistry;
 use Castor\Exception\ProblemException;
 use Castor\Import\Remote\Composer;
+use Castor\Runner\PhpRunner;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -14,9 +16,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Filesystem;
-
-use function Castor\context;
-use function Castor\run_php;
 
 /** @internal */
 #[AsCommand(
@@ -32,6 +31,8 @@ final class ExecuteCommand extends Command
         #[Autowire(lazy: true)]
         private readonly Composer $composer,
         private readonly Filesystem $filesystem,
+        private readonly PhpRunner $phpRunner,
+        private readonly ContextRegistry $contextRegistry,
         private readonly string $cacheDir,
     ) {
         parent::__construct();
@@ -122,7 +123,7 @@ final class ExecuteCommand extends Command
                 }
             }
 
-            $context = context()->withAllowFailure();
+            $context = $this->contextRegistry->getCurrentContext()->withAllowFailure();
 
             // By default the run command will use the directory of the root castor.php file
             // but this command should be executed in the same directory as where it was launched
@@ -130,7 +131,7 @@ final class ExecuteCommand extends Command
                 $context = $context->withWorkingDirectory($workingDir);
             }
 
-            return run_php($binaryDirectory . '/' . $binary, $args, $context)->wait();
+            return $this->phpRunner->run($binaryDirectory . '/' . $binary, $args, $context)->wait();
         } finally {
             $this->filesystem->remove($tmpDir);
         }
