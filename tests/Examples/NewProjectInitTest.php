@@ -10,7 +10,7 @@ class NewProjectInitTest extends TaskTestCase
     // init
     public function test(): void
     {
-        $tmpDirectory = tempnam(sys_get_temp_dir(),'');
+        $tmpDirectory = tempnam(sys_get_temp_dir(), '');
 
         if (file_exists($tmpDirectory)) {
             unlink($tmpDirectory);
