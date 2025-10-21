@@ -1,0 +1,4 @@
+ [OK] Project created. You can edit "castor.php" and write your own tasks.
+
+ ! [NOTE] Run "castor" to see the available tasks.
+
