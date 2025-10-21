@@ -143,6 +143,15 @@ class Application extends SymfonyApplication
             )
         );
 
+        $definition->addOption(
+            new InputOption(
+                'castor-file',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Specify an alternative castor file to use instead of the default "castor.php"',
+            )
+        );
+
         return $definition;
     }
 
