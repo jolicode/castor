@@ -5,13 +5,6 @@
   <sub><em><h6>Automate everything. In PHP. Simply. Efficiently. Elegantly.</h6></em></sub>
 </h1>
 
-<div align="center">
-
-[![PHP Version Require](http://poser.pugx.org/jolicode/castor/require/php)](https://packagist.org/packages/jolicode/castor)
-[![Monthly Downloads](http://poser.pugx.org/jolicode/castor/d/monthly)](https://packagist.org/packages/jolicode/castor)
-
-</div>
-
 ## 🚀 TL;DR
 
 Write your automation scripts in PHP, run them from the CLI.<br/>
