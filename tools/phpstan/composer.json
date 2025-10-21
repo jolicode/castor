@@ -6,6 +6,11 @@
     "require": {
         "phpstan/phpstan": "^2.1.31"
     },
+    "autoload": {
+        "psr-4": {
+            "Castor\\PHPStan\\": "src/"
+        }
+    },
     "config": {
         "bump-after-update": true,
         "platform": {

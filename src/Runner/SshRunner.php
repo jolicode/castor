@@ -2,16 +2,16 @@
 
 namespace Castor\Runner;
 
+use Castor\ContextRegistry;
 use Spatie\Ssh\Ssh;
 use Symfony\Component\Process\Process;
-
-use function Castor\context;
 
 /** @internal */
 final readonly class SshRunner
 {
     public function __construct(
         private ProcessRunner $processRunner,
+        private ContextRegistry $contextRegistry,
     ) {
     }
 
@@ -83,13 +83,15 @@ final readonly class SshRunner
     ): Process {
         return $this->processRunner->run(
             $command,
-            context: context()->withPty(false)
-                                ->withTty(false)
-                                ->withEnvironment([])
-                                ->withQuiet($quiet ?? false)
-                                ->withAllowFailure($allowFailure ?? false)
-                                ->withNotify($notify)
-                                ->withTimeout($timeout),
+            context: $this->contextRegistry
+                          ->getCurrentContext()
+                          ->withPty(false)
+                          ->withTty(false)
+                          ->withEnvironment([])
+                          ->withQuiet($quiet ?? false)
+                          ->withAllowFailure($allowFailure ?? false)
+                          ->withNotify($notify)
+                          ->withTimeout($timeout),
             callback: $callback,
         );
     }

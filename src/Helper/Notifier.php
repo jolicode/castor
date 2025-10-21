@@ -8,8 +8,6 @@ use Joli\JoliNotif\Exception\InvalidNotificationException;
 use Joli\JoliNotif\Notification;
 use Psr\Log\LoggerInterface;
 
-use function Castor\context;
-
 /** @internal */
 class Notifier
 {
@@ -54,8 +52,10 @@ class Notifier
 
     private function getNotifyTitle(): string
     {
-        if ('' !== context()->notificationTitle) {
-            return context()->notificationTitle;
+        $context = $this->contextRegistry->getCurrentContext();
+
+        if ('' !== $context->notificationTitle) {
+            return $context->notificationTitle;
         }
 
         return 'Castor';
