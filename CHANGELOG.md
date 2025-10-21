@@ -5,6 +5,7 @@
 ### Features
 
 * Allow to specify directory where to output repacked phar
+* Do not ask confirmation when explicitly using `castor init` command
 
 ### Fixes
 

@@ -209,7 +209,6 @@ add_test(['symfony:greet', 'World', '--french', 'COUCOU', '--punctuation', '!'],
 add_test(['symfony:hello'], 'SymfonyHello', skipOnBinary: true);
 // In /tmp
 add_test(['completion', 'bash'], 'NoConfigCompletion', '/tmp');
-add_test(['init'], 'NewProjectInit', '/tmp');
 add_test(['unknown:task', 'toto', '--foo', 1], 'NoConfigUnknownWithArgs', '/tmp');
 add_test(['unknown:task'], 'NoConfigUnknown', '/tmp');
 add_test([], 'NewProject', '/tmp');
