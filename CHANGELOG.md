@@ -6,6 +6,7 @@
 
 * Allow to specify directory where to output repacked phar
 * Do not ask confirmation when explicitly using `castor init` command
+* Allow to pass a callback when using the `run_php` function (similar to the `run` function)
 
 ### Fixes
 

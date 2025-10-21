@@ -761,10 +761,10 @@ function zip_php(
  * @param array<string|\Stringable>                      $arguments
  * @param (callable(string, string, Process) :void)|null $callback
  */
-function run_php(string $pharPath, array $arguments = [], ?Context $context = null): Process
+function run_php(string $pharPath, array $arguments = [], ?Context $context = null, ?callable $callback = null): Process
 {
     return Container::get()
         ->phpRunner
-        ->run($pharPath, $arguments, $context)
+        ->run($pharPath, $arguments, $context, $callback)
     ;
 }
