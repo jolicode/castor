@@ -11,6 +11,7 @@ You can register a listener inside your Castor project by using the
 the targeted event and the priority of this listener.
 
 ```php
+use Castor\Attribute\AsListener;
 use Castor\Event\AfterExecuteTaskEvent;
 use Castor\Event\FunctionsResolvedEvent;
 
