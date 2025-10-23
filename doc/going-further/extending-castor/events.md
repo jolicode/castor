@@ -6,21 +6,49 @@ application lifecycle.
 
 ## Registering a listener
 
-You can register a listener inside your Castor project by using the
-`Castor\Attribute\AsListener` attribute. This attribute allows you to specify
-the targeted event and the priority of this listener.
+You can register a listener inside your Castor project by using the `Castor\Attribute\AsListener` attribute as a **function** (not a class method). This attribute allows you to specify the targeted event and the priority of this listener.
 
+**Important:** Listener functions must be defined in a file that is imported in your `castor.php` file using the `import()` function.
+
+### Example
 ```php
-use Castor\Event\AfterExecuteTaskEvent;
-use Castor\Event\FunctionsResolvedEvent;
+<?php
+// file: src/EventListener/CastorListener.php
 
-#[AsListener(event: AfterExecuteTaskEvent::class)]
-#[AsListener(event: FunctionsResolvedEvent::class, priority: 1)]
-function my_event_listener(AfterExecuteTaskEvent|FunctionsResolvedEvent $event): void
+use Castor\Attribute\AsListener;
+use Castor\Event\AfterExecuteTaskEvent;
+use Castor\Event\ContextCreatedEvent;
+
+#[AsListener(AfterExecuteTaskEvent::class)]
+#[AsListener(ContextCreatedEvent::class)]
+function my_event_listener(AfterExecuteTaskEvent|ContextCreatedEvent $event): void
 {
     // Custom logic to handle the events
+    echo "Event triggered: " . $event::class . "\n";
+}
+
+#[AsListener(ContextCreatedEvent::class, priority: 10)]
+function high_priority_listener(ContextCreatedEvent $event): void
+{
+    // This listener will run before the one above due to higher priority
+    echo "High priority listener\n";
 }
 ```
+
+Then import this file in your `castor.php`:
+```php
+<?php
+// file: castor.php
+
+use function Castor\import;
+
+import('src/EventListener/CastorListener.php');
+
+// ... rest of your tasks
+```
+
+**Note:** Use `Castor\Attribute\AsListener`, not Symfony's `AsEventListener` attribute.
+
 
 > [!NOTE]
 > You can specify multiple events for a single listener.
