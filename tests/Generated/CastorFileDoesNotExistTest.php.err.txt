@@ -1,0 +1,5 @@
+In Kernel.php line XXXX:
+
+  Could not find "./idonotexist" file.
+
+

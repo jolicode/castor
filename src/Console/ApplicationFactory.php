@@ -36,6 +36,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Path;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\VarDumper\Caster\StubCaster;
@@ -62,13 +63,24 @@ class ApplicationFactory
         }
 
         $hasCastorFile = true;
+        $castorFilePath = null;
 
         if (!$repacked) {
-            try {
-                $rootDir = PathHelper::getRoot();
-            } catch (\RuntimeException $e) {
-                $rootDir = getcwd();
-                $hasCastorFile = false;
+            // Try to see if we want to load a different castor file
+            $argv = $_SERVER['argv'] ?? [];
+            $optionIndex = array_search('--castor-file', $argv, true);
+            $castorFile = false !== $optionIndex ? $argv[(int) $optionIndex + 1] ?? null : null;
+
+            if ($castorFile) {
+                $rootDir = \dirname($castorFile);
+                $castorFilePath = Path::makeRelative($castorFile, $rootDir);
+            } else {
+                try {
+                    $rootDir = PathHelper::getRoot();
+                } catch (\RuntimeException $e) {
+                    $rootDir = getcwd();
+                    $hasCastorFile = false;
+                }
             }
         }
 
@@ -86,6 +98,7 @@ class ApplicationFactory
             'test' => '%env(bool:default::CASTOR_TEST)%',
             'use_output_section' => '%env(bool:default::CASTOR_USE_SECTION)%',
             'has_castor_file' => $hasCastorFile,
+            'castor_file_path' => $castorFilePath,
         ]);
 
         $container->compile(true);
@@ -146,6 +159,7 @@ class ApplicationFactory
                 ->bind('string $rootDir', '%root_dir%')
                 ->bind('string $cacheDir', '%cache_dir%')
                 ->bind('bool $hasCastorFile', '%has_castor_file%')
+                ->bind('string $castorFilePath', '%castor_file_path%')
 
             ->load('Castor\\', __DIR__ . '/../*')
                 ->exclude([

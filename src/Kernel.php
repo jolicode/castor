@@ -42,6 +42,7 @@ final class Kernel
         private readonly FunctionLoader $functionLoader,
         private readonly ContextRegistry $contextRegistry,
         private readonly bool $hasCastorFile,
+        private readonly ?string $castorFilePath,
     ) {
     }
 
@@ -52,7 +53,7 @@ final class Kernel
 
             $allowRemotePackage = $this->composer->isRemoteAllowed();
 
-            $this->addMount(new Mount($this->rootDir, allowRemotePackage: $allowRemotePackage, allowEmptyEntrypoint: !$this->hasCastorFile));
+            $this->addMount(new Mount($this->rootDir, allowRemotePackage: $allowRemotePackage, allowEmptyEntrypoint: !$this->hasCastorFile, file: $this->castorFilePath));
 
             while ($mount = array_shift($this->mounts)) {
                 $currentFunctions = get_defined_functions()['user'];
@@ -143,9 +144,13 @@ final class Kernel
 
         // It's an import, via a remote package, with a file specified
         if ($mount->file) {
-            $this->importer->importFile($mount->path . '/' . $mount->file);
+            if (file_exists($file = $mount->path . '/' . $mount->file)) {
+                $this->importer->importFile($file);
 
-            return;
+                return;
+            }
+
+            throw new CouldNotFindEntrypointException('Could not find "' . $mount->path . '/' . $mount->file . '" file.');
         }
 
         if (file_exists($file = $path . '/castor.php')) {
