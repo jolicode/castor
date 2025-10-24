@@ -11,6 +11,7 @@
 ### Fixes
 
 * Use correct working directory when using the `castor execute` command.
+* Fix infinite loop when executing `castor` with `castor execute jolicode/castor@castor` 
 
 ### Internal
 
