@@ -11,6 +11,8 @@ if ($memoryLimit && function_exists('ini_set')) {
 
 $phpFile = $_SERVER['CASTOR_PHP_REPLACE'] ?? false;
 if ($phpFile) {
+    // Avoid infinite loop if we exec castor inside castor
+    unset($_SERVER['CASTOR_PHP_REPLACE']);
     require $phpFile;
 
     exit(0);
