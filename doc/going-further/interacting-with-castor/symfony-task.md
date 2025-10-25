@@ -11,10 +11,13 @@ command class.
 >  on your vendor directory - unless you installed Castor with Composer).
 
 ```php
+<?php
+
+namespace App\Command;
 
 use Castor\Attribute\AsSymfonyTask;
 use Symfony\Component\Console\Attribute\AsCommand;
-use Symfony\Component\Console\Commhearand\Command;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -26,7 +29,7 @@ class HelloCommand extends Command
     {
         $output->writeln('Hello');
 
-        return 0;
+        return Command::SUCCESS;
     }
 }
 ```
