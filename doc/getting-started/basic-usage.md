@@ -50,6 +50,10 @@ or in its parents.
 
 The `castor.php` file has an higher priority than the `.castor/castor.php` file.
 
+> [!NOTE]
+> You can also use the `--castor-file` option to specify a custom path to the
+> root file. See the [related documentation](../going-further/interacting-with-castor/root-file-and-shebang.md).
+
 ## Splitting tasks in multiple files
 
 ## The `import()` function

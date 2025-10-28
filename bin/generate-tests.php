@@ -151,6 +151,10 @@ foreach ($applicationDescription['commands'] as $task) {
         $args[] = sprintf('FIXME(%s)', $argument['name']);
     }
     foreach ($options as $option) {
+        if ('--castor-file' === $option['name']) {
+            continue;
+        }
+
         $args[] = $option['name'];
         if (!$option['accept_value']) {
             continue;
@@ -200,6 +204,7 @@ add_test(['context:context', '--context', 'run'], 'ContextContextRun');
 add_test(['context:context', '--context', 'updated'], 'ContextContextUpdated');
 add_test(['context-info', '-c', 'run', '--test'], 'ContextIsParsedAnywhereOnTheCommandLine');
 add_test(['enabled:hello', '--context', 'production'], 'EnabledInProduction');
+add_test(['--castor-file', 'idonotexist', 'hello'], 'CastorFileDoesNotExist');
 add_test(['failure:verbose-arguments'], 'FailureVerboseArgumentsTrue', input: "yes\n");
 add_test(['list', '--raw', '--format', 'txt', '--short'], 'List', needRemote: true, skipOnBinary: true);
 // Transient test, disabled for now
