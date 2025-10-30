@@ -2,7 +2,6 @@ site_name: Task runner
 site_description: A lightweight and modern task runner. Automate everything. In PHP. Simply. Efficiently. Elegantly.
 site_url: https://castor.jolicode.com/
 repo_url: https://github.com/jolicode/castor
-copyright: 'Castor is licensed under <a href="https://github.com/jolicode/castor/blob/main/LICENSE">MIT license</a>'
 
 edit_uri: edit/main/doc/
 docs_dir: doc
@@ -60,13 +59,7 @@ theme:
   custom_dir: overrides
 
 extra:
-  social:
-    - icon: fontawesome/brands/github-alt
-      link: https://github.com/jolicode
-    - icon: fontawesome/brands/x-twitter
-      link: https://x.com/jolicode
   generator: false
-  version: !ENV CASTOR_VERSION
 
 markdown_extensions:
   - admonition
@@ -97,3 +90,4 @@ extra_javascript:
   - assets/javascripts/highlight.min.js
 extra_css:
   - assets/stylesheets/highlight-github.min.css
+  - assets/stylesheets/extra.css
