@@ -59,7 +59,13 @@ theme:
   custom_dir: overrides
 
 extra:
+  social:
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/jolicode
+    - icon: fontawesome/brands/x-twitter
+      link: https://x.com/jolicode
   generator: false
+  version: !ENV CASTOR_VERSION
 
 markdown_extensions:
   - admonition
