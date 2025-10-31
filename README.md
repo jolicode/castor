@@ -120,6 +120,7 @@ Discover more by reading the docs:
 * [Examples](https://castor.jolicode.com/examples/)
 * [Frequently asked questions](https://castor.jolicode.com/faq/)
 
+<br><br>
 <div align="center">
-<a href="https://jolicode.com/"><img src="https://jolicode.com/media/original/oss/footer-github.png?v2" alt="JoliCode is sponsoring this project"></a>
+<a href="https://jolicode.com/"><img src="https://jolicode.com/media/original/oss/footer-github.png?v3" alt="JoliCode is sponsoring this project"></a>
 </div>
