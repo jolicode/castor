@@ -94,6 +94,11 @@ jobs:
         with:
           target: 'test'
 
+      - uses: ./.github/actions/cache
+        with:
+          target: 'linux-amd64'
+        if: matrix.castor.method == 'static'
+
       - name: Build Castor phar for Linux
         run: bin/castor castor:phar:linux
         if: matrix.castor.method == 'phar' || matrix.castor.method == 'static'
@@ -134,8 +139,10 @@ jobs:
           composer-flags: "--no-dev"
       - uses: ./.github/actions/cache
         with:
-          target: 'test'
+          target: 'linux-amd64'
       - uses: ./.github/actions/phar
       - uses: ./.github/actions/static
+        with:
+          os: 'linux-amd64'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

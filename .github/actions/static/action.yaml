@@ -5,7 +5,6 @@ inputs:
   os:
     description: 'The operating system to build for'
     required: true
-    default: 'linux-amd64'
 
 runs:
   using: "composite"
