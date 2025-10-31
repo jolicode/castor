@@ -20,6 +20,7 @@ castor:composer                                                   Interact with 
 castor:execute                                                    Execute a remote task from a packagist directory
 castor:mkdocs:build                                               Build documentation
 castor:mkdocs:docker-build                                        Build mkdocs docker image
+castor:mkdocs:fetch-assets                                        Fetch external assets
 castor:mkdocs:serve                                               Serve documentation and watches for changes
 castor:phar:build                                                 Build phar for all systems
 castor:phar:darwin                                                Build phar for MacOS system

@@ -96,4 +96,4 @@ extra_javascript:
   - assets/javascripts/highlight.min.js
 extra_css:
   - assets/stylesheets/highlight-github.min.css
-  - assets/stylesheets/extra.css
+  - assets/stylesheets/jolicode.css

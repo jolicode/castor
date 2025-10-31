@@ -11,3 +11,4 @@
 !/castor.composer.json
 !/castor.composer.lock
 /tools/release/artifacts/
+/doc/assets/stylesheets/jolicode.css
