@@ -123,7 +123,7 @@ class ContextRegistry
     public function getCurrentContext(): Context
     {
         if (!isset($this->currentContext)) {
-            throw new \RuntimeException('No current context defined. You can set one with ContextRegistry::setCurrentContext() or get the default one with ContextRegistry::get().');
+            throw new \RuntimeException('You must explicitly pass a Context object when using some functions (like run / capture / exit_code) inside a context creator function.');
         }
 
         return $this->currentContext;

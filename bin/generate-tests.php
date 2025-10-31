@@ -73,6 +73,7 @@ $taskFilterList = [
     'castor:mkdocs:build',
     'castor:mkdocs:docker-build',
     'castor:mkdocs:serve',
+    'castor:mkdocs:fetch-assets',
     'castor:phar:build',
     'castor:phar:darwin',
     'castor:phar:install',
@@ -189,6 +190,7 @@ add_test(['list'], 'LayoutWithFolder', '{{ base }}/tests/fixtures/valid/layout-w
 add_test([], 'ImportSamePackageWithDefaultVersion', '{{ base }}/tests/fixtures/valid/import-same-package-with-default-version', needRemote: true, needResetVendor: true);
 add_test(['fs-watch'], 'WatchWithForcedTimeout', '{{ base }}/tests/fixtures/valid/watch-with-forced-timeout');
 add_test([], 'DefaultTask', '{{ base }}/tests/fixtures/valid/default-task');
+add_test([], 'ContextRunWithoutContext', '{{ base }}/tests/fixtures/valid/context-run-without-context');
 
 echo "\nDone.\n";
 
