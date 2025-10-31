@@ -1,0 +1,5 @@
+In castor.php line XXXX:
+
+  You must explicitly pass a Context object when using some functions (like run / capture / exit_code) inside a context creator function.
+
+
