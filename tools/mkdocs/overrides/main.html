@@ -48,3 +48,8 @@
         }
     </script>
 {% endblock %}
+
+{% block footer %}
+    {{ super() }}
+    {% include "partials/jolicode-footer.html" %}
+{% endblock %}

@@ -10,6 +10,7 @@ use Symfony\Component\Process\Process;
 use function Castor\context;
 use function Castor\exit_code;
 use function Castor\fs;
+use function Castor\http_download;
 use function Castor\io;
 use function Castor\log;
 use function Castor\run;
@@ -24,9 +25,33 @@ function docker_build(): int
     ));
 }
 
+#[AsTask(description: 'Fetch external assets')]
+function fetch_assets(): void
+{
+    io()->title('Fetching external assets for MkDocs documentation');
+
+    http_download('https://raw.githubusercontent.com/jolicode/oss-theme/refs/heads/main/MkDocs/extra.css', __DIR__ . '/../../doc/assets/stylesheets/jolicode.css');
+    http_download('https://raw.githubusercontent.com/jolicode/oss-theme/refs/heads/main/snippet-joli-footer.html', __DIR__ . '/overrides/partials/jolicode-footer.html');
+
+    $html = <<<HTML
+    Castor is licensed under
+    <a href="https://github.com/jolicode/castor/blob/main/LICENSE" target="_blank" rel="noreferrer noopener" class="jf-link">
+      MIT license
+    </a>
+    HTML;
+
+    $footer = file_get_contents(__DIR__ . '/overrides/partials/jolicode-footer.html');
+    $footer = str_replace('#GITHUB_REPO', 'jolicode/castor', $footer);
+    $footer = str_replace('<!-- #SUBTITLE -->', $html, $footer);
+
+    file_put_contents(__DIR__ . '/overrides/partials/jolicode-footer.html', $footer);
+}
+
 #[AsTask(description: 'Build documentation')]
 function build(): void
 {
+    fetch_assets();
+
     io()->title('Building MkDocs documentation');
 
     docker_run(['mkdocs', 'build'], context()->withData([
@@ -47,6 +72,8 @@ function build(): void
 #[AsTask(description: 'Serve documentation and watches for changes')]
 function serve(): void
 {
+    fetch_assets();
+
     io()->title('Building and watching MkDocs documentation');
 
     docker_run(['mkdocs', 'serve'], context()->withData([
