@@ -1,16 +1,16 @@
 <?php
 
-namespace Castor\Tests\Examples;
+namespace Castor\Tests\Generated;
 
 use Castor\Tests\TaskTestCase;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
-class CastorFileTest extends TaskTestCase
+class CastorFileExistWithEqualsSignTest extends TaskTestCase
 {
-    // init
+    // --castor-file=tests/fixtures/valid/castor-file/castor-file.php
     public function test(): void
     {
-        $process = $this->runTask(['--castor-file', __DIR__ . '/castor-file.php', 'hello']);
+        $process = $this->runTask(['--castor-file=tests/fixtures/valid/castor-file/castor-file.php', 'hello']);
 
         if (0 !== $process->getExitCode()) {
             throw new ProcessFailedException($process);
