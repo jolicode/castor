@@ -191,6 +191,9 @@ add_test([], 'ImportSamePackageWithDefaultVersion', '{{ base }}/tests/fixtures/v
 add_test(['fs-watch'], 'WatchWithForcedTimeout', '{{ base }}/tests/fixtures/valid/watch-with-forced-timeout');
 add_test([], 'DefaultTask', '{{ base }}/tests/fixtures/valid/default-task');
 add_test([], 'ContextRunWithoutContext', '{{ base }}/tests/fixtures/valid/context-run-without-context');
+add_test(['--castor-file', 'idonotexist', 'hello'], 'CastorFileDoesNotExist');
+add_test(['--castor-file', 'tests/fixtures/valid/castor-file/castor-file.php', 'hello'], 'CastorFileExist');
+add_test(['--castor-file=tests/fixtures/valid/castor-file/castor-file.php', 'hello'], 'CastorFileExistWithEqualsSign');
 
 echo "\nDone.\n";
 
@@ -206,7 +209,6 @@ add_test(['context:context', '--context', 'run'], 'ContextContextRun');
 add_test(['context:context', '--context', 'updated'], 'ContextContextUpdated');
 add_test(['context-info', '-c', 'run', '--test'], 'ContextIsParsedAnywhereOnTheCommandLine');
 add_test(['enabled:hello', '--context', 'production'], 'EnabledInProduction');
-add_test(['--castor-file', 'idonotexist', 'hello'], 'CastorFileDoesNotExist');
 add_test(['failure:verbose-arguments'], 'FailureVerboseArgumentsTrue', input: "yes\n");
 add_test(['list', '--raw', '--format', 'txt', '--short'], 'List', needRemote: true, skipOnBinary: true);
 // Transient test, disabled for now

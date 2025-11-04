@@ -21,6 +21,7 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\ConsoleEvents;
+use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -67,9 +68,7 @@ class ApplicationFactory
 
         if (!$repacked) {
             // Try to see if we want to load a different castor file
-            $argv = $_SERVER['argv'] ?? [];
-            $optionIndex = array_search('--castor-file', $argv, true);
-            $castorFile = false !== $optionIndex ? $argv[(int) $optionIndex + 1] ?? null : null;
+            $castorFile = (new ArgvInput())->getParameterOption('--castor-file', null);
 
             if ($castorFile) {
                 $rootDir = \dirname($castorFile);
