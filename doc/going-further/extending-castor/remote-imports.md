@@ -33,7 +33,7 @@ the package.
 
 ## Manipulating castor composer file
 
-Castor provide a `composer` command to manipulate the `castor.composer.json` 
+Castor provides a `composer` command to manipulate the `castor.composer.json` 
 file.
 
 For example, you can use it to add a package to the file:
