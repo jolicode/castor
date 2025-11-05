@@ -8,6 +8,10 @@ use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 
+if (class_exists(ProhibitCastorFunctionInClass::class)) {
+    return [];
+}
+
 /**
  * @implements Rule<Node\Expr\FuncCall>
  */
@@ -57,3 +61,5 @@ class ProhibitCastorFunctionInClass implements Rule
         ];
     }
 }
+
+return [];
