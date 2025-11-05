@@ -10,8 +10,8 @@ Castor can import functions from your filesystem but also from a remote resource
 When importing functions from a remote resource, Castor will use Composer to
 download the packages and store them in `.castor/vendor/`.
 
-To import functions, you need to create a `castor.composer.json` file next to 
-the `castor.php` file (either at the root of your project or in the `.castor/` 
+To import functions, you need to create a `castor.composer.json` file next to
+the `castor.php` file (either at the root of your project or in the `.castor/`
 directory).
 
 This also can be done by running the `castor composer init` command.
@@ -21,19 +21,19 @@ more information about the `composer.json` file.
 
 ## Importing file from a remote package
 
-Third party functions may not be autoloaded by Composer, as they may be 
+Third party functions may not be autoloaded by Composer, as they may be
 optional. To import them, you can use the `import()` function.
 
 ```php
 import('composer://vendor/package/', file: 'functions.php');
 ```
 
-File is optional, if not provided, Castor will look for a `castor.php` file in 
+File is optional, if not provided, Castor will look for a `castor.php` file in
 the package.
 
 ## Manipulating castor composer file
 
-Castor provides a `composer` command to manipulate the `castor.composer.json` 
+Castor provides a `composer` command to manipulate the `castor.composer.json`
 file.
 
 For example, you can use it to add a package to the file:
@@ -72,7 +72,7 @@ castor my-task # will not import any remote functions
 
 ## Lock file
 
-Like every PHP projects using Composer, it will generate a 
+Like every PHP projects using Composer, it will generate a
 `castor.composer.lock` file to lock the versions of the imported packages.
 
 It is recommended to commit this file to your version control system to ensure

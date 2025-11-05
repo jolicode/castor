@@ -47,7 +47,7 @@ changes, improvements or alternatives may be given).
 
 Run the tests using the following script:
 
-```shell
+```bash
 vendor/bin/simple-phpunit
 ```
 
@@ -58,14 +58,14 @@ So it could be green on your local php version but fail on CI.
 
 ### Testing functions
 
-When your changes are related to Castor's provided functions, run the `bin/generate-tests.php` 
+When your changes are related to Castor's provided functions, run the `bin/generate-tests.php`
 to generate tests that would reflect your changes.
 
 ## Coding Standards
 
 Set up [PHP CS fixer](http://cs.sensiolabs.org/) in the [tools/php-cs-fixer](tools/php-cs-fixer) directory
 
-```shell
+```bash
 # from castor project root dir
 composer install --working-dir=tools/php-cs-fixer
 ```
@@ -73,7 +73,7 @@ composer install --working-dir=tools/php-cs-fixer
 And run the tool to make your code compliant with
 castor's coding standards:
 
-```shell
+```bash
 tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php
 ```
 
@@ -81,7 +81,7 @@ tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php
 
 Set up [PHPStan](https://phpstan.org/) in the [tools/phpstan](tools/phpstan) directory
 
-```shell
+```bash
 # from castor project root dir
 composer install --working-dir=tools/phpstan
 ```
@@ -89,7 +89,7 @@ composer install --working-dir=tools/phpstan
 And run the tool to make your code compliant with
 castor's static analysis checks:
 
-```shell
+```bash
 tools/phpstan/vendor/bin/phpstan --configuration=phpstan.neon
 ```
 
@@ -101,9 +101,9 @@ own project, like new Castor functions for example, make sure to document its us
 ## Update the Changelog
 
 Add a new entry in [CHANGELOG.md](CHANGELOG.md) summarizing your changes.
-Multiple points for a single PR is fine. 
+Multiple points for a single PR is fine.
 
-Prefix with `[BC Break]` entries that 
+Prefix with `[BC Break]` entries that
 are related to backward compatibility breaking changes.
 
 ## Keeping your fork up-to-date
@@ -111,14 +111,13 @@ are related to backward compatibility breaking changes.
 To keep your fork up-to-date, you should track the upstream (original) one
 using the following command:
 
-
-```shell
+```bash
 git remote add upstream https://github.com/jolicode/castor.git
 ```
 
 Then get the upstream changes:
 
-```shell
+```bash
 git checkout main
 git pull --rebase origin main
 git pull --rebase upstream main
@@ -128,7 +127,7 @@ git rebase main
 
 Finally, publish your changes:
 
-```shell
+```bash
 git push -f origin <your-branch>
 ```
 

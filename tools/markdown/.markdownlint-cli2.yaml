@@ -1,0 +1,21 @@
+globs:
+    - "*.md"
+    - "doc/**/*.md"
+
+customRules:
+    - "./custom-rules/code-block-console.js"
+
+config:
+    default: true
+
+    # Titles should use the "atx" format (# Title)
+    heading-style:
+        style: "atx"
+
+    # List should be 4-spaces indented
+    ul-indent:
+        indent: 4
+
+    line-length: false
+    no-inline-html: false
+    no-bare-urls: false

@@ -51,7 +51,7 @@ By default, Castor caches items on the filesystem, in the `<home directory>/.cac
 directory. If you want to change the cache directory, you can set the `CASTOR_CACHE_DIR`
 environment variable.
 
-```shell
+```bash
 CASTOR_CACHE_DIR=/tmp/castor-cache castor foo
 ```
 

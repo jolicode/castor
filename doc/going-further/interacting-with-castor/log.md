@@ -7,7 +7,7 @@ Castor has logging capabilities. It relies on
 There are different log levels, and you can control the log level displayed with
 the `-v` option:
 
-```
+```bash
 castor      # display level "warning" and above
 castor -v   # display level "notice" and above
 castor -vv  # display level "info" and above
@@ -86,13 +86,13 @@ function preprodContext(): Context
 Castor ships a `debug` task that displays the current context, the root
 directory, the cache directory, and more information. Run with:
 
-```console
+```bash
 castor debug
 ```
 
 If you want to define your own `debug` command, you can still access to the
 castor task with:
 
-```
+```bash
 castor castor:debug
 ```

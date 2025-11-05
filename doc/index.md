@@ -65,8 +65,8 @@ function hello(): void
 
 Will expose a `hello` task that you can run with `castor hello`:
 
-```shell
-$ castor greetings:hello
+```console
+$ castor hello
 Hello from castor
 ```
 
@@ -146,3 +146,5 @@ Discover more by reading all the docs:
 * [Castor reference](reference.md)
 * [Examples](examples.md)
 * [Frequently asked questions](faq.md)
+
+<!-- markdownlint-disable-file first-line-h1 -->

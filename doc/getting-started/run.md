@@ -45,7 +45,7 @@ function foo(): void
 > Without the allowFailure option, Castor would throw an exception if the process
 > execution failed. See [this documentation](context.md#failure) for more
 > information about failure handling.
-
+<!-- -->
 > [!TIP]
 > Related example: [run.php](https://github.com/jolicode/castor/blob/main/examples/run.php)
 

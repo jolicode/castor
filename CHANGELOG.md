@@ -12,7 +12,7 @@
 ### Fixes
 
 * Use correct working directory when using the `castor execute` command.
-* Fix infinite loop when executing `castor` with `castor execute jolicode/castor@castor` 
+* Fix infinite loop when executing `castor` with `castor execute jolicode/castor@castor`
 * Fix `--castor-file` option parsing
 
 ### Internal
@@ -246,12 +246,14 @@ paths in arguments and options
 
 * Deprecate all arguments in `run()` function that are already in the context.
     Examples:
+
     ```diff
     {
     -    run(['composer', 'install'], workingDirectory: __DIR__);
     +    run(['composer', 'install'], context: context()->withWorkingDirectory(__DIR__));
     }
     ```
+
 * Deprecate `suggestedValues` property in `AsArgument` and `AsOption` attributes. Use `autocomplete` property instead.
 
 ## 0.17.1 (2024-05-31)
@@ -292,9 +294,9 @@ paths in arguments and options
 * Better handling of notification errors and exceptions
 * Better log output in debug mode (`-vvv`)
 * Changed the behavior of `notify` parameter in `Context` to be a nullable boolean.
-  - `null` is now the default value (only user notifications are displayed).
-  - `true` to enable notifications globally (user and Castor generated notifications)
-  - `false` to disable them globally
+    * `null` is now the default value (only user notifications are displayed).
+    * `true` to enable notifications globally (user and Castor generated notifications)
+    * `false` to disable them globally
 * `.castor.stub.php` is now generated in same location where `castor.php` is located
 
 ### Deprecations
@@ -514,3 +516,5 @@ paths in arguments and options
 ## 0.1.0 (2023-05-21)
 
 * Initial release
+
+<!-- markdownlint-disable-file no-duplicate-heading -->

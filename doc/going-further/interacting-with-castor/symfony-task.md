@@ -8,7 +8,7 @@ command class.
 > [!NOTE]
 > Thanks to how PHP attributes works, your application will work even if it
 > does not find this attribute class (which will probably not be available
->  on your vendor directory - unless you installed Castor with Composer).
+> on your vendor directory - unless you installed Castor with Composer).
 
 ```php
 <?php

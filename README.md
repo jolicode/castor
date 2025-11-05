@@ -56,7 +56,7 @@ function hello(): void
 Will expose a `hello` task that you can run with `castor hello`:
 
 ```console
-$ castor greetings:hello
+$ castor hello
 Hello from castor
 ```
 
@@ -110,11 +110,11 @@ castor
 Discover more by reading the docs:
 
 * [Getting started with Castor](https://castor.jolicode.com/getting-started/)
-  * [Installation and Autocomplete](https://castor.jolicode.com/getting-started/installation/)
-  * [Basic Usage](https://castor.jolicode.com/getting-started/basic-usage/)
-  * [Executing Processes with `run()`](https://castor.jolicode.com/getting-started/run/)
-  * [Task Arguments](https://castor.jolicode.com/getting-started/arguments)
-  * [Using the Context](https://castor.jolicode.com/getting-started/context)
+    * [Installation and Autocomplete](https://castor.jolicode.com/getting-started/installation/)
+    * [Basic Usage](https://castor.jolicode.com/getting-started/basic-usage/)
+    * [Executing Processes with `run()`](https://castor.jolicode.com/getting-started/run/)
+    * [Task Arguments](https://castor.jolicode.com/getting-started/arguments)
+    * [Using the Context](https://castor.jolicode.com/getting-started/context)
 * [Going further with Castor](https://castor.jolicode.com/going-further/)
 * [Castor reference](https://castor.jolicode.com/reference/)
 * [Examples](https://castor.jolicode.com/examples/)

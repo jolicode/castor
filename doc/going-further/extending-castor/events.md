@@ -25,7 +25,7 @@ function my_event_listener(AfterExecuteTaskEvent|FunctionsResolvedEvent $event):
 
 > [!NOTE]
 > You can specify multiple events for a single listener.
-
+<!-- -->
 > [!NOTE]
 > The `priority` argument is optional and defaults to `0`. The higher the
 > priority, the earlier the listener will be executed.

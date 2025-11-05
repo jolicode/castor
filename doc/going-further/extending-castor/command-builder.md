@@ -1,8 +1,8 @@
 # Creating a command builder
 
-Some commands are complex and require a lot of parameters. To make it easier to 
-create these commands, you can provide a command builder by using the 
-`CommandBuiderInterface` to help users use the command without having to 
+Some commands are complex and require a lot of parameters. To make it easier to
+create these commands, you can provide a command builder by using the
+`CommandBuiderInterface` to help users use the command without having to
 remember all parameters or options.
 
 Here is an example of a command builder:
@@ -52,7 +52,7 @@ run($ls);
 ```
 
 Due to the philosophy of Castor, it is highly recommended to provide a function
-that creates the command builder. Which provide a closer experience of castor 
+that creates the command builder. Which provide a closer experience of castor
 way of doing things.
 
 ```php

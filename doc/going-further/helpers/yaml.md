@@ -1,6 +1,6 @@
 # YAML
 
-Castor provides a `yaml_parse()` and `yaml_dump()` functions that will parse or 
+Castor provides a `yaml_parse()` and `yaml_dump()` functions that will parse or
 dump YAML content and returns an array using the [symfony/yaml](https://symfony.com/doc/current/components/yaml.html) component:
 
 ```php

@@ -20,3 +20,5 @@
 - [Examples](examples.md)
 - [FAQ](faq.md)
 - [Changelog](changelog.md)
+
+<!-- markdownlint-disable-file first-line-h1 -->

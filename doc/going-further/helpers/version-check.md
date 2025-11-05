@@ -15,14 +15,14 @@ This is useful when you want to use a new feature of Castor in your command. And
 ensure that the user has the right version of Castor.
 
 > [!NOTE]
-> Where to put this function? 
-> 
+> Where to put this function?
+>
 > It depends on your usage. If you want to ensure that the user
 > has the right version of Castor before running any task, you can put it in the top of
-> your `castor.php` file. 
-> 
+> your `castor.php` file.
+>
 > If you want to ensure that the user has the right version of Castor
-> before running a specific task, you can put it in the task function directly and 
+> before running a specific task, you can put it in the task function directly and
 > check will be done only when the task is called.
 
 You can go further with [Events and Listeners](../extending-castor/events.md#listening-to-events) to check certain conditions by checking a pattern task name.

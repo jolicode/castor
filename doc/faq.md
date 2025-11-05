@@ -4,7 +4,7 @@ description: Most frequently asked questions about Castor.
 
 # Frequently Asked Questions
 
-## Differences with **Make**? 
+## Differences with **Make**?
 
 See below how **Castor** is different from **Make**:
 
@@ -19,7 +19,7 @@ See below how **Castor** is different from **Make**:
 | **Cross-platform**        | ✅ Fully portable (runs with PHP)          | ⚠️ Depends on shell tools — may vary on Windows/Linux       |
 | **Designed for PHP devs** | ✅ Yes                                     | ❌ Not really                                                |
 
-**TL;DR**
+TL;DR:
 
 * **Make** is great for compiling C projects in 1995.
 * **Castor** is great for automating (PHP or not) projects in 2025.
@@ -42,10 +42,10 @@ See below how **Castor** is different from **Robo**:
 | **Symfony Console-based** | ✅ Yes (under the hood)                       | ✅ Yes (used directly)                                    |
 | **Community**             | Small but active                             | Larger but not very active                               |
 
-**TL;DR**
+TL;DR:
 
-- Castor is minimal, expressive, and easy to use. You define tasks as plain PHP functions with attributes — that’s it.
-- Robo is powerful but more verbose and class-oriented. It might feel too heavy for small or script-like automation needs.
+* Castor is minimal, expressive, and easy to use. You define tasks as plain PHP functions with attributes — that’s it.
+* Robo is powerful but more verbose and class-oriented. It might feel too heavy for small or script-like automation needs.
 
 > If you prefer "just PHP" over complex CLI frameworks, you'll love Castor.<br>
 > If you're building a full-featured CLI app, Robo might fit — but Castor often gets you there faster.
@@ -65,10 +65,10 @@ See below how **Castor** is different from **Phing**:
 | **Community**       | Young, growing                       | Historical, smaller today               |
 | **Best suited for** | Local automation, CI/CD, DevOps      | Legacy projects, complex build scripts  |
 
-**TL;DR**
+TL;DR:
 
-- Castor is modern, minimal, and uses plain PHP functions with attributes.
-- Phing is XML-heavy, verbose, and feels like it belongs in a museum next to Ant and SOAP.
+* Castor is modern, minimal, and uses plain PHP functions with attributes.
+* Phing is XML-heavy, verbose, and feels like it belongs in a museum next to Ant and SOAP.
 
 > Phing shines if you love writing <target> blocks and closing tags.<br>
 > Castor shines if you prefer actual PHP code in 2025 instead of XML from 2005.
@@ -88,15 +88,13 @@ See below how **Castor** is different from **Deployer**:
 | **Community**       | Young, growing                      | Large, strong adoption in production                      |
 | **Best suited for** | Automation, CI/CD, local tooling    | Deployments and server orchestration                      |
 
+TL;DR:
 
-**TL;DR**
-
-- Castor is a general-purpose task runner: tests, CI/CD, local automation, Docker, Ansible… all in plain PHP.
-- Deployer is laser-focused on one thing: pushing your code to servers.
+* Castor is a general-purpose task runner: tests, CI/CD, local automation, Docker, Ansible… all in plain PHP.
+* Deployer is laser-focused on one thing: pushing your code to servers.
 
 > If you need a Swiss Army knife for automation, Castor has your back.<br>
 > If your only goal is “ship this to production”, Deployer is the specialist.
-
 
 ## How is **Castor** different from raw **Symfony Console** usage?
 

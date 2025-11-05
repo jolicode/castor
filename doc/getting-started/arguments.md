@@ -19,7 +19,7 @@ function task(
 
 Which can be called like that:
 
-```bash
+```console
 $ castor task foo bar
 foo bar
 ```
@@ -42,7 +42,7 @@ function task(
 }
 ```
 
-```bash
+```console
 $ castor task foo
 foo default
 $ castor task foo --second-arg=bar
@@ -65,7 +65,7 @@ function phpunit(#[AsRawTokens] array $rawTokens): void
 Then, you can use it like that:
 
 ```bash
-$ castor phpunit --filter=testName --debug --verbose
+castor phpunit --filter=testName --debug --verbose
 ```
 
 You can also disable validation by using the `ignoreValidationErrors` flag:
@@ -100,7 +100,7 @@ function command(
 }
 ```
 
-```bash
+```console
 $ castor command foo
 foo
 ```
@@ -128,7 +128,7 @@ function command(
 }
 ```
 
-```bash
+```console
 $ castor command --foo=foo
 foo
 ```
@@ -153,7 +153,7 @@ function command(
 }
 ```
 
-```bash
+```console
 $ castor command --force
 command has been forced
 ```
@@ -189,7 +189,7 @@ function command(
 }
 ```
 
-```bash
+```console
 $ castor command /var/www/[TAB]
 /var/www/foo  /var/www/bar  /var/www/baz
 ```

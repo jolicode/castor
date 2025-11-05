@@ -45,4 +45,3 @@ function onSigUsr2(int $signal): int|false
     return false;
 }
 ```
-

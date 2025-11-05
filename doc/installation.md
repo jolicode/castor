@@ -39,6 +39,8 @@ We provide different phar for Linux / MacOS / Windows architectures to offer
 lighter phar files. Download the correct one and make it available in your
 shell.
 
+<!-- markdownlint-disable code-block-style -->
+
 === "Linux AMD64 (x86-64)"
 
     > [!TIP]
@@ -101,6 +103,8 @@ shell.
     curl.exe "https://github.com/jolicode/castor/releases/latest/download/castor.windows-amd64.phar" -Lso C:\<a directory in your PATH>\castor
     ```
 
+<!-- markdownlint-restore -->
+
 ### As a static binary
 
 If you don't have PHP installed on your system, Castor can also be installed
@@ -122,7 +126,8 @@ You can install a specific version of Castor with the installer using the
 ```bash
 curl "https://castor.jolicode.com/install" | bash -s -- --version=v0.25.0
 ```
- > [!TIP]
+
+> [!TIP]
 > By default the latest version will be installed.
 
 You can also download the binaries in the [releases
@@ -266,7 +271,7 @@ parameters:
 If you don't want to generate stubs, you can use the `CASTOR_GENERATE_STUBS`
 environment variables:
 
-```
+```bash
 CASTOR_GENERATE_STUBS=0 castor
 ```
 

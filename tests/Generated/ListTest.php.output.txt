@@ -18,6 +18,7 @@ cache:complex                                                     Cache with usa
 cache:simple                                                      Cache a simple call
 castor:composer                                                   Interact with built-in Composer for castor
 castor:execute                                                    Execute a remote task from a packagist directory
+castor:markdown:lint                                              Lint markdown files
 castor:mkdocs:build                                               Build documentation
 castor:mkdocs:docker-build                                        Build mkdocs docker image
 castor:mkdocs:fetch-assets                                        Fetch external assets

@@ -111,8 +111,8 @@ wait_for_http_response(
 
 ### The `wait_for_http_status()` function
 
-The `wait_for_http_status()` function is a specialized version of 
-`wait_for_http_response()`, specifically designed to monitor a URL until it 
+The `wait_for_http_status()` function is a specialized version of
+`wait_for_http_response()`, specifically designed to monitor a URL until it
 returns a desired HTTP status code.
 
 Example:
@@ -135,7 +135,6 @@ ready. It checks if the container is running and if the specified port is
 accessible within the specified timeout.
 It can also wait for a specific check to be successful, by providing a
 `$containerChecker` callback function.
-
 
 Example:
 

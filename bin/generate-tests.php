@@ -70,6 +70,7 @@ $taskFilterList = [
     // Not examples
     'castor:compile',
     'castor:execute',
+    'castor:markdown:lint',
     'castor:mkdocs:build',
     'castor:mkdocs:docker-build',
     'castor:mkdocs:serve',
