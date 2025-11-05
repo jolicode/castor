@@ -55,7 +55,7 @@ function hello(): void
 
 Will expose a `hello` task that you can run with `castor hello`:
 
-```shell
+```console
 $ castor greetings:hello
 Hello from castor
 ```
