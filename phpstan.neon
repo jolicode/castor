@@ -7,6 +7,7 @@ parameters:
         - src
         - examples
         - tools/phpstan/src
+        - tests/autoload/loadme.php
     tmpDir: 'var/phpstan/tmp'
     inferPrivatePropertyTypeFromConstructor: true
     excludePaths:

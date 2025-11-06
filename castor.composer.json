@@ -28,5 +28,10 @@
                 }
             }
         }
-    ]
+    ],
+    "autoload": {
+        "files": [
+            "tests\/autoload\/loadme.php"
+        ]
+    }
 }
