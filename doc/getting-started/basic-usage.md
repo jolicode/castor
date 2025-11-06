@@ -3,7 +3,7 @@
 Castor use a convention to find tasks. It will look for the
 first `castor.php` file in the current directory or in parents directory.
 
-In this file, all functions with the `Castor\Attribute\AsTask` attribute will be
+In this file, all functions with the `#[Castor\Attribute\AsTask()]` attribute will be
 transformed as tasks. The name of the function will be the task's name
 and the namespace will be the task's namespace.
 

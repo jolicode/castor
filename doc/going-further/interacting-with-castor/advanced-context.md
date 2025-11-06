@@ -86,10 +86,10 @@ function foo(): void
 }
 ```
 
-## The `AsContextGenerator()` attribute
+## The `#[AsContextGenerator()]` attribute
 
 In some case, you may want to programmatically define contexts. You can use the
-`AsContextGenerator()` attribute:
+`#[AsContextGenerator()]` attribute:
 
 ```php
 use Castor\Attribute\AsContextGenerator;
