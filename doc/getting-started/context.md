@@ -1,11 +1,12 @@
 # Context
 
 For every task that Castor run, it uses a `Context` object. This object
-contains the default values for the `run` or `watch` function (directory,
-environment variables, pty, tty, etc...).
+contains the default values for a bunch of built-in functions like `run()`, `watch()`,
+`capture()`, etc.
+It configures working directory of the command, environment variables, PTY, TTY,
+timeout, etc...
 
-It also contains custom values that can be set by the user and reused in
-tasks.
+It also contains custom values that can be set by the user and reused in tasks.
 
 The context is immutable, which means that every time you change a value, a new
 context is created.
@@ -92,51 +93,120 @@ function foo(): void
 }
 ```
 
+> [!NOTE]
+> If you only define one context in your project, it will be used by default for
+> all tasks.
+> See the next chapter to learn how to set a default context.
+
+So when you run the `foo` task, you will get:
+
+```console
+$ castor foo
+foo=BAR
+```
+
+## Working with several contexts
+
+Defining multiple contexts can be useful to represent different environments
+(e.g. `dev`, `staging`, `prod`, etc.) or different configurations (e.g. `docker`, `local`, etc.).
+
+You can define as many contexts as you want in your project by declaring multiple
+functions with the `#[AsContext]` attribute:
+
+```php
+use Castor\Attribute\AsContext;
+use Castor\Context;
+
+#[AsContext()]
+function dev_context(): Context
+{
+    return new Context(environment: ['APP_ENV' => 'dev']);
+}
+
+#[AsContext()]
+function test_context(): Context
+{
+    return new Context(environment: ['APP_ENV' => 'test']);
+}
+```
+
+You can then choose which context to use when running a task by using the
+`--context` option:
+
+```bash
+castor foo --context=dev_context
+```
+
+> [!TIP]
+> The `-c` option is a shortcut for the `--context` option in order to make it
+> easier to type.
+
+```bash
+castor foo -c dev_context
+```
+
+### Overriding the context name
+
+You can override the context name by setting the `name` argument of the
+`#[AsContext]` attribute:
+
+```php
+use Castor\Attribute\AsContext;
+use Castor\Context;
+
+use function Castor\run;
+
+#[AsContext(name: 'dev')]
+function dev_context(): Context
+{
+    return new Context(environment: ['APP_ENV' => 'dev']);
+}
+```
+
+### Setting a default context
+
+You may want to set a default context for all your tasks. You can do that by
+setting the `default` argument to `true` in the `#[AsContext]` attribute:
+
+```php
+use Castor\Attribute\AsContext;
+use Castor\Attribute\AsTask;
+use Castor\Context;
+
+use function Castor\run;
+
+#[AsContext(default: true, name: 'default')]
+function default_context(): Context
+{
+    return new Context();
+}
+
+#[AsContext(name: 'my_context')]
+function other_context(): Context
+{
+    return new Context(environment: ['FOO' => 'BAR']);
+}
+
+#[AsTask()]
+function foo(): void
+{
+    run('echo foo=$FOO');
+}
+```
+
 By default the `foo` task will only print `foo=` as the `FOO` environment
-variable is not set. If you want to use your new context you can use
-the `--context` option:
+variable is not set:
 
 ```console
 $ castor foo
 foo=
 ```
 
+If you want to use your other context, you can use the `--context` option:
+
 ```console
-$ castor foo --context=my-context
+$ castor foo --context=my_context
 foo=BAR
-```
-
-> [!NOTE]
-> You can override the context name by setting the `name` argument of the
-> `AsContext` attribute.
-<!-- -->
-> [!TIP]
-> Related example: [context.php](https://github.com/jolicode/castor/blob/main/examples/context.php)
-
-## Setting a default context
-
-You may want to set a default context for all your tasks. You can do that by
-setting the `default` argument to `true` in the `AsContext` attribute:
-
-```php
-use Castor\Attribute\AsContext;
-use Castor\Context;
-
-use function Castor\io;
-use function Castor\run;
-
-#[AsContext(default: true, name: 'my_context')]
-function create_default_context(): Context
-{
-    return new Context(['foo' => 'bar'], workingDirectory: '/tmp');
-}
-
-#[AsTask()]
-function foo(Context $context): void
-{
-    io()->writeln($context['foo']); // will print bar even if you do not use the --context option
-    run('pwd'); // will print /tmp
-}
 ```
 
 > [!NOTE]
@@ -145,10 +215,12 @@ function foo(Context $context): void
 > provided.
 
 ```bash
-CASTOR_CONTEXT=another_context castor foo
+CASTOR_CONTEXT=my_context castor foo
 ```
 
-## Failure
+## Context features
+
+### Failure
 
 By default, Castor will throw an exception if the process fails. You can disable
 that by using the `withAllowFailure` method:
@@ -169,7 +241,7 @@ function foo(): void
 > [!TIP]
 > Related example: [failure.php](https://github.com/jolicode/castor/blob/main/examples/failure.php)
 
-## Working directory
+### Working directory
 
 By default, Castor will execute the process in the same directory as
 the `castor.php` file. You can change that by using the `withWorkingDirectory`
@@ -192,7 +264,7 @@ function foo(): void
 > [!TIP]
 > Related example: [cd.php](https://github.com/jolicode/castor/blob/main/examples/cd.php)
 
-## Environment variables
+### Environment variables
 
 By default, Castor will use the same environment variables as the current
 process. You can add or override environment variables by using the
@@ -214,7 +286,7 @@ function foo(): void
 > [!TIP]
 > Related example: [env.php](https://github.com/jolicode/castor/blob/main/examples/env.php)
 
-## Timeout
+### Timeout
 
 By default, Castor allow your `run()` calls to go indefinitly.
 
@@ -238,11 +310,11 @@ This process will have a 2 minutes timeout.
 > [!TIP]
 > Related example: [wait_for.php](https://github.com/jolicode/castor/blob/main/examples/wait_for.php)
 
-## PTY & TTY
+### PTY & TTY
 
 By default, Castor will use a pseudo terminal (PTY) to run the underlying process,
 which allows to have nice output in most cases.
-For some commands you may want to disable the PTY and use a TTY instead. You can
+For some commands, you may want to disable the PTY and use a TTY instead. You can
 do that by using the `withTty` method:
 
 ```php
@@ -279,10 +351,10 @@ function foo(): void
 }
 ```
 
-## Passing verbose arguments
+### Passing verbose arguments
 
-Castor allow you to pass verbose arguments to the underlying process. You can
-do that by using the `withVerboseArguments` method:
+Castor allow you to pass verbose arguments (like the universal `-v` option) to
+the underlying process. You can do that by using the `withVerboseArguments` method:
 
 ```php
 use Castor\Attribute\AsTask;
@@ -293,15 +365,16 @@ use function Castor\run;
 #[AsTask()]
 function foo(): void
 {
-    run('php bin/console do:some:task', context: context()->withVerboseArguments(['-v']));
+    run('php bin/console do:some:task', context: context()->withVerboseArguments(['--verbose']));
 }
 ```
 
-By default, Castor will not pass any verbose arguments to the command. However
-if you run castor with the `-v` option, it will pass the verbose arguments to this command.
+By default, Castor will not pass any verbose arguments to the command. However,
+if you run castor [in verbose mode](../going-further/interacting-with-castor/log.md)
+(for example with `castor foo -v`), it will pass the verbose arguments you configured to this command.
 
-Also if this command fails, castor will ask you if you want to retry the command
-with the verbose arguments.
+Additionally, if this command fails when Castor is not in verbose mode, it will
+ask you if you want to retry the command with the verbose arguments.
 
 ## Advanced usage
 
