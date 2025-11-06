@@ -1,7 +1,0 @@
-In shell.php line XXXX:
-
-  TTY mode requires /dev/tty to be read/writable.
-
-
-shell:sh
-

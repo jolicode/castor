@@ -4,7 +4,7 @@ namespace Castor\Tests\Examples\Fingerprint;
 
 class FingerprintTaskWithCompleteFingerprintTest extends FingerprintedTestCase
 {
-    // fingerprint:task-with-some-fingerprint
+    // fingerprint:exist-and-save
     public function test(): void
     {
         // Run for the first time, should run
@@ -19,14 +19,14 @@ class FingerprintTaskWithCompleteFingerprintTest extends FingerprintedTestCase
 
     private function runProcessAndExpect(string $expectedOutputFilePath, string $withFileContent = 'Hello'): void
     {
-        $filepath = \dirname(__DIR__, 3) . '/examples/fingerprint_file.fingerprint_single';
+        $filepath = \dirname(__DIR__, 3) . '/examples/basic/fingerprint/fingerprint_file.fingerprint_single';
         if (file_exists($filepath)) {
             unlink($filepath);
         }
 
         file_put_contents($filepath, $withFileContent);
 
-        $process = $this->runTask(['fingerprint:task-with-complete-fingerprint'], needResetCache: false);
+        $process = $this->runTask(['fingerprint:exist-and-save'], needResetCache: false);
 
         if (file_exists($expectedOutputFilePath)) {
             $this->assertStringEqualsFile($expectedOutputFilePath, $process->getOutput());

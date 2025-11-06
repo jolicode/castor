@@ -36,9 +36,6 @@ function foo(): void
 }
 ```
 
-> [!TIP]
-> Related example: [context.php](https://github.com/jolicode/castor/blob/main/examples/context.php)
-
 ### The `variable()` function
 
 Castor also provides a `variable()` function to get the value of a variable
@@ -64,9 +61,6 @@ function foo(): void
     }
 }
 ```
-
-> [!TIP]
-> Related example: [context.php](https://github.com/jolicode/castor/blob/main/examples/context.php)
 
 ## Creating a new context
 
@@ -238,9 +232,6 @@ function foo(): void
 }
 ```
 
-> [!TIP]
-> Related example: [failure.php](https://github.com/jolicode/castor/blob/main/examples/failure.php)
-
 ### Working directory
 
 By default, Castor will execute the process in the same directory as
@@ -261,9 +252,6 @@ function foo(): void
 }
 ```
 
-> [!TIP]
-> Related example: [cd.php](https://github.com/jolicode/castor/blob/main/examples/cd.php)
-
 ### Environment variables
 
 By default, Castor will use the same environment variables as the current
@@ -282,9 +270,6 @@ function foo(): void
     run('echo $FOO', context: context()->withEnvironment(['FOO' => 'bar'])); // will print "bar"
 }
 ```
-
-> [!TIP]
-> Related example: [env.php](https://github.com/jolicode/castor/blob/main/examples/env.php)
 
 ### Timeout
 
@@ -306,9 +291,6 @@ function foo(): void
 ```
 
 This process will have a 2 minutes timeout.
-
-> [!TIP]
-> Related example: [wait_for.php](https://github.com/jolicode/castor/blob/main/examples/wait_for.php)
 
 ### PTY & TTY
 

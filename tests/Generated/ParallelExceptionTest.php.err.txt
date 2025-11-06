@@ -1,4 +1,4 @@
-In parallel.php line XXXX:
+In exception.php line XXXX:
 
   This is an exception
 
@@ -6,7 +6,7 @@ In parallel.php line XXXX:
 parallel:exception
 
 
-In parallel.php line XXXX:
+In exception.php line XXXX:
 
   One or more exceptions were thrown in parallel.
 

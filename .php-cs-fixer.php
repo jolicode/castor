@@ -10,6 +10,8 @@ $finder = PhpCsFixer\Finder::create()
     ->notPath([
         '.castor.stub.php',
         'tests/Stub/fixtures',
+        'examples/advanced/event_listener/access_attributes_of_task.php', // There is a class in it, we don't want it to be renamed
+        'examples/advanced/remote_import/import_class.php', // There is a class in it, we don't want it to be renamed
     ])
 ;
 

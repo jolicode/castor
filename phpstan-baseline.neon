@@ -1,22 +1,22 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Function args\\args\(\) has parameter \$word with no type specified\.$#'
+			message: '#^Function arguments\\arguments\(\) has parameter \$word with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
-			path: examples/args.php
+			path: examples/basic/arguments/arguments.php
 
 		-
 			message: '#^Negated boolean expression is always true\.$#'
 			identifier: booleanNot.alwaysTrue
 			count: 1
-			path: examples/assertion.php
+			path: examples/basic/assertion/ensure.php
 
 		-
 			message: '#^Result of function usleep \(void\) is used\.$#'
 			identifier: function.void
 			count: 1
-			path: examples/assertion.php
+			path: examples/basic/assertion/ensure.php
 
 		-
 			message: '#^Class RepackedApplication not found\.$#'

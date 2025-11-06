@@ -4,10 +4,10 @@ namespace Castor\Tests\Examples\Fingerprint;
 
 class FingerprintTaskWithAFingerprintAndForceTest extends FingerprintedTestCase
 {
-    // fingerprint:task-with-a-fingerprint-and-force
+    // fingerprint:force
     public function test(): void
     {
-        $filepath = \dirname(__DIR__, 3) . '/examples/fingerprint_file.fingerprint_single';
+        $filepath = \dirname(__DIR__, 3) . '/examples/basic/fingerprint/fingerprint_file.fingerprint_single';
 
         if (file_exists($filepath)) {
             unlink($filepath);
@@ -15,9 +15,9 @@ class FingerprintTaskWithAFingerprintAndForceTest extends FingerprintedTestCase
 
         file_put_contents($filepath, 'Hello');
 
-        $processFirstRun = $this->runTask(['fingerprint:task-with-a-fingerprint-and-force'], needResetCache: false);
-        $processSecondRun = $this->runTask(['fingerprint:task-with-a-fingerprint-and-force', '--force'], needResetCache: false);
-        $processThirdRun = $this->runTask(['fingerprint:task-with-a-fingerprint-and-force'], needResetCache: false);
+        $processFirstRun = $this->runTask(['fingerprint:force'], needResetCache: false);
+        $processSecondRun = $this->runTask(['fingerprint:force', '--force'], needResetCache: false);
+        $processThirdRun = $this->runTask(['fingerprint:force'], needResetCache: false);
 
         $this->assertStringEqualsFile(__FILE__ . '.output_runnable.txt', $processFirstRun->getOutput());
         $this->assertStringEqualsFile(__FILE__ . '.output_runnable.txt', $processSecondRun->getOutput());
@@ -25,7 +25,7 @@ class FingerprintTaskWithAFingerprintAndForceTest extends FingerprintedTestCase
 
         file_put_contents($filepath, 'Hello World');
         // If we don't force, it should re-run the task
-        $processFourthRun = $this->runTask(['fingerprint:task-with-a-fingerprint-and-force'], needResetCache: false);
+        $processFourthRun = $this->runTask(['fingerprint:force'], needResetCache: false);
         $this->assertStringEqualsFile(__FILE__ . '.output_runnable.txt', $processFourthRun->getOutput());
 
         foreach ([$processFirstRun, $processSecondRun, $processThirdRun, $processFourthRun] as $process) {

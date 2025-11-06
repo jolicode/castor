@@ -1,119 +1,121 @@
-completion                                                        Dump the shell completion script
-hello                                                             hello
-help                                                              Display help for a command
-list                                                              List commands
-no-namespace                                                      Task without a namespace
-update                                                            Update all dependencies
-archive:zip                                                       Compress files into a zip archive using native binary or fallback to ZipArchive php class
-archive:zip-binary                                                Compress files into a zip archive using native binary
-archive:zip-php                                                   Compress files into a zip archive using ZipArchive php class
-args:another-args                                                 Dumps all arguments and options, without configuration
-args:args                                                         Dumps all arguments and options, with custom configuration
-args:autocomplete-argument                                        Provides autocomplete for an argument
-args:autocomplete-path                                            Provides autocomplete for a path argument
-args:passthru                                                     Dumps all arguments and options, without configuration nor validation
-assertion:ensure-we-are-in-the-future                             Ensure we are in the future
-assertion:throw-an-exception                                      Throws a Problem exception
-cache:complex                                                     Cache with usage of CacheItemInterface
-cache:simple                                                      Cache a simple call
-castor:composer                                                   Interact with built-in Composer for castor
-castor:execute                                                    Execute a remote task from a packagist directory
-castor:markdown:lint                                              Lint markdown files
-castor:mkdocs:build                                               Build documentation
-castor:mkdocs:docker-build                                        Build mkdocs docker image
-castor:mkdocs:fetch-assets                                        Fetch external assets
-castor:mkdocs:serve                                               Serve documentation and watches for changes
-castor:phar:build                                                 Build phar for all systems
-castor:phar:darwin                                                Build phar for MacOS system
-castor:phar:install                                               install dependencies
-castor:phar:linux                                                 Build phar for Linux system
-castor:phar:update                                                update dependencies
-castor:phar:windows                                               Build phar for Windows system
-castor:release:release                                            Release a new version of castor
-castor:static:darwin-amd64                                        Build static binary for MacOS (amd64) system
-castor:static:darwin-arm64                                        Build static binary for MacOS (arm64) system
-castor:static:linux-amd64                                         Build static binary for Linux (amd64) system
-castor:static:linux-arm64                                         Build static binary for Linux (arm64) system
-castor:watcher:build                                              Build watcher for all systems
-castor:watcher:darwin                                             Build watcher for MacOS system
-castor:watcher:linux                                              Build watcher for Linux system
-castor:watcher:windows                                            Build watcher for Windows system
-cd:directory                                                      Changes directory
-command-builder:ls                                                Run a sub-process and display information about it
-configuration:bar:bar                                             Prints bar, but also executes foo
-configuration:foo:foo                                             Prints foo
-configuration:renamed                                             Task that was renamed
-context:context                                                   Displays information about the context
-context:context-info-forced                                       Displays information about the context
-context:context-with                                              Displays information about the context, using a specific context
-crypto:decrypt                                                    Decrypt content with a password
-crypto:decrypt-file                                               Decrypt file with a password
-crypto:encrypt                                                    Encrypt content with a password
-crypto:encrypt-file                                               Encrypt file with a password
-env:env                                                           Display environment variables
-event-listener:my-task                                            An dummy task with event listeners attached
-failure:allow-failure                                             A failing task authorized to fail
-failure:failure                                                   A failing task not authorized to fail
-failure:verbose-arguments                                         A failing task authorized to fail
-filesystem:filesystem                                             Performs some operations on the filesystem
-filesystem:find                                                   Search files and directories on the filesystem
-fingerprint:task-with-a-fingerprint                               Execute a callback only if the fingerprint has changed
-fingerprint:task-with-a-fingerprint-and-force                     Check if the fingerprint has changed before executing a callback (with force option)
-fingerprint:task-with-a-fingerprint-global                        Execute a callback only if the global fingerprint has changed (Shared across all projects)
-fingerprint:task-with-complete-fingerprint-check                  Check if the fingerprint has changed before executing some code
-http:download                                                     Download a file through HTTP
-http:request                                                      Make HTTP request
-log:all-level                                                     Logs some messages with different levels
-log:error                                                         Logs an "error" message
-log:info                                                          Logs an "info" message
-log:with-context                                                  Logs an "error" message
-notify:notify-on-finish                                           Sends a notification when the task finishes
-notify:send-notify                                                Sends a notification
-notify:send-notify-with-custom-title                              Sends a notification with a custom title
-open:documentation                                                Open Castor documentation in the default browser
-open:multiple                                                     Open an URL and a file in the default applications
-output:output                                                     Plays with Symfony Style
-parallel:exception                                                Sleep and throw an exception
-parallel:sleep                                                    Sleeps for 5, 7, and 10 seconds in parallel
-pyrech:foobar                                                     Hello from foobar!
-pyrech:hello-example                                              Hello from example!
-pyrech:not-imported                                               Not imported task
-qa:cs:cs                                                          Fix CS
-qa:cs:install                                                     install dependencies
-qa:cs:update                                                      Update dependencies
-qa:phpstan:install                                                install dependencies
-qa:phpstan:phpstan                                                Run PHPStan
-qa:phpstan:update                                                 update dependencies
-quiet:quiet                                                       Executes something but does not output anything
-remote-import:remote-task-class                                   Use a class that extends a class imported from a remote package
-remote-import:remote-tasks                                        Use functions imported from remote packages
-run:exception                                                     Run a command that will fail
-run:ls                                                            Run a sub-process and display information about it
-run:phar                                                          Run a phar in a sub process
-run:test-file                                                     Run a sub-process and return its exit code, with get_exit_code() function
-run:variables                                                     Run a sub-process with environment variables and display information about it
-run:whoami                                                        Run a sub-process and display information about it, with capture() function
-run:with-process-helper                                           Run a sub-process and display information about it, with ProcessHelper
-shell:bash                                                        Runs a bash
-shell:sh                                                          Runs a sh
-signal:sigusr2                                                    Captures SIGUSR2 signal
-ssh:download                                                      Downloads a file from the remote server
-ssh:ls                                                            Lists content of /var/www directory on the remote server
-ssh:real-time-output                                              Output in real-time ssh command output
-ssh:upload                                                        Uploads a file to the remote server
-ssh:whoami                                                        Connect to a remote server without specifying a user
+completion                                               Dump the shell completion script
+hello                                                    hello
+help                                                     Display help for a command
+list                                                     List commands
+no-namespace                                             Task without a namespace
+update                                                   Update all dependencies
+archive:zip                                              Compress files into a zip archive using native binary or fallback to ZipArchive php class
+archive:zip-binary                                       Compress files into a zip archive using native binary
+archive:zip-php                                          Compress files into a zip archive using ZipArchive php class
+arguments:arguments                                      Dumps all arguments and options, with custom configuration
+arguments:auto-configuration                             Dumps all arguments and options, without configuration
+arguments:autocomplete                                   Provides autocomplete for an argument
+arguments:autocomplete-path                              Provides autocomplete for a path argument
+arguments:passthru                                       Dumps all arguments and options, without configuration nor validation
+assertion:ensure-we-are-in-the-future                    Ensure we are in the future
+assertion:throw-an-exception                             Throws a Problem exception
+cache:complex                                            Cache with usage of CacheItemInterface
+cache:simple                                             Cache a simple call
+castor:composer                                          Interact with built-in Composer for castor
+castor:execute                                           Execute a remote task from a packagist directory
+castor:markdown:lint                                     Lint markdown files
+castor:mkdocs:build                                      Build documentation
+castor:mkdocs:docker-build                               Build mkdocs docker image
+castor:mkdocs:fetch-assets                               Fetch external assets
+castor:mkdocs:serve                                      Serve documentation and watches for changes
+castor:phar:build                                        Build phar for all systems
+castor:phar:darwin                                       Build phar for MacOS system
+castor:phar:install                                      install dependencies
+castor:phar:linux                                        Build phar for Linux system
+castor:phar:update                                       update dependencies
+castor:phar:windows                                      Build phar for Windows system
+castor:release:release                                   Release a new version of castor
+castor:static:darwin-amd64                               Build static binary for MacOS (amd64) system
+castor:static:darwin-arm64                               Build static binary for MacOS (arm64) system
+castor:static:linux-amd64                                Build static binary for Linux (amd64) system
+castor:static:linux-arm64                                Build static binary for Linux (arm64) system
+castor:watcher:build                                     Build watcher for all systems
+castor:watcher:darwin                                    Build watcher for MacOS system
+castor:watcher:linux                                     Build watcher for Linux system
+castor:watcher:windows                                   Build watcher for Windows system
+command-builder:ls                                       Run a sub-process and display information about it
+configuration:bar:bar                                    Prints bar, but also executes foo
+configuration:foo:foo                                    Prints foo
+configuration:renamed                                    Task that was renamed
+context:context                                          Displays information about the context
+context:display-context-info-with                        Displays information about the context, using a specific context
+context:display-dynamic-context-info                     Displays information about the context
+crypto:decrypt                                           Decrypt content with a password
+crypto:decrypt-file                                      Decrypt file with a password
+crypto:encrypt                                           Encrypt content with a password
+crypto:encrypt-file                                      Encrypt file with a password
+event-listener:before-execute-task                       A dummy task with before execute task event listener
+event-listener:console-terminate                         A dummy task with console terminate event listener
+event-listener:loggable                                  A dummy task to demonstrate accessing attributes of a task
+event-listener:multiple                                  A dummy task with many event listeners attached
+event-listener:priority                                  A dummy task with event listeners that have priority
+event-listener:process                                   A dummy task with process event listeners
+fingerprint:exist-and-save                               Check if the fingerprint has changed before executing some code
+fingerprint:fingerprint                                  Execute a callback only if the fingerprint has changed
+fingerprint:force                                        Check if the fingerprint has changed before executing a callback (with force option)
+fingerprint:global                                       Execute a callback only if the global fingerprint has changed (Shared across all projects)
+http:download                                            Download a file through HTTP
+http:request                                             Make HTTP request
+io:io                                                    Plays with Symfony Style
+log:all-level                                            Logs some messages with different levels
+log:error                                                Logs an "error" message
+log:info                                                 Logs an "info" message
+log:with-context                                         Logs an "error" message
+notify:custom-title                                      Sends a notification with a custom title
+notify:notify                                            Sends a notification
+notify:on-run-finished                                   Sends a notification when the task finishes
+open:documentation                                       Open Castor documentation in the default browser
+open:multiple                                            Open an URL and a file in the default applications
+parallel:embed                                           Sleeps for 5, 7, and 10 seconds in parallel
+parallel:exception                                       Sleep and throw an exception
+parallel:sleep                                           Sleeps for 3 and 4 seconds in parallel
+phar:phar                                                Run a phar in a sub process
+pyrech:foobar                                            Hello from foobar!
+pyrech:hello-example                                     Hello from example!
+pyrech:not-imported                                      Not imported task
+qa:cs:cs                                                 Fix CS
+qa:cs:install                                            install dependencies
+qa:cs:update                                             Update dependencies
+qa:phpstan:install                                       install dependencies
+qa:phpstan:phpstan                                       Run PHPStan
+qa:phpstan:update                                        update dependencies
+remote-import:import-class                               Use a class that extends a class imported from a remote package
+remote-import:remote-tasks                               Use functions imported from remote packages
+run:allow-failure                                        A failing task authorized to fail
+run:capture                                              Run a sub-process and display information about it, with capture() function
+run:env-override                                         Display environment variables
+run:exception                                            Run a command that will fail
+run:exit-code                                            Run a sub-process and return its exit code, with get_exit_code() function
+run:failure                                              A failing task not authorized to fail
+run:ls                                                   Run a sub-process and display information about it
+run:process-helper                                       Run a sub-process and display information about it, with ProcessHelper
+run:quiet                                                Executes something but does not output anything
+run:variables                                            Run a sub-process with environment variables and display information about it
+run:verbose-arguments                                    A failing task that will suggest to re-run with verbose arguments
+run:working-directory-override                           Changes directory
+signal:sigusr2                                           Captures SIGUSR2 signal
+ssh:download                                             Downloads a file from the remote server
+ssh:ls                                                   Lists content of /var/www directory on the remote server
+ssh:real-time-output                                     Output in real-time ssh command output
+ssh:upload                                               Uploads a file to the remote server
+ssh:whoami                                               Connect to a remote server without specifying a user
 symfony:greet
-symfony:hello                                                     Says hello from a symfony application
-version-guard:min-version-check                                   Check if the minimum castor version requirement is met
-version-guard:min-version-check-fail                              Check if the minimum castor version requirement is met (fail)
-wait-for:custom-wait-for-task                                     Use custom wait for, to check anything
-wait-for:wait-for-docker-container-task                           Wait for docker container to be ready
-wait-for:wait-for-port-task                                       Wait for a service available on a port
-wait-for:wait-for-url-task                                        Wait for an URL to be available
-wait-for:wait-for-url-with-specific-response-content-and-status   Wait for an URL to respond with a "200" status code and a specific content
-wait-for:wait-for-url-with-status-code-only                       Wait for an URL to respond with a specific status code only
-watch:fs-change                                                   Watches on filesystem changes
-watch:parallel-change                                             Watches on filesystem changes with 2 watchers in parallel
-watch:stop                                                        Watches on filesystem changes and stop after first change
-yaml:dump                                                         Dump a YAML content
-yaml:parse                                                        Parse a YAML content
+symfony:hello                                            Says hello from a symfony application
+version-guard:min-version-check                          Check if the minimum castor version requirement is met
+version-guard:min-version-check-fail                     Check if the minimum castor version requirement is met (fail)
+wait-for:callback                                        Use custom wait for, to check anything
+wait-for:docker                                          Wait for docker container to be ready
+wait-for:port                                            Wait for a service available on a port
+wait-for:url                                             Wait for an URL to be available
+wait-for:url-with-specific-response-content-and-status   Wait for an URL to respond with a "200" status code and a specific content
+wait-for:url-with-status-code-only                       Wait for an URL to respond with a specific status code only
+watch:filesystem                                         Watches on filesystem changes
+watch:parallel-change                                    Watches on filesystem changes with 2 watchers in parallel
+watch:stop                                               Watches on filesystem changes and stop after first change
+yaml:dump                                                Dump a YAML content
+yaml:parse                                               Parse a YAML content

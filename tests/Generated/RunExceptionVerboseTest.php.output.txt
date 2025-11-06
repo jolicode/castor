@@ -1,2 +1,3 @@
-hh:mm:ss NOTICE    [castor] Running command: "echo $foo; echo bar>&2; exit 1". ["process" => ["cwd" => "...","env" => ["foo" => "bar"],"runnable" => "foo='bar' echo $foo; echo bar>&2; exit 1"]]
+hh:mm:ss NOTICE    [castor] Running command: "echo foo; echo bar>&2;exit 1". ["process" => ["cwd" => "...","env" => [],"runnable" => "echo foo; echo bar>&2;exit 1"]]
+foo
 hh:mm:ss NOTICE    [castor] Command finished with an error (exit code=1).

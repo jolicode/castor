@@ -1,7 +1,9 @@
+bar
+
 In ProcessRunner.php line XXXX:
 
   [Symfony\Component\Process\Exception\ProcessFailedException]
-  The command "echo $foo; echo bar>&2; exit 1" failed.
+  The command "echo foo; echo bar>&2;exit 1" failed.
 
   Exit Code: 1(General error)
 
@@ -9,7 +11,7 @@ In ProcessRunner.php line XXXX:
 
   Output:
   ================
-  bar
+  foo
 
 
   Error Output:
@@ -20,7 +22,7 @@ In ProcessRunner.php line XXXX:
 Exception trace:
   at .../src/Runner/ProcessRunner.php:XXXX
  Castor\Runner\ProcessRunner->run() at .../src/functions.php:XXXX
- Castor\run() at .../examples/run.php:XXXX
+ Castor\run() at .../examples/basic/run/exception.php:XXXX
  run\exception() at .../src/Console/Command/TaskCommand.php:XXXX
  Castor\Console\Command\TaskCommand->execute() at .../vendor/symfony/console/Command/Command.php:XXXX
  Symfony\Component\Console\Command\Command->run() at .../vendor/symfony/console/Application.php:XXXX
@@ -30,5 +32,5 @@ Exception trace:
  Castor\Console\Application->doRun() at .../vendor/symfony/console/Application.php:XXXX
  Symfony\Component\Console\Application->run() at castor:XXXX
 
-run:exception [--repeat [REPEAT]]
+run:exception
 

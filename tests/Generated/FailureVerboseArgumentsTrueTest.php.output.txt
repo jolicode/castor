@@ -1,8 +1,0 @@
- Do you want to retry the command with verbose arguments? (yes/no) [no]:
- >
-In failure.php line XXXX:
-
- [ERROR] The following process did not finish successfully (exit code XX):
-
-bash -c i_do_not_exist -x -e
-

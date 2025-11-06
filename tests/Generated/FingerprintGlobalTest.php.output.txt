@@ -1,0 +1,3 @@
+Hello Task with Global Fingerprint!
+Cool, no global fingerprint! Executing...
+Cool! I finished global!

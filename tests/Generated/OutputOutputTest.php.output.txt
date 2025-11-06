@@ -1,9 +1,0 @@
-This is a title
-===============
-
- This is the task "output:output"
-
- // With IO, you can ask questions ...
-
- Tell me something:
- >

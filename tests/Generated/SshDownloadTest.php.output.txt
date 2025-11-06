@@ -1,4 +1,4 @@
-In ssh.php line XXXX:
+In download.php line XXXX:
 
  [ERROR] The following process did not finish successfully (exit code XX):
 

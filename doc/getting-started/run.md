@@ -45,9 +45,6 @@ function foo(): void
 > Without the allowFailure option, Castor would throw an exception if the process
 > execution failed. See [this documentation](context.md#failure) for more
 > information about failure handling.
-<!-- -->
-> [!TIP]
-> Related example: [run.php](https://github.com/jolicode/castor/blob/main/examples/run.php)
 
 ## Processing the output
 
@@ -85,9 +82,6 @@ function foo(): void
 }
 ```
 
-> [!TIP]
-> Related example: [quiet.php](https://github.com/jolicode/castor/blob/main/examples/quiet.php)
-
 ### The `capture()` function
 
 Castor provides a `capture()` function that will run the process quietly,
@@ -108,9 +102,6 @@ function whoami()
 }
 ```
 
-> [!TIP]
-> Related example: [run.php](https://github.com/jolicode/castor/blob/main/examples/run.php)
-
 ### The `exit_code()` function
 
 Castor provides a `exit_code()` function that will run the command, allowing
@@ -128,9 +119,6 @@ function cs(): int
     return exit_code('php-cs-fixer fix --dry-run');
 }
 ```
-
-> [!TIP]
-> Related example: [run.php](https://github.com/jolicode/castor/blob/main/examples/run.php)
 
 ## Interactive Process
 
