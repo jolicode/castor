@@ -54,7 +54,7 @@ castor
 ```
 
 → Castor can also be installed in many other ways (phar, static binaries, Composer,
-Github Action, etc), see [the installation documentation](installation.md).
+GitHub Action, etc), see [the installation documentation](installation/index.md#installation-methods).
 
 ## Basic usage
 
@@ -141,7 +141,7 @@ Because:
 
 Discover more by reading all the docs:
 
-* [Installation](installation.md)
+* [Installing Castor and initial setup](installation/index.md)
 * [Getting started with Castor](getting-started/index.md)
 * [Going further with Castor](going-further/index.md)
 * [Castor reference](reference.md)

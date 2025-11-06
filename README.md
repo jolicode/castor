@@ -110,12 +110,13 @@ Because:
 
 Discover more by reading the docs:
 
+* [Installing Castor and initial setup](https://castor.jolicode.com/installation/)
 * [Getting started with Castor](https://castor.jolicode.com/getting-started/)
-    * [Installation and Autocomplete](https://castor.jolicode.com/getting-started/installation/)
     * [Basic Usage](https://castor.jolicode.com/getting-started/basic-usage/)
     * [Executing Processes with `run()`](https://castor.jolicode.com/getting-started/run/)
     * [Task Arguments](https://castor.jolicode.com/getting-started/arguments)
     * [Using the Context](https://castor.jolicode.com/getting-started/context)
+    * [Remote execution](https://castor.jolicode.com/getting-started/remote)
 * [Going further with Castor](https://castor.jolicode.com/going-further/)
 * [Castor reference](https://castor.jolicode.com/reference/)
 * [Examples](https://castor.jolicode.com/examples/)
