@@ -14,7 +14,7 @@ No need for Bash, Makefiles or YAML.<br/>
 * 🧠 [Autocompletion](going-further/interacting-with-castor/autocomplete.md) & descriptions for each task
 * 🧰 Easy to integrate in your dev workflows
 
-## 🤓 Presentation
+## Presentation
 
 <p align="center">
     <i>Castor is a <strong><abbr title="Developer eXperience">DX</abbr>-oriented task
@@ -35,7 +35,18 @@ It comes with many features to make your life easier:
     * [`fs()`](https://castor.jolicode.com/going-further/helpers/filesystem/#the-fs-function): Create, remove, and manipulate files and directories
     * [And even more advanced functions](https://castor.jolicode.com/reference/)
 
-## 🧑‍🔬 Basic usage
+## Get started in 10 seconds
+
+```bash
+curl "https://castor.jolicode.com/install" | bash
+
+castor
+```
+
+→ Castor can also be installed in many other ways (phar, static binaries, Composer,
+Github Action, etc), see [the installation documentation](https://castor.jolicode.com/getting-started/installation/).
+
+## Basic usage
 
 In Castor, tasks are set up as typical PHP functions marked with the `#[AsTask()]` attribute in a `castor.php` file.
 
@@ -85,7 +96,7 @@ function destroy(bool $force = false)
 
 → Want to see basic usages and main features of Castor? Read the [Getting started documentation](https://castor.jolicode.com/getting-started/)
 
-## 🤔 Why not Make / Robo / Phing / Deployer / Symfony Console?
+## Why not Make / Robo / Phing / Deployer / Symfony Console?
 
 Because:
 
@@ -95,17 +106,7 @@ Because:
 
 → See detailed comparisons in our [FAQ](https://castor.jolicode.com/faq/)
 
-## 🧰 Get started in 10 seconds
-
-```bash
-curl "https://castor.jolicode.com/install" | bash
-
-castor
-```
-
-→ Castor can also be installed in other ways (phar, static binaries, Composer), see [the installation documentation](https://castor.jolicode.com/getting-started/installation/).
-
-## 📚 Want more?
+## Want more?
 
 Discover more by reading the docs:
 

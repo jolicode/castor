@@ -25,7 +25,7 @@ No need for Bash, Makefiles or YAML.<br/>
 * 🧠 [Autocompletion](going-further/interacting-with-castor/autocomplete.md) & descriptions for each task
 * 🧰 Easy to integrate in your dev workflows
 
-## 🤓 Presentation
+## Presentation
 
 Castor is a <strong><abbr title="Developer eXperience">DX</abbr> oriented task
 runner</strong>, that is designed to help you automate your development tasks
@@ -45,7 +45,18 @@ It comes with many features to make your life easier:
     * [`fs()`](going-further/helpers/filesystem.md/#the-fs-function): Creates, removes, and manipulates files and directories
     * [And even more advanced functions](reference.md)
 
-## 🧑‍🔬 Basic usage
+## Get started in 10 seconds
+
+```bash
+curl "https://castor.jolicode.com/install" | bash
+
+castor
+```
+
+→ Castor can also be installed in many other ways (phar, static binaries, Composer,
+Github Action, etc), see [the installation documentation](installation.md).
+
+## Basic usage
 
 In Castor, tasks are set up as typical PHP functions marked with the `#[AsTask()]` attribute in a `castor.php` file.
 
@@ -95,7 +106,7 @@ function destroy(bool $force = false)
 
 → Want to see basic usages and main features of Castor? Read the [Getting started documentation](getting-started/index.md)
 
-## 🧪 Real-world use cases
+## Real-world use cases
 
 * Run database migrations
 * Deploy your app with one command
@@ -105,7 +116,7 @@ function destroy(bool $force = false)
 
 → See [more examples from the community](examples.md#real-world-examples).
 
-## 💬 What developers say
+## What developers say
 
 > "Finally a task runner that feels like PHP. No weird DSL, just functions."<br>
 > — Every Castor user, probably
@@ -116,7 +127,7 @@ function destroy(bool $force = false)
 > "We migrated from Make to Castor and nobody cried. That's a win."<br>
 > — Senior Developer, now less grumpy
 
-## 🤔 Why not Make / Robo / Phing / Deployer / Symfony Console?
+## Why not Make / Robo / Phing / Deployer / Symfony Console?
 
 Because:
 
@@ -126,17 +137,7 @@ Because:
 
 → See detailed comparisons in our [FAQ](faq.md)
 
-## 🧰 Get started in 10 seconds
-
-```bash
-curl "https://castor.jolicode.com/install" | bash
-
-castor
-```
-
-→ Castor can also be installed in other ways (phar, static binaries, Composer), see [the installation documentation](installation.md).
-
-## 📚 Want more?
+## Want more?
 
 Discover more by reading all the docs:
 
