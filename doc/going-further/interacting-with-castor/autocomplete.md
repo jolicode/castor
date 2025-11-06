@@ -5,7 +5,7 @@
 If you use bash, you can enable autocomplete for castor by running the
 following task:
 
-```
+```bash
 castor completion | sudo tee /etc/bash_completion.d/castor
 ```
 
@@ -14,7 +14,7 @@ Then reload your shell.
 Others shells are also supported (zsh, fish, etc). To get the list of supported
 shells and their dedicated instructions, run:
 
-```
+```bash
 castor completion --help
 ```
 
@@ -39,7 +39,7 @@ function my_task(
 When trying to autocomplete the arguments, your shell will now suggest these
 values:
 
-```bash
+```console
 $ castor my-task [TAB]
 bar  baz  foo
 ```
@@ -76,7 +76,7 @@ function get_argument_autocompletion(CompletionInput $input): array
 }
 ```
 
->[!NOTE]
+> [!NOTE]
 > Because the syntax `my_callback(...)` is not allowed on attribute, you need to
 > specify the `autocomplete` callback with either:
 >
@@ -86,11 +86,11 @@ function get_argument_autocompletion(CompletionInput $input): array
 This function receives an optional `Symfony\Component\Console\Completion\CompletionInput`
 argument to allow you to pre-filter the suggestions returned to the shell.
 
->[!TIP]
+> [!TIP]
 > The shell script is able to handle huge amounts of suggestions and will
 > automatically filter the suggested values based on the existing input from the
 > user. You do not have to implement any filter logic in the function.
-> 
+>
 > You may use CompletionInput::getCompletionValue() to get the current input if
 > that helps to improve performance (e.g. by reducing the number of rows fetched
 > from the database).

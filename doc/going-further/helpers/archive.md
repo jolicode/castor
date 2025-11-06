@@ -22,9 +22,9 @@ function compress_file(string $file, string $destination): void
 
 > [!NOTE]
 > The `zip()` function automatically selects the best available method (binary or PHP) based on your system configuration.
-> 
+>
 > The `source` parameter can be either a file path or a directory path. Both are fully supported.
-
+<!-- -->
 > [!WARNING]
 > If you're using the binary version of Castor, you must compile it with the ZIP extension enabled using the `--php-extensions=...,zip` option. Otherwise, the ZIP functionality will not be available.
 

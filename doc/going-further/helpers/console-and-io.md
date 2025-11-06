@@ -108,7 +108,7 @@ dedicated section of the console.
 This feature is disabled by default and can be enabled by setting the
 `CASTOR_USE_SECTION` environment variable to `true`.
 
-```shell
+```bash
 CASTOR_USE_SECTION=true castor task-running-commands-in-parallel
 ```
 

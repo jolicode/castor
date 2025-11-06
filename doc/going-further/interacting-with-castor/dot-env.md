@@ -35,7 +35,7 @@ function show_database_url(): void
 > it will only return variables defined in the .env file. So if someone overrides
 > one variable with true environment variable, it will not be returned. So it's
 > better to use `$_SERVER` in you code to access env variables.
-
+<!-- -->
 > [!NOTE]
 > You can find more about how `.env` file loading and overloading works on
 > [related Symfony documentation](https://symfony.com/doc/current/configuration.html#configuring-environment-variables-in-env-files).

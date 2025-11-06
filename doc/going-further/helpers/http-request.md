@@ -46,7 +46,7 @@ function foo()
 When running Castor in verbose mode, `http_download()` outputs useful logs,
 including a progress indicator to track the download status.
 
-```
+```text
 18:55:09 INFO      [castor] Filename determined for http download ["filename" => "100MB-speedtest","url" => "http://eu-central-1.linodeobjects.com/speedtest/100MB-speedtest"]
 18:55:11 INFO      [castor] Download progress: 29.72 MB/100.00 MB (29.72%) at 18.40 MB/s, ETA: 3s ["url" => "http://eu-central-1.linodeobjects.com/speedtest/100MB-speedtest"]
 18:55:13 INFO      [castor] Download progress: 74.94 MB/100.00 MB (74.94%) at 20.73 MB/s, ETA: 1s ["url" => "http://eu-central-1.linodeobjects.com/speedtest/100MB-speedtest"]

@@ -33,6 +33,7 @@ vendor/bin/castor compile my-custom-castor-app.phar
 
 Make sure to take a look at the command description to see all the available
 options:
+
 ```bash
 vendor/bin/castor compile --help
 ```
@@ -62,4 +63,3 @@ You can simply run it like any other executable:
 ```bash
 ./castor
 ```
-

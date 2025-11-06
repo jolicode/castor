@@ -74,6 +74,7 @@ the `Castor\Attribute\AsContext` attribute:
 
 ```php
 use Castor\Attribute\AsContext;
+use Castor\Attribute\AsTask;
 use Castor\Context;
 
 use function Castor\run;
@@ -87,25 +88,28 @@ function my_context(): Context
 #[AsTask()]
 function foo(): void
 {
-    run('echo $FOO');
+    run('echo foo=$FOO');
 }
 ```
 
-By default the `foo` task will not print anything as the `FOO` environment
+By default the `foo` task will only print `foo=` as the `FOO` environment
 variable is not set. If you want to use your new context you can use
 the `--context` option:
 
-```bash
+```console
 $ castor foo
+foo=
+```
 
+```console
 $ castor foo --context=my-context
-BAR
+foo=BAR
 ```
 
 > [!NOTE]
 > You can override the context name by setting the `name` argument of the
 > `AsContext` attribute.
-
+<!-- -->
 > [!TIP]
 > Related example: [context.php](https://github.com/jolicode/castor/blob/main/examples/context.php)
 
@@ -141,7 +145,7 @@ function foo(Context $context): void
 > provided.
 
 ```bash
-$ CASTOR_CONTEXT=another_context castor foo
+CASTOR_CONTEXT=another_context castor foo
 ```
 
 ## Failure
@@ -191,7 +195,7 @@ function foo(): void
 ## Environment variables
 
 By default, Castor will use the same environment variables as the current
-process. You can add or override environment variables by using the 
+process. You can add or override environment variables by using the
 `withEnvironment()` method:
 
 ```php
@@ -296,9 +300,8 @@ function foo(): void
 By default, Castor will not pass any verbose arguments to the command. However
 if you run castor with the `-v` option, it will pass the verbose arguments to this command.
 
-Also if this command fails, castor will ask you if you want to retry the command 
+Also if this command fails, castor will ask you if you want to retry the command
 with the verbose arguments.
-
 
 ## Advanced usage
 

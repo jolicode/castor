@@ -36,9 +36,6 @@ jobs:
           php-version: "8.3"
           need_phar: 'false'
 
-      - name: Build docker image for MkDocs
-        run: bin/castor castor:mkdocs:docker-build
-
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v4

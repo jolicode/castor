@@ -3,7 +3,7 @@
 Castor can mount another application. This pattern is useful when you have a
 majestic monolith and you want to split it into smaller applications:
 
-```
+```text
 project/
 ├─ projects/
 │  ├─ A/

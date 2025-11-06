@@ -31,7 +31,7 @@ function task_with_a_fingerprint(): void
 > [!NOTE]
 > You can use the `$force` parameter of the `fingerprint()` function to force
 > the execution of the callback even if the fingerprint has not changed.
-
+<!-- -->
 > [!NOTE]
 > By default the fingerprint is scoped to the current project, but you can use
 > the `$global` parameter to make it shared across all projects.

@@ -81,7 +81,7 @@ function decrypt_file(string $file): void
 
 > [!NOTE]
 > When no destination path is provided, the function follows these rules:
-> 
+>
 > For files ending with `.enc` extension:
 >
 > - The function attempts to create the decrypted file with the same name but without the `.enc` extension
@@ -89,7 +89,7 @@ function decrypt_file(string $file): void
 >
 > - If a file already exists at that path, it uses the `.dec` extension instead to prevent data loss
 >     - Example: `secret.txt.enc` → `secret.txt.dec` (when `secret.txt` already exists)
-> 
+>
 > For files not ending with `.enc` extension:
 >
 > - The function always appends the `.dec` extension to the original filename

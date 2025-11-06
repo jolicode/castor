@@ -24,13 +24,13 @@ documentation](https://www.php.net/manual/en/phar.configuration.php#ini.phar.rea
 
 Then, run the repack command to create the new phar:
 
-```
+```bash
 vendor/bin/castor repack
 ```
 
 See the help for more options:
 
-```
+```bash
 vendor/bin/castor repack --help
 ```
 
@@ -38,30 +38,30 @@ vendor/bin/castor repack --help
 > Castor will automatically import all files in the current directly.
 > So ensure to have the less files possible in the directory where you run the
 > repack task to avoid including useless files in the phar.
-
+<!-- -->
 > [!NOTE]
 > If a `box.json` file exists in your application directory,
 > it will be merged with the config file used by Castor.
 > None of theses keys `base-path`, `main`, `alias` or `output` keys can be
 > defined in your application box config.
-
+<!-- -->
 > [!CAUTION]
->  If some classes are missing in your phar, it might be because they are
+> If some classes are missing in your phar, it might be because they are
 > excluded by castor's `box.json` file. In this case, you should override the
 > default configuration with a local `box.json` file
 
 ## Repack with your logo
 
-When you repack, you can use the `--no-logo` option to hide the Castor logo.   
+When you repack, you can use the `--no-logo` option to hide the Castor logo.
 
 Alternatively, you can replace the Castor logo with your own.  
-Use the `--logo-file` option and provide the absolute path (or a path relative 
-to the working directory) of a `.php` file.   
+Use the `--logo-file` option and provide the absolute path (or a path relative
+to the working directory) of a `.php` file.
 
 This file must return a string or a closure that returns a string.  
 The closure will receive the application name and version as string parameters.
 
-#### Example
+### Example
 
 ```php
 // repack/my-logo.php
@@ -71,7 +71,7 @@ The closure will receive the application name and version as string parameters.
 return '❤️ My LOGO ❤️';
 ```
 
-```
+```bash
 vendor/bin/castor repack --logo-file repack/my-logo.php
 ```
 
@@ -91,11 +91,12 @@ return function (string $appName, string $appVersion) {
 };
 ```
 
-```
+```bash
 vendor/bin/castor repack --logo-file repack/my-complex-logo.php
 ```
 
 ![img.png](../../assets/custom-logo.png)
+
 ## Going further
 
 Packaging your Castor app as a phar simplifies distribution but requires PHP
