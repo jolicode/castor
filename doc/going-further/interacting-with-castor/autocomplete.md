@@ -25,7 +25,7 @@ You have two options to make your arguments autocompleted.
 ### Static suggestions
 
 In case your suggestions are fixed, you can pass them as an array in the
-`autocomplete` property of the `AsArgument` and `AsOption` attributes:
+`autocomplete` property of the `#[AsArgument()]` and `#[AsOption()]` attributes:
 
 ```php
 #[AsTask()]
@@ -48,8 +48,8 @@ bar  baz  foo
 
 In case you need some logic to list the suggestions (like suggesting paths or
 docker services, making a database query or HTTP request to determine some
-values, etc.), you can use the same `autocomplete` property of the `AsArgument`
-and `AsOption` attributes to provide the function that will return the
+values, etc.), you can use the same `autocomplete` property of the `#[AsArgument()]`
+and `#[AsOption()]` attributes to provide the function that will return the
 suggestions:
 
 ```php

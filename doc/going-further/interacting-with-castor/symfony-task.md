@@ -2,7 +2,7 @@
 
 If your Castor project lives near a Symfony application, you may want to use
 some of its commands directly as Castor tasks.
-This is possible with the `AsSymfonyTask` attribute you can set on your
+This is possible with the `#[AsSymfonyTask()]` attribute you can set on your
 command class.
 
 > [!NOTE]
@@ -37,7 +37,7 @@ class HelloCommand extends Command
 By default, the attribute will re-use the same name as the one defined in the
 Symfony application, but you can override it with the `name` parameter.
 
-If Symfony command does own a `AsCommand` attribute, you must set the
+If Symfony command does own a `#[AsCommand()]` attribute, you must set the
 `originName` parameter, and it must be the same as the same in the symfony
 application.
 

@@ -7,7 +7,7 @@ application lifecycle.
 ## Registering a listener
 
 You can register a listener inside your Castor project by using the
-`Castor\Attribute\AsListener` attribute. This attribute allows you to specify
+`#[Castor\Attribute\AsListener()]` attribute. This attribute allows you to specify
 the targeted event and the priority of this listener.
 
 ```php

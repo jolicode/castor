@@ -4,6 +4,7 @@ globs:
 
 customRules:
     - "./custom-rules/code-block-console.js"
+    - "./custom-rules/admonition.js"
 
 config:
     default: true

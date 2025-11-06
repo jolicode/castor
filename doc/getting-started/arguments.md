@@ -83,7 +83,7 @@ function do_something(): void
 ## Overriding the argument name and description
 
 You can override the name and description of an argument by using
-the `Castor\Attribute\AsArgument` attribute:
+the `#[Castor\Attribute\AsArgument()]` attribute:
 
 ```php
 use Castor\Attribute\AsArgument;
@@ -111,7 +111,7 @@ foo
 ## Overriding the option name and description
 
 If you prefer, you can force an argument to be an option by using the
-`Castor\Attribute\AsOption` attribute:
+`#[Castor\Attribute\AsOption()]` attribute:
 
 ```php
 use Castor\Attribute\AsOption;
