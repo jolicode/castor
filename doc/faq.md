@@ -35,7 +35,7 @@ See below how **Castor** is different from **Robo**:
 |---------------------------|----------------------------------------------|----------------------------------------------------------|
 | **Philosophy**            | Simple PHP **functions with attributes**     | **OOP-based** task classes                               |
 | **Task definition**       | Annotated PHP functions (`#[AsTask]`)        | Methods inside a class extending `Tasks`                 |
-| **Installation**          | Phar, static binary, Composer, Github Action | Phar, Composer                                           |
+| **Installation**          | Phar, static binary, Composer, GitHub Action | Phar, Composer                                           |
 | **CLI autocompletion**    | ✅ Built-in                                   | ❌ Not by default                                         |
 | **Learning curve**        | ✅ Very low – just write a function           | ⚠️ Requires boilerplate and understanding of inheritance |
 | **Modern PHP**            | ✅ Uses modern features (attributes, PHP 8+)  | ⚠️ More traditional OOP, less "modern PHP"-oriented      |
