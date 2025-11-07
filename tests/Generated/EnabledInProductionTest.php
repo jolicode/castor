@@ -7,10 +7,10 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class EnabledInProductionTest extends TaskTestCase
 {
-    // enabled:hello
+    // configuration:hello
     public function test(): void
     {
-        $process = $this->runTask(['enabled:hello', '--context', 'production']);
+        $process = $this->runTask(['configuration:hello', '--context', 'production']);
 
         if (0 !== $process->getExitCode()) {
             throw new ProcessFailedException($process);

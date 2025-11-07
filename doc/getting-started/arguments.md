@@ -77,9 +77,6 @@ function do_something(): void
 }
 ```
 
-> [!TIP]
-> Related example: [args.php](https://github.com/jolicode/castor/blob/main/examples/args.php)
-
 ## Overriding the argument name and description
 
 You can override the name and description of an argument by using
@@ -104,9 +101,6 @@ function command(
 $ castor command foo
 foo
 ```
-
-> [!TIP]
-> Related example: [args.php](https://github.com/jolicode/castor/blob/main/examples/args.php)
 
 ## Overriding the option name and description
 
@@ -157,9 +151,6 @@ function command(
 $ castor command --force
 command has been forced
 ```
-
-> [!TIP]
-> Related example: [args.php](https://github.com/jolicode/castor/blob/main/examples/args.php)
 
 ---
 

@@ -1,6 +1,6 @@
 REAL TIME OUTPUT> ssh: Could not resolve hostname server-1.example.com: Name or service not known
 
-In ssh.php line XXXX:
+In real_time_output.php line XXXX:
 
  [ERROR] The following process did not finish successfully (exit code XX):
 

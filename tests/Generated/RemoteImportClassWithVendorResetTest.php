@@ -7,10 +7,10 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class RemoteImportClassWithVendorResetTest extends TaskTestCase
 {
-    // remote-import:remote-task-class
+    // remote-import:import-class
     public function test(): void
     {
-        $process = $this->runTask(['remote-import:remote-task-class'], needRemote: true, needResetVendor: true);
+        $process = $this->runTask(['remote-import:import-class'], needRemote: true, needResetVendor: true);
 
         if (0 !== $process->getExitCode()) {
             throw new ProcessFailedException($process);

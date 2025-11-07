@@ -64,7 +64,7 @@ $taskFilterList = [
     'castor:debug',
     'open:documentation',
     'open:multiple',
-    'watch:fs-change',
+    'watch:filesystem',
     'watch:parallel-change',
     'watch:stop',
     // Not examples
@@ -115,10 +115,11 @@ $taskFilterList = [
     'log:error',
     'log:info',
     'log:with-context',
-    'notify:notify-on-finish',
-    'notify:send-notify',
-    'notify:send-notify-with-custom-title',
+    'notify:custom-title',
+    'notify:notify',
+    'notify:on-run-finished',
     'parallel:sleep',
+    'parallel:embed',
     'remote-import:remote-task-class',
     'remote-import:remote-tasks',
     'run:ls',
@@ -200,21 +201,19 @@ echo "\nDone.\n";
 
 displayTitle('Generating additional tests');
 
-add_test(['args:passthru', 'a', 'b', '--no', '--foo', 'bar', '-x'], 'ArgPassthruExpanded');
+add_test(['arguments:passthru', 'a', 'b', '--no', '--foo', 'bar', '-x'], 'ArgPassthruExpanded');
+add_test(['context:context', '--context', 'dotenv'], 'ContextContextDotEnv');
 add_test(['context:context', '--context', 'dynamic'], 'ContextContextDynamic');
 add_test(['context:context', '--context', 'my_default', '-v'], 'ContextContextMyDefault');
 add_test(['context:context', '--context', 'no_no_exist'], 'ContextContextDoNotExist');
-add_test(['context:context', '--context', 'path'], 'ContextContextPath');
 add_test(['context:context', '--context', 'production'], 'ContextContextProduction');
 add_test(['context:context', '--context', 'run'], 'ContextContextRun');
 add_test(['context:context', '--context', 'updated'], 'ContextContextUpdated');
 add_test(['context-info', '-c', 'run', '--test'], 'ContextIsParsedAnywhereOnTheCommandLine');
-add_test(['enabled:hello', '--context', 'production'], 'EnabledInProduction');
-add_test(['failure:verbose-arguments'], 'FailureVerboseArgumentsTrue', input: "yes\n");
+add_test(['configuration:hello', '--context', 'production'], 'EnabledInProduction');
 add_test(['list', '--raw', '--format', 'txt', '--short'], 'List', needRemote: true, skipOnBinary: true);
-// Transient test, disabled for now
-// add_test(['parallel:sleep', '--sleep5', '0', '--sleep7', '0', '--sleep10', '0'], 'ParallelSleep');
 add_test(['run:exception', '-v'], 'RunExceptionVerbose');
+add_test(['run:verbose-arguments'], 'RunVerboseArgumentsTrue', input: "yes\n");
 add_test(['symfony:greet', 'World', '--french', 'COUCOU', '--punctuation', '!'], 'SymfonyGreet', skipOnBinary: true);
 add_test(['symfony:hello'], 'SymfonyHello', skipOnBinary: true);
 // In /tmp
@@ -223,7 +222,7 @@ add_test(['unknown:task', 'toto', '--foo', 1], 'NoConfigUnknownWithArgs', '/tmp'
 add_test(['unknown:task'], 'NoConfigUnknown', '/tmp');
 add_test([], 'NewProject', '/tmp');
 // remote special test
-add_test(['remote-import:remote-task-class'], 'RemoteImportClassWithVendorReset', needRemote: true, needResetVendor: true);
+add_test(['remote-import:import-class'], 'RemoteImportClassWithVendorReset', needRemote: true, needResetVendor: true);
 // composer help test
 add_test(['composer', 'list', '--', '--help'], 'ComposerHelp');
 

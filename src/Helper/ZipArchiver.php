@@ -6,6 +6,7 @@ use Castor\Context;
 use Castor\Runner\ProcessRunner;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Path;
 
 class ZipArchiver
 {
@@ -95,6 +96,9 @@ class ZipArchiver
             // For directories, we need to manually add each file
             $baseDir = rtrim($source, '/\\');
             $baseName = basename($baseDir);
+            if ('.' === $baseName) {
+                $baseName = '';
+            }
 
             $zip->addEmptyDir($baseName);
 
@@ -106,7 +110,8 @@ class ZipArchiver
             foreach ($iterator as $file) {
                 if (!$file->isDir()) {
                     $filePath = $file->getRealPath();
-                    $relativePath = $baseName . '/' . substr($filePath, \strlen($baseDir) + 1);
+                    $relativePath = $baseName . '/' . Path::makeRelative($filePath, $baseDir);
+                    $relativePath = ltrim($relativePath, '/\\');
 
                     $zip->addFile($filePath, $relativePath);
                 }

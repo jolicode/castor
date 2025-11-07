@@ -1,6 +1,6 @@
-In ssh.php line XXXX:
+In upload.php line XXXX:
 
  [ERROR] The following process did not finish successfully (exit code XX):
 
-scp -r .../examples/ssh.php debian@server-1.example.com:/var/www/index.html
+scp -r .../examples/basic/ssh/upload.php debian@server-1.example.com:/var/www/index.html
 

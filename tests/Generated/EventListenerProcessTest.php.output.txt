@@ -1,0 +1,4 @@
+Hello after process creation
+Hello after process start
+Hello from process
+Hello after process stop

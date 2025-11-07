@@ -1,0 +1,3 @@
+Hello from listener! (higher priority) before task execution
+Hello from listener! (smaller priority) before task execution
+Hello from task!

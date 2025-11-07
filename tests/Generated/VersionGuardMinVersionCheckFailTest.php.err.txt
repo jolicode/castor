@@ -1,4 +1,4 @@
-In version-guard.php line 18:
+In fail.php line XXXX:
 
   This project requires Castor in version v999.0.0 or greater, you are using vX.Y.Z. Please consider upgrading.
 

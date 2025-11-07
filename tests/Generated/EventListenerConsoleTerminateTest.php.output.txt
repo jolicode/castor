@@ -1,0 +1,2 @@
+Hello from task!
+Hello from console terminate event listener!
