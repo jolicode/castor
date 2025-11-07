@@ -5,16 +5,7 @@
 Castor provides a `run()` function to execute external processes.
 
 ```php
-use Castor\Attribute\AsTask;
-
-use function Castor\run;
-
-#[AsTask()]
-function foo(): void
-{
-    run('my-script.sh');
-    run(['php', 'vendor/bin/phpunit', '--filter', 'MyTest']);
-}
+{% include "/examples/basic/run/run.php" start="<?php\n\nnamespace run;\n\n" %}
 ```
 
 You can pass a string or an array of string for this function. When passing a
@@ -28,17 +19,7 @@ object to execute the process. The `run()` function will return this object. So
 you can use the API of this class to interact with the underlying process:
 
 ```php
-use Castor\Attribute\AsTask;
-
-use function Castor\context;
-use function Castor\run;
-
-#[AsTask()]
-function foo(): void
-{
-    $process = run('my-script.sh', context: context()->withAllowFailure());
-    $process->isSuccessful(); // will return true if the process exited with code 0.
-}
+{% include "/examples/basic/run/ls.php" start="<?php\n\nnamespace run;\n\n" %}
 ```
 
 > [!NOTE]
@@ -53,33 +34,7 @@ If you do not want to print the process output you can use a context with the
 `quiet` option to true:
 
 ```php
-use Castor\Attribute\AsTask;
-
-use function Castor\context;
-use function Castor\run;
-
-#[AsTask()]
-function foo(): void
-{
-    run('echo "bar"', context: context()->withQuiet()); // will not print anything
-}
-```
-
-You can also fetch the process output by using the
-returned `Symfony\Component\Process\Process` object:
-
-```php
-use Castor\Attribute\AsTask;
-
-use function Castor\context;
-use function Castor\run;
-
-#[AsTask()]
-function foo(): void
-{
-    $process = run('echo "bar"', context: context()->withQuiet())); // will not print anything
-    $output = $process->getOutput(); // will return "bar\n"
-}
+{% include "/examples/basic/run/quiet.php" start="<?php\n\nnamespace run;\n\n" %}
 ```
 
 ### The `capture()` function
@@ -88,18 +43,7 @@ Castor provides a `capture()` function that will run the process quietly,
 trims the output, then returns it:
 
 ```php
-use Castor\Attribute\AsTask;
-
-use function Castor\capture;
-use function Castor\io;
-
-#[AsTask()]
-function whoami()
-{
-    $whoami = capture('whoami');
-
-    io()->writeln("Hello: $whoami");
-}
+{% include "/examples/basic/run/capture.php" start="<?php\n\nnamespace run;\n\n" %}
 ```
 
 ### The `exit_code()` function
@@ -109,15 +53,7 @@ the process to fail and return its exit code. This is particularly useful when
 running tasks on CI as this allows the CI to know if the task failed or not:
 
 ```php
-use Castor\Attribute\AsTask;
-
-use function Castor\exit_code;
-
-#[AsTask()]
-function cs(): int
-{
-    return exit_code('php-cs-fixer fix --dry-run');
-}
+{% include "/examples/basic/run/exit_code.php" start="<?php\n\nnamespace run;\n\n" %}
 ```
 
 ## Interactive Process
@@ -125,16 +61,7 @@ function cs(): int
 If you want to run an interactive process, you can transform any context into an interactive one:
 
 ```php
-use Castor\Attribute\AsTask;
-
-use function Castor\run;
-use function Castor\context;
-
-#[AsTask()]
-function vim(): void
-{
-    run('vim', context: context()->toInteractive());
-}
+{% include "/examples/basic/run/interactive.php" start="<?php\n\nnamespace run;\n\n" %}
 ```
 
 ## PTY & TTY
@@ -145,16 +72,7 @@ For some commands you may want to disable the PTY and use a TTY instead. You can
 do that by setting the `tty` option to `true`:
 
 ```php
-use Castor\Attribute\AsTask;
-
-use function Castor\run;
-use function Castor\context;
-
-#[AsTask()]
-function foo(): void
-{
-    run('echo "bar"', context: context()->withTty(true));
-}
+{% include "/examples/basic/run/tty.php" start="<?php\n\nnamespace run;\n\n" %}
 ```
 
 > [!WARNING]
@@ -166,14 +84,5 @@ and `tty` are both set to `false`, the standard input will not be forwarded to
 the process:
 
 ```php
-use Castor\Attribute\AsTask;
-
-use function Castor\run;
-use function Castor\context;
-
-#[AsTask()]
-function foo(): void
-{
-    run('echo "bar"', context: context()->withPty(false));
-}
+{% include "/examples/basic/run/pty.php" start="<?php\n\nnamespace run;\n\n" %}
 ```

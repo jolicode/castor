@@ -91,6 +91,9 @@ plugins:
   - search
   - literate-nav:
       nav_file: _nav.md
+  - include-markdown:
+      start: |
+        <?php
 
 extra_javascript:
   - assets/javascripts/highlight.min.js

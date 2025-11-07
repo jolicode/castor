@@ -34,6 +34,7 @@ final class OutputCleaner
         $string = preg_replace('{The following process did not finish successfully \(exit code \d+\):}m', 'The following process did not finish successfully (exit code XX): ', $string);
 
         // Clean the time
+        $string = preg_replace('{^Current time: \d\d:\d\d:\d\d}m', 'hh:mm:ss ', $string);
         $string = preg_replace('{^\d\d:\d\d:\d\d }m', 'hh:mm:ss ', $string);
 
         // Clean the warning on tasks when remote imports are disabled
