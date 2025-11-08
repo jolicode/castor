@@ -179,7 +179,7 @@ download_url=$CASTOR_DOWNLOAD_URL_PATTERN
 download_url=${download_url/~platform~/${platform}}
 download_url=${download_url/~versionPath~/${versionPath}}
 
-output "  Downloading ${download_url}...";
+output "  Downloading ${download_url}.";
 case $downloader in
     "curl")
         http_code=$(curl -s -o "${CASTOR_TMPDIR}/${CASTOR_TMP_NAME}" -w "%{http_code}" --location "${download_url}")
@@ -207,20 +207,20 @@ if [ ! -d "${binary_dest}" ]; then
 fi
 
 if [ "${custom_dir}" == "true" ]; then
-    output "  Installing the phar into ${binary_dest} ..."
+    output "  Installing castor into ${binary_dest}."
 else
-    output "  Installing the phar into your home directory..."
+    output "  Installing castor into your home directory."
 fi
 
 if mv "${CASTOR_TMPDIR}/${CASTOR_TMP_NAME}" "${binary_dest}/${CASTOR_EXECUTABLE}"; then
-    output "  The phar was saved to: ${binary_dest}/${CASTOR_EXECUTABLE}"
+    output "  Castor executable was moved to: ${binary_dest}/${CASTOR_EXECUTABLE}."
 else
-    output "  Failed to move the phar to ${binary_dest}." "error"
+    output "  Failed to move the executable to ${binary_dest}." "error"
     rm "${CASTOR_TMPDIR}/${CASTOR_EXECUTABLE}"
     exit 1
 fi
 
-output "  Fixing the phar permissions."
+output "  Fixing the executable permissions."
 chmod u+x "${binary_dest}/${CASTOR_EXECUTABLE}"
 
 output "\n🦫  $("${binary_dest}/${CASTOR_EXECUTABLE}" --version) was installed successfully!" "success"

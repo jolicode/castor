@@ -14,6 +14,7 @@
 * Use correct working directory when using the `castor execute` command.
 * Fix infinite loop when executing `castor` with `castor execute jolicode/castor@castor`
 * Fix `--castor-file` option parsing
+* Fix the update instructions when using static binaries
 
 ### Internal
 
@@ -21,6 +22,10 @@
 * Update all PHP vendor
 * Upgrade SPC version to v2.7.5
 * Use a `PhpRunner` service instead of static functions to run PHP files
+
+### Documentation
+
+* Rework the installation methods documentation
 
 ## 1.0.0 (2025-10-10)
 
