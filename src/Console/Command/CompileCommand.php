@@ -224,6 +224,7 @@ class CompileCommand extends Command
             $spcBinaryPath,
             'micro:combine', $pharFilePath,
             '--output=' . $appBinaryFilePath,
+            '--with-ini-set', 'castor.static=1',
         ];
         if ($iniFile) {
             if (!file_exists($iniFile)) {

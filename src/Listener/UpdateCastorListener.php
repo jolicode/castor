@@ -123,28 +123,42 @@ class UpdateCastorListener
                 default => [],
             };
 
+            $architecture = PlatformHelper::getArchitecture();
+            $assets = array_filter($assets, fn (array $asset): bool => str_contains((string) $asset['name'], $architecture->value));
+
             if (!$assets) {
-                $this->logger->info('Failed to detect the correct release url adapted to your system.');
+                $this->logger->info('Failed to detect the correct release URL adapted to your system.');
 
                 return;
             }
 
-            $latestReleaseUrl = reset($assets)['browser_download_url'] ?? null;
-            // Fow now, we force the phar since it has more capabilities than
-            // the static binary, and it's more tested
-            if (!str_ends_with((string) $latestReleaseUrl, '.phar')) {
-                $latestReleaseUrl .= '.phar';
+            $isStatic = (bool) get_cfg_var('castor.static');
+
+            if ($isStatic) {
+                $assets = array_filter($assets, fn (array $asset): bool => !str_ends_with((string) $asset['name'], '.phar'));
+            } else {
+                $assets = array_filter($assets, fn (array $asset): bool => str_ends_with((string) $asset['name'], '.phar'));
             }
 
+            $latestReleaseUrl = reset($assets)['browser_download_url'] ?? null;
+
             if (!$latestReleaseUrl) {
-                $this->logger->info('Failed to fetch latest phar url.');
+                $this->logger->info('Failed to fetch latest artefact URL.');
 
                 return;
             }
 
             if (OsHelper::isUnix()) {
+                $installerOptions = [
+                    '--install-dir ' . \dirname($pharPath),
+                ];
+
+                if ($isStatic) {
+                    $installerOptions[] = '--static';
+                }
+
                 $symfonyStyle->block('Run the following command to update Castor:');
-                $symfonyStyle->block(\sprintf('<comment>curl "https://castor.jolicode.com/install" | bash -s -- --install-dir %s</comment>', \dirname($pharPath)), escape: false);
+                $symfonyStyle->block(\sprintf('<comment>curl "https://castor.jolicode.com/install" | bash -s -- %s</comment>', implode(' ', $installerOptions)), escape: false);
             } else {
                 $symfonyStyle->block(\sprintf('Download the latest version at <comment>%s</comment>', $latestReleaseUrl), escape: false);
             }
@@ -163,7 +177,8 @@ class UpdateCastorListener
 
         // Installed via composer global
         if ($globalComposerPath && str_contains(__FILE__, $globalComposerPath)) {
-            $symfonyStyle->block('Run the following command to update Castor: <comment>composer global update jolicode/castor</comment>', escape: false);
+            $symfonyStyle->block('Run the following command to update Castor:');
+            $symfonyStyle->block('<comment>composer global update jolicode/castor</comment>', escape: false);
         }
     }
 }

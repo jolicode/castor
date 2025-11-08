@@ -5,6 +5,8 @@ namespace Castor\Runner;
 use Castor\Console\Output\SectionOutput;
 use Castor\Context;
 use Castor\ContextRegistry;
+use Castor\Helper\Architecture;
+use Castor\Helper\PlatformHelper;
 use JoliCode\PhpOsHelper\OsHelper;
 use Symfony\Component\Process\Process;
 
@@ -39,15 +41,17 @@ final readonly class WatchRunner
             return;
         }
 
+        $architecture = PlatformHelper::getArchitecture();
+
         $binary = match (true) {
-            OsHelper::isMacOS() => match (php_uname('m')) {
-                'arm64' => 'watcher-darwin-arm64',
-                default => 'watcher-darwin-amd64',
+            OsHelper::isMacOS() => match ($architecture) {
+                Architecture::Arm64 => 'watcher-darwin-arm64',
+                Architecture::Amd64 => 'watcher-darwin-amd64',
             },
             OsHelper::isWindows() => 'watcher-windows.exe',
-            default => match (php_uname('m')) {
-                'arm64' => 'watcher-linux-arm64',
-                default => 'watcher-linux-amd64',
+            default => match ($architecture) {
+                Architecture::Arm64 => 'watcher-darwin-arm64',
+                Architecture::Amd64 => 'watcher-linux-amd64',
             },
         };
 
