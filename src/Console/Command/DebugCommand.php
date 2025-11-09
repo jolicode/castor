@@ -4,6 +4,7 @@ namespace Castor\Console\Command;
 
 use Castor\Console\Application;
 use Castor\ContextRegistry;
+use Castor\Helper\Installation;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,6 +24,7 @@ final class DebugCommand extends Command
         private readonly string $rootDir,
         private readonly string $cacheDir,
         private readonly ContextRegistry $contextRegistry,
+        private readonly Installation $installation,
     ) {
         parent::__construct();
     }
@@ -38,6 +40,9 @@ final class DebugCommand extends Command
             'Cache directory' => $this->cacheDir,
             'Current context name' => $this->contextRegistry->getCurrentContext()->name,
             'Current context data' => json_encode($this->contextRegistry->getCurrentContext()->getDebugInfo(), \JSON_THROW_ON_ERROR | \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES),
+            'Installation path' => $this->installation->getPath(),
+            'Installation method' => $this->installation->getMethod()->value,
+            'Architecture' => $this->installation->getArchitecture()->value,
         ];
 
         $io->horizontalTable(array_keys($table), [array_values($table)]);

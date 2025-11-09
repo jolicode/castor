@@ -28,14 +28,6 @@ final class PlatformHelper
         return getenv($name);
     }
 
-    public static function getArchitecture(): Architecture
-    {
-        return match (php_uname('m')) {
-            'arm64' => Architecture::Arm64,
-            default => Architecture::Amd64,
-        };
-    }
-
     public static function getDefaultCacheDirectory(): string
     {
         try {

@@ -9,6 +9,7 @@
 * Allow to pass a callback when using the `run_php` function (similar to the `run` function)
 * Add a new `--castor-file` option to specify a custom root file when using the `castor` command
 * Add a `slug()` function to slugify strings
+* Display installation method/path in `castor debug`
 
 ### Fixes
 

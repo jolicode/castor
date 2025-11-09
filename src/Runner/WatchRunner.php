@@ -6,7 +6,7 @@ use Castor\Console\Output\SectionOutput;
 use Castor\Context;
 use Castor\ContextRegistry;
 use Castor\Helper\Architecture;
-use Castor\Helper\PlatformHelper;
+use Castor\Helper\Installation;
 use JoliCode\PhpOsHelper\OsHelper;
 use Symfony\Component\Process\Process;
 
@@ -18,6 +18,7 @@ final readonly class WatchRunner
         private ParallelRunner $parallelRunner,
         private ProcessRunner $processRunner,
         private SectionOutput $sectionOutput,
+        private Installation $installation,
     ) {
     }
 
@@ -41,7 +42,7 @@ final readonly class WatchRunner
             return;
         }
 
-        $architecture = PlatformHelper::getArchitecture();
+        $architecture = $this->installation->getArchitecture();
 
         $binary = match (true) {
             OsHelper::isMacOS() => match ($architecture) {
