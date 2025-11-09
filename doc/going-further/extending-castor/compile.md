@@ -15,8 +15,9 @@ Just pass your repacked Castor app phar as an argument of this command.
 
 ## Pre-requisites
 
-Follow the [`repack` documentation](repack.md) to produce a phar of your Castor
-app.
+Compiling your Castor application into a static binary requires you to have a phar
+version of it. Follow the [`repack` documentation](repack.md) to produce a phar
+containing your Castor application.
 
 ## Running the Compile Command
 
@@ -29,14 +30,7 @@ vendor/bin/castor compile my-custom-castor-app.phar
 > [!WARNING]
 > Compiling is not supported yet on Windows.
 
-### Options
-
-Make sure to take a look at the command description to see all the available
-options:
-
-```bash
-vendor/bin/castor compile --help
-```
+{% include "/build/command_castor-compile.md" start="`castor:compile`\n----------------" %}
 
 ### Behavior
 
