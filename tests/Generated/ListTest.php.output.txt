@@ -55,6 +55,7 @@ event-listener:my-task                                            An dummy task 
 failure:allow-failure                                             A failing task authorized to fail
 failure:failure                                                   A failing task not authorized to fail
 failure:verbose-arguments                                         A failing task authorized to fail
+filesystem:context-aware                                          Demonstrates context-aware filesystem operations
 filesystem:filesystem                                             Performs some operations on the filesystem
 filesystem:find                                                   Search files and directories on the filesystem
 fingerprint:task-with-a-fingerprint                               Execute a callback only if the fingerprint has changed
