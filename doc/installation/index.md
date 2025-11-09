@@ -10,7 +10,7 @@ You can install Castor using different methods:
 
 <div align="center" class="grid" style="margin: 3em 0">
 <div>
-<a href="./installer" class="md-button md-button--primary" style="font-size: 2em; line-height: 2em; text-decoration: none">
+<a href="./installer/" class="md-button md-button--primary" style="font-size: 2em; line-height: 2em; text-decoration: none">
     🚀 Official installer
 </a>
 
@@ -19,7 +19,7 @@ You can install Castor using different methods:
 </p>
 </div>
 <div>
-<a href="./alternative-methods" class="md-button" style="font-size: 2em; line-height: 2em; text-decoration: none">
+<a href="./alternative-methods/" class="md-button" style="font-size: 2em; line-height: 2em; text-decoration: none">
     Alternative methods
 </a>
 
@@ -31,7 +31,7 @@ You can install Castor using different methods:
 
 <div align="center">
     You can also install Castor in a GitHub Action, see
-    <a href="./github-action">
+    <a href="./github-action/">
         the dedicated documentation
     </a>
 </div>
