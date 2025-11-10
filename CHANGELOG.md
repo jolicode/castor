@@ -23,6 +23,10 @@
 * Upgrade SPC version to v2.7.5
 * Use a `PhpRunner` service instead of static functions to run PHP files
 
+### Deprecations
+
+* Deprecate `DISABLE_VERSION_CHECK` environment variable in favor of `CASTOR_DISABLE_VERSION_CHECK`
+
 ### Documentation
 
 * Rework the installation methods documentation
