@@ -6,6 +6,7 @@ use Castor\Console\Application;
 use Castor\Console\Output\SectionOutput;
 use Castor\Fingerprint\FingerprintHelper;
 use Castor\Helper\Notifier;
+use Castor\Helper\Slugger;
 use Castor\Helper\SymmetricCrypto;
 use Castor\Helper\Waiter;
 use Castor\Helper\ZipArchiver;
@@ -58,6 +59,7 @@ final class Container
         public readonly WatchRunner $watchRunner,
         public readonly SymmetricCrypto $symmetricCrypto,
         public readonly ZipArchiver $zipArchiver,
+        public readonly Slugger $slugger,
     ) {
     }
 

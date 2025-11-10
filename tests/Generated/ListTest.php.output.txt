@@ -103,6 +103,7 @@ run:variables                                            Run a sub-process with 
 run:verbose-arguments                                    A failing task that will suggest to re-run with verbose arguments
 run:working-directory-override                           Changes directory
 signal:sigusr2                                           Captures SIGUSR2 signal
+slug:slugify                                             Slugify strings
 ssh:download                                             Downloads a file from the remote server
 ssh:ls                                                   Lists content of /var/www directory on the remote server
 ssh:real-time-output                                     Output in real-time ssh command output

@@ -44,6 +44,7 @@ Castor provides the following built-in functions:
 - [`parallel`](going-further/helpers/parallel.md#the-parallel-function)
 - [`run`](getting-started/run.md#the-run-function)
 - [`run_php`](going-further/helpers/run-php.md)
+- [`slug`](going-further/helpers/slug.md)
 - [`ssh_download`](going-further/helpers/ssh.md#the-ssh_download-function)
 - [`ssh_run`](going-further/helpers/ssh.md#the-ssh_run-function)
 - [`ssh_upload`](going-further/helpers/ssh.md#the-ssh_upload-function)

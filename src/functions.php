@@ -768,3 +768,11 @@ function run_php(string $pharPath, array $arguments = [], ?Context $context = nu
         ->run($pharPath, $arguments, $context, $callback)
     ;
 }
+
+function slug(string $value, string $separator = '-', ?string $locale = null): string
+{
+    return Container::get()
+        ->slugger
+        ->slug($value, $separator, $locale)
+    ;
+}

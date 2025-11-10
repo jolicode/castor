@@ -14,10 +14,10 @@ final readonly class Slugger
     ) {
     }
 
-    public function slug(string $string): string
+    public function slug(string $string, string $separator = '-', ?string $locale = null): string
     {
         $string = u($string)->snake()->toString();
 
-        return $this->slugger->slug($string)->lower()->toString();
+        return $this->slugger->slug($string, $separator, $locale)->lower()->toString();
     }
 }

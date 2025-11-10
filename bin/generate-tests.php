@@ -127,6 +127,7 @@ $taskFilterList = [
     'remote-import:remote-tasks',
     'run:ls',
     'run:run-parallel',
+    'slug:slugify',
     'symfony:greet',
     'symfony:hello',
     // Imported tasks
