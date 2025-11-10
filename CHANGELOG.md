@@ -16,6 +16,7 @@
 * Fix infinite loop when executing `castor` with `castor execute jolicode/castor@castor`
 * Fix `--castor-file` option parsing
 * Fix the update instructions when using static binaries
+* Fix remote composer working directory, forcing relative paths to have "../" prefix
 
 ### Internal
 

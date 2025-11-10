@@ -84,6 +84,7 @@ qa:cs:update                                             Update dependencies
 qa:phpstan:install                                       install dependencies
 qa:phpstan:phpstan                                       Run PHPStan
 qa:phpstan:update                                        update dependencies
+remote-import:autoload                                   Can invoke autoloaded files from castor.composer.json
 remote-import:import-class                               Use a class that extends a class imported from a remote package
 remote-import:remote-tasks                               Use functions imported from remote packages
 run:allow-failure                                        A failing task authorized to fail

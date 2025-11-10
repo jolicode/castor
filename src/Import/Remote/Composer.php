@@ -153,9 +153,6 @@ class Composer
     {
         $this->filesystem->mkdir($vendorDirectory);
 
-        $args[] = '--working-dir';
-        $args[] = \dirname($vendorDirectory);
-
         if (!$interactive) {
             $args[] = '--no-interaction';
         }
@@ -165,6 +162,9 @@ class Composer
         putenv('COMPOSER=' . $composerJsonFilePath);
         $_ENV['COMPOSER'] = $composerJsonFilePath;
         $_SERVER['COMPOSER'] = $composerJsonFilePath;
+        putenv('COMPOSER_VENDOR_DIR=' . $vendorDirectory);
+        $_ENV['COMPOSER_VENDOR_DIR'] = $vendorDirectory;
+        $_SERVER['COMPOSER_VENDOR_DIR'] = $vendorDirectory;
         $_SERVER['PHP_SELF'] = $self . ' composer';
 
         if ($binDir) {
@@ -206,9 +206,10 @@ class Composer
             $exitCode = $composerApplication->run($argvInput, $output);
         } finally {
             putenv('COMPOSER=');
+            putenv("COMPOSER_VENDOR_DIR=");
             $_SERVER['PHP_SELF'] = $self;
 
-            unset($_ENV['COMPOSER'], $_SERVER['COMPOSER']);
+            unset($_ENV['COMPOSER'], $_SERVER['COMPOSER'], $_ENV['COMPOSER_VENDOR_DIR'], $_SERVER['COMPOSER_VENDOR_DIR']);
         }
 
         if ($binDir) {

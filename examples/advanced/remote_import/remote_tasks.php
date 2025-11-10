@@ -5,6 +5,7 @@ namespace remote_import;
 use Castor\Attribute\AsTask;
 
 use function Castor\import;
+use function Castor\Tests\autoload\loadme;
 
 // Importing tasks from a Composer package
 import('composer://pyrech/castor-example');
@@ -19,4 +20,10 @@ function remote_tasks(): void
 {
     \pyrech\helloExample(); // from composer://pyrech/castor-example
     \pyrech\foobar(); // from package://pyrech/foobar
+}
+
+#[AsTask(description: 'Can invoke autoloaded files from castor.composer.json')]
+function autoload(): void
+{
+    loadme();
 }
