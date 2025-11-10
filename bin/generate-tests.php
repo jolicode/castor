@@ -67,6 +67,9 @@ $taskFilterList = [
     'watch:filesystem',
     'watch:parallel-change',
     'watch:stop',
+    // Examples for the doc
+    'run:interactive',
+    'run:run',
     // Not examples
     'castor:compile',
     'castor:execute',

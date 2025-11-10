@@ -90,11 +90,15 @@ run:allow-failure                                        A failing task authoriz
 run:capture                                              Run a sub-process and display information about it, with capture() function
 run:env-override                                         Display environment variables
 run:exception                                            Run a command that will fail
-run:exit-code                                            Run a sub-process and return its exit code, with get_exit_code() function
+run:exit-code                                            Run a sub-process and return its exit code, with exit_code() function
 run:failure                                              A failing task not authorized to fail
+run:interactive
 run:ls                                                   Run a sub-process and display information about it
 run:process-helper                                       Run a sub-process and display information about it, with ProcessHelper
+run:pty                                                  Run a command with PTY disabled
 run:quiet                                                Executes something but does not output anything
+run:run                                                  Run a sub-process
+run:tty                                                  Run a command with TTY enabled
 run:variables                                            Run a sub-process with environment variables and display information about it
 run:verbose-arguments                                    A failing task that will suggest to re-run with verbose arguments
 run:working-directory-override                           Changes directory

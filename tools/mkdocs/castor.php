@@ -99,6 +99,7 @@ function do_run(array $runCommand, ?Context $c = null): Process
             \sprintf('%s:/mkdocs:cached', realpath(__DIR__)),
             \sprintf('%s:/mkdocs/CHANGELOG.md:cached', realpath(__DIR__) . '/../../CHANGELOG.md'),
             \sprintf('%s:/mkdocs/doc:cached', realpath(__DIR__ . '/../../doc')),
+            \sprintf('%s:/examples:cached', realpath(__DIR__ . '/../../examples')),
         ],
         environment: [
             'CASTOR_VERSION' => Application::VERSION,
