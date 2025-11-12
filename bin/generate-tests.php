@@ -61,15 +61,14 @@ $taskFilterList = [
     'completion',
     'help',
     // Never complete or impossible to run
+    'arguments:phpunit',
     'castor:debug',
     'open:documentation',
     'open:multiple',
+    'run:interactive',
     'watch:filesystem',
     'watch:parallel-change',
     'watch:stop',
-    // Examples for the doc
-    'run:interactive',
-    'run:run',
     // Not examples
     'castor:compile',
     'castor:execute',
@@ -105,6 +104,8 @@ $taskFilterList = [
     'archive:zip',
     'archive:zip-binary',
     'archive:zip-php',
+    'arguments:no-validation',
+    'arguments:optional',
     'crypto:decrypt',
     'crypto:encrypt',
     'crypto:decrypt-file',
@@ -205,7 +206,13 @@ echo "\nDone.\n";
 
 displayTitle('Generating additional tests');
 
-add_test(['arguments:passthru', 'a', 'b', '--no', '--foo', 'bar', '-x'], 'ArgPassthruExpanded');
+add_test(['arguments:no-validation', '--unknown-option', 'value'], 'ArgumentsNoValidation');
+add_test(['arguments:optional', 'foo'], 'ArgumentsOptional');
+add_test(['arguments:optional', 'foo', '--second-arg=bar'], 'ArgumentsOptionalWithSecondArg');
+add_test(['arguments:option-mode', '--force'], 'ArgumentsOptionMode');
+add_test(['arguments:override-argument', '--help'], 'ArgumentsOverrideArgument');
+add_test(['arguments:override-option', '--help'], 'ArgumentsOverrideOption');
+add_test(['arguments:passthru', 'a', 'b', '--no', '--foo', 'bar', '-x'], 'ArgumentsPassthruExpanded');
 add_test(['context:context', '--context', 'dotenv'], 'ContextContextDotEnv');
 add_test(['context:context', '--context', 'dynamic'], 'ContextContextDynamic');
 add_test(['context:context', '--context', 'my_default', '-v'], 'ContextContextMyDefault');

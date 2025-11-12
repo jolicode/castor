@@ -9,6 +9,6 @@ use function Castor\run;
 #[AsTask(description: 'Run a sub-process')]
 function run_(): void
 {
-    run('my-script.sh');
-    run(['php', 'vendor/bin/phpunit', '--filter', 'MyTest']);
+    run('examples/basic/run/my-script.sh');
+    run(['grep', '-rni', 'todo', 'examples/']);
 }

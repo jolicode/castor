@@ -5,12 +5,12 @@ namespace Castor\Tests\Generated;
 use Castor\Tests\TaskTestCase;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
-class ArgPassthruExpandedTest extends TaskTestCase
+class ArgumentsOverrideArgumentTest extends TaskTestCase
 {
-    // arguments:passthru
+    // arguments:override-argument
     public function test(): void
     {
-        $process = $this->runTask(['arguments:passthru', 'a', 'b', '--no', '--foo', 'bar', '-x']);
+        $process = $this->runTask(['arguments:override-argument', '--help']);
 
         if (0 !== $process->getExitCode()) {
             throw new ProcessFailedException($process);
