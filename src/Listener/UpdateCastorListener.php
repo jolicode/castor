@@ -4,6 +4,8 @@ namespace Castor\Listener;
 
 use Castor\Console\Application;
 use Castor\Exception\MinimumVersionRequirementNotMetException;
+use Castor\Helper\Installation;
+use Castor\Helper\InstallationMethod;
 use Castor\Helper\PlatformHelper;
 use JoliCode\PhpOsHelper\OsHelper;
 use Psr\Cache\CacheItemPoolInterface;
@@ -16,7 +18,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
-use Symfony\Component\Process\Process;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -27,6 +28,7 @@ class UpdateCastorListener
     public function __construct(
         private readonly CacheItemPoolInterface&CacheInterface $cache,
         private readonly HttpClientInterface $httpClient,
+        private readonly Installation $installation,
         #[Autowire('%repacked%')]
         private readonly bool $repacked,
         private readonly LoggerInterface $logger = new NullLogger(),
@@ -121,8 +123,9 @@ class UpdateCastorListener
 
         $symfonyStyle->block(\sprintf('<info>A new Castor version is available</info> (<comment>%s</comment>, currently running <comment>%s</comment>).', $latestVersion['tag_name'], Application::VERSION), escape: false);
 
-        // Installed via phar
-        if ($pharPath = \Phar::running(false)) {
+        $installationMethod = $this->installation->getMethod();
+
+        if (\in_array($installationMethod, [InstallationMethod::Phar, InstallationMethod::Static], true)) {
             $assets = match (true) {
                 OsHelper::isWindows() || OsHelper::isWindowsSubsystemForLinux() => array_filter($latestVersion['assets'], fn (array $asset): bool => str_contains((string) $asset['name'], 'windows')),
                 OsHelper::isMacOS() => array_filter($latestVersion['assets'], fn (array $asset): bool => str_contains((string) $asset['name'], 'darwin')),
@@ -130,7 +133,7 @@ class UpdateCastorListener
                 default => [],
             };
 
-            $architecture = PlatformHelper::getArchitecture();
+            $architecture = $this->installation->getArchitecture();
             $assets = array_filter($assets, fn (array $asset): bool => str_contains((string) $asset['name'], $architecture->value));
 
             if (!$assets) {
@@ -139,9 +142,7 @@ class UpdateCastorListener
                 return;
             }
 
-            $isStatic = (bool) get_cfg_var('castor.static');
-
-            if ($isStatic) {
+            if (InstallationMethod::Static === $installationMethod) {
                 $assets = array_filter($assets, fn (array $asset): bool => !str_ends_with((string) $asset['name'], '.phar'));
             } else {
                 $assets = array_filter($assets, fn (array $asset): bool => str_ends_with((string) $asset['name'], '.phar'));
@@ -157,10 +158,10 @@ class UpdateCastorListener
 
             if (OsHelper::isUnix()) {
                 $installerOptions = [
-                    '--install-dir ' . \dirname($pharPath),
+                    '--install-dir ' . $this->installation->getPath(),
                 ];
 
-                if ($isStatic) {
+                if (InstallationMethod::Static === $installationMethod) {
                     $installerOptions[] = '--static';
                 }
 
@@ -175,15 +176,7 @@ class UpdateCastorListener
             return;
         }
 
-        $globalComposerPath = $this->cache->get('castor-composer-global-path', function (): string {
-            $process = new Process(['composer', 'global', 'config', 'home', '--quiet']);
-            $process->run();
-
-            return trim($process->getOutput());
-        });
-
-        // Installed via composer global
-        if ($globalComposerPath && str_contains(__FILE__, $globalComposerPath)) {
+        if (InstallationMethod::ComposerGlobal === $installationMethod) {
             $symfonyStyle->block('Run the following command to update Castor:');
             $symfonyStyle->block('<comment>composer global update jolicode/castor</comment>', escape: false);
         }
