@@ -37,7 +37,7 @@ class HelloCommand extends Command
 By default, the attribute will re-use the same name as the one defined in the
 Symfony application, but you can override it with the `name` parameter.
 
-If Symfony command does own a `#[AsCommand()]` attribute, you must set the
+If Symfony command does not own a `#[AsCommand()]` attribute, you must set the
 `originName` parameter, and it must be the same as the same in the symfony
 application.
 
