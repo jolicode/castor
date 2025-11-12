@@ -17,12 +17,12 @@ curl "https://castor.jolicode.com/install" | bash
 > This method will install a phar and thus, it requires PHP >= 8.2 installed on
 > your system.
 >
-> See the next chapter to install a static binary that does not require PHP
+> See the `--static` option to install a static binary that does not require PHP
 > installed.
 
-## Installer options
+### Options
 
-### Static binary
+### --static
 
 If you don't have PHP available on your system, Castor can be installed with a
 static binary that embeds PHP, so it can be run anywhere.
@@ -33,7 +33,7 @@ Use the `--static` option to install Castor this way:
 curl "https://castor.jolicode.com/install" | bash -s -- --static
 ```
 
-### Install location
+### --install-dir
 
 By default, the installer will install Castor in the current user's
 `$HOME/.local/bin` directory.
@@ -44,7 +44,7 @@ You can change that by using the `--install-dir` option:
 curl "https://castor.jolicode.com/install" | bash -s -- --install-dir /usr/local/bin
 ```
 
-### Specific version
+### --version
 
 By default, the installer will install the latest version of Castor.
 

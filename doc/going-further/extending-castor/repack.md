@@ -28,12 +28,6 @@ Then, run the repack command to create the new phar:
 vendor/bin/castor repack
 ```
 
-See the help for more options:
-
-```bash
-vendor/bin/castor repack --help
-```
-
 > [!NOTE]
 > Castor will automatically import all files in the current directly.
 > So ensure to have the less files possible in the directory where you run the
@@ -49,6 +43,8 @@ vendor/bin/castor repack --help
 > If some classes are missing in your phar, it might be because they are
 > excluded by castor's `box.json` file. In this case, you should override the
 > default configuration with a local `box.json` file
+
+{% include "/build/command_castor-repack.md" start="`castor:repack`\n---------------" %}
 
 ## Repack with your logo
 

@@ -20,8 +20,8 @@ castor:composer                                          Interact with built-in 
 castor:execute                                           Execute a remote task from a packagist directory
 castor:markdown:lint                                     Lint markdown files
 castor:mkdocs:build                                      Build documentation
+castor:mkdocs:build-assets                               Fetch external assets and build command help files
 castor:mkdocs:docker-build                               Build mkdocs docker image
-castor:mkdocs:fetch-assets                               Fetch external assets
 castor:mkdocs:serve                                      Serve documentation and watches for changes
 castor:phar:build                                        Build phar for all systems
 castor:phar:darwin                                       Build phar for MacOS system

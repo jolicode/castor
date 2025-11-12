@@ -7,6 +7,7 @@ use Castor\Console\Application;
 use Castor\Context;
 use Symfony\Component\Process\Process;
 
+use function Castor\capture;
 use function Castor\context;
 use function Castor\docker\docker_run;
 use function Castor\exit_code;
@@ -14,6 +15,7 @@ use function Castor\fs;
 use function Castor\http_download;
 use function Castor\io;
 use function Castor\run;
+use function Castor\slug;
 
 const DOCKER_IMAGE_NAME = 'castor-mkdocs';
 
@@ -27,8 +29,8 @@ function docker_build(): int
     ));
 }
 
-#[AsTask(description: 'Fetch external assets')]
-function fetch_assets(): void
+#[AsTask(description: 'Fetch external assets and build command help files')]
+function build_assets(): void
 {
     io()->title('Fetching external assets for MkDocs documentation');
 
@@ -47,12 +49,25 @@ function fetch_assets(): void
     $footer = str_replace('<!-- #SUBTITLE -->', $html, $footer);
 
     file_put_contents(__DIR__ . '/overrides/partials/jolicode-footer.html', $footer);
+
+    io()->title('Building command help files for MkDocs documentation');
+
+    $commands = [
+        'castor:repack',
+        'castor:compile',
+    ];
+
+    fs()->mkdir(__DIR__ . '/build');
+
+    foreach ($commands as $command) {
+        fs()->dumpFile(\sprintf('%s/build/command_%s.md', __DIR__, slug($command)), get_command_markdown($command));
+    }
 }
 
 #[AsTask(description: 'Build documentation')]
 function build(): void
 {
-    fetch_assets();
+    build_assets();
 
     io()->title('Building MkDocs documentation');
 
@@ -70,7 +85,7 @@ function build(): void
 #[AsTask(description: 'Serve documentation and watches for changes')]
 function serve(): void
 {
-    fetch_assets();
+    build_assets();
 
     io()->title('Building and watching MkDocs documentation');
 
@@ -100,10 +115,49 @@ function do_run(array $runCommand, ?Context $c = null): Process
             \sprintf('%s:/mkdocs/CHANGELOG.md:cached', realpath(__DIR__) . '/../../CHANGELOG.md'),
             \sprintf('%s:/mkdocs/doc:cached', realpath(__DIR__ . '/../../doc')),
             \sprintf('%s:/examples:cached', realpath(__DIR__ . '/../../examples')),
+            \sprintf('%s:/build:cached', realpath(__DIR__ . '/build')),
         ],
         environment: [
             'CASTOR_VERSION' => Application::VERSION,
         ],
         context: $c
     );
+}
+
+function get_command_markdown(string $command): string
+{
+    $commandMarkdown = capture(\sprintf('bin/castor help %s --format=md', $command));
+    $commandJson = json_decode(capture(\sprintf('bin/castor help %s --format=json', $command)), true, 512, \JSON_THROW_ON_ERROR);
+
+    $usage = $commandJson['usage'][0];
+
+    // Clean usage chapter to only keep the real command with arguments/options and ignore aliases
+    // Also, wrap it in a bash code block
+    $commandMarkdown = preg_replace('/### Usage\n([^#]*)\n\n###/s', \sprintf("### Usage\n\n```bash\n%s\n```\n\n###", $usage), $commandMarkdown);
+
+    // Remove options that are global to all commands
+    preg_match_all('/#### `([^`]*)`/', $commandMarkdown, $matches);
+
+    foreach ($matches[1] as $optionChapter) {
+        $options = explode('|', $optionChapter);
+
+        foreach ($options as $option) {
+            $option = trim($option);
+
+            // Not an option
+            if (!str_starts_with($option, '--') && !str_starts_with($option, '-')) {
+                continue 2;
+            }
+
+            // Option is used in the usage, keep it
+            if (preg_match('/\[' . preg_quote($option) . '[^\]]*\]/', $usage)) {
+                continue 2;
+            }
+        }
+
+        // Remove the whole option chapter
+        $commandMarkdown = preg_replace('/#### `' . preg_quote($optionChapter, '/') . '`\n([^#]*)/s', '', $commandMarkdown);
+    }
+
+    return $commandMarkdown;
 }
