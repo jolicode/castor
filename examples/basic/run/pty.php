@@ -10,5 +10,5 @@ use function Castor\context;
 #[AsTask(description: 'Run a command with PTY disabled')]
 function pty(): void
 {
-    run('echo "bar"', context: context()->withPty(false));
+    run('echo "bar"', context()->withPty(false));
 }
