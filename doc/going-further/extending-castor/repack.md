@@ -44,7 +44,7 @@ vendor/bin/castor repack
 > excluded by castor's `box.json` file. In this case, you should override the
 > default configuration with a local `box.json` file
 
-{% include "/build/command_castor-repack.md" start="`castor:repack`\n---------------" %}
+{% include-markdown "/build/command_castor-repack.md" start="`castor:repack`\n---------------" %}
 
 ## Repack with your logo
 

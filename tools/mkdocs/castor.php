@@ -89,7 +89,7 @@ function serve(): void
 
     io()->title('Building and watching MkDocs documentation');
 
-    do_run(['mkdocs', 'serve']);
+    do_run(['mkdocs', 'serve', '--livereload']);
 }
 
 function do_run(array $runCommand, ?Context $c = null): Process

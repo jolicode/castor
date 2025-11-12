@@ -36,6 +36,21 @@ jobs:
       - name: PHPStan
         run: bin/castor lint-markdown
 
+  mkdocs:
+    name: Verify documentation can be built
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/install
+        with:
+          php-version: "8.4"
+          need_phar: 'false'
+
+      - name: Build site with mkdocs
+        run: bin/castor castor:mkdocs:build
+
   check-cs:
     name: Coding Standards
     runs-on: ubuntu-latest

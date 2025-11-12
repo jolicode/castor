@@ -33,7 +33,7 @@ jobs:
 
       - uses: ./.github/actions/install
         with:
-          php-version: "8.3"
+          php-version: "8.4"
           need_phar: 'false'
 
       - name: Setup Pages
