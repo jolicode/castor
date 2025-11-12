@@ -35,6 +35,7 @@ class Context implements \ArrayAccess
         public readonly string $name = '',
         public readonly string $notificationTitle = '',
         public readonly array $verboseArguments = [],
+        public readonly Config $config = new Config(),
     ) {
         $this->workingDirectory = $workingDirectory ?? PathHelper::getRoot(false);
     }
@@ -55,6 +56,11 @@ class Context implements \ArrayAccess
             'notify' => $this->notify,
             'verbosityLevel' => $this->verbosityLevel,
             'notificationTitle' => $this->notificationTitle,
+            'config' => array_map(fn (ConfigFlag $flag) => [
+                'name' => $flag->name,
+                'default' => $flag->defaultValueWhenNull(),
+                'is_enabled' => $this->config->isEnabled($flag),
+            ], ConfigFlag::cases()),
         ];
     }
 
@@ -91,6 +97,7 @@ class Context implements \ArrayAccess
             $this->name,
             $this->notificationTitle,
             $this->verboseArguments,
+            $this->config,
         );
     }
 
@@ -111,6 +118,7 @@ class Context implements \ArrayAccess
             $this->name,
             $this->notificationTitle,
             $this->verboseArguments,
+            $this->config,
         );
     }
 
@@ -130,6 +138,7 @@ class Context implements \ArrayAccess
             $this->name,
             $this->notificationTitle,
             $this->verboseArguments,
+            $this->config,
         );
     }
 
@@ -149,6 +158,7 @@ class Context implements \ArrayAccess
             $this->name,
             $this->notificationTitle,
             $this->verboseArguments,
+            $this->config,
         );
     }
 
@@ -168,6 +178,7 @@ class Context implements \ArrayAccess
             $this->name,
             $this->notificationTitle,
             $this->verboseArguments,
+            $this->config,
         );
     }
 
@@ -187,6 +198,7 @@ class Context implements \ArrayAccess
             $this->name,
             $this->notificationTitle,
             $this->verboseArguments,
+            $this->config,
         );
     }
 
@@ -206,6 +218,7 @@ class Context implements \ArrayAccess
             $this->name,
             $this->notificationTitle,
             $this->verboseArguments,
+            $this->config,
         );
     }
 
@@ -225,6 +238,7 @@ class Context implements \ArrayAccess
             $this->name,
             $this->notificationTitle,
             $this->verboseArguments,
+            $this->config,
         );
     }
 
@@ -244,6 +258,7 @@ class Context implements \ArrayAccess
             $this->name,
             $this->notificationTitle,
             $this->verboseArguments,
+            $this->config,
         );
     }
 
@@ -263,6 +278,7 @@ class Context implements \ArrayAccess
             $this->name,
             $this->notificationTitle,
             $this->verboseArguments,
+            $this->config,
         );
     }
 
@@ -286,6 +302,7 @@ class Context implements \ArrayAccess
             $name,
             $this->notificationTitle,
             $this->verboseArguments,
+            $this->config,
         );
     }
 
@@ -305,6 +322,7 @@ class Context implements \ArrayAccess
             $this->name,
             $notificationTitle,
             $this->verboseArguments,
+            $this->config,
         );
     }
 
@@ -325,6 +343,27 @@ class Context implements \ArrayAccess
             $this->name,
             $this->notificationTitle,
             $arguments,
+            $this->config,
+        );
+    }
+
+    public function withConfig(Config $config): self
+    {
+        return new self(
+            $this->data,
+            $this->environment,
+            $this->workingDirectory,
+            $this->tty,
+            $this->pty,
+            $this->timeout,
+            $this->quiet,
+            $this->allowFailure,
+            $this->notify,
+            $this->verbosityLevel,
+            $this->name,
+            $this->notificationTitle,
+            $this->verboseArguments,
+            $config,
         );
     }
 

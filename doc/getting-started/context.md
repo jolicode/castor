@@ -358,6 +358,117 @@ if you run castor [in verbose mode](../going-further/interacting-with-castor/log
 Additionally, if this command fails when Castor is not in verbose mode, it will
 ask you if you want to retry the command with the verbose arguments.
 
+### Configuration flags
+
+Castor allows you to configure optional features through configuration flags.
+These flags control behavior changes that may be introduced in future versions
+of Castor, allowing you to opt-in or opt-out of specific features.
+
+You can enable or disable flags when creating a context by using the `config`
+parameter:
+
+```php
+use Castor\Attribute\AsContext;
+use Castor\Config;
+use Castor\ConfigFlag;
+use Castor\Context;
+
+#[AsContext(name: 'my_context')]
+function create_context(): Context
+{
+    return new Context(
+        config: (new Config())
+            ->withEnabled(ConfigFlag::ContextAwareFilesystem)
+    );
+}
+```
+
+You can also explicitly disable flags:
+
+```php
+use Castor\Attribute\AsContext;
+use Castor\Config;
+use Castor\ConfigFlag;
+use Castor\Context;
+
+#[AsContext(name: 'my_context')]
+function create_context(): Context
+{
+    return new Context(
+        config: (new Config())
+            ->withDisabled(ConfigFlag::ContextAwareFilesystem)
+    );
+}
+```
+
+Multiple flags can be configured at once:
+
+```php
+use Castor\Config;
+use Castor\ConfigFlag;
+
+$config = (new Config())
+    ->withEnabled(ConfigFlag::ContextAwareFilesystem)
+    ->withDisabled(ConfigFlag::SomeOtherFlag);
+```
+
+#### Checking flag status
+
+You can check whether a flag is enabled in your tasks:
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\context;
+use function Castor\io;
+
+#[AsTask()]
+function check_flags(): void
+{
+    $context = context();
+
+    if ($context->config->isEnabled(ConfigFlag::ContextAwareFilesystem)) {
+        io()->writeln('ContextAwareFilesystem is enabled.');
+    }
+}
+```
+
+#### Available flags
+
+- `ConfigFlag::ContextAwareFilesystem`: When enabled, filesystem operations
+  will be automatically aware of the context's working directory.
+
+#### Deprecation warnings
+
+Configuration flags support a deprecation system to help you prepare for future
+versions of Castor. When a flag is not explicitly configured, or when it's
+configured to a value that will change in a future version, Castor will emit
+a deprecation warning.
+
+These warnings help you understand:
+
+- Which flags are not configured in your project
+- What the current default value is
+- What the future default value will be
+- In which version the default will change
+
+To avoid these warnings, explicitly configure the flags you use:
+
+```php
+use Castor\Config;
+use Castor\ConfigFlag;
+use Castor\Context;
+
+return new Context(
+    config: (new Config())
+        ->withEnabled(ConfigFlag::ContextAwareFilesystem)
+);
+```
+
+> [!TIP]
+> Check the [configuration flags example](https://github.com/jolicode/castor/blob/main/examples/basic/context/config.php)
+> for a complete working example.
+
 ## Advanced usage
 
 See [this documentation](../going-further/interacting-with-castor/advanced-context.md) for more usage about
