@@ -30,7 +30,7 @@ vendor/bin/castor compile my-custom-castor-app.phar
 > [!WARNING]
 > Compiling is not supported yet on Windows.
 
-{% include "/build/command_castor-compile.md" start="`castor:compile`\n----------------" %}
+{% include-markdown "/build/command_castor-compile.md" start="`castor:compile`\n----------------" %}
 
 ### Behavior
 

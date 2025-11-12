@@ -5,21 +5,22 @@
   <sub><em><h6>Automate everything. In PHP. Simply. Efficiently. Elegantly.</h6></em></sub>
 </h1>
 
+<!-- start index -->
+
 Write your automation scripts in PHP, run them from the CLI.<br/>
 No need for Bash, Makefiles or YAML.<br/>
 
 * ✅ 100% PHP — define tasks as simple PHP functions
 * ⚡ Fast & native — no configuration, no boilerplate
-* 🔧 Provided with a bunch of [useful built-in functions](reference.md)
-* 🧠 [Autocompletion](going-further/interacting-with-castor/autocomplete.md) & descriptions for each task
+* 🔧 Provided with a bunch of [useful built-in functions](https://castor.jolicode.com/reference/)
+* 🧠 [Autocompletion](https://castor.jolicode.com/going-further/interacting-with-castor/autocomplete/) & descriptions for each task
 * 🧰 Easy to integrate in your dev workflows
 
 ## Presentation
 
-<p align="center">
-    <i>Castor is a <strong><abbr title="Developer eXperience">DX</abbr>-oriented task
-    runner</strong> built in PHP featuring a range of functions for common task processing.</i>
-</p>
+Castor is a <strong><abbr title="Developer eXperience">DX</abbr> oriented task
+runner</strong>, that is designed to help you automate your development tasks
+and workflows in a simple and efficient way.
 
 It can be viewed as an alternative to Makefile, Fabric, Invoke, Shell scripts,
 etc., but it leverages PHP's scripting capabilities and extensive library ecosystem.
@@ -96,6 +97,27 @@ function destroy(bool $force = false)
 
 → Want to see basic usages and main features of Castor? Read the [Getting started documentation](https://castor.jolicode.com/getting-started/)
 
+## Real-world use cases
+
+* Run database migrations
+* Deploy your app with one command
+* Manage assets or translations
+* Bootstrap environments
+* Automate internal tools
+
+→ See [more examples from the community](https://castor.jolicode.com/examples/#real-world-examples).
+
+## What developers say
+
+> "Finally a task runner that feels like PHP. No weird DSL, just functions."<br>
+> — Every Castor user, probably
+<!-- -->
+> "I thought I needed Bash, Make, and half a DevOps degree. Turns out I just needed Castor."<br>
+> — A surprisingly relieved developer
+<!-- -->
+> "We migrated from Make to Castor and nobody cried. That's a win."<br>
+> — Senior Developer, now less grumpy
+
 ## Why not Make / Robo / Phing / Deployer / Symfony Console?
 
 Because:
@@ -105,6 +127,8 @@ Because:
 * Symfony Console is a great base — but Castor is built on top of it and gives you superpowers
 
 → See detailed comparisons in our [FAQ](https://castor.jolicode.com/faq/)
+
+<!-- end index -->
 
 ## Want more?
 

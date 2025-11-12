@@ -2,7 +2,7 @@ name: Continuous Integration
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
   pull_request:
 
 permissions:
@@ -30,11 +30,26 @@ jobs:
 
       - uses: ./.github/actions/install
         with:
-          php-version: "8.4"
+          php-version: 8.4
           need_phar: 'false'
 
       - name: PHPStan
         run: bin/castor lint-markdown
+
+  mkdocs:
+    name: Verify documentation can be built
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/install
+        with:
+          php-version: 8.4
+          need_phar: 'false'
+
+      - name: Build site with mkdocs
+        run: bin/castor castor:mkdocs:build
 
   check-cs:
     name: Coding Standards
@@ -45,7 +60,7 @@ jobs:
 
       - uses: ./.github/actions/install
         with:
-          php-version: "8.3"
+          php-version: 8.3
           need_phar: 'false'
 
       - name: PHP CS Fixer
@@ -60,7 +75,7 @@ jobs:
 
       - uses: ./.github/actions/install
         with:
-          php-version: "8.3"
+          php-version: 8.3
           need_phar: 'false'
 
       - name: PHPStan
@@ -75,26 +90,26 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - php: "8.2"
+          - php: 8.2
             castor:
-              bin: 'bin/castor'
-              method: 'bin/castor'
-          - php: "8.2"
+              bin: bin/castor
+              method: bin/castor
+          - php: 8.2
             castor:
-              bin: 'tools/phar/build/castor.linux-amd64.phar'
-              method: 'phar'
-          - php: "8.2"
+              bin: tools/phar/build/castor.linux-amd64.phar
+              method: phar
+          - php: 8.2
             castor:
-              bin: 'castor'
-              method: 'static'
-          - php: "8.3"
+              bin: castor
+              method: static
+          - php: 8.3
             castor:
-              bin: 'bin/castor'
-              method: 'bin/castor'
-          - php: "8.4"
+              bin: bin/castor
+              method: bin/castor
+          - php: 8.4
             castor:
-              bin: 'bin/castor'
-              method: 'bin/castor'
+              bin: bin/castor
+              method: bin/castor
 
     steps:
       - name: Checkout
@@ -106,11 +121,11 @@ jobs:
 
       - uses: ./.github/actions/cache
         with:
-          target: 'test'
+          target: test
 
       - uses: ./.github/actions/cache
         with:
-          target: 'linux-amd64'
+          target: linux-amd64
         if: matrix.castor.method == 'static'
 
       - name: Build Castor phar for Linux
@@ -150,13 +165,13 @@ jobs:
 
       - uses: ./.github/actions/install
         with:
-          composer-flags: "--no-dev"
+          composer-flags: --no-dev
       - uses: ./.github/actions/cache
         with:
-          target: 'linux-amd64'
+          target: linux-amd64
       - uses: ./.github/actions/phar
       - uses: ./.github/actions/static
         with:
-          os: 'linux-amd64'
+          os: linux-amd64
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

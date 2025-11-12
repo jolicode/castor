@@ -19,7 +19,7 @@ object to execute the process. The `run()` function will return this object. So
 you can use the API of this class to interact with the underlying process:
 
 ```php
-{% include "/examples/basic/run/ls_functions.php" start="<?php\n\nnamespace run;\n\n" %}
+{% include "/examples/basic/run/ls.php" start="<?php\n\nnamespace run;\n\n" %}
 ```
 
 > [!NOTE]
