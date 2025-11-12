@@ -113,6 +113,7 @@ function do_run(array $runCommand, ?Context $c = null): Process
         volumes: [
             \sprintf('%s:/mkdocs:cached', realpath(__DIR__)),
             \sprintf('%s:/mkdocs/CHANGELOG.md:cached', realpath(__DIR__) . '/../../CHANGELOG.md'),
+            \sprintf('%s:/mkdocs/README.md:cached', realpath(__DIR__) . '/../../README.md'),
             \sprintf('%s:/mkdocs/doc:cached', realpath(__DIR__ . '/../../doc')),
             \sprintf('%s:/examples:cached', realpath(__DIR__ . '/../../examples')),
             \sprintf('%s:/build:cached', realpath(__DIR__ . '/build')),
