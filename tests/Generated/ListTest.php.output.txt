@@ -11,7 +11,15 @@ arguments:arguments                                      Dumps all arguments and
 arguments:auto-configuration                             Dumps all arguments and options, without configuration
 arguments:autocomplete                                   Provides autocomplete for an argument
 arguments:autocomplete-path                              Provides autocomplete for a path argument
+arguments:no-validation
+arguments:option-mode
+arguments:optional
+arguments:override-argument
+arguments:override-option
 arguments:passthru                                       Dumps all arguments and options, without configuration nor validation
+arguments:path-argument
+arguments:phpunit
+arguments:simple
 assertion:ensure-we-are-in-the-future                    Ensure we are in the future
 assertion:throw-an-exception                             Throws a Problem exception
 cache:complex                                            Cache with usage of CacheItemInterface

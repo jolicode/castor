@@ -1,0 +1,18 @@
+Usage:
+  arguments:override-argument [<foo>]
+
+Arguments:
+  foo                              This is the foo argument [default: "bar"]
+
+Options:
+  -h, --help                       Display help for the given command. When no command is given display help for the list command
+      --silent                     Do not output any message
+  -q, --quiet                      Only errors are displayed. All other output is suppressed
+  -V, --version                    Display this application version
+      --ansi|--no-ansi             Force (or disable --no-ansi) ANSI output
+  -n, --no-interaction             Do not ask any interactive question
+      --no-remote                  Skip the import of all remote remote packages
+      --update-remotes             Force the update of remote packages
+      --castor-file[=CASTOR-FILE]  Specify an alternative castor file to use instead of the default "castor.php"
+  -c, --context=CONTEXT            The context to use (dotenv|dynamic|interactive|my_default|production|run|updated) [default: "my_default"]
+  -v|vv|vvv, --verbose             Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug

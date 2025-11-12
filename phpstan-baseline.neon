@@ -7,6 +7,12 @@ parameters:
 			path: examples/basic/arguments/arguments.php
 
 		-
+			message: '#^Function arguments\\phpunit\(\) has parameter \$rawTokens with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: examples/basic/arguments/raw-tokens.php
+
+		-
 			message: '#^Negated boolean expression is always true\.$#'
 			identifier: booleanNot.alwaysTrue
 			count: 1
