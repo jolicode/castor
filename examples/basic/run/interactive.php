@@ -4,8 +4,8 @@ namespace run;
 
 use Castor\Attribute\AsTask;
 
-use function Castor\run;
 use function Castor\context;
+use function Castor\run;
 
 #[AsTask()]
 function interactive(): void

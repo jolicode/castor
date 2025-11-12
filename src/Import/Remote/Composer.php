@@ -206,7 +206,7 @@ class Composer
             $exitCode = $composerApplication->run($argvInput, $output);
         } finally {
             putenv('COMPOSER=');
-            putenv("COMPOSER_VENDOR_DIR=");
+            putenv('COMPOSER_VENDOR_DIR=');
             $_SERVER['PHP_SELF'] = $self;
 
             unset($_ENV['COMPOSER'], $_SERVER['COMPOSER'], $_ENV['COMPOSER_VENDOR_DIR'], $_SERVER['COMPOSER_VENDOR_DIR']);
