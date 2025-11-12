@@ -1,13 +1,13 @@
-name: 'Build static binaries'
-description: 'Builds static binaries for all systems'
+name: Build static binaries
+description: Builds static binaries for all systems
 
 inputs:
   os:
-    description: 'The operating system to build for'
+    description: The operating system to build for
     required: true
 
 runs:
-  using: "composite"
+  using: composite
   steps:
     - name: Build Castor static binary for Linux (linux-amd64)
       run: bin/castor castor:static:linux-amd64

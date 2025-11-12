@@ -1,13 +1,13 @@
-name: 'Compute cache keys'
-description: 'Export cache keys for the build process to env vars'
+name: Compute cache keys
+description: Export cache keys for the build process to env vars
 
 inputs:
   target:
-    description: 'The target to compute the cache key for'
+    description: The target to compute the cache key for
     required: true
 
 runs:
-  using: "composite"
+  using: composite
   steps:
     - name: Get cache keys
       shell: bash

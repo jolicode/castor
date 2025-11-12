@@ -1,8 +1,8 @@
-name: 'Build phars'
-description: 'Builds phars for all systems'
+name: Build phars
+description: Builds phars for all systems
 
 runs:
-  using: "composite"
+  using: composite
   steps:
     - name: Build Castor phar for Linux (linux-amd64 + linux-arm64)
       run: bin/castor castor:phar:linux

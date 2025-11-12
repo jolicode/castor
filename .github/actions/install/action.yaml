@@ -1,22 +1,22 @@
-name: 'Install dependencies'
-description: 'Install dependencies for the project and the phar builder'
+name: Install dependencies
+description: Install dependencies for the project and the phar builder
 
 inputs:
   php-version:
-    description: 'The PHP version to use'
+    description: The PHP version to use
     required: true
     default: '8.2'
   composer-flags:
-    description: 'Install dev dependencies'
+    description: Install dev dependencies
     required: false
     default: ''
   need_phar:
-    description: 'Install phar dependencies'
+    description: Install phar dependencies
     required: false
     default: 'true'
 
 runs:
-  using: "composite"
+  using: composite
   steps:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2

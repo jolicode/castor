@@ -2,7 +2,7 @@ name: Artifacts
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
 
 permissions:
   contents: write
@@ -18,42 +18,42 @@ jobs:
 
       - uses: ./.github/actions/install
         with:
-          composer-flags: "--no-dev"
+          composer-flags: --no-dev
 
       - uses: ./.github/actions/phar
 
       - name: Upload the Linux phar (linux-amd64)
         uses: actions/upload-artifact@v4
         with:
-          name: 'castor.linux-amd64.phar'
+          name: castor.linux-amd64.phar
           path: tools/phar/build/castor.linux-amd64.phar
           if-no-files-found: error
 
       - name: Upload the Linux phar (linux-arm64)
         uses: actions/upload-artifact@v4
         with:
-          name: 'castor.linux-arm64.phar'
+          name: castor.linux-arm64.phar
           path: tools/phar/build/castor.linux-arm64.phar
           if-no-files-found: error
 
       - name: Upload the Darwin phar (darwin-amd64)
         uses: actions/upload-artifact@v4
         with:
-          name: 'castor.darwin-amd64.phar'
+          name: castor.darwin-amd64.phar
           path: tools/phar/build/castor.darwin-amd64.phar
           if-no-files-found: error
 
       - name: Upload the Darwin phar (darwin-arm64)
         uses: actions/upload-artifact@v4
         with:
-          name: 'castor.darwin-arm64.phar'
+          name: castor.darwin-arm64.phar
           path: tools/phar/build/castor.darwin-arm64.phar
           if-no-files-found: error
 
       - name: Upload the Windows phar (windows-amd64)
         uses: actions/upload-artifact@v4
         with:
-          name: 'castor-windows-amd64.phar'
+          name: castor-windows-amd64.phar
           path: tools/phar/build/castor.windows-amd64.phar
           if-no-files-found: error
 
@@ -69,7 +69,7 @@ jobs:
 
       - uses: ./.github/actions/cache
         with:
-          target: 'linux-amd64'
+          target: linux-amd64
 
       - name: retrieve phar artifacts
         uses: actions/download-artifact@v4
@@ -79,14 +79,14 @@ jobs:
 
       - uses: ./.github/actions/static
         with:
-          os: 'linux-amd64'
+          os: linux-amd64
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload the Linux amd64 static binary
         uses: actions/upload-artifact@v4
         with:
-          name: 'castor.linux-amd64'
+          name: castor.linux-amd64
           path: ./castor.linux-amd64
           if-no-files-found: error
 
@@ -102,7 +102,7 @@ jobs:
 
       - uses: ./.github/actions/cache
         with:
-          target: 'linux-arm64'
+          target: linux-arm64
 
       - name: retrieve phar artifacts
         uses: actions/download-artifact@v4
@@ -112,14 +112,14 @@ jobs:
 
       - uses: ./.github/actions/static
         with:
-          os: 'linux-arm64'
+          os: linux-arm64
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload the Linux arm64 static binary
         uses: actions/upload-artifact@v4
         with:
-          name: 'castor.linux-arm64'
+          name: castor.linux-arm64
           path: ./castor.linux-arm64
           if-no-files-found: error
 
@@ -135,7 +135,7 @@ jobs:
 
       - uses: ./.github/actions/cache
         with:
-          target: 'darwin-amd64'
+          target: darwin-amd64
 
       - name: retrieve phar artifacts
         uses: actions/download-artifact@v4
@@ -145,14 +145,14 @@ jobs:
 
       - uses: ./.github/actions/static
         with:
-          os: 'darwin-amd64'
+          os: darwin-amd64
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload the MacOs amd64 static binary
         uses: actions/upload-artifact@v4
         with:
-          name: 'castor.darwin-amd64'
+          name: castor.darwin-amd64
           path: ./castor.darwin-amd64
           if-no-files-found: error
 
@@ -168,7 +168,7 @@ jobs:
 
       - uses: ./.github/actions/cache
         with:
-          target: 'darwin-arm64'
+          target: darwin-arm64
 
       - name: retrieve phar artifacts
         uses: actions/download-artifact@v4
@@ -178,13 +178,13 @@ jobs:
 
       - uses: ./.github/actions/static
         with:
-          os: 'darwin-arm64'
+          os: darwin-arm64
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload the MacOs arm64 static binary
         uses: actions/upload-artifact@v4
         with:
-          name: 'castor.darwin-arm64'
+          name: castor.darwin-arm64
           path: ./castor.darwin-arm64
           if-no-files-found: error
