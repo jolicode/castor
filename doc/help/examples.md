@@ -8,8 +8,8 @@ description: See how to use Castor with some examples, either builtin or from th
 
 Castor's repository provides a bunch of usage examples in the
 [examples directory](https://github.com/jolicode/castor/tree/main/examples).
-These examples are useful to show different Castor features in action, do not
-hesitate to browse them.
+These examples are useful to showcase different Castor features in action.
+They are sorted by feature so do not hesitate to browse them.
 
 As a side note, these examples also act as a full test suite for Castor to
 ensure each feature works as expected.

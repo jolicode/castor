@@ -91,7 +91,7 @@ return function (string $appName, string $appVersion) {
 vendor/bin/castor repack --logo-file repack/my-complex-logo.php
 ```
 
-![img.png](../../assets/custom-logo.png)
+![img.png](../../../assets/custom-logo.png)
 
 ## Going further
 

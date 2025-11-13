@@ -39,20 +39,20 @@ class ReferenceTest extends TestCase
             }
 
             if (str_contains($comment, '@deprecated')) {
-                $this->assertNotContains($function, $lists['Functions'], "Built-in function \"{$function}\" is deprecated and SHOULD NOT be listed in the documentation doc/reference.md");
+                $this->assertNotContains($function, $lists['Functions'], "Built-in function \"{$function}\" is deprecated and SHOULD NOT be listed in the documentation doc/docs/reference.md");
             } else {
-                $this->assertContains($function, $lists['Functions'], "Built-in function \"{$function}\" should be listed in the documentation doc/reference.md");
+                $this->assertContains($function, $lists['Functions'], "Built-in function \"{$function}\" should be listed in the documentation doc/docs/reference.md");
             }
 
             unset($referencedFunctions[array_search($function, $referencedFunctions)]);
         }
 
-        $this->assertEmpty($referencedFunctions, 'Some functions are listed in the documentation doc/reference.md but do not exist: ' . implode(', ', $referencedFunctions));
+        $this->assertEmpty($referencedFunctions, 'Some functions are listed in the documentation doc/docs/reference.md but do not exist: ' . implode(', ', $referencedFunctions));
 
         $sortedFunctions = $lists['Functions'];
         sort($sortedFunctions);
 
-        $this->assertSame($sortedFunctions, $lists['Functions'], 'Functions should be listed in alphabetical order in the documentation doc/reference.md');
+        $this->assertSame($sortedFunctions, $lists['Functions'], 'Functions should be listed in alphabetical order in the documentation doc/docs/reference.md');
     }
 
     public function testAttributesAreReferenced(): void
@@ -76,18 +76,18 @@ class ReferenceTest extends TestCase
         foreach ($attributeClasses as $reflection) {
             $shortName = $reflection->getShortName();
 
-            $this->assertContains($shortName, $lists['Attributes'], "Attribute \"{$shortName}\" should be listed in the documentation doc/reference.md");
+            $this->assertContains($shortName, $lists['Attributes'], "Attribute \"{$shortName}\" should be listed in the documentation doc/docs/reference.md");
 
             unset($referencedAttributes[array_search($shortName, $referencedAttributes)]);
         }
 
         // Ensure all referenced attributes exist
-        $this->assertEmpty($referencedAttributes, 'Some attributes are listed in the documentation doc/reference.md but do not exist: ' . implode(', ', $referencedAttributes));
+        $this->assertEmpty($referencedAttributes, 'Some attributes are listed in the documentation doc/docs/reference.md but do not exist: ' . implode(', ', $referencedAttributes));
 
         $sortedFunctions = $lists['Attributes'];
         sort($sortedFunctions);
 
-        $this->assertSame($sortedFunctions, $lists['Attributes'], 'Attributes should be listed in alphabetical order in the documentation doc/reference.md');
+        $this->assertSame($sortedFunctions, $lists['Attributes'], 'Attributes should be listed in alphabetical order in the documentation doc/docs/reference.md');
     }
 
     /**
@@ -164,7 +164,7 @@ class ReferenceTest extends TestCase
      */
     private function getReferencedLists(): array
     {
-        $file = __DIR__ . '/../../doc/reference.md';
+        $file = __DIR__ . '/../../doc/docs/reference.md';
         $doc = file_get_contents($file);
 
         $lines = explode("\n", $doc);

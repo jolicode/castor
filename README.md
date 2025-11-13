@@ -10,10 +10,10 @@
 Write your automation scripts in PHP, run them from the CLI.<br/>
 No need for Bash, Makefiles or YAML.<br/>
 
-* ✅ 100% PHP — define tasks as simple PHP functions
-* ⚡ Fast & native — no configuration, no boilerplate
-* 🔧 Provided with a bunch of [useful built-in functions](https://castor.jolicode.com/reference/)
-* 🧠 [Autocompletion](https://castor.jolicode.com/going-further/interacting-with-castor/autocomplete/) & descriptions for each task
+* ✅ 100% PHP - define tasks as simple PHP functions
+* ⚡ Fast & native - no configuration, no boilerplate
+* 🔧 Provided with a bunch of [useful built-in functions](https://castor.jolicode.com/docs/reference/)
+* 🧠 [Autocompletion](https://castor.jolicode.com/docs/going-further/interacting-with-castor/autocomplete/) & descriptions for each task
 * 🧰 Easy to integrate in your dev workflows
 
 ## Presentation
@@ -28,13 +28,13 @@ etc., but it leverages PHP's scripting capabilities and extensive library ecosys
 It comes with many features to make your life easier:
 
 * Seamless parsing of **arguments and options**, simplifying input handling
-* **[Autocomplete](https://castor.jolicode.com/going-further/interacting-with-castor/autocomplete)** support for faster and error-free typing
+* **[Autocomplete](https://castor.jolicode.com/docs/going-further/interacting-with-castor/autocomplete)** support for faster and error-free typing
 * A built-in list of useful functions:
-    * [`run()`](https://castor.jolicode.com/getting-started/run/#the-run-function): Run external processes, enabling seamless integration with external tools
-    * [`io()`](https://castor.jolicode.com/going-further/helpers/console-and-io/#the-io-function): Display beautiful output and interacts with the terminal
-    * [`watch()`](https://castor.jolicode.com/going-further/helpers/watch/): Watch files and automatically triggers actions on file modifications
-    * [`fs()`](https://castor.jolicode.com/going-further/helpers/filesystem/#the-fs-function): Create, remove, and manipulate files and directories
-    * [And even more advanced functions](https://castor.jolicode.com/reference/)
+    * [`run()`](https://castor.jolicode.com/docs/getting-started/run/#the-run-function): Run external processes, enabling seamless integration with external tools
+    * [`io()`](https://castor.jolicode.com/docs/going-further/helpers/console-and-io/#the-io-function): Display beautiful output and interacts with the terminal
+    * [`watch()`](https://castor.jolicode.com/docs/going-further/helpers/watch/): Watch files and automatically triggers actions on file modifications
+    * [`fs()`](https://castor.jolicode.com/docs/going-further/helpers/filesystem/#the-fs-function): Create, remove, and manipulate files and directories
+    * [And even more advanced functions](https://castor.jolicode.com/docs/reference/)
 
 ## Get started in 10 seconds
 
@@ -45,13 +45,13 @@ castor
 ```
 
 → Castor can also be installed in many other ways (phar, static binaries, Composer,
-Github Action, etc), see [the installation documentation](https://castor.jolicode.com/getting-started/installation/).
+Github Action, etc), see [the installation documentation](https://castor.jolicode.com/installation/).
 
 ## Basic usage
 
 In Castor, tasks are set up as typical PHP functions marked with the `#[AsTask()]` attribute in a `castor.php` file.
 
-These tasks can run any PHP code but also make use of various [functions for standard operations](https://castor.jolicode.com/reference/) that come pre-packaged with Castor.
+These tasks can run any PHP code but also make use of various [functions for standard operations](https://castor.jolicode.com/docs/reference/) that come pre-packaged with Castor.
 
 For example, the following castor.php file:
 
@@ -95,7 +95,7 @@ function destroy(bool $force = false)
 }
 ```
 
-→ Want to see basic usages and main features of Castor? Read the [Getting started documentation](https://castor.jolicode.com/getting-started/)
+→ Want to see basic usages and main features of Castor? Read the [Getting started documentation](https://castor.jolicode.com/docs/getting-started/)
 
 ## Real-world use cases
 
@@ -105,7 +105,7 @@ function destroy(bool $force = false)
 * Bootstrap environments
 * Automate internal tools
 
-→ See [more examples from the community](https://castor.jolicode.com/examples/#real-world-examples).
+→ See [more examples from the community](https://castor.jolicode.com/help/examples/#real-world-examples).
 
 ## What developers say
 
@@ -124,9 +124,9 @@ Because:
 
 * Make is not PHP, and is hard to maintain in large projects
 * Others are either too verbose, OOP-heavy, requiring YML or XML configurations or are specialized in deployment only.
-* Symfony Console is a great base — but Castor is built on top of it and gives you superpowers
+* Symfony Console is a great base - but Castor is built on top of it and gives you superpowers
 
-→ See detailed comparisons in our [FAQ](https://castor.jolicode.com/faq/)
+→ See detailed comparisons in our [FAQ](https://castor.jolicode.com/help/faq/)
 
 <!-- end index -->
 
@@ -135,16 +135,19 @@ Because:
 Discover more by reading the docs:
 
 * [Installing Castor and initial setup](https://castor.jolicode.com/installation/)
-* [Getting started with Castor](https://castor.jolicode.com/getting-started/)
-    * [Basic Usage](https://castor.jolicode.com/getting-started/basic-usage/)
-    * [Executing Processes with `run()`](https://castor.jolicode.com/getting-started/run/)
-    * [Task Arguments](https://castor.jolicode.com/getting-started/arguments)
-    * [Using the Context](https://castor.jolicode.com/getting-started/context)
-    * [Remote execution](https://castor.jolicode.com/getting-started/remote)
-* [Going further with Castor](https://castor.jolicode.com/going-further/)
-* [Castor reference](https://castor.jolicode.com/reference/)
-* [Examples](https://castor.jolicode.com/examples/)
-* [Frequently asked questions](https://castor.jolicode.com/faq/)
+* [Documentation](https://castor.jolicode.com/docs/)
+    * [Getting started with Castor](https://castor.jolicode.com/docs/getting-started/)
+        * [Basic Usage](https://castor.jolicode.com/docs/getting-started/basic-usage/)
+        * [Executing Processes with `run()`](https://castor.jolicode.com/docs/getting-started/run/)
+        * [Task Arguments](https://castor.jolicode.com/docs/getting-started/arguments)
+        * [Using the Context](https://castor.jolicode.com/docs/getting-started/context)
+        * [Remote execution](https://castor.jolicode.com/docs/getting-started/remote)
+    * [Going further with Castor](https://castor.jolicode.com/docs/going-further/)
+    * [Castor reference](https://castor.jolicode.com/docs/reference/)
+* [Need help?](https://castor.jolicode.com/help/)
+    * [Frequently asked questions](https://castor.jolicode.com/help/faq/)
+    * [Examples](https://castor.jolicode.com/help/examples/)
+    * [Support](https://castor.jolicode.com/help/support/)
 
 <br><br>
 <div align="center">

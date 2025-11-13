@@ -50,6 +50,8 @@ theme:
     - navigation.indexes
     - navigation.instant
     - navigation.instant.prefetch
+    - navigation.path
+    - navigation.sections
     - navigation.tabs
     - navigation.tabs.sticky
     - navigation.top
