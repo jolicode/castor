@@ -40,7 +40,7 @@ You can install Castor using different methods:
 
 Castor provides a built-in autocomplete to ease its usage in shell.
 
-See [the dedicated documentation](../going-further/interacting-with-castor/autocomplete.md)
+See [the dedicated documentation](../docs/going-further/interacting-with-castor/autocomplete.md)
 to see how to install it, and also how to autocomplete your arguments.
 
 ## Stubs
