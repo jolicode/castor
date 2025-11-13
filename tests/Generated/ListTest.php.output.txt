@@ -53,6 +53,7 @@ configuration:renamed                                    Task that was renamed
 context:context                                          Displays information about the context
 context:display-context-info-with                        Displays information about the context, using a specific context
 context:display-dynamic-context-info                     Displays information about the context
+context:use-context-with-config-flags
 crypto:decrypt                                           Decrypt content with a password
 crypto:decrypt-file                                      Decrypt file with a password
 crypto:encrypt                                           Encrypt content with a password

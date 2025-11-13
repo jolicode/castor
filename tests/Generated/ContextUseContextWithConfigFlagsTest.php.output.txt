@@ -1,0 +1,6 @@
+Flag: ContextAwareFilesystem, Value: true
+ContextAwareFilesystem is enabled.
+
+Disabling ContextAwareFilesystem flag...
+hh:mm:ss WARNING   [castor] User Deprecated: Since castor/castor 2.0: Configuration flag "ContextAwareFilesystem" is explicitly set to "false", but will default to "true" in version 2.0.  ["exception" => ErrorException { …}]
+ContextAwareFilesystem is disabled.
