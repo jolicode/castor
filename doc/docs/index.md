@@ -1,4 +1,10 @@
-# Documentation of Castor
+---
+description: Comprehensive documentation for Castor, the modern PHP task runner.
+---
+
+# Castor Documentation
+
+Welcome to the official documentation for Castor, the modern PHP task runner.
 
 ## New to Castor?
 

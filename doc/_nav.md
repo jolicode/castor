@@ -23,7 +23,7 @@
     - [Reference](docs/reference.md)
 - [Need help?](help/index.md)
     - [FAQ](help/faq.md)
-    - [Examples](help/examples.md)
+    - [Examples and use-cases](help/examples.md)
     - [Support](help/support.md)
 - [Changelog](changelog.md)
 

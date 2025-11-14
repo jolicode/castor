@@ -2,7 +2,10 @@
 description: See how to use Castor with some examples, either builtin or from the real-world.
 ---
 
-# Examples
+# Examples and use-cases
+
+If you are looking for inspiration on how to use Castor, here are some examples
+that you can check out.
 
 ## Builtin examples
 
@@ -12,9 +15,10 @@ These examples are useful to showcase different Castor features in action.
 They are sorted by feature so do not hesitate to browse them.
 
 As a side note, these examples also act as a full test suite for Castor to
-ensure each feature works as expected.
+ensure each feature works as expected. So they will always be up-to-date with
+the latest Castor version.
 
-## Real-world examples
+## Real-world use-cases
 
 Here is some real-world projects using Castor:
 

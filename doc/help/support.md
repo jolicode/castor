@@ -1,3 +1,7 @@
+---
+description: How to get support for Castor.
+---
+
 # Support
 
 Need help with Castor or want to go further? Here are your options depending on
