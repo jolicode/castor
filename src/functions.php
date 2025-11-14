@@ -9,6 +9,7 @@ use Castor\Exception\MinimumVersionRequirementNotMetException;
 use Castor\Exception\ProblemException;
 use Castor\Exception\WaitFor\ExitedBeforeTimeoutException;
 use Castor\Exception\WaitFor\TimeoutReachedException;
+use Castor\Filesystem\ContextAwareFilesystem;
 use Castor\Helper\CompressionMethod;
 use Castor\Helper\HasherHelper;
 use Castor\Helper\PathHelper;
@@ -23,7 +24,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Dotenv\Dotenv;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -265,9 +265,15 @@ function task(bool $allowNull = false): ?Command
     return Container::get()->getCommand($allowNull);
 }
 
-function fs(): Filesystem
+function fs(?Context $context = null): ContextAwareFilesystem
 {
-    return Container::get()->fs;
+    $container = Container::get();
+    $context ??= $container->contextRegistry->getCurrentContext();
+
+    return new ContextAwareFilesystem(
+        $container->fs,
+        $context->workingDirectory,
+    );
 }
 
 function finder(): Finder
@@ -603,9 +609,9 @@ function wait_for_docker_container(
 }
 
 /**
- * @see Yaml::parse()
- *
  * @param int-mask-of<Yaml::PARSE_*> $flags A bit field of DUMP_* constants to customize the dumped YAML string
+ *
+ * @see Yaml::parse()
  */
 function yaml_parse(string $content, int $flags = 0): mixed
 {
@@ -613,9 +619,9 @@ function yaml_parse(string $content, int $flags = 0): mixed
 }
 
 /**
- * @see Yaml::dump()
- *
  * @param int-mask-of<Yaml::DUMP_*> $flags A bit field of DUMP_* constants to customize the dumped YAML string
+ *
+ * @see Yaml::dump()
  */
 function yaml_dump(mixed $input, int $inline = 2, int $indent = 4, int $flags = 0): string
 {
@@ -765,8 +771,7 @@ function run_php(string $pharPath, array $arguments = [], ?Context $context = nu
 {
     return Container::get()
         ->phpRunner
-        ->run($pharPath, $arguments, $context, $callback)
-    ;
+        ->run($pharPath, $arguments, $context, $callback);
 }
 
 function slug(string $value, string $separator = '-', ?string $locale = null): string
