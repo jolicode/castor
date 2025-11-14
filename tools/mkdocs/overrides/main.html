@@ -2,7 +2,7 @@
 
 {% block htmltitle %}
     {% if page.is_homepage %}
-    <title>Castor - Modern PHP Task Runner for Automation, CI/CD & DevOps</title>
+    <title>{{ page.meta.title }}</title>
     {% elif page.meta and page.meta.title %}
     <title>{{ page.meta.title }} - Castor task runner</title>
     {% else %}
@@ -11,17 +11,6 @@
 {% endblock %}
 
 {% block extrahead %}
-    <meta property="og:title" content="{% if page.meta and page.meta.title %}{{ page.meta.title }}{% else %}{{ page.title | striptags }}{% endif %}">
-    <meta property="og:description" content="{% if page.meta and page.meta.description %}{{ page.meta.description }}{% else %}{{ page.description | striptags }}{% endif %}">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ config.site_url }}">
-    <meta property="og:image" content="{{ config.site_url }}assets/logo_CASTOR_square@2x.png">
-
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{% if page.meta and page.meta.title %}{{ page.meta.title }}{% else %}{{ page.title | striptags }}{% endif %}">
-    <meta name="twitter:description" content="{% if page.meta and page.meta.description %}{{ page.meta.description }}{% else %}{{ config.site_description }}{% endif %}">
-    <meta name="twitter:image" content="{{ config.site_url }}assets/logo_CASTOR_square@2x.png">
-
     <script type="application/ld+json">
         {
             "@context": "https://schema.org",

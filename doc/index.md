@@ -1,5 +1,6 @@
 ---
-description: Castor is a modern PHP task runner. Automate scripts, CI/CD, deployments, and DevOps workflows with plain PHP - no XML, no DSL, just PHP.
+title: A Modern PHP Task Runner for Automation, CI/CD & DevOps
+description: Castor lets you write automation, CI/CD, deployments, and DevOps workflows with plain PHP - no XML, no DSL, just PHP.
 ---
 
 <div align="center">

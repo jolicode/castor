@@ -1,4 +1,8 @@
-# Need help?
+---
+description: Need help? Here are some resources to get you started with Castor.
+---
+
+# Need help with Castor?
 
 If you need help with Castor, here are some resources to get you started:
 

@@ -1,0 +1,81 @@
+size: { width: 1200, height: 630 }
+layers:
+  - background:
+      color: white
+
+  - size: { width: 385, height: 100 }
+    offset: { x: 50, y: 50 }
+    background:
+      image: /mkdocs/doc/assets/logo_CASTOR_line@2x.png
+
+  - size: { width: 1200, height: 10 }
+    offset: { x: 0, y: 620 }
+    background:
+      color: "#FF7300"
+
+  - size: { width: 500, height: 50 }
+    offset: { x: 500, y: 80 }
+    typography:
+      content: "— The PHP Task Runner"
+      align: start center
+      color: "#1C153F"
+      line:
+        amount: 1
+        height: 1
+      font:
+        family: Roboto
+        style: Bold
+
+  - size: { width: 1100, height: 300 }
+    offset: { x: 50, y: 180 }
+    typography:
+      content: "{{ page.meta.get('title', page.title) }}"
+      overflow: shrink
+      align: start center
+      color: "#1C153F"
+      line:
+        amount: 4
+        height: 1.25
+      font:
+        family: Roboto
+        style: Bold
+
+  - size: { width: 1100, height: 90 }
+    offset: { x: 50, y: 500 }
+    typography:
+      content: "{{ page.meta.get('description', config.site_description) or '' }}"
+      overflow: truncate
+      align: start
+      color: "#1C153F"
+      line:
+        amount: 2
+        height: 1.25
+      font:
+        family: Roboto
+        style: Light
+
+definitions:
+  - &page_title_with_site_name >-
+    {%- if not page.is_homepage -%}
+      {{ page.meta.get("title", page.title) }} - {{ config.site_name }}
+    {%- else -%}
+      {{ page.meta.get("title", page.title) }}
+    {%- endif -%}
+
+  - &page_description >-
+    {{ page.meta.get("description", config.site_description) or "" }}
+
+tags:
+  og:type: website
+  og:title: *page_title_with_site_name
+  og:description: *page_description
+  og:image: "{{ image.url }}"
+  og:image:type: "{{ image.type }}"
+  og:image:width: "{{ image.width }}"
+  og:image:height: "{{ image.height }}"
+  og:url: "{{ page.canonical_url }}"
+
+  twitter:card: summary_large_image
+  twitter:title: *page_title_with_site_name
+  twitter:description: *page_description
+  twitter:image: "{{ image.url }}"

@@ -1,4 +1,4 @@
-site_name: Task runner
+site_name: Castor - Modern PHP Task Runner
 site_description: A lightweight and modern task runner. Automate everything. In PHP. Simply. Efficiently. Elegantly.
 site_url: https://castor.jolicode.com/
 repo_url: https://github.com/jolicode/castor
@@ -94,6 +94,13 @@ plugins:
   - literate-nav:
       nav_file: _nav.md
   - include-markdown
+  - social:
+      cards_layout_dir: cards-layouts
+      cards_layout: custom
+      # debug: true
+      cards_layout_options:
+        font_family: Noto Sans SC
+        background_color: white
 
 extra_javascript:
   - assets/javascripts/highlight.min.js
