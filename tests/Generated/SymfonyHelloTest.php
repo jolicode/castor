@@ -10,10 +10,6 @@ class SymfonyHelloTest extends TaskTestCase
     // symfony:hello
     public function test(): void
     {
-        if (self::$binary) {
-            $this->markTestSkipped('This test is not compatible with the binary version of Castor.');
-        }
-
         $process = $this->runTask(['symfony:hello']);
 
         if (0 !== $process->getExitCode()) {

@@ -10,10 +10,6 @@ class SymfonyGreetTest extends TaskTestCase
     // symfony:greet
     public function test(): void
     {
-        if (self::$binary) {
-            $this->markTestSkipped('This test is not compatible with the binary version of Castor.');
-        }
-
         $process = $this->runTask(['symfony:greet', 'World', '--french', 'COUCOU', '--punctuation', '!']);
 
         if (0 !== $process->getExitCode()) {

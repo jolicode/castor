@@ -19,6 +19,8 @@
 * Fix `--castor-file` option parsing
 * Fix the update instructions when using static binaries
 * Fix remote composer working directory, forcing relative paths to have "../" prefix
+* Allow to run Symfony commands even with the static binaries
+* Force the `SCRIPT_FILENAME` env var when using `run_php()` to avoid issues with some PHP scripts
 
 ### Internal
 

@@ -225,8 +225,8 @@ add_test(['configuration:hello', '--context', 'production'], 'EnabledInProductio
 add_test(['list', '--raw', '--format', 'txt', '--short'], 'List', needRemote: true, skipOnBinary: true);
 add_test(['run:exception', '-v'], 'RunExceptionVerbose');
 add_test(['run:verbose-arguments'], 'RunVerboseArgumentsTrue', input: "yes\n");
-add_test(['symfony:greet', 'World', '--french', 'COUCOU', '--punctuation', '!'], 'SymfonyGreet', skipOnBinary: true);
-add_test(['symfony:hello'], 'SymfonyHello', skipOnBinary: true);
+add_test(['symfony:greet', 'World', '--french', 'COUCOU', '--punctuation', '!'], 'SymfonyGreet');
+add_test(['symfony:hello'], 'SymfonyHello');
 // In /tmp
 add_test(['completion', 'bash'], 'NoConfigCompletion', '/tmp');
 add_test(['unknown:task', 'toto', '--foo', 1], 'NoConfigUnknownWithArgs', '/tmp');
