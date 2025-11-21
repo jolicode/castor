@@ -8,6 +8,9 @@ use Symfony\Component\Process\Process;
 
 class CompileCommandTest extends TestCase
 {
+    /**
+     * @requires PHP < 8.5
+     */
     public function test()
     {
         $finder = new ExecutableFinder();
