@@ -50,6 +50,10 @@ class CompileCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        if (PHP_VERSION_ID >= 80500) {
+            throw new \RuntimeException('The "castor compile" command is not supported on PHP 8.5 or higher yet.');
+        }
+
         $this->validateInput($input);
         $io = new SymfonyStyle($input, $output);
         $io->section('Compiling PHP and your Castor app phar into a static binary');
