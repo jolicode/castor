@@ -21,12 +21,6 @@ mount(__DIR__ . '/tools/phar');
 mount(__DIR__ . '/tools/release');
 mount(__DIR__ . '/tools/watcher');
 
-#[AsTask(description: 'hello')]
-function hello(): void
-{
-    echo 'Hello world!';
-}
-
 #[AsTask(description: 'Update all dependencies')]
 function update(): void
 {

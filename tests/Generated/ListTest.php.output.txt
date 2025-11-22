@@ -1,5 +1,5 @@
 completion                                               Dump the shell completion script
-hello                                                    hello
+hello
 help                                                     Display help for a command
 list                                                     List commands
 no-namespace                                             Task without a namespace
@@ -68,6 +68,9 @@ fingerprint:exist-and-save                               Check if the fingerprin
 fingerprint:fingerprint                                  Execute a callback only if the fingerprint has changed
 fingerprint:force                                        Check if the fingerprint has changed before executing a callback (with force option)
 fingerprint:global                                       Execute a callback only if the global fingerprint has changed (Shared across all projects)
+foo:bar                                                  Configures the default name, namespace, and description
+foo1:hello1
+foo2:hello2
 http:download                                            Download a file through HTTP
 http:request                                             Make HTTP request
 io:io                                                    Plays with Symfony Style
@@ -121,6 +124,8 @@ ssh:upload                                               Uploads a file to the r
 ssh:whoami                                               Connect to a remote server without specifying a user
 symfony:greet
 symfony:hello                                            Says hello from a symfony application
+usage:about                                              Displays some help for the current project
+usage:with:long:namespace:hello
 version-guard:min-version-check                          Check if the minimum castor version requirement is met
 version-guard:min-version-check-fail                     Check if the minimum castor version requirement is met (fail)
 wait-for:callback                                        Use custom wait for, to check anything

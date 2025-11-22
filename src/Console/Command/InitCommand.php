@@ -21,7 +21,7 @@ class InitCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         // Only ask for confirmation if not running "castor init" explicitly
-        if ($this->getName() !== $input->getFirstArgument() && !$io->confirm('Do you want to initialize current directory with castor?', false)) {
+        if ($this->getName() !== $input->getFirstArgument() && !$io->confirm('Do you want to initialize current directory with castor? This will create an initial "castor.php" file.', false)) {
             $io->note('Doing nothing.');
 
             return Command::SUCCESS;
@@ -51,8 +51,8 @@ class InitCommand extends Command
             file_put_contents('.gitignore', "\n.castor.stub.php\n", \FILE_APPEND);
         }
 
-        $io->success('Project created. You can edit "castor.php" and write your own tasks.');
-        $io->note('Run "castor" to see the available tasks.');
+        $io->success('A "castor.php" file has been created in the current directory. You can now edit it and write your own tasks.');
+        $io->note('Learn how to get started with Castor by reading the documentation at https://castor.jolicode.com/docs/getting-started');
 
         return Command::SUCCESS;
     }

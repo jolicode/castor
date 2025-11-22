@@ -1,0 +1,9 @@
+About this project
+==================
+
+ // Run castor list to display the command list.
+
+ // Run castor about to display this project help.
+
+ // Run castor help [command] to display Castor help.
+

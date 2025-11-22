@@ -34,6 +34,7 @@
 ### Documentation
 
 * Rework the installation methods documentation
+* Rework the Basic Usage documentation
 * Add documentation for arguments/options of compile & repack commands
 
 ## 1.0.0 (2025-10-10)
