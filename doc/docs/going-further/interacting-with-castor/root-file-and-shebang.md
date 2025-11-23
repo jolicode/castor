@@ -13,7 +13,7 @@ This could be very useful if you want to use castor with a shebang line. For exa
 can create a file named `my-script` with the following content:
 
 ```php
-#!/usr/bin/env castor --castor-file
+#!/usr/bin/env -S castor --castor-file
 <?php
 use Castor\Attribute\AsTask;
 
