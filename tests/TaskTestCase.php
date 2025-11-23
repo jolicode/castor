@@ -62,7 +62,7 @@ abstract class TaskTestCase extends TestCase
         $inputStream = $input ? new InputStream() : null;
 
         $process = new Process(
-            [self::$castorBin, '--no-ansi', ...$args],
+            $this->getCommand($args),
             cwd: $workingDirectory,
             env: [
                 'COLUMNS' => 1000,
@@ -92,5 +92,10 @@ abstract class TaskTestCase extends TestCase
     {
         $actualString = OutputCleaner::cleanOutput($actualString);
         parent::assertStringEqualsFile($expectedFile, $actualString, $message);
+    }
+
+    protected function getCommand(array $args): array
+    {
+        return [self::$castorBin, '--no-ansi', ...$args];
     }
 }

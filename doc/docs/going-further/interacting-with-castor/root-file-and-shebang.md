@@ -33,5 +33,5 @@ chmod +x my-script
 Now, you can run your script directly from the command line:
 
 ```bash
-./my-script my-task
+./my-script shebang-task
 ```
