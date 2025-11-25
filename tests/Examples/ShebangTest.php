@@ -44,7 +44,7 @@ class ShebangTest extends TaskTestCase
         // Modify the shebang line to use the currently tested castor binary
         $shebangTask = preg_replace(
             '/^#!.*castor --castor-file.*$/m',
-            '#!' . self::$castorBin . ' --castor-file',
+            '#!/usr/bin/env -S ' . self::$castorBin . ' --castor-file',
             $shebangTask
         );
         file_put_contents(self::$shebangTaskFile, $shebangTask);
