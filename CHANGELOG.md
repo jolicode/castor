@@ -11,6 +11,7 @@
 * Add a `slug()` function to slugify strings
 * Display installation method/path in `castor debug`
 * Add support for PHP 8.5 (except for static binaries which are not available yet)
+* Allow to create context without a default one, useful if your default context does not have anything special
 
 ### Fixes
 

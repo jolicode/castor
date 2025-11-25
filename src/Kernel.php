@@ -188,6 +188,14 @@ final class Kernel
             ?: PlatformHelper::getEnv('CASTOR_CONTEXT')
             ?: $this->contextRegistry->getDefaultName();
 
+        if (!$currentContextName) {
+            $this->contextRegistry->setCurrentContext(new Context(
+                verbosityLevel: VerbosityLevel::fromSymfonyOutput($output)
+            ));
+
+            return;
+        }
+
         $applicationDefinition = $this->application->getDefinition();
         $applicationDefinition->addOption(new InputOption(
             'context',
