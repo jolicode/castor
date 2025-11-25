@@ -1,4 +1,5 @@
 completion                                               Dump the shell completion script
+context-aware                                            Demonstrates context-aware filesystem operations
 hello                                                    hello
 help                                                     Display help for a command
 list                                                     List commands
