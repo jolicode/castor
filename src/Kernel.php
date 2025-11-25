@@ -184,8 +184,8 @@ final class Kernel
             $contextOptions[] = '-c';
         }
 
-        $currentContextName = PlatformHelper::getEnv('CASTOR_CONTEXT')
-            ?: $input->getParameterOption($contextOptions)
+        $currentContextName = $input->getParameterOption($contextOptions)
+            ?: PlatformHelper::getEnv('CASTOR_CONTEXT')
             ?: $this->contextRegistry->getDefaultName();
 
         $applicationDefinition = $this->application->getDefinition();
