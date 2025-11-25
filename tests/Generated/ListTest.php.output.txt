@@ -3,6 +3,7 @@ hello                                                    hello
 help                                                     Display help for a command
 list                                                     List commands
 no-namespace                                             Task without a namespace
+shebang-task
 update                                                   Update all dependencies
 archive:zip                                              Compress files into a zip archive using native binary or fallback to ZipArchive php class
 archive:zip-binary                                       Compress files into a zip archive using native binary
