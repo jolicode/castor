@@ -91,7 +91,7 @@ class ApplicationFactory
             'repacked' => $repacked,
             'cache_dir' => '%env(default:.default_cache_dir:CASTOR_CACHE_DIR)%',
             'composer_no_remote' => '%env(bool:default::CASTOR_NO_REMOTE)%',
-            'context' => '%env(default::CASTOR_CONTEXT)%',
+            'context' => '',
             'env(CASTOR_GENERATE_STUBS)' => 'true',
             'generate_stubs' => '%env(bool:CASTOR_GENERATE_STUBS)%',
             'test' => '%env(bool:default::CASTOR_TEST)%',
