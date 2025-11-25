@@ -13,6 +13,10 @@ $phpFile = $_SERVER['CASTOR_PHP_REPLACE'] ?? false;
 if ($phpFile) {
     // Avoid infinite loop if we exec castor inside castor
     unset($_SERVER['CASTOR_PHP_REPLACE']);
+
+    // override script filename env var
+    $_SERVER['SCRIPT_FILENAME'] = $phpFile;
+
     require $phpFile;
 
     exit(0);

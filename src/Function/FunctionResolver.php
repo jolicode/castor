@@ -92,11 +92,6 @@ final readonly class FunctionResolver
             return;
         }
 
-        // @phpstan-ignore-next-line identical.alwaysFalse (PHP_BINARY is empty in case of static binary)
-        if (!\PHP_BINARY) {
-            return;
-        }
-
         $newClasses = array_diff(get_declared_classes(), $previousClasses);
         foreach ($newClasses as $className) {
             $reflectionClass = new \ReflectionClass($className);

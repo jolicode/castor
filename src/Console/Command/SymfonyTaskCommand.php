@@ -5,13 +5,15 @@ namespace Castor\Console\Command;
 use Castor\Attribute\AsSymfonyTask;
 use Castor\Console\Input\GetRawTokenTrait;
 use Castor\Descriptor\SymfonyTaskDescriptor;
+use Castor\Runner\PhpRunner;
+use Castor\Runner\ProcessRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
-use Symfony\Component\Process\Process;
+use Symfony\Component\Mime\MimeTypes;
 
 /** @internal */
 #[Exclude]
@@ -37,16 +39,20 @@ class SymfonyTaskCommand extends Command
         public readonly AsSymfonyTask $taskAttribute,
         public readonly \ReflectionClass $class,
         public readonly array $definition,
+        public readonly PhpRunner $phpRunner,
+        public readonly ProcessRunner $processRunner,
     ) {
         parent::__construct($taskAttribute->name);
     }
 
-    public static function createFromDescriptor(SymfonyTaskDescriptor $symfonyTaskDescriptor): self
+    public static function createFromDescriptor(SymfonyTaskDescriptor $symfonyTaskDescriptor, PhpRunner $phpRunner, ProcessRunner $processRunner): self
     {
         return new self(
             $symfonyTaskDescriptor->taskAttribute,
             $symfonyTaskDescriptor->function,
             $symfonyTaskDescriptor->definition,
+            $phpRunner,
+            $processRunner,
         );
     }
 
@@ -85,8 +91,56 @@ class SymfonyTaskCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $p = new Process([...$this->taskAttribute->console, $this->taskAttribute->originalName, ...$this->getRawTokens($input)]);
-        $p->run(fn ($type, $bytes) => print ($bytes));
+        $console = $this->taskAttribute->console;
+
+        if (!$console) {
+            throw new \RuntimeException('The AsSymfonyTask attribute "console" property must be a non-empty array.');
+        }
+
+        $execPath = $console[0];
+        $console = \array_slice($console, 1);
+
+        if (null === $this->taskAttribute->usePhpRunner) {
+            $mimeTypes = new MimeTypes();
+            $mimeType = $mimeTypes->guessMimeType($execPath);
+
+            $mainMimeType = $mimeType ? explode('/', $mimeType)[0] : null;
+
+            if ('text' === $mainMimeType && ($content = file_get_contents($execPath)) !== false) {
+                // let's read the file and check for php tags
+                $tokens = \PhpToken::tokenize($content);
+                $hasPhpTag = false;
+
+                foreach ($tokens as $token) {
+                    if (\T_OPEN_TAG === $token->id || \T_OPEN_TAG_WITH_ECHO === $token->id) {
+                        $hasPhpTag = true;
+
+                        break;
+                    }
+                }
+
+                $this->taskAttribute->usePhpRunner = $hasPhpTag;
+            } elseif ('application' === $mainMimeType) {
+                // check for php mime types
+                $this->taskAttribute->usePhpRunner = \in_array($mimeType, ['application/x-php', 'application/php'], true);
+            } else {
+                $this->taskAttribute->usePhpRunner = false;
+            }
+        }
+
+        $args = [...$console];
+
+        if ($this->taskAttribute->originalName) {
+            $args[] = $this->taskAttribute->originalName;
+        }
+
+        $args = [...$args, ...$this->getRawTokens($input)];
+
+        if ($this->taskAttribute->usePhpRunner) {
+            $p = $this->phpRunner->run($execPath, $args);
+        } else {
+            $p = $this->processRunner->run([$execPath, ...$args]);
+        }
 
         return $p->getExitCode() ?? 0;
     }

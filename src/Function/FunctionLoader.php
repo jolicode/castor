@@ -12,6 +12,8 @@ use Castor\Descriptor\SymfonyTaskDescriptor;
 use Castor\Descriptor\TaskDescriptor;
 use Castor\Exception\FunctionConfigurationException;
 use Castor\Factory\TaskCommandFactory;
+use Castor\Runner\PhpRunner;
+use Castor\Runner\ProcessRunner;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -24,6 +26,9 @@ final readonly class FunctionLoader
         #[Autowire(lazy: true)]
         private Application $application,
         private TaskCommandFactory $taskCommandFactory,
+        private PhpRunner $phpRunner,
+        #[Autowire(lazy: true)]
+        private ProcessRunner $processRunner,
     ) {
     }
 
@@ -86,7 +91,7 @@ final readonly class FunctionLoader
             }
         }
         foreach ($symfonyTaskDescriptors as $descriptor) {
-            $this->application->add(SymfonyTaskCommand::createFromDescriptor($descriptor));
+            $this->application->add(SymfonyTaskCommand::createFromDescriptor($descriptor, $this->phpRunner, $this->processRunner));
         }
     }
 }

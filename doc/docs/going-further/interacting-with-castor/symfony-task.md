@@ -49,3 +49,10 @@ with the `console` parameter. Some examples:
 * `['path/to/symfony/bin/console']`, when Symfony is in another directory
 * `['docker', 'exec', 'foobar-backend-1', '/app/server/backend/bin/console']`, when
   your Symfony application lives in a docker container
+
+> [!NOTE]
+> We try to detect automatically if the executable is a PHP script, and if so,
+> we will use a special runner that can also work without the PHP binary being
+> available on the system when using the static Castor binary.
+> You can override this behavior with the `usePhpRunner` parameter, where `true`
+> will force to consider the executable as a PHP script.

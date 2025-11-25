@@ -11,7 +11,8 @@ class AsSymfonyTask
     public function __construct(
         public ?string $name = null,
         public ?string $originalName = null,
-        public readonly array $console = [\PHP_BINARY, 'bin/console'],
+        public readonly array $console = ['bin/console'],
+        public ?bool $usePhpRunner = null,
     ) {
     }
 }
