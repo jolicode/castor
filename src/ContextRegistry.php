@@ -70,7 +70,7 @@ class ContextRegistry
         }
 
         if (1 < \count($this->descriptors)) {
-            throw new \RuntimeException(\sprintf('Since there are multiple contexts "%s", you must set a "default: true" context.', implode('", "', $this->getNames())));
+            return;
         }
 
         $this->defaultName = array_key_first($this->descriptors);
