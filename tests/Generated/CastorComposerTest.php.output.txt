@@ -49,6 +49,7 @@ Available commands:
   prohibits            [why-not] Shows which packages prevent the given package from being installed
   reinstall            Uninstalls and reinstalls the given package names
   remove               [rm|uninstall] Removes a package from the require or require-dev
+  repository           [repo] Manages repositories
   require              [r] Adds required packages to your composer.json and installs them
   run-script           [run] Runs the scripts defined in composer.json
   search               Searches for packages
