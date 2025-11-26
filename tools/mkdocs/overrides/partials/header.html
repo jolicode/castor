@@ -1,6 +1,4 @@
-{#-
-This file was automatically generated - do not edit
--#}
+{# Retrieved from https://github.com/squidfunk/mkdocs-material/blob/master/src/templates/partials/header.html to override site name #}
 {% set class = "md-header" %}
 {% if "navigation.tabs.sticky" in features %}
     {% set class = class ~ " md-header--shadow md-header--lifted" %}
@@ -20,7 +18,7 @@ This file was automatically generated - do not edit
             <div class="md-header__ellipsis">
                 <div class="md-header__topic">
           <span class="md-ellipsis">
-            {# { config.site_name }} #}
+            {# {{ config.site_name }} #}
              Task runner
           </span>
                 </div>
