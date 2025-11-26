@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+## 1.1.0 (2025-11-26)
+
 ### Features
 
 * Allow to specify directory where to output repacked phar
@@ -21,6 +23,8 @@
 * Fix remote composer working directory, forcing relative paths to have "../" prefix
 * Allow to run Symfony commands even with the static binaries
 * Force the `SCRIPT_FILENAME` env var when using `run_php()` to avoid issues with some PHP scripts
+* Fix `--context` to take precedence over`CASTOR_CONTEXT` env var
+* Fix `CASTOR_CONTEXT=default` to work as expected
 
 ### Internal
 
