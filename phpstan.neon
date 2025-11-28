@@ -1,5 +1,6 @@
 includes:
     - phpstan-baseline.neon
+    - tools/phpstan/src/ProhibitCastorFunctionInClass.php
 
 parameters:
     level: 8
@@ -39,10 +40,6 @@ parameters:
            }
        '''
     ignoreErrors:
-        -
-            message: "#^Function pyrech\\\\.* not found\\.$#"
-            count: 2
-            path: examples/
         -
             identifier: missingType.generics
 
