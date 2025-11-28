@@ -73,7 +73,7 @@ final readonly class FunctionLoader
         $previousDefault = null;
 
         foreach ($taskDescriptors as $descriptor) {
-            $this->application->add($this->taskCommandFactory->createTask($descriptor));
+            $this->application->addCommand($this->taskCommandFactory->createTask($descriptor));
 
             if ($descriptor->taskAttribute->default) {
                 $taskName = $descriptor->taskAttribute->name;
@@ -91,7 +91,7 @@ final readonly class FunctionLoader
             }
         }
         foreach ($symfonyTaskDescriptors as $descriptor) {
-            $this->application->add(SymfonyTaskCommand::createFromDescriptor($descriptor, $this->phpRunner, $this->processRunner));
+            $this->application->addCommand(SymfonyTaskCommand::createFromDescriptor($descriptor, $this->phpRunner, $this->processRunner));
         }
     }
 }
