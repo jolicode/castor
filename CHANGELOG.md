@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Internal
+
+* Update all PHP vendor
+
 ## 1.1.0 (2025-11-26)
 
 ### Features

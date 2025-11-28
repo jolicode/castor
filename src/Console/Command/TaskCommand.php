@@ -49,17 +49,18 @@ class TaskCommand extends Command implements SignalableCommandInterface
         private readonly Slugger $slugger,
         private readonly Filesystem $fs,
     ) {
-        $this->setDescription($taskDescriptor->taskAttribute->description);
-        $this->setAliases($taskDescriptor->taskAttribute->aliases);
-
         $taskName = $taskDescriptor->taskAttribute->name;
+
         if ($taskDescriptor->taskAttribute->namespace) {
             $taskName = $taskDescriptor->taskAttribute->namespace . ':' . $taskName;
         }
 
-        $this->setProcessTitle(Application::NAME . ':' . $taskName);
-
         parent::__construct($taskName);
+
+        $this->setDescription($taskDescriptor->taskAttribute->description);
+        $this->setAliases($taskDescriptor->taskAttribute->aliases);
+
+        $this->setProcessTitle(Application::NAME . ':' . $taskName);
     }
 
     /**
