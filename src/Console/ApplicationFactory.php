@@ -227,22 +227,22 @@ class ApplicationFactory
                 ->args([
                     '$containerBuilder' => service(ContainerInterface::class),
                 ])
-                ->call('add', [service(DebugCommand::class)])
-                ->call('add', [service(ExecuteCommand::class)])
+                ->call('addCommand', [service(DebugCommand::class)])
+                ->call('addCommand', [service(ExecuteCommand::class)])
                 ->call('setDispatcher', [service(EventDispatcherInterface::class)])
                 ->call('setCatchErrors', [true])
         ;
         if (!$repacked && $hasCastorFile) {
             $app
-                ->call('add', [service(ComposerCommand::class)])
-                ->call('add', [service(RepackCommand::class)])
-                ->call('add', [service(CompileCommand::class)])
+                ->call('addCommand', [service(ComposerCommand::class)])
+                ->call('addCommand', [service(RepackCommand::class)])
+                ->call('addCommand', [service(CompileCommand::class)])
             ;
         }
 
         if (!$hasCastorFile) {
             $app
-                ->call('add', [service(InitCommand::class)])
+                ->call('addCommand', [service(InitCommand::class)])
                 ->call('setDefaultCommand', ['init'])
             ;
         }
