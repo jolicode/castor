@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Features
+
+* Add `#[AsArgsAfterOptionEnd]` attribute to get all arguments after `--` delimiter
+
 ### Internal
 
 * Update all PHP vendor

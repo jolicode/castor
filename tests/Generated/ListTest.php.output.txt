@@ -19,7 +19,7 @@ arguments:optional
 arguments:override-argument
 arguments:override-option
 arguments:passthru                                       Dumps all arguments and options, without configuration nor validation
-arguments:passthru-after-endoption                       Dumps all arguments and options, without configuration nor validation
+arguments:passthru-after-endoption                       Dumps all arguments and options after the end of options marker (--).
 arguments:path-argument
 arguments:phpunit
 arguments:simple

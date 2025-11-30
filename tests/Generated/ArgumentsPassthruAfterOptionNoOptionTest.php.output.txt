@@ -1,18 +1,18 @@
-array(8) {
+string(6) "before"
+bool(false)
+array(7) {
   [0]=>
-  string(6) "before"
-  [1]=>
   string(1) "a"
-  [2]=>
+  [1]=>
   string(1) "b"
-  [3]=>
+  [2]=>
   string(2) "--"
-  [4]=>
+  [3]=>
   string(4) "--no"
-  [5]=>
+  [4]=>
   string(5) "--foo"
-  [6]=>
+  [5]=>
   string(3) "bar"
-  [7]=>
+  [6]=>
   string(2) "-x"
 }

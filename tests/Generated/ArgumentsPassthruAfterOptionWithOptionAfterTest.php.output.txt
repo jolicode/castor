@@ -1,10 +1,10 @@
-array(4) {
+string(6) "before"
+bool(false)
+array(3) {
   [0]=>
-  string(6) "before"
-  [1]=>
   string(1) "a"
-  [2]=>
+  [1]=>
   string(1) "b"
-  [3]=>
+  [2]=>
   string(15) "--custom-option"
 }

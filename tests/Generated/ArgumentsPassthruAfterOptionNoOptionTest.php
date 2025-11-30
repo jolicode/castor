@@ -7,10 +7,10 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class ArgumentsPassthruAfterOptionNoOptionTest extends TaskTestCase
 {
-    // arguments:passthru
+    // arguments:passthru-after-endoption
     public function test(): void
     {
-        $process = $this->runTask(['arguments:passthru', 'before', '--', 'a', 'b', '--', '--no', '--foo', 'bar', '-x']);
+        $process = $this->runTask(['arguments:passthru-after-endoption', 'before', '--', 'a', 'b', '--', '--no', '--foo', 'bar', '-x']);
 
         if (0 !== $process->getExitCode()) {
             throw new ProcessFailedException($process);
