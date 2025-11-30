@@ -8,6 +8,7 @@ update                                                   Update all dependencies
 archive:zip                                              Compress files into a zip archive using native binary or fallback to ZipArchive php class
 archive:zip-binary                                       Compress files into a zip archive using native binary
 archive:zip-php                                          Compress files into a zip archive using ZipArchive php class
+arguments:args-after-end-option                          Dumps all arguments and options after "--" without configuration nor validation
 arguments:arguments                                      Dumps all arguments and options, with custom configuration
 arguments:auto-configuration                             Dumps all arguments and options, without configuration
 arguments:autocomplete                                   Provides autocomplete for an argument
@@ -18,6 +19,7 @@ arguments:optional
 arguments:override-argument
 arguments:override-option
 arguments:passthru                                       Dumps all arguments and options, without configuration nor validation
+arguments:passthru-after-endoption                       Dumps all arguments and options after the end of options marker (--).
 arguments:path-argument
 arguments:phpunit
 arguments:simple

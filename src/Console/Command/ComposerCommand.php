@@ -43,7 +43,7 @@ final class ComposerCommand extends Command
         }
 
         $vendorDirectory = $this->rootDir . '/' . Composer::VENDOR_DIR;
-        $tokens = $this->getRawTokens($input);
+        $tokens = $this->getRawTokens($input, false);
 
         if (\in_array('init', $tokens)) {
             $lastDirectory = basename($this->rootDir);
