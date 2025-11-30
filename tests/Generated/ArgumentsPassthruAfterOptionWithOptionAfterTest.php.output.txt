@@ -1,0 +1,10 @@
+array(4) {
+  [0]=>
+  string(6) "before"
+  [1]=>
+  string(1) "a"
+  [2]=>
+  string(1) "b"
+  [3]=>
+  string(15) "--custom-option"
+}
