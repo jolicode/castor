@@ -2,6 +2,7 @@
 
 namespace Castor\Console\Command;
 
+use Castor\Attribute\AsArgsAfterOptionEnd;
 use Castor\Attribute\AsArgument;
 use Castor\Attribute\AsCommandArgument;
 use Castor\Attribute\AsOption;
@@ -111,7 +112,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
         }
 
         foreach ($this->taskDescriptor->function->getParameters() as $parameter) {
-            if ($parameter->getAttributes(AsRawTokens::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null) {
+            if (($attribute = $parameter->getAttributes(AsRawTokens::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null) && $attribute->getName() !== AsArgsAfterOptionEnd::class) {
                 $this->ignoreValidationErrors();
 
                 continue;
@@ -185,8 +186,8 @@ class TaskCommand extends Command implements SignalableCommandInterface
         $args = [];
 
         foreach ($this->taskDescriptor->function->getParameters() as $parameter) {
-            if ($parameter->getAttributes(AsRawTokens::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null) {
-                $args[] = $this->getRawTokens($input);
+            if (($asRawToken = $parameter->getAttributes(AsRawTokens::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null)) {
+                $args[] = $this->getRawTokens($input, $asRawToken->getName() === AsArgsAfterOptionEnd::class);
 
                 continue;
             }

@@ -1,0 +1,18 @@
+string(6) "before"
+bool(false)
+array(7) {
+  [0]=>
+  string(1) "a"
+  [1]=>
+  string(1) "b"
+  [2]=>
+  string(2) "--"
+  [3]=>
+  string(4) "--no"
+  [4]=>
+  string(5) "--foo"
+  [5]=>
+  string(3) "bar"
+  [6]=>
+  string(2) "-x"
+}
