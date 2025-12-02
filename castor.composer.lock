@@ -4,8 +4,51 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "84c13e176c1c98b7831babc4ec2cab99",
+    "content-hash": "b958f7e37d137c621bc3a92542b7e477",
     "packages": [
+        {
+            "name": "castor-php/php-qa",
+            "version": "0.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/castor-php/php-qa.git",
+                "reference": "fe2f69be9071622375ce42e8d7ae718ecf3194db"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/castor-php/php-qa/zipball/fe2f69be9071622375ce42e8d7ae718ecf3194db",
+                "reference": "fe2f69be9071622375ce42e8d7ae718ecf3194db",
+                "shasum": ""
+            },
+            "require-dev": {
+                "jolicode/castor": "^0.22.1"
+            },
+            "type": "castor-plugin",
+            "autoload": {
+                "files": [
+                    "src/functions.php"
+                ],
+                "psr-4": {
+                    "CastorPhp\\PhpQa\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Joel Wurtz",
+                    "email": "jwurtz@jolicode.com"
+                }
+            ],
+            "description": "PHP Quality tools functions for castor",
+            "support": {
+                "issues": "https://github.com/castor-php/php-qa/issues",
+                "source": "https://github.com/castor-php/php-qa/tree/0.2.0"
+            },
+            "time": "2025-11-28T14:04:27+00:00"
+        },
         {
             "name": "doctrine/collections",
             "version": "2.2.2",
