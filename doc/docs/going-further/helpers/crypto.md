@@ -1,4 +1,13 @@
+---
+description: >
+  Learn to use Castor's cryptography helpers for encrypting and decrypting
+  strings and files with passwords, leveraging libsodium for secure
+  operations.
+---
+
 # Cryptography helpers
+
+Castor provides a set of helper functions for cryptographic operations.
 
 ## The `encrypt_with_password()` function
 

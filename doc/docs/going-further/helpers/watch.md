@@ -1,3 +1,9 @@
+---
+description: >
+  Learn to use Castor's `watch()` function to monitor files and directories for
+  changes.
+---
+
 # Watching file changes
 
 Castor provides a `watch()` function that will watch a file or a directory and

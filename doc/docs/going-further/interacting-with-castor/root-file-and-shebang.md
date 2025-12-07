@@ -1,11 +1,20 @@
+---
+description: >
+  Learn how to use a custom root file and shebang lines in Castor to create
+  directly executable scripts for your tasks.
+---
+
 # Root file and shebang
+
+This document explains how to make Castor to use a custom root file and
+how to leverage shebang lines for direct script execution.
 
 ## Using a custom root file
 
-By default castor looks for a `castor.php` or  `.castor/castor.php` file in the
+By default, castor looks for a `castor.php` or  `.castor/castor.php` file in the
 current working directory or one of its parents.
 
-However you can use another root file by using the `--castor-file` option:
+However, you can use another root file by using the `--castor-file` option:
 
 ```bash
 castor --castor-file=path/to/your-file.php your-task

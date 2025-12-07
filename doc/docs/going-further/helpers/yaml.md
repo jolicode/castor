@@ -1,3 +1,9 @@
+---
+description: >
+  Discover how to manipulate YAML in Castor with `yaml_parse()` and
+  `yaml_dump()` functions.
+---
+
 # YAML
 
 Castor provides a `yaml_parse()` and `yaml_dump()` functions that will parse or

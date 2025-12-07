@@ -1,4 +1,13 @@
+---
+description: >
+  Learn how to use Castor's `check()` function and `ProblemException` to handle
+  assertions and gracefully stop task execution when requirements are not met.
+---
+
 # Assertion
+
+This document details Castor's assertion capabilities, including the `check()`
+function and `ProblemException` for robust task management.
 
 ## The `check()` function
 

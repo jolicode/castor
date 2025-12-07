@@ -1,3 +1,9 @@
+---
+description: >
+  Learn how to define and use task arguments and options in Castor, including
+  optional arguments, validation, and path-specific autocompletion.
+---
+
 # Task arguments
 
 When creating a function that will be used as a task, all the parameters of
@@ -7,7 +13,7 @@ the function will be used as arguments or options:
 {% include "/examples/basic/arguments/simple.php" start="<?php\n\nnamespace arguments;\n\n" %}
 ```
 
-Which can be called like that:
+This task can be called like that:
 
 ```console
 $ castor simple foo bar

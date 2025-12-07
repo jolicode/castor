@@ -1,5 +1,7 @@
 ---
-description: Exhaustive list of built-in Castor functions, attributes, and environment variables supported.
+description: >
+  Exhaustive list of built-in Castor functions, attributes, and environment
+  variables supported.
 ---
 
 # Castor reference

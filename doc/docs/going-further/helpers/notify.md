@@ -1,3 +1,9 @@
+---
+description: >
+  Learn how to display desktop notifications, customize their titles, and
+  control when they appear.
+---
+
 # Desktop notification
 
 Castor uses the [JoliNotif](https://github.com/jolicode/jolinotif) library to

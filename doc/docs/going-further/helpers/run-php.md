@@ -1,4 +1,12 @@
+---
+description: >
+  Learn how to execute PHP scripts and PHAR files using Castor's `run_php()`
+  function, and how to manage memory limits for resource-intensive tasks.
+---
+
 # Executing a PHP script
+
+This document explains how to execute PHP scripts and PHAR files within Castor.
 
 ## The `run_php()` function
 
@@ -13,7 +21,7 @@ function exec_something()
 }
 ```
 
-This allow to execute external php script even if you don't have PHP when using
+This allows to execute external php script even if you don't have PHP when using
 the static binary and without conflicts between the external script and internal
 php code of Castor.
 

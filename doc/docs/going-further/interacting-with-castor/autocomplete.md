@@ -1,4 +1,12 @@
+---
+description: >
+  Learn how to enable and use autocomplete for your Castor tasks, with both
+  static and dynamic suggestions for arguments and options.
+---
+
 # Autocomplete
+
+This document explains how to enable and use autocomplete for your Castor tasks.
 
 ## Installation
 

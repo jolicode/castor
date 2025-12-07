@@ -1,21 +1,30 @@
+---
+description: >
+  Learn how to use Castor's `mount()` function to integrate multiple Castor
+  applications, manage working directories, and organize tasks with namespaces.
+---
+
 # Mount another application
 
 Castor can mount another application. This pattern is useful when you have a
-majestic monolith and you want to split it into smaller applications:
+majestic monolith and you want to split it into smaller applications.
+
+## Introduction
+
+Let's take the following projects architecture example:
 
 ```text
-project/
-├─ projects/
-│  ├─ A/
-│  │  ├─ castor.php
-│  ├─ B/
-│  │  ├─ castor.php
-├─ castor.php
+projects/
+├─ A/
+│  ├─ castor.php
+├─ B/
+│  ├─ castor.php
+castor.php
 ```
 
-In this example, `project/A/castor.php` and `project/B/castor.php` are two
-standalone castor applications. All functions defined in `project/A/castor.php`
-will be run **inside** the `project/A` directory whatever your current directory
+In this example, `projects/A/castor.php` and `projects/B/castor.php` are two
+standalone castor applications. All functions defined in `projects/A/castor.php`
+will be run **inside** the `projects/A` directory whatever your current directory
 is.
 
 To achieve this, you need to use the `mount()` function in your main
@@ -44,7 +53,7 @@ working directory. If in your `path/to/another/castor/app` you keep repeating th
 kind of code:
 
 ```php
-use function Castor\Attribute\AsTask;
+use Castor\Attribute\AsTask;
 
 use function Castor\context;
 use function Castor\run;

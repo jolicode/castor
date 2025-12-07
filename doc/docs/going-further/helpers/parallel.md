@@ -1,4 +1,12 @@
+---
+description: >
+  Discover how to use Castor's `parallel()` function to run multiple functions
+  concurrently, leveraging PHP Fibers for efficient, non-blocking execution.
+---
+
 # Parallel execution
+
+This document explores how to execute multiple functions concurrently in Castor.
 
 ## The `parallel()` function
 

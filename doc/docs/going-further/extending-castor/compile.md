@@ -1,4 +1,16 @@
+---
+description: >
+  Learn how to compile your Castor application into a static binary, making it
+  portable and independent of the target system's PHP installation.
+---
+
 # Compiling your application into a static binary
+
+This document explains how to compile your Castor application into a static
+binary, making it portable and independent of the target system's PHP
+installation.
+
+## Introduction
 
 [Packing your Castor application as a phar](repack.md) can be a good way to
 easily share and use it in various environments.
@@ -11,7 +23,8 @@ To make things simpler, Castor's `compile` command can help by creating a
 customizable PHP binary with a phar, making one executable file that can be used
 in any setting.
 
-Just pass your repacked Castor app phar as an argument of this command.
+Just pass your repacked Castor app phar as an argument of this command and you
+are done.
 
 ## Pre-requisites
 

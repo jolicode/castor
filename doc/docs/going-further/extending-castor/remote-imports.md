@@ -1,9 +1,18 @@
+---
+description: >
+  Learn how to import remote functions in Castor using Composer, manage
+  dependencies with the `castor composer` command, and control remote imports
+  for security.
+---
+
 # Import remote functions
 
-> [!WARNING]
-> Remote imports is in a experimental state and may change in the future.
+In addition to loading functions locally from your filesystem, Castor can also
+import external functions remote resources. This document explains how to
+achieve this.
 
-Castor can import functions from your filesystem but also from a remote resource.
+> [!WARNING]
+> Remote imports is in an experimental state and may change in the future.
 
 ## Installing remote packages
 
@@ -28,8 +37,8 @@ optional. To import them, you can use the `import()` function.
 import('composer://vendor/package/', file: 'functions.php');
 ```
 
-File is optional, if not provided, Castor will look for a `castor.php` file in
-the package.
+The `file` argument is optional. When not provided, Castor will look for a
+`castor.php` file in the package.
 
 ## Manipulating castor composer file
 
@@ -42,7 +51,7 @@ For example, you can use it to add a package to the file:
 castor composer require 'vendor/package'
 ```
 
-Or you can use it to update packages
+Or you can use it to update packages:
 
 ```bash
 castor composer update

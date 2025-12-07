@@ -1,4 +1,14 @@
+---
+description: >
+  Discover advanced context usage in Castor, including disabling tasks, getting
+  specific contexts, using the `with()` function, and generating contexts
+  programmatically.
+---
+
 # Advanced Context usage
+
+This document delves into advanced techniques for managing and utilizing contexts
+within Castor.
 
 ## Disabled tasks according to the context
 

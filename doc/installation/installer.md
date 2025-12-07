@@ -4,6 +4,9 @@ description: Recommended installation method of Castor.
 
 # The official installer
 
+This document outlines the recommended and easiest way to install Castor
+on your system using the official installer.
+
 ## Using the installer
 
 The installer is the recommended and easiest way to install Castor on your system.

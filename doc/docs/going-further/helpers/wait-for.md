@@ -1,3 +1,9 @@
+---
+description: >
+  Explore Castor's `wait_for` functions to handle various scenarios like waiting
+  for ports, URLs, HTTP responses, and Docker containers or custom scenarios.
+---
+
 # Waiting for things
 
 `wait_for` and `wait_for_*` functions are designed to help developers handle

@@ -1,3 +1,9 @@
+---
+description: >
+  Learn how to use Castor's `slug()` function to create URL- and filename-safe
+  strings, leveraging Symfony's AsciiSlugger for consistent results.
+---
+
 # Slug
 
 Castor provides a `slug()` function to slugify strings for use in URLs or filenames.

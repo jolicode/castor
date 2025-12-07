@@ -1,4 +1,14 @@
+---
+description: >
+  Learn to use Castor's `fs()` and `finder()` functions for OS-independent
+  filesystem operations and powerful file/directory searching with Symfony
+  components.
+---
+
 # Filesystem
+
+This document explores Castor's filesystem helpers, providing OS-independent
+utilities for file and directory manipulation.
 
 ## The `fs()` function
 

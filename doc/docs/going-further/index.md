@@ -1,3 +1,10 @@
+---
+description: >
+  Explore advanced topics in Castor, including built-in helpers, interacting
+  with Castor's features, and extending its functionality for custom task
+  management.
+---
+
 # Going further
 
 This section contains more advanced topics about Castor.
