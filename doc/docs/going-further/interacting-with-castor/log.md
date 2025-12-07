@@ -1,8 +1,15 @@
+---
+description: >
+  Learn how to use Castor's logging capabilities, including the `log()` and
+  `logger()` functions, and how to debug your tasks with the `debug` command.
+---
+
 # Log and Debug
 
-Castor has logging capabilities. It relies on
-[Monolog](https://github.com/seldaek/monolog) and is also configured with
-[Symfony Console](https://symfony.com/doc/current/logging/monolog_console.html).
+This document details Castor's logging and debugging capabilities, leveraging
+[Monolog](https://github.com/seldaek/monolog) and
+[Symfony Console](https://symfony.com/doc/current/logging/monolog_console.html)
+for comprehensive output management.
 
 There are different log levels, and you can control the log level displayed with
 the `-v` option:

@@ -1,8 +1,14 @@
+---
+description: >
+  Learn how to listen to and react to events in Castor by registering
+  listeners, and explore the built-in events for advanced customization of your
+  tasks.
+---
+
 # Listening to events
 
-Castor provides utilities to listen and react when event happened inside your
-project. It allows to implement custom logic at various points in the
-application lifecycle.
+Castor provides utilities to listen and react when events happen inside your
+project, allowing custom logic at various points in the application lifecycle.
 
 ## Registering a listener
 

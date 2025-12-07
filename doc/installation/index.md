@@ -4,6 +4,9 @@ description: Installation instructions for Castor.
 
 # Installing Castor and initial setup
 
+This document provides comprehensive instructions for installing and
+setting up Castor.
+
 ## Installation methods
 
 You can install Castor using different methods:

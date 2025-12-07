@@ -1,7 +1,15 @@
+---
+description: >
+  Learn how to use Castor's fingerprinting functionality to execute tasks
+  conditionally based on changes in files, strings, or other data sources.
+---
+
 # Fingerprinting and code execution when something changes
 
-Castor provides a `fingerprint` functionality to execute tasks only if something
-changed. To detect whether something has changed, Castor uses a fingerprint that
+Castor provides a fingerprinting functionality to execute tasks only if
+something changed.
+
+To detect whether something has changed, Castor uses a fingerprint that
 can be anything like a string content, the hash of a file or a group of files
 (based on content or modification time), etc.
 

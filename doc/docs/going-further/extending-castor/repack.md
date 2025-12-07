@@ -1,3 +1,9 @@
+---
+description: >
+  Learn how to repackage your Castor application into a distributable PHAR file,
+  customize it with your own logo, and prepare for static compilation.
+---
+
 # Repacking your application in a new phar
 
 You have created a Castor application, with many tasks, and you want to
@@ -30,13 +36,13 @@ vendor/bin/castor repack
 
 > [!NOTE]
 > Castor will automatically import all files in the current directly.
-> So ensure to have the less files possible in the directory where you run the
+> So ensure to have the fewer files possible in the directory where you run the
 > repack task to avoid including useless files in the phar.
 <!-- -->
 > [!NOTE]
 > If a `box.json` file exists in your application directory,
 > it will be merged with the config file used by Castor.
-> None of theses keys `base-path`, `main`, `alias` or `output` keys can be
+> None of these keys `base-path`, `main`, `alias` or `output` keys can be
 > defined in your application box config.
 <!-- -->
 > [!CAUTION]

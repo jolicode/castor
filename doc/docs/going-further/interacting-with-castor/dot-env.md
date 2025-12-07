@@ -1,4 +1,13 @@
+---
+description: >
+  Learn how to load and use .env files in Castor with the `load_dot_env()`
+  function and how to create a context from a .env file for your tasks.
+---
+
 # Using .env files
+
+This document explains how to effectively use `.env` files within Castor to
+manage environment variables and create contexts.
 
 ## The `load_dot_env()` function
 

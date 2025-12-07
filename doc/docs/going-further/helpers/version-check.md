@@ -1,4 +1,14 @@
+---
+description: >
+  Learn how to enforce a minimum Castor version for your tasks using
+  `guard_min_version()` and manage update reminders for a smooth development
+  experience.
+---
+
 # Check Castor version
+
+This document explains how to manage and enforce Castor versions within your
+projects.
 
 ## The `guard_min_version()` function
 

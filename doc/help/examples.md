@@ -1,5 +1,7 @@
 ---
-description: See how to use Castor with some examples, either builtin or from the real-world.
+description: >
+    See how to use Castor with some examples, either builtin or from the
+    real-world.
 ---
 
 # Examples and use-cases

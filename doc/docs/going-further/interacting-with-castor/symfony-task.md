@@ -1,3 +1,10 @@
+---
+description: >
+  Learn how to reuse Symfony commands as Castor tasks with the
+  `#[AsSymfonyTask]` attribute, allowing seamless integration between your
+  Castor and Symfony projects.
+---
+
 # Re-use Symfony Command
 
 If your Castor project lives near a Symfony application, you may want to use

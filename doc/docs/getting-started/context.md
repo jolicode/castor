@@ -1,3 +1,9 @@
+---
+description: >
+  Learn how to use and create contexts in Castor to manage environments,
+  variables, and process execution settings for your tasks.
+---
+
 # Context
 
 For every task that Castor run, it uses a `Context` object. This object

@@ -1,4 +1,14 @@
+---
+description: >
+  Learn how to execute external processes in Castor using the `run()`,
+  `capture()`, and `exit_code()` functions, and how to manage process output
+  and interactivity.
+---
+
 # Executing Processes
+
+This document explains how to execute external processes in Castor, manage their
+output, and handle interactivity.
 
 ## The `run()` function
 

@@ -1,3 +1,9 @@
+---
+description: >
+  Learn how to handle signals in Castor to gracefully manage task execution,
+  such as stopping a task with CTRL+C or responding to other system signals.
+---
+
 # Handling signals
 
 Castor can handle signals sent to the process. This is useful to gracefully

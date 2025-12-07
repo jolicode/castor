@@ -1,4 +1,14 @@
+---
+description: >
+  Learn to make HTTP requests, download files, and configure the HTTP client in
+  Castor using `http_request()`, `http_download()`, and `http_client()`
+  functions.
+---
+
 # HTTP requests
+
+This document details how to perform HTTP requests, download files, and configure
+the HTTP client within Castor.
 
 ## The `http_request()` function
 

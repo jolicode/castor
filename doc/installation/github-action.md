@@ -1,6 +1,10 @@
+---
+description: How to set up Castor in your GitHub Actions workflows.
+---
+
 # GitHub Action
 
-You can set up Castor in your GitHub Actions workflows in two different ways.
+This document explains how to set up Castor within your GitHub Actions workflows.
 
 ## Using the official setup-castor action
 

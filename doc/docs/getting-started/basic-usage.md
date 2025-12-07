@@ -1,4 +1,14 @@
+---
+description: >
+  Learn the basic usage of Castor, including how to create and execute your
+  first task, organize tasks into namespaces and files, and customize task
+  attributes.
+---
+
 # Basic usage
+
+This document covers the fundamental aspects of using Castor, from executing
+your first task to organizing your project.
 
 ## Executing your first task
 

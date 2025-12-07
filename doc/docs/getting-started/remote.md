@@ -1,3 +1,10 @@
+---
+description: >
+  Learn how to execute remote PHP packages with Castor without installation,
+  specifying versions, binaries, and dependencies for flexible command
+  execution.
+---
+
 # Remote execution
 
 Castor allows you to run any php package without installing it on your machine or

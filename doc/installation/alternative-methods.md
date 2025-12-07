@@ -4,9 +4,9 @@ description: Alternatives methods to install Castor.
 
 # Alternative installation methods
 
-Using the installer is [the recommended way to install Castor](installer.md). However, if you
-need to (or if you are on Windows), you can also install Castor using other
-methods.
+Using the installer is [the recommended way to install Castor](installer.md).
+However, if you need to (or if you are on Windows), you can also install Castor
+using other methods.
 
 ## As a phar
 

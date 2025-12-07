@@ -1,4 +1,13 @@
+---
+description: >
+  Learn how to use Castor's caching functions, `cache()` and `get_cache()`, to
+  store and retrieve data, set TTLs, and manage cache locations for optimized
+  performance.
+---
+
 # Cache
+
+This document describes how to use the caching functions provided by Castor.
 
 ## The `cache()` function
 

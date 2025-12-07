@@ -1,4 +1,12 @@
+---
+description: >
+  Learn how to use Castor's `zip()`, `zip_binary()`, and `zip_php()` functions
+  to create password-protected ZIP archives with various compression methods.
+---
+
 # Archive
+
+This section details Castor's functions for creating and managing ZIP archives.
 
 ## The `zip()` function
 

@@ -1,3 +1,10 @@
+---
+description: >
+  Learn to interact with the console in Castor using `io()`, `input()`,
+  `output()`, `app()`, and `task()` functions, and explore the experimental
+  section output feature.
+---
+
 # Manipulating the input and output and interacting with the Console
 
 Castor is heavily based on

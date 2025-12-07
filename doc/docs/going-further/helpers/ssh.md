@@ -1,3 +1,10 @@
+---
+description: >
+  Learn how to use Castor's `ssh_run`, `ssh_upload`, and `ssh_download`
+  functions to execute commands on remote servers and transfer files via SCP,
+  with detailed parameter explanations.
+---
+
 # SSH and remote servers
 
 Castor provide several `ssh_*` functions to run SSH commands on remote servers
