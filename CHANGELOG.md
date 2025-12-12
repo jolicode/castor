@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Features
+
+* Add a `terminal()` function to get terminal properties
+
 ### Internal
 
 * Update all PHP vendor

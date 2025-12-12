@@ -22,6 +22,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Console\Terminal;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
@@ -774,5 +775,12 @@ function slug(string $value, string $separator = '-', ?string $locale = null): s
     return Container::get()
         ->slugger
         ->slug($value, $separator, $locale)
+    ;
+}
+
+function terminal(): Terminal
+{
+    return Container::get()
+        ->terminal
     ;
 }

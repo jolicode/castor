@@ -51,6 +51,7 @@ Castor provides the following built-in functions:
 - [`ssh_run`](going-further/helpers/ssh.md#the-ssh_run-function)
 - [`ssh_upload`](going-further/helpers/ssh.md#the-ssh_upload-function)
 - [`task`](going-further/helpers/console-and-io.md#the-task-function)
+- [`terminal`](going-further/helpers/console-and-io.md#the-terminal-function)
 - [`variable`](getting-started/context.md#the-variable-function)
 - [`wait_for`](going-further/helpers/wait-for.md#the-wait_for-function)
 - [`wait_for_docker_container`](going-further/helpers/wait-for.md#the-wait_for_docker_container-function)

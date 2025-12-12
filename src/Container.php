@@ -23,6 +23,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Console\Terminal;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -55,6 +56,7 @@ final class Container
         public readonly SectionOutput $sectionOutput,
         public readonly SshRunner $sshRunner,
         public readonly SymfonyStyle $symfonyStyle,
+        public readonly Terminal $terminal,
         public readonly Waiter $waiter,
         public readonly WatchRunner $watchRunner,
         public readonly SymmetricCrypto $symmetricCrypto,
