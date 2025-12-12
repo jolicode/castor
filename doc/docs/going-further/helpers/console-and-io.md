@@ -106,6 +106,19 @@ before the task  or during a context initialization for example. In this case,
 `task()` will throw an exception. You can use the optional parameter to allow
 `task(true)` to return `null` in this case.
 
+## The `terminal()` function
+
+Castor provides the `terminal()` helper to get an instance of
+[`Terminal`](https://github.com/symfony/symfony/blob/7.4/src/Symfony/Component/Console/Terminal.php)
+object.
+
+This service is useful to get some properties of the terminal in which Castor
+currently runs, like the width or height for example:
+
+```php
+{% include "/examples/basic/io/terminal.php" start="<?php\n\nnamespace io;\n\n" %}
+```
+
 ## Experimental section output
 
 When running commands in parallel, output can be mixed and hard to read. Castor

@@ -25,6 +25,7 @@ use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Console\Terminal;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -217,6 +218,8 @@ class ApplicationFactory
                 ->synthetic()
 
             ->set(SymfonyStyle::class)
+
+            ->set(Terminal::class)
 
             ->set(ErrorHandler::class)
                 ->synthetic()

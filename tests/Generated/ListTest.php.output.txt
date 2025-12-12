@@ -74,6 +74,7 @@ foo2:hello2
 http:download                                            Download a file through HTTP
 http:request                                             Make HTTP request
 io:io                                                    Plays with Symfony Style
+io:term                                                  Get terminal properties
 log:all-level                                            Logs some messages with different levels
 log:error                                                Logs an "error" message
 log:info                                                 Logs an "info" message

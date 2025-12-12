@@ -75,6 +75,7 @@ final readonly class StubsGenerator
             \Symfony\Component\Console\Output\OutputInterface::class,
             \Symfony\Component\Console\Question\Question::class,
             \Symfony\Component\Console\Style\SymfonyStyle::class,
+            \Symfony\Component\Console\Terminal::class,
             \Symfony\Contracts\EventDispatcher\Event::class,
             \Symfony\Component\EventDispatcher\EventDispatcherInterface::class,
             \Symfony\Component\EventDispatcher\EventSubscriberInterface::class,

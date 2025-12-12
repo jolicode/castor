@@ -1,0 +1,2 @@
+Current terminal width: 1000
+Current terminal height: 50
