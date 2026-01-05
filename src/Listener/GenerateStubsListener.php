@@ -16,6 +16,7 @@ class GenerateStubsListener
         private readonly bool $repacked,
         #[Autowire('%generate_stubs%')]
         private readonly bool $generateStubs,
+        private readonly bool $hasCastorFile,
     ) {
     }
 
@@ -32,11 +33,15 @@ class GenerateStubsListener
             return;
         }
 
+        if (!$this->hasCastorFile) {
+            return;
+        }
+
         $command = $event->getCommand();
         if (!$command) {
             return;
         }
-        if ('_complete' === $command->getName()) {
+        if ('_complete' === $command->getName() || 'completion' === $command->getName()) {
             return;
         }
 
