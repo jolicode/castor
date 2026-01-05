@@ -1,4 +1,4 @@
-REAL TIME OUTPUT> ssh: Could not resolve hostname server-1.example.com: Name or service not known
+REAL TIME OUTPUT> ssh: Could not resolve hostname server-1.example.com: No address associated with hostname
 
 In real_time_output.php line XXXX:
 
