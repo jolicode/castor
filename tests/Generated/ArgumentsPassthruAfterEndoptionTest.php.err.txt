@@ -1,0 +1,6 @@
+
+  Not enough arguments (missing: "args-after-option-end").
+
+
+arguments:passthru-after-endoption [--custom-option] [--] <before-arg> <args-after-option-end>...
+

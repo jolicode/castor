@@ -75,7 +75,7 @@ final class ExecuteCommand extends Command
         $composerJsonPath = $tmpDir . '/composer.json';
         $vendorDirectory = $tmpDir . '/vendor';
         $binaryDirectory = $tmpDir . '/bin';
-        $tokens = $this->getRawTokens($input);
+        $tokens = $this->getRawTokens($input, false);
 
         $args = [];
         $foundPackageName = false;

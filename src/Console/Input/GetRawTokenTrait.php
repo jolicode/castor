@@ -11,7 +11,7 @@ trait GetRawTokenTrait
     /**
      * @return list<string>
      */
-    private function getRawTokens(InputInterface $input): array
+    private function getRawTokens(InputInterface $input, bool $onlyAfterEndOption): array
     {
         if (!$input instanceof ArgvInput) {
             throw new \RuntimeException('The input must be an instance of ArgvInput.');
@@ -22,14 +22,22 @@ trait GetRawTokenTrait
 
         $parameters = [];
         $keep = false;
+        $delimiterFound = false;
+
         foreach ($tokens as $value) {
-            if (!$keep && $value === $input->getFirstArgument()) {
+            if (!$keep && !$onlyAfterEndOption && $value === $input->getFirstArgument()) {
                 $keep = true;
 
                 continue;
             }
 
-            if ('--' === $value) {
+            if ('--' === $value && !$delimiterFound) {
+                $delimiterFound = true;
+
+                if ($onlyAfterEndOption) {
+                    $keep = true;
+                }
+
                 continue;
             }
 

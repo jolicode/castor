@@ -134,7 +134,7 @@ class SymfonyTaskCommand extends Command
             $args[] = $this->taskAttribute->originalName;
         }
 
-        $args = [...$args, ...$this->getRawTokens($input)];
+        $args = [...$args, ...$this->getRawTokens($input, false)];
 
         if ($this->taskAttribute->usePhpRunner) {
             $p = $this->phpRunner->run($execPath, $args);

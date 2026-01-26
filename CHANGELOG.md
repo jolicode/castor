@@ -5,6 +5,7 @@
 ### Features
 
 * Add a `terminal()` function to get terminal properties
+* Add a `#[AsArgsAfterOptionEnd]` attribute to get all arguments after `--` delimiter
 
 ### Internal
 

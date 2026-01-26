@@ -84,6 +84,7 @@ Some vendor helpers are also included natively in Castor:
 
 Castor provides the following attributes to register tasks, listener, etc:
 
+- [`AsArgsAfterOptionEnd`](getting-started/arguments.md#getting-argument-after-end-of-options)
 - [`AsArgument`](getting-started/arguments.md#overriding-the-argument-name-and-description)
 - [`AsContext`](getting-started/context.md#creating-a-new-context)
 - [`AsContextGenerator`](going-further/interacting-with-castor/advanced-context.md#the-ascontextgenerator-attribute)

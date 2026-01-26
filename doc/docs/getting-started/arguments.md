@@ -76,6 +76,20 @@ Then, you can use it like that:
 castor phpunit --filter=testName --debug --verbose
 ```
 
+## Getting argument after end of options
+
+A common use case when dealing with command line arguments is to ignore all
+options after the `--` delimiter.
+
+This is useful when you want to pass options to a sub command that may
+conflict with the options of the main command.
+
+You can achieve this by using the `#[AsArgsAfterOptionEnd]` attribute:
+
+```php
+{% include "/examples/basic/arguments/args-after-end-option.php" start="<?php\n\nnamespace arguments;\n\n" %}
+```
+
 ## Overriding the argument name and description
 
 You can override the name and description of an argument by using
