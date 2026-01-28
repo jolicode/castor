@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - uses: ./.github/actions/install
         with:
@@ -23,35 +23,35 @@ jobs:
       - uses: ./.github/actions/phar
 
       - name: Upload the Linux phar (linux-amd64)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: castor.linux-amd64.phar
           path: tools/phar/build/castor.linux-amd64.phar
           if-no-files-found: error
 
       - name: Upload the Linux phar (linux-arm64)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: castor.linux-arm64.phar
           path: tools/phar/build/castor.linux-arm64.phar
           if-no-files-found: error
 
       - name: Upload the Darwin phar (darwin-amd64)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: castor.darwin-amd64.phar
           path: tools/phar/build/castor.darwin-amd64.phar
           if-no-files-found: error
 
       - name: Upload the Darwin phar (darwin-arm64)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: castor.darwin-arm64.phar
           path: tools/phar/build/castor.darwin-arm64.phar
           if-no-files-found: error
 
       - name: Upload the Windows phar (windows-amd64)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: castor-windows-amd64.phar
           path: tools/phar/build/castor.windows-amd64.phar
@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - uses: ./.github/actions/install
 
@@ -72,7 +72,7 @@ jobs:
           target: linux-amd64
 
       - name: retrieve phar artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           path: tools/phar/build
           merge-multiple: true
@@ -84,7 +84,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload the Linux amd64 static binary
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: castor.linux-amd64
           path: ./castor.linux-amd64
@@ -96,7 +96,7 @@ jobs:
     runs-on: ubuntu-24.04-arm
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - uses: ./.github/actions/install
 
@@ -105,7 +105,7 @@ jobs:
           target: linux-arm64
 
       - name: retrieve phar artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           path: tools/phar/build
           merge-multiple: true
@@ -117,7 +117,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload the Linux arm64 static binary
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: castor.linux-arm64
           path: ./castor.linux-arm64
@@ -129,7 +129,7 @@ jobs:
     runs-on: macos-15-intel
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - uses: ./.github/actions/install
 
@@ -138,7 +138,7 @@ jobs:
           target: darwin-amd64
 
       - name: retrieve phar artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           path: tools/phar/build
           merge-multiple: true
@@ -150,7 +150,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload the MacOs amd64 static binary
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: castor.darwin-amd64
           path: ./castor.darwin-amd64
@@ -162,7 +162,7 @@ jobs:
     runs-on: macos-15
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - uses: ./.github/actions/install
 
@@ -171,7 +171,7 @@ jobs:
           target: darwin-arm64
 
       - name: retrieve phar artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           path: tools/phar/build
           merge-multiple: true
@@ -183,7 +183,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload the MacOs arm64 static binary
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: castor.darwin-arm64
           path: ./castor.darwin-arm64

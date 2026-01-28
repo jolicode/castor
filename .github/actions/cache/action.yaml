@@ -45,35 +45,35 @@ runs:
         echo cache_key_test=$cache_key_test >> $GITHUB_ENV
 
     - name: Restore PHP static building artifacts cache for linux-amd64
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ env.cache_dirname_linux_amd64 }}
         key: php-static-${{ env.cache_key_linux_amd64 }}
       if: ${{ inputs.target == 'linux-amd64' }}
 
     - name: Restore PHP static building artifacts cache for linux-arm64
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ env.cache_dirname_linux_arm64 }}
         key: php-static-${{ env.cache_key_linux_arm64 }}
       if: ${{ inputs.target == 'linux-arm64' }}
 
     - name: Restore PHP static building artifacts cache for darwin-amd64
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ env.cache_dirname_darwin_amd64 }}
         key: php-static-${{ env.cache_key_darwin_amd64 }}
       if: ${{ inputs.target == 'darwin-amd64' }}
 
     - name: Restore PHP static building artifacts cache for darwin-arm64
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ env.cache_dirname_darwin_arm64 }}
         key: php-static-${{ env.cache_key_darwin_arm64}}
       if: ${{ inputs.target == 'darwin-arm64' }}
 
     - name: Restore PHP static building artifacts cache for test job
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ env.cache_dirname_test }}
         key: php-static-${{ env.cache_key_test }}
