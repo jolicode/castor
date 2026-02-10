@@ -2,10 +2,16 @@
 
 ## Not released yet
 
+## 1.2.0 (2026-02-10)
+
 ### Features
 
 * Add a `terminal()` function to get terminal properties
 * Add a `#[AsArgsAfterOptionEnd]` attribute to get all arguments after `--` delimiter
+
+### Fixed
+
+* Do not generate stub if no castor file, also check for completion command name
 
 ### Internal
 

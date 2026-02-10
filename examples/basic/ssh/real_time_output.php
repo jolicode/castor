@@ -14,7 +14,7 @@ function real_time_output(): void
         command: 'ls -alh',
         host: 'server-1.example.com',
         user: 'debian',
-        callback: function ($type, $buffer): void {
+        callback: static function ($type, $buffer): void {
             io()->writeln('REAL TIME OUTPUT> ' . $buffer);
         }
     );

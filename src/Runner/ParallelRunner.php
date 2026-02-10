@@ -71,6 +71,6 @@ final readonly class ParallelRunner
             throw new \RuntimeException('One or more exceptions were thrown in parallel.');
         }
 
-        return array_map(fn ($fiber): mixed => $fiber->getReturn(), $fibers);
+        return array_map(static fn ($fiber): mixed => $fiber->getReturn(), $fibers);
     }
 }

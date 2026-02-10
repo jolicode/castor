@@ -14,7 +14,7 @@ function callback(string $thing = 'foobar'): void
 {
     try {
         wait_for(
-            callback: fn () => \in_array($thing, ['foo', 'bar', 'foobar'], true),
+            callback: static fn () => \in_array($thing, ['foo', 'bar', 'foobar'], true),
             timeout: 5,
             message: 'Waiting for my custom check...',
         );

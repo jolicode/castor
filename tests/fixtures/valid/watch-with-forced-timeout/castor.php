@@ -11,7 +11,7 @@ use function Castor\watch;
 function fs_watch(): void
 {
     io()->writeln('Watching for file change');
-    watch(dirname(__DIR__) . '/...', function (string $name, string $type) {
+    watch(dirname(__DIR__) . '/...', static function (string $name, string $type) {
         io()->writeln("File {$name} has been {$type}");
     });
 }

@@ -289,7 +289,7 @@ function add_test(array $args, string $class, ?string $cwd = null, bool $needRem
     $code = strtr($template, [
         '{{ class_name }}' => $class,
         '{{ task }}' => $args[0] ?? 'no task',
-        '{{ args }}' => implode(', ', array_map(fn ($arg) => var_export($arg, true), $args)),
+        '{{ args }}' => implode(', ', array_map(static fn ($arg) => var_export($arg, true), $args)),
         '{{ exitCode }}' => $process->getExitCode(),
         '{{ cwd }}' => $cwd ? ', ' . var_export($cwd, true) : '',
         '{{ needRemote }}' => $needRemote ? ', needRemote: true' : '',

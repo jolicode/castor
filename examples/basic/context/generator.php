@@ -11,7 +11,7 @@ use Castor\Context;
 #[AsContextGenerator()]
 function create_context_generator(): iterable
 {
-    yield 'dynamic' => fn () => new Context([
+    yield 'dynamic' => static fn () => new Context([
         'name' => 'dynamic',
         'production' => false,
         'foo' => 'baz',

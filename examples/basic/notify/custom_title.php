@@ -15,7 +15,7 @@ function custom_title(): void
 
     // Set application name in context
     with(
-        callback: function () {
+        callback: static function () {
             notify('Hello world!'); // Will use 'My App Name' by default
         },
         context: context()->withNotificationTitle('My App Name')

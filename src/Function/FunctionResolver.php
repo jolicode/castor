@@ -152,7 +152,7 @@ final readonly class FunctionResolver
 
         $key = hash('sha256', implode('-', ['symfony-console-definitions-', ...$console, $this->rootDir]));
 
-        $definitions = $this->cache->get($key, function (ItemInterface $item) use ($console, $reflectionClass) {
+        $definitions = $this->cache->get($key, static function (ItemInterface $item) use ($console, $reflectionClass) {
             $item->expiresAfter(60 * 60 * 24);
 
             $p = new Process([...$console, '--format=json']);

@@ -12,7 +12,7 @@ use function Castor\io;
 function complex(): void
 {
     $hasBeenCalled = false;
-    cache('another-key', function (CacheItemInterface $item) use (&$hasBeenCalled) {
+    cache('another-key', static function (CacheItemInterface $item) use (&$hasBeenCalled) {
         $item->expiresAfter(1);
         $hasBeenCalled = true;
 
@@ -21,7 +21,7 @@ function complex(): void
     io()->writeln(\sprintf('First call: %s', $hasBeenCalled ? 'yes' : 'no'));
 
     $hasBeenCalled = false;
-    cache('another-key', function (CacheItemInterface $item) use (&$hasBeenCalled) {
+    cache('another-key', static function (CacheItemInterface $item) use (&$hasBeenCalled) {
         $item->expiresAfter(1);
         $hasBeenCalled = true;
 

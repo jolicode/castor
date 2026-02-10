@@ -11,8 +11,8 @@ use function Castor\run;
 function exception(): void
 {
     parallel(
-        fn () => run('exit 1'),
-        fn () => run('sleep 1; echo "I am executed"'),
-        fn () => throw new \RuntimeException('This is an exception'),
+        static fn () => run('exit 1'),
+        static fn () => run('sleep 1; echo "I am executed"'),
+        static fn () => throw new \RuntimeException('This is an exception'),
     );
 }

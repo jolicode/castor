@@ -10,7 +10,7 @@ use function Castor\watch;
 #[AsTask(description: 'Watches on filesystem changes and stop after first change')]
 function stop(): void
 {
-    watch(\dirname(__DIR__) . '/...', function (string $name, string $type) {
+    watch(\dirname(__DIR__) . '/...', static function (string $name, string $type) {
         io()->writeln("File {$name} has been {$type}");
 
         return false;

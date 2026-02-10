@@ -12,7 +12,7 @@ use function Castor\watch;
 function parallel_change(): void
 {
     parallel(
-        function () {
+        static function () {
             for ($i = 1; $i <= 10; ++$i) {
                 io()->writeln("[app] Writing hello-{$i}.txt");
                 file_put_contents("hello-{$i}.txt", "Hello {$i}\n", \FILE_APPEND);
@@ -24,13 +24,13 @@ function parallel_change(): void
                 usleep(500_000);
             }
         },
-        function () {
-            watch(\dirname(__DIR__) . '/...', function ($name, $type) {
+        static function () {
+            watch(\dirname(__DIR__) . '/...', static function ($name, $type) {
                 io()->writeln("[watcher:A] File {$name} has been {$type}");
             });
         },
-        function () {
-            watch(\dirname(__DIR__) . '/...', function ($name, $type) {
+        static function () {
+            watch(\dirname(__DIR__) . '/...', static function ($name, $type) {
                 io()->writeln("[watcher:B] Second : File {$name} has been {$type}");
             });
         },

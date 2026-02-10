@@ -16,7 +16,7 @@ function force(
     io()->writeln('Hello Task with Fingerprint!');
 
     $hasRun = fingerprint(
-        callback: function () {
+        callback: static function () {
             io()->writeln('Cool, no fingerprint! Executing...');
         },
         id: 'my_fingerprint_check',

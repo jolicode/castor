@@ -21,7 +21,7 @@ function docker(): void
         wait_for_docker_container(
             containerName: 'helloworld',
             timeout: 5,
-            containerChecker: function ($containerId) use ($checkLogSince): bool {
+            containerChecker: static function ($containerId) use ($checkLogSince): bool {
                 // Check some things (logs, command result, etc.)
                 $output = capture("docker logs --since {$checkLogSince} {$containerId}", context()->withAllowFailure());
 

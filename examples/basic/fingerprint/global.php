@@ -13,7 +13,7 @@ function global_(): void
     io()->writeln('Hello Task with Global Fingerprint!');
 
     fingerprint(
-        callback: function () {
+        callback: static function () {
             io()->writeln('Cool, no global fingerprint! Executing...');
         },
         id: 'my_global_fingerprint_check',

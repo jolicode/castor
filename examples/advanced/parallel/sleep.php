@@ -14,8 +14,8 @@ function sleep(): void
     $start = microtime(true);
 
     parallel(
-        fn () => sleep_(3),
-        fn () => sleep_(4),
+        static fn () => sleep_(3),
+        static fn () => sleep_(4),
     );
 
     io()->writeln('');

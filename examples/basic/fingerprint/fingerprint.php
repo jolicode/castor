@@ -16,7 +16,7 @@ function fingerprint_(): void
     io()->writeln('Hello Task with Fingerprint!');
 
     fingerprint(
-        callback: function () {
+        callback: static function () {
             io()->writeln('Cool, no fingerprint! Executing...');
         },
         id: 'my_fingerprint_check',

@@ -13,7 +13,7 @@ use function Castor\run;
 #[AsTask(description: 'Dumps all arguments and options after "--" without configuration nor validation')]
 function args_after_end_option(string $before, #[AsArgsAfterOptionEnd] array $argsAfterOptionEnd): void
 {
-    if ($before === 'first') {
+    if ('first' === $before) {
         run(['task1', ...$argsAfterOptionEnd]);
     }
 

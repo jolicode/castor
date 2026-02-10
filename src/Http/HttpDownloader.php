@@ -31,7 +31,7 @@ class HttpDownloader
         $lastLogTime = time();
         $startTime = microtime(true);
         $finalLogDone = false;
-        $userProvidedOnProgress = $options['on_progress'] ?? function (int $downloadedSize, int $totalSize): void {};
+        $userProvidedOnProgress = $options['on_progress'] ?? static function (int $downloadedSize, int $totalSize): void {};
         $totalDownloadedSize = 0;
 
         $options['on_progress'] = function (int $downloadedSize, int $totalSize) use ($userProvidedOnProgress, &$totalDownloadedSize, &$lastLogTime, &$finalLogDone, $url, $startTime): void {
