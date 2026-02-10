@@ -11,21 +11,21 @@ use function Castor\run;
 #[AsTask(description: 'Build phar for Linux system')]
 function linux()
 {
-    compile(fn () => run('vendor/bin/box compile -c box.linux-amd64.json'));
-    compile(fn () => run('vendor/bin/box compile -c box.linux-arm64.json'));
+    compile(static fn () => run('vendor/bin/box compile -c box.linux-amd64.json'));
+    compile(static fn () => run('vendor/bin/box compile -c box.linux-arm64.json'));
 }
 
 #[AsTask(description: 'Build phar for MacOS system')]
 function darwin()
 {
-    compile(fn () => run('vendor/bin/box compile -c box.darwin-amd64.json'));
-    compile(fn () => run('vendor/bin/box compile -c box.darwin-arm64.json'));
+    compile(static fn () => run('vendor/bin/box compile -c box.darwin-amd64.json'));
+    compile(static fn () => run('vendor/bin/box compile -c box.darwin-arm64.json'));
 }
 
 #[AsTask(description: 'Build phar for Windows system')]
 function windows()
 {
-    compile(fn () => run('vendor/bin/box compile -c box.windows-amd64.json'));
+    compile(static fn () => run('vendor/bin/box compile -c box.windows-amd64.json'));
 }
 
 #[AsTask(description: 'Build phar for all systems')]

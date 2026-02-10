@@ -100,7 +100,7 @@ final readonly class Waiter
     ): void {
         $this->waitFor(
             io: $io,
-            callback: function () use ($host, $port): bool {
+            callback: static function () use ($host, $port): bool {
                 $fp = @fsockopen($host, $port, $errno, $errstr, 1);
                 if ($fp) {
                     fclose($fp);
@@ -131,7 +131,7 @@ final readonly class Waiter
     ): void {
         $this->waitFor(
             io: $io,
-            callback: function () use ($url): bool {
+            callback: static function () use ($url): bool {
                 $fp = @fopen($url, 'r');
                 if ($fp) {
                     fclose($fp);
@@ -164,7 +164,7 @@ final readonly class Waiter
         $this->waitForHttpResponse(
             io: $io,
             url: $url,
-            responseChecker: fn (ResponseInterface $response): bool => $response->getStatusCode() === $status,
+            responseChecker: static fn (ResponseInterface $response): bool => $response->getStatusCode() === $status,
             timeout: $timeout,
             quiet: $quiet,
             intervalMs: $intervalMs,
@@ -260,7 +260,7 @@ final readonly class Waiter
                     try {
                         $this->waitFor(
                             io: $io,
-                            callback: fn () => $containerChecker($containerId),
+                            callback: static fn () => $containerChecker($containerId),
                             timeout: $timeout,
                             quiet: true,
                         );

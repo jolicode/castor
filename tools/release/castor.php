@@ -29,19 +29,19 @@ function release(): int
     check(
         'Check if Git is installed',
         'Git is not installed. Please install it before.',
-        fn () => (new ExecutableFinder())->find('git'),
+        static fn () => (new ExecutableFinder())->find('git'),
     );
 
     check(
         'Check if GitHub CLI is installed',
         'GitHub CLI is not installed. Please install it before.',
-        fn () => (new ExecutableFinder())->find('gh'),
+        static fn () => (new ExecutableFinder())->find('gh'),
     );
 
     check(
         'Check if there are uncommitted changes',
         'You have uncommitted changes. Please commit or stash them before.',
-        fn () => !capture(['git', 'status', '--porcelain']),
+        static fn () => !capture(['git', 'status', '--porcelain']),
     );
 
     $currentSha = capture('git rev-parse HEAD');
@@ -50,7 +50,7 @@ function release(): int
     check(
         'Check current commit exist on remote',
         'You are not up to date with origin/main. Please push the latest changes before.',
-        fn () => $currentSha === capture('git ls-remote git@github.com:' . REPO . ' refs/heads/main | cut -f 1'),
+        static fn () => $currentSha === capture('git ls-remote git@github.com:' . REPO . ' refs/heads/main | cut -f 1'),
     );
 
     $version = Application::VERSION;
@@ -59,7 +59,7 @@ function release(): int
     check(
         'Check if a tag already exists for this version',
         "Version {$version} already exists. Change the version in `src/Console/Application.php`.",
-        fn () => !capture('git ls-remote git@github.com:' . REPO . " refs/tags/{$version}", context: context()->withAllowFailure()),
+        static fn () => !capture('git ls-remote git@github.com:' . REPO . " refs/tags/{$version}", context: context()->withAllowFailure()),
     );
 
     io()->section('Check GitHub Actions requirements');
@@ -96,7 +96,7 @@ function release(): int
     check(
         'Download artifacts',
         'Failed to download artifacts.',
-        fn () => run(['gh', 'run', 'download', $runArtifacts['databaseId'], '--dir', $artifactsDir], context: context()->withQuiet())->isSuccessful(),
+        static fn () => run(['gh', 'run', 'download', $runArtifacts['databaseId'], '--dir', $artifactsDir], context: context()->withQuiet())->isSuccessful(),
     );
 
     $files = finder()
@@ -107,16 +107,16 @@ function release(): int
     check(
         'Check the number of artifacts',
         'There are not enough files in the artifacts directory.',
-        fn () => EXPECTED_ARTIFACTS === \count($files),
+        static fn () => EXPECTED_ARTIFACTS === \count($files),
     );
 
     check(
         'Check if artifacts are not empty',
         'Some artifacts are empty.',
-        fn () => !array_filter(
+        static fn () => !array_filter(
             iterator_to_array($files),
             // A least 3MB
-            fn (SplFileInfo $file) => 3_000_000 > $file->getSize()
+            static fn (SplFileInfo $file) => 3_000_000 > $file->getSize()
         ),
     );
 

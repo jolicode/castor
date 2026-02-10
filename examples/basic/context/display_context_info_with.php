@@ -12,7 +12,7 @@ use function Castor\with;
 function display_context_info_with(): void
 {
     $result = with(
-        function (Context $context) {
+        static function (Context $context) {
             display_context_info();
 
             return $context->data['foo'] ?? 'N/A';

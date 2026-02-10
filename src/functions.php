@@ -719,7 +719,7 @@ function open(string ...$urls): void
     $parallelCallbacks = [];
 
     foreach ($urls as $url) {
-        $parallelCallbacks[] = fn (): Process => run([$command, $url], context: context()->withQuiet(true));
+        $parallelCallbacks[] = static fn (): Process => run([$command, $url], context: context()->withQuiet(true));
     }
 
     parallel(...$parallelCallbacks);

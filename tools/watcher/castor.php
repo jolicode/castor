@@ -34,5 +34,5 @@ function windows()
 #[AsTask(description: 'Build watcher for all systems')]
 function build()
 {
-    parallel(fn () => linux(), fn () => darwin(), fn () => windows());
+    parallel(static fn () => linux(), static fn () => darwin(), static fn () => windows());
 }

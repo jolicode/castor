@@ -156,7 +156,7 @@ function complete_filtered(CompletionInput $input): array
         'foo',
         'bar',
         'baz',
-    ], fn (string $value) => str_starts_with($value, $input->getCompletionValue()));
+    ], static fn (string $value) => str_starts_with($value, $input->getCompletionValue()));
 }
 
 function task_with_path_argument(

@@ -28,7 +28,7 @@ final class WebServerHelper
             throw new ProcessFailedException(self::$process);
         }
 
-        register_shutdown_function(fn () => self::stop());
+        register_shutdown_function(static fn () => self::stop());
     }
 
     private static function stop(): void

@@ -15,13 +15,13 @@ class ExpressionLanguage extends SymfonyExpressionLanguage
 
         $this->addFunction(new ExpressionFunction(
             'var',
-            fn () => throw new \LogicException('This function can only be used in expressions.'),
+            static fn () => throw new \LogicException('This function can only be used in expressions.'),
             fn ($vars, ...$args): mixed => $this->contextRegistry->getVariable(...$args),
         ));
 
         $this->addFunction(new ExpressionFunction(
             'context',
-            fn () => throw new \LogicException('This function can only be used in expressions.'),
+            static fn () => throw new \LogicException('This function can only be used in expressions.'),
             fn ($vars, ...$args): Context => $this->contextRegistry->get(...$args),
         ));
     }

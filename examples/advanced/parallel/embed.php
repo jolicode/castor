@@ -15,10 +15,10 @@ function embed(int $sleep5 = 5, int $sleep7 = 7, int $sleep10 = 10): void
 
     [$baz, [$foo, $bar]] = parallel(
         // $baz is the return value of sleep_10()
-        fn () => sleep_10($sleep10),
+        static fn () => sleep_10($sleep10),
 
         // $foo and $bar are the return values of sleep_5() and sleep_7()
-        fn () => parallel_sleep($sleep5, $sleep7)
+        static fn () => parallel_sleep($sleep5, $sleep7)
     );
 
     io()->writeln('');
@@ -45,8 +45,8 @@ function sleep_10(int $sleep = 10): string
 function parallel_sleep(int $sleep5 = 5, int $sleep7 = 7): array
 {
     return parallel(
-        fn () => sleep_5($sleep5),
-        fn () => sleep_7($sleep7)
+        static fn () => sleep_5($sleep5),
+        static fn () => sleep_7($sleep7)
     );
 }
 

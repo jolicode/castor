@@ -31,7 +31,7 @@ class Installation
             $this->method = InstallationMethod::Phar;
             $this->path = $pharPath;
         } else {
-            $globalComposerPath = $this->cache->get('castor-composer-global-path', function (): string {
+            $globalComposerPath = $this->cache->get('castor-composer-global-path', static function (): string {
                 $process = new Process(['composer', 'global', 'config', 'home', '--quiet']);
                 $process->run();
 

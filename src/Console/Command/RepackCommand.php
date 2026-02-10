@@ -122,7 +122,7 @@ class RepackCommand extends Command
             }
             $boxConfig[$key] = [
                 ...array_map(
-                    fn (string $file): string => $castorSourceDir . '/' . $file,
+                    static fn (string $file): string => $castorSourceDir . '/' . $file,
                     $boxConfig[$key] ?? []
                 ),
             ];
@@ -132,7 +132,7 @@ class RepackCommand extends Command
         // box
         $boxConfig['files'] = [
             ...array_map(
-                fn (string $file): string => str_replace(PathHelper::getRoot() . '/', '', $file),
+                static fn (string $file): string => str_replace(PathHelper::getRoot() . '/', '', $file),
                 $this->importer->getImports(),
             ),
             ...$boxConfig['files'] ?? [],
@@ -173,7 +173,7 @@ class RepackCommand extends Command
         $process = new Process([$box, 'compile', '--config=.box.json']);
 
         try {
-            $process->mustRun(fn ($type, $buffer) => print $buffer);
+            $process->mustRun(static fn ($type, $buffer) => print $buffer);
         } finally {
             unlink('.box.json');
             unlink('.main.php');

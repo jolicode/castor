@@ -112,7 +112,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
         }
 
         foreach ($this->taskDescriptor->function->getParameters() as $parameter) {
-            if (($attribute = $parameter->getAttributes(AsRawTokens::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null) && $attribute->getName() !== AsArgsAfterOptionEnd::class) {
+            if (($attribute = $parameter->getAttributes(AsRawTokens::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null) && AsArgsAfterOptionEnd::class !== $attribute->getName()) {
                 $this->ignoreValidationErrors();
 
                 continue;
@@ -186,8 +186,8 @@ class TaskCommand extends Command implements SignalableCommandInterface
         $args = [];
 
         foreach ($this->taskDescriptor->function->getParameters() as $parameter) {
-            if (($asRawToken = $parameter->getAttributes(AsRawTokens::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null)) {
-                $args[] = $this->getRawTokens($input, $asRawToken->getName() === AsArgsAfterOptionEnd::class);
+            if ($asRawToken = $parameter->getAttributes(AsRawTokens::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null) {
+                $args[] = $this->getRawTokens($input, AsArgsAfterOptionEnd::class === $asRawToken->getName());
 
                 continue;
             }
@@ -227,8 +227,8 @@ class TaskCommand extends Command implements SignalableCommandInterface
                 $this->contextRegistry->setCurrentContext($initialContext);
             }
         } catch (\Error $e) {
-            $castorFunctions = array_filter(get_defined_functions()['user'], fn (string $functionName): bool => str_starts_with($functionName, 'castor\\'));
-            $castorFunctionsWithoutNamespace = array_map(fn (string $functionName): string => substr($functionName, \strlen('castor\\')), $castorFunctions);
+            $castorFunctions = array_filter(get_defined_functions()['user'], static fn (string $functionName): bool => str_starts_with($functionName, 'castor\\'));
+            $castorFunctionsWithoutNamespace = array_map(static fn (string $functionName): string => substr($functionName, \strlen('castor\\')), $castorFunctions);
             foreach ($castorFunctionsWithoutNamespace as $function) {
                 if ("Call to undefined function {$function}()" === $e->getMessage()) {
                     throw new \LogicException(\sprintf('Call to undefined function %s(). Did you forget to import it? Try to add "use function Castor\%s;" in top of "%s" file.', $function, $function, $this->taskDescriptor->function->getFileName()), 0, $e);
@@ -338,10 +338,10 @@ class TaskCommand extends Command implements SignalableCommandInterface
         }
 
         return array_map(
-            fn (string $item): string => $baseValue . $item . (is_dir($baseValue . $item) ? \DIRECTORY_SEPARATOR : ''),
+            static fn (string $item): string => $baseValue . $item . (is_dir($baseValue . $item) ? \DIRECTORY_SEPARATOR : ''),
             array_filter(
                 $items,
-                fn (string $suggestion): bool => '.' !== $suggestion && '..' !== $suggestion,
+                static fn (string $suggestion): bool => '.' !== $suggestion && '..' !== $suggestion,
             ),
         );
     }

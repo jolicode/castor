@@ -19,7 +19,7 @@ function url_with_specific_response_content_and_status(): void
     try {
         wait_for_http_response(
             url: $url,
-            responseChecker: fn (ResponseInterface $response) => 200 === $response->getStatusCode()
+            responseChecker: static fn (ResponseInterface $response) => 200 === $response->getStatusCode()
                     && u($response->getContent())->containsAny(['Hello World!']),
             timeout: 2,
         );

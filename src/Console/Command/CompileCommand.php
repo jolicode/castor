@@ -160,7 +160,7 @@ class CompileCommand extends Command
         );
 
         $io->text('Running command: ' . $extractProcess->getCommandLine());
-        $extractProcess->mustRun(fn ($type, $buffer) => print $buffer);
+        $extractProcess->mustRun(static fn ($type, $buffer) => print $buffer);
         chmod($spcBinaryDestination, 0o755);
 
         $progressBar->finish();
@@ -174,7 +174,7 @@ class CompileCommand extends Command
             timeout: null,
         );
         $io->text('Running command: ' . $installSPCDepsProcess->getCommandLine());
-        $installSPCDepsProcess->mustRun(fn ($type, $buffer) => print $buffer);
+        $installSPCDepsProcess->mustRun(static fn ($type, $buffer) => print $buffer);
     }
 
     private function downloadPHPSourceDeps(string $spcBinaryPath, mixed $phpExtensions, mixed $phpVersion, string $spcBinaryDir, SymfonyStyle $io): void
@@ -190,7 +190,7 @@ class CompileCommand extends Command
             timeout: null,
         );
         $io->text('Running command: ' . $downloadProcess->getCommandLine());
-        $downloadProcess->mustRun(fn ($type, $buffer) => print $buffer);
+        $downloadProcess->mustRun(static fn ($type, $buffer) => print $buffer);
     }
 
     private function buildPHP(string $spcBinaryPath, mixed $phpExtensions, mixed $os, string $spcBinaryDir, SymfonyStyle $io, bool $debug = false): void
@@ -215,7 +215,7 @@ class CompileCommand extends Command
             timeout: null,
         );
         $io->text('Running command: ' . $buildProcess->getCommandLine());
-        $buildProcess->mustRun(fn ($type, $buffer) => print $buffer);
+        $buildProcess->mustRun(static fn ($type, $buffer) => print $buffer);
     }
 
     private function mergePHPandPHARIntoSingleExecutable(string $spcBinaryPath, string $pharFilePath, string $appBinaryFilePath, string $spcBinaryDir, ?string $iniFile, SymfonyStyle $io): void
@@ -245,7 +245,7 @@ class CompileCommand extends Command
         );
 
         $io->text('Running command: ' . $mergePHPandPHARProcess->getCommandLine());
-        $mergePHPandPHARProcess->mustRun(fn ($type, $buffer) => print $buffer);
+        $mergePHPandPHARProcess->mustRun(static fn ($type, $buffer) => print $buffer);
     }
 
     private function setupSPC(string $spcBinaryDir, string $spcBinaryPath, SymfonyStyle $io, mixed $os, mixed $arch, string $spcVersion): void

@@ -3,7 +3,6 @@
 namespace arguments;
 
 use Castor\Attribute\AsArgsAfterOptionEnd;
-use Castor\Attribute\AsRawTokens;
 use Castor\Attribute\AsTask;
 
 /**

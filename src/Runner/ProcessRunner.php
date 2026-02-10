@@ -101,7 +101,7 @@ class ProcessRunner
 
         $this->sectionOutput->initProcess($process);
 
-        $process->start(function ($type, $bytes) use ($callback, $process): void {
+        $process->start(static function ($type, $bytes) use ($callback, $process): void {
             if ($callback) {
                 $callback($type, $bytes, $process);
             }

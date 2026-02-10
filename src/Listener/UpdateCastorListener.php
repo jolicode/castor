@@ -127,14 +127,14 @@ class UpdateCastorListener
 
         if (\in_array($installationMethod, [InstallationMethod::Phar, InstallationMethod::Static], true)) {
             $assets = match (true) {
-                OsHelper::isWindows() || OsHelper::isWindowsSubsystemForLinux() => array_filter($latestVersion['assets'], fn (array $asset): bool => str_contains((string) $asset['name'], 'windows')),
-                OsHelper::isMacOS() => array_filter($latestVersion['assets'], fn (array $asset): bool => str_contains((string) $asset['name'], 'darwin')),
-                OsHelper::isUnix() => array_filter($latestVersion['assets'], fn (array $asset): bool => str_contains((string) $asset['name'], 'linux')),
+                OsHelper::isWindows() || OsHelper::isWindowsSubsystemForLinux() => array_filter($latestVersion['assets'], static fn (array $asset): bool => str_contains((string) $asset['name'], 'windows')),
+                OsHelper::isMacOS() => array_filter($latestVersion['assets'], static fn (array $asset): bool => str_contains((string) $asset['name'], 'darwin')),
+                OsHelper::isUnix() => array_filter($latestVersion['assets'], static fn (array $asset): bool => str_contains((string) $asset['name'], 'linux')),
                 default => [],
             };
 
             $architecture = $this->installation->getArchitecture();
-            $assets = array_filter($assets, fn (array $asset): bool => str_contains((string) $asset['name'], $architecture->value));
+            $assets = array_filter($assets, static fn (array $asset): bool => str_contains((string) $asset['name'], $architecture->value));
 
             if (!$assets) {
                 $this->logger->info('Failed to detect the correct release URL adapted to your system.');
@@ -143,9 +143,9 @@ class UpdateCastorListener
             }
 
             if (InstallationMethod::Static === $installationMethod) {
-                $assets = array_filter($assets, fn (array $asset): bool => !str_ends_with((string) $asset['name'], '.phar'));
+                $assets = array_filter($assets, static fn (array $asset): bool => !str_ends_with((string) $asset['name'], '.phar'));
             } else {
-                $assets = array_filter($assets, fn (array $asset): bool => str_ends_with((string) $asset['name'], '.phar'));
+                $assets = array_filter($assets, static fn (array $asset): bool => str_ends_with((string) $asset['name'], '.phar'));
             }
 
             $latestReleaseUrl = reset($assets)['browser_download_url'] ?? null;
