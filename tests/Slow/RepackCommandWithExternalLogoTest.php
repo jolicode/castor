@@ -17,10 +17,10 @@ class RepackCommandWithExternalLogoTest extends AbstractRepackCommandTest
         }
 
         $castorAppDirPath = self::setupRepackedCastorApp('castor-test-repack-with-external-logo');
-        $phar = $castorAppDirPath . '/my-app.linux.phar';
+        $phar = $castorAppDirPath . '/my-app.linux-amd64.phar';
 
         (new Process([
-            './bin/castor',
+            self::$castorBin,
             'repack',
             '--os', 'linux',
             '--logo-file', 'simple-logo-file.php',
@@ -32,7 +32,7 @@ class RepackCommandWithExternalLogoTest extends AbstractRepackCommandTest
         $this->assertStringStartsWith('My LOGO', $p->getOutput());
 
         (new Process([
-            './bin/castor',
+            self::$castorBin,
             'repack',
             '--os', 'linux',
             '--logo-file', 'closure-logo-file.php',

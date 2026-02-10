@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Minor
+
+* Rework how repacking is done. It's no longer needed to require jolicode/castor before repacking.
+
 ## 1.2.0 (2026-02-10)
 
 ### Features

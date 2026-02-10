@@ -2,11 +2,10 @@
 
 namespace Castor\Tests\Slow;
 
-use PHPUnit\Framework\TestCase;
+use Castor\Tests\TaskTestCase;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Process\Process;
 
-abstract class AbstractRepackCommandTest extends TestCase
+abstract class AbstractRepackCommandTest extends TaskTestCase
 {
     public static function setupRepackedCastorApp(string $castorAppDirName): string
     {
@@ -47,7 +46,7 @@ abstract class AbstractRepackCommandTest extends TestCase
             #[AsTask()]
             function ls(): void
             {
-                run(['ls', 'my-app.linux.phar']);
+                run(['ls', 'my-app.linux-amd64.phar']);
             }
 
             #[AsTask()]
@@ -57,18 +56,6 @@ abstract class AbstractRepackCommandTest extends TestCase
             }
             PHP
         );
-
-        $fs->dumpFile($castorAppDirPath . '/composer.json', json_encode([
-            'repositories' => [
-                [
-                    'type' => 'path',
-                    'url' => __DIR__ . '/../..',
-                ],
-            ],
-            'require' => [
-                'jolicode/castor' => '*@dev',
-            ],
-        ]));
 
         // Only for the compile test
         $fs->dumpFile($castorAppDirPath . '/php.ini', <<<'INI'
@@ -91,11 +78,6 @@ abstract class AbstractRepackCommandTest extends TestCase
             };
             CLOSURELOGOFILE
         );
-
-        (new Process(['composer', 'install'],
-            cwd: $castorAppDirPath,
-            env: ['COMPOSER_MIRROR_PATH_REPOS' => '1'],
-        ))->mustRun();
 
         return $castorAppDirPath;
     }

@@ -11,13 +11,7 @@ distribute it as a single phar file? Castor can help you with that.
 
 ## Pre-requisites
 
-In your project, install Castor as a dependency:
-
-```bash
-composer require jolicode/castor
-```
-
-You'll also need
+You'll need
 [box](https://github.com/box-project/box/blob/main/doc/installation.md#installation)
 to create the phar. The box binary must be available in your path.
 
@@ -56,11 +50,11 @@ vendor/bin/castor repack
 
 When you repack, you can use the `--no-logo` option to hide the Castor logo.
 
-Alternatively, you can replace the Castor logo with your own.  
+Alternatively, you can replace the Castor logo with your own.
 Use the `--logo-file` option and provide the absolute path (or a path relative
 to the working directory) of a `.php` file.
 
-This file must return a string or a closure that returns a string.  
+This file must return a string or a closure that returns a string.
 The closure will receive the application name and version as string parameters.
 
 ### Example
@@ -88,7 +82,7 @@ return function (string $appName, string $appVersion) {
     return <<<LOGO
 
     ❤️ My LOGO for {$appName} in Version {$appVersion} ❤️
-     
+
     LOGO;
 };
 ```
