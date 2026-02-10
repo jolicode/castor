@@ -12,6 +12,6 @@ function about(): void
     io()->title('About this project');
 
     io()->comment('Run <comment>castor list</comment> to display the command list.');
-    io()->comment('Run <comment>castor about</comment> to display this project help.');
+    io()->comment('Run <comment>castor usage:about</comment> to display this project help.');
     io()->comment('Run <comment>castor help [command]</comment> to display Castor help.');
 }
