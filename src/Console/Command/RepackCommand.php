@@ -2,6 +2,7 @@
 
 namespace Castor\Console\Command;
 
+use Castor\Console\Application;
 use Castor\Helper\PathHelper;
 use Castor\Import\Importer;
 use Castor\Import\Remote\Composer;
@@ -44,6 +45,7 @@ class RepackCommand extends Command
             ->addOption('app-version', null, InputOption::VALUE_REQUIRED, 'The version of the phar application', '1.0.0')
             ->addOption('os', null, InputOption::VALUE_REQUIRED, 'The targeted OS', 'linux', ['linux', 'darwin', 'windows'])
             ->addOption('arch', null, InputOption::VALUE_REQUIRED, 'The targeted CPU architecture', 'amd64', ['amd64', 'arm64'])
+            ->addOption('castor-version', null, InputOption::VALUE_REQUIRED, 'The Castor version to use (vX.Y.Z)', Application::VERSION)
             ->addOption('no-logo', null, InputOption::VALUE_NONE, 'Hide Castor logo')
             ->addOption('logo-file', null, InputOption::VALUE_OPTIONAL, 'Path to a PHP file that returns a logo as a string, or a closure that returns a logo as a string')
             ->addOption('output-directory', null, InputOption::VALUE_REQUIRED, 'Path to the directory where the phar will be generated', '')
@@ -91,7 +93,7 @@ class RepackCommand extends Command
         }
 
         // Download and extract castor phar from GitHub
-        $castorSourceDir = $this->downloadAndExtractCastorPhar($os, $arch);
+        $castorSourceDir = $this->downloadAndExtractCastorPhar($os, $arch, $input->getOption('castor-version'));
 
         $appName = $input->getOption('app-name');
         $appVersion = $input->getOption('app-version');
@@ -209,7 +211,7 @@ class RepackCommand extends Command
         };
     }
 
-    private function downloadAndExtractCastorPhar(string $os, string $arch): string
+    private function downloadAndExtractCastorPhar(string $os, string $arch, string $version): string
     {
         $extractDir = PathHelper::getRoot() . '/.castor-vendor';
 
@@ -223,7 +225,7 @@ class RepackCommand extends Command
         $this->fs->remove($extractDir);
         $this->fs->mkdir($extractDir);
 
-        $this->io->comment('Fetching latest Castor release from GitHub...');
+        $this->io->comment(\sprintf('Fetching Castor release %s from GitHub...', $version));
 
         $options = [
             'headers' => [
@@ -234,9 +236,9 @@ class RepackCommand extends Command
             $options['headers']['Authorization'] = 'Bearer ' . $_SERVER['GITHUB_TOKEN'];
         }
 
-        // Get latest release info from GitHub API
+        // Get release info from GitHub API for the specified version
         $releaseInfo = $this->httpClient
-            ->request('GET', 'https://api.github.com/repos/jolicode/castor/releases/latest', $options)
+            ->request('GET', \sprintf('https://api.github.com/repos/jolicode/castor/releases/tags/%s', $version), $options)
             ->toArray()
         ;
 
@@ -252,7 +254,7 @@ class RepackCommand extends Command
         }
 
         if (null === $pharUrl) {
-            throw new \RuntimeException(\sprintf('Could not find %s in the latest GitHub release.', $pharName));
+            throw new \RuntimeException(\sprintf('Could not find %s in the GitHub release %s.', $pharName, $version));
         }
 
         $this->io->comment(\sprintf('Downloading Castor %s (%s-%s)...', $releaseInfo['tag_name'], $os, $arch));
