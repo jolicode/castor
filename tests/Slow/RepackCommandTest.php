@@ -19,7 +19,7 @@ class RepackCommandTest extends AbstractRepackCommandTest
         $castorAppDirPath = self::setupRepackedCastorApp('castor-test-repack');
 
         (new Process([
-            './bin/castor',
+            self::$castorBin,
             'repack',
             '--os', 'linux',
             '--output-directory', 'build',
@@ -27,7 +27,7 @@ class RepackCommandTest extends AbstractRepackCommandTest
 
         $castorOutputDirPath = $castorAppDirPath . '/build';
 
-        $phar = $castorOutputDirPath . '/my-app.linux.phar';
+        $phar = $castorOutputDirPath . '/my-app.linux-amd64.phar';
         $this->assertFileExists($phar);
 
         (new Process([$phar], cwd: $castorOutputDirPath))->mustRun();
@@ -46,6 +46,6 @@ class RepackCommandTest extends AbstractRepackCommandTest
 
         // Ensure the Root is well set
         $p = (new Process([$phar, 'ls'], cwd: $castorOutputDirPath))->mustRun();
-        $this->assertEquals('my-app.linux.phar', trim($p->getOutput()));
+        $this->assertEquals('my-app.linux-amd64.phar', trim($p->getOutput()));
     }
 }

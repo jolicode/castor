@@ -2,11 +2,11 @@
 
 namespace Castor\Tests\Slow;
 
-use PHPUnit\Framework\TestCase;
+use Castor\Tests\TaskTestCase;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
-class CompileCommandTest extends TestCase
+class CompileCommandTest extends TaskTestCase
 {
     /**
      * @requires PHP < 8.5
@@ -24,7 +24,7 @@ class CompileCommandTest extends TestCase
 
         (new Process(
             [
-                'vendor/jolicode/castor/bin/castor',
+                self::$castorBin,
                 'repack',
                 '--os', 'linux',
             ],
@@ -36,8 +36,8 @@ class CompileCommandTest extends TestCase
         // If you update this command, you must also update the command in .github/actions/cache/action.yaml
         (new Process(
             [
-                'vendor/jolicode/castor/bin/castor',
-                'compile', $castorAppDirPath . '/my-app.linux.phar',
+                self::$castorBin,
+                'compile', $castorAppDirPath . '/my-app.linux-amd64.phar',
                 '--os', 'linux',
                 '--binary-path', $binary,
                 '--php-extensions', 'filter,mbstring,phar,posix,tokenizer',
