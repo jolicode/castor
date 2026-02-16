@@ -158,7 +158,7 @@ class UpdateCastorListener
 
             if (OsHelper::isUnix()) {
                 $installerOptions = [
-                    '--install-dir ' . $this->installation->getPath(),
+                    '--install-dir ' . \dirname($this->installation->getPath()),
                 ];
 
                 if (InstallationMethod::Static === $installationMethod) {
