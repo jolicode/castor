@@ -24,7 +24,7 @@ class NewProjectInitTest extends TaskTestCase
             throw new ProcessFailedException($process);
         }
 
-        $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());
+        $this->assertStringEqualsFileWithCleaning(__FILE__ . '.output.txt', $process->getOutput());
         $this->assertSame('', $process->getErrorOutput());
     }
 }

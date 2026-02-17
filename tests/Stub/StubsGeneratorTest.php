@@ -5,6 +5,7 @@ namespace Castor\Tests\Stub;
 use Castor\Stub\StubsGenerator;
 use Monolog\Logger;
 use PhpParser\PrettyPrinter\Standard;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
@@ -28,9 +29,7 @@ class StubsGeneratorTest extends TestCase
         $this->assertSame(0, $process->getExitCode());
     }
 
-    /**
-     * @dataProvider provideFixtures
-     */
+    #[DataProvider('provideFixtures')]
     public function testGenerateFixturesStubs(string $directory)
     {
         $expected = $directory . '/expected.php';
@@ -51,7 +50,7 @@ class StubsGeneratorTest extends TestCase
         $this->assertSame($expectedCode, $generatedCode, "Fail to assert the generated code is identical for fixture \"{$directory}\"");
     }
 
-    public function provideFixtures(): \Generator
+    public static function provideFixtures(): \Generator
     {
         $dirs = (new Finder())
             ->in(__DIR__ . '/fixtures')

@@ -151,11 +151,8 @@ jobs:
       - name: Link box
         run: sudo ln -s $GITHUB_WORKSPACE/tools/phar/vendor/bin/box /usr/local/bin/box
 
-      - name: Install PHPUnit
-        run: vendor/bin/simple-phpunit install
-
       - name: Run tests
-        run: vendor/bin/simple-phpunit
+        run: vendor/bin/phpunit
         env:
           CASTOR_BIN: ${{ github.workspace }}/${{ matrix.castor.bin }}
 

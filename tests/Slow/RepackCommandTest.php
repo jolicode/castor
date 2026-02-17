@@ -5,7 +5,7 @@ namespace Castor\Tests\Slow;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
-class RepackCommandTest extends AbstractRepackCommandTest
+class RepackCommandTest extends AbstractRepackCommandTestCase
 {
     public function test()
     {

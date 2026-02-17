@@ -11,6 +11,7 @@ use Castor\ContextRegistry;
 use Castor\Descriptor\TaskDescriptor;
 use Castor\ExpressionLanguage;
 use Castor\Helper\Slugger;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Console\Completion\CompletionInput;
 use Symfony\Component\Console\Tester\CommandCompletionTester;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -19,7 +20,7 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class AutocompleteTest extends TaskTestCase
 {
-    /** @dataProvider provideCompletionTests */
+    #[DataProvider('provideCompletionTests')]
     public function testCompletion(\Closure $function, array $expectedValues, string $input = '')
     {
         $descriptor = new TaskDescriptor(new AsTask('task'), new \ReflectionFunction($function));
@@ -39,7 +40,7 @@ class AutocompleteTest extends TaskTestCase
         $this->assertSame($expectedValues, $suggestions);
     }
 
-    public function provideCompletionTests(): \Generator
+    public static function provideCompletionTests(): \Generator
     {
         yield [task_with_static_autocomplete(...), ['a', 'b', 'c']];
         yield [task_with_autocomplete(...), ['d', 'e', 'f']];
@@ -47,7 +48,7 @@ class AutocompleteTest extends TaskTestCase
         yield [task_with_autocomplete_filtered(...), ['bar', 'baz'], 'ba'];
     }
 
-    /** @dataProvider providePathCompletionTests */
+    #[DataProvider('providePathCompletionTests')]
     public function testPathCompletion(\Closure $function, array $input, array $expectedItems, bool $exactExpectations = false)
     {
         $descriptor = new TaskDescriptor(new AsTask('task'), new \ReflectionFunction($function));
@@ -82,7 +83,7 @@ class AutocompleteTest extends TaskTestCase
         $this->assertCount(\count($expectedItems), array_intersect($suggestions, $expectedItems), $message);
     }
 
-    public function providePathCompletionTests(): \Generator
+    public static function providePathCompletionTests(): \Generator
     {
         $fs = new Filesystem();
 

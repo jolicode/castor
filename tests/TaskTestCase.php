@@ -29,7 +29,7 @@ abstract class TaskTestCase extends TestCase
 
     public function runTask(array $args, ?string $cwd = null, bool $needRemote = false, bool $needResetVendor = false, bool $needResetCache = true, ?string $input = null): Process
     {
-        $coverage = $this->getTestResultObject()?->getCodeCoverage();
+        $coverage = $this->result()?->getCodeCoverage();
 
         $extraEnv = [
             'ENDPOINT' => $_SERVER['ENDPOINT'],
@@ -88,10 +88,10 @@ abstract class TaskTestCase extends TestCase
         return $process;
     }
 
-    public static function assertStringEqualsFile(string $expectedFile, string $actualString, string $message = ''): void
+    public function assertStringEqualsFileWithCleaning(string $expectedFile, string $actualString, string $message = ''): void
     {
         $actualString = OutputCleaner::cleanOutput($actualString);
-        parent::assertStringEqualsFile($expectedFile, $actualString, $message);
+        self::assertStringEqualsFile($expectedFile, $actualString, $message);
     }
 
     protected function getCommand(array $args): array
