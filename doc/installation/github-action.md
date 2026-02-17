@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Setup castor
-        uses: castor-php/setup-castor@v0.1.0
+        uses: castor-php/setup-castor@v1.0.0
 
       - name: Run castor "hello" task
         run: castor hello
