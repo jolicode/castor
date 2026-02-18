@@ -19,8 +19,8 @@ class CompileCommand extends Command
 {
     // When something **important** related to the compilation changed, increase
     // this version to invalidate the cache
-    private const CACHE_VERSION = '4';
-    private const DEFAULT_SPC_VERSION = '2.7.5';
+    private const CACHE_VERSION = '5';
+    private const DEFAULT_SPC_VERSION = '2.8.2';
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,
@@ -40,7 +40,7 @@ class CompileCommand extends Command
             ->addOption('binary-path', null, InputOption::VALUE_REQUIRED, 'Path to compiled static binary. It can be the parent dirname too', PathHelper::getRoot(false))
             ->addOption('os', null, InputOption::VALUE_REQUIRED, 'Target OS for PHP compilation', 'linux', ['linux', 'macos'])
             ->addOption('arch', null, InputOption::VALUE_REQUIRED, 'Target architecture for PHP compilation', 'x86_64', ['x86_64', 'aarch64'])
-            ->addOption('php-version', null, InputOption::VALUE_REQUIRED, 'PHP version in major.minor format', '8.4')
+            ->addOption('php-version', null, InputOption::VALUE_REQUIRED, 'PHP version in major.minor format', '8.5')
             ->addOption('php-extensions', null, InputOption::VALUE_REQUIRED, 'PHP extensions required, in a comma-separated format. Defaults are the minimum required to run a basic "Hello World" task in Castor.', 'mbstring,phar,posix,tokenizer,curl,filter,openssl')
             ->addOption('php-ini-file', 'N', InputOption::VALUE_REQUIRED, 'ini file to inject into micro.sfx when combining')
             ->addOption('php-rebuild', null, InputOption::VALUE_NONE, 'Ignore cache and force PHP build compilation.')
