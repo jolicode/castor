@@ -3,13 +3,11 @@
 namespace Castor\Tests\Slow;
 
 use Castor\Tests\TaskTestCase;
-use PHPUnit\Framework\Attributes\RequiresPhp;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
 class CompileCommandTest extends TaskTestCase
 {
-    #[RequiresPhp('< 8.5')]
     public function test()
     {
         $finder = new ExecutableFinder();
