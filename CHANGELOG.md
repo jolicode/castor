@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Features
+
+* Allow to compile castor with PHP 8.5
+
 ### Minor
 
 * Rework how repacking is done. It's no longer needed to require jolicode/castor before repacking.
