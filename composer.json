@@ -61,8 +61,8 @@
         "symfony/yaml": "^7.4.1"
     },
     "require-dev": {
-        "phpunit/php-code-coverage": "^9.2.32",
-        "symfony/phpunit-bridge": "^7.4.3"
+        "phpunit/php-code-coverage": "^11.0.12",
+        "phpunit/phpunit": "^11.5.53"
     },
     "bin": [
         "bin/castor"

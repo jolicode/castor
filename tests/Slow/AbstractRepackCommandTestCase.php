@@ -5,7 +5,7 @@ namespace Castor\Tests\Slow;
 use Castor\Tests\TaskTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 
-abstract class AbstractRepackCommandTest extends TaskTestCase
+abstract class AbstractRepackCommandTestCase extends TaskTestCase
 {
     public static function setupRepackedCastorApp(string $castorAppDirName): string
     {

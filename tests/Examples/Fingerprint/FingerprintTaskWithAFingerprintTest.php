@@ -29,7 +29,7 @@ class FingerprintTaskWithAFingerprintTest extends FingerprintedTestCase
         $process = $this->runTask(['fingerprint:fingerprint'], needResetCache: false);
 
         if (file_exists($expectedOutputFilePath)) {
-            $this->assertStringEqualsFile($expectedOutputFilePath, $process->getOutput());
+            $this->assertStringEqualsFileWithCleaning($expectedOutputFilePath, $process->getOutput());
         }
 
         $this->assertSame(0, $process->getExitCode());

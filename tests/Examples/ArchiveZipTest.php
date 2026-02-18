@@ -3,6 +3,7 @@
 namespace Castor\Tests\Examples;
 
 use Castor\Tests\TaskTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -25,9 +26,7 @@ class ArchiveZipTest extends TaskTestCase
         parent::tearDown();
     }
 
-    /**
-     * @dataProvider archiveTaskProvider
-     */
+    #[DataProvider('archiveTaskProvider')]
     public function testArchiveTask(string $taskName, string $filePath, string $expectedFileZipPath, string $expectedDirZipPath): void
     {
         $process = $this->runTask([$taskName]);
@@ -48,7 +47,7 @@ class ArchiveZipTest extends TaskTestCase
         $this->assertZipIsPasswordProtected($expectedDirZipPath, 'foobar/lorem-ipsum.txt');
     }
 
-    public function archiveTaskProvider(): \Generator
+    public static function archiveTaskProvider(): \Generator
     {
         yield 'archive:zip' => [
             'archive:zip',
