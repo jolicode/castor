@@ -2,14 +2,16 @@
 
 ## Not released yet
 
+## 1.3.0 (2026-03-06)
+
 ### Features
 
 * Allow to compile castor with PHP 8.5
 * Castor static binaries are now compiled with PHP 8.5
-
-### Minor
-
 * Rework how repacking is done. It's no longer needed to require `jolicode/castor` before repacking
+
+### Internal
+
 * Update SPC version to v2.8.2
 
 ## 1.2.0 (2026-02-10)
