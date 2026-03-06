@@ -19,14 +19,18 @@ class CompileCommandTest extends TaskTestCase
 
         $castorAppDirPath = RepackCommandTest::setupRepackedCastorApp('castor-test-compile');
 
-        (new Process(
+        $process = new Process(
             [
                 self::$castorBin,
                 'repack',
                 '--os', 'linux',
             ],
-            cwd: $castorAppDirPath)
-        )->mustRun();
+            cwd: $castorAppDirPath
+        );
+        if ($_SERVER['GITHUB_TOKEN'] ?? false) {
+            $process->setEnv(['GITHUB_TOKEN' => $_SERVER['GITHUB_TOKEN']]);
+        }
+        $process->mustRun();
 
         $binary = $castorAppDirPath . '/castor';
 
