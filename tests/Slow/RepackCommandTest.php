@@ -2,10 +2,12 @@
 
 namespace Castor\Tests\Slow;
 
+use Castor\Tests\TaskTestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
-class RepackCommandTest extends AbstractRepackCommandTestCase
+class RepackCommandTest extends TaskTestCase
 {
     public function test()
     {
@@ -16,37 +18,28 @@ class RepackCommandTest extends AbstractRepackCommandTestCase
             $this->markTestSkipped('box is not installed.');
         }
 
-        $castorAppDirPath = self::setupRepackedCastorApp('castor-test-repack');
+        $castorAppDirPath = RepackHelper::setupRepackedCastorApp('castor-test-repack');
 
-        (new Process([
-            self::$castorBin,
-            'repack',
-            '--os', 'linux',
-            '--output-directory', 'build',
-            '--castor-version', 'v1.2.0',
-        ], cwd: $castorAppDirPath))->mustRun();
+        $phar = RepackHelper::repackApp(self::$castorBin, $castorAppDirPath);
 
-        $castorOutputDirPath = $castorAppDirPath . '/build';
-
-        $phar = $castorOutputDirPath . '/my-app.linux-amd64.phar';
         $this->assertFileExists($phar);
 
-        (new Process([$phar], cwd: $castorOutputDirPath))->mustRun();
+        (new Process([$phar], cwd: $castorAppDirPath))->mustRun();
 
-        $p = (new Process([$phar, 'hello'], cwd: $castorOutputDirPath))->mustRun();
+        $p = (new Process([$phar, 'hello'], cwd: $castorAppDirPath))->mustRun();
         $this->assertSame('hello', $p->getOutput());
 
         // Twice, because we want to be sure the phar is not corrupted after a
         // run
-        $p = (new Process([$phar, 'hello'], cwd: $castorOutputDirPath))->mustRun();
+        $p = (new Process([$phar, 'hello'], cwd: $castorAppDirPath))->mustRun();
         $this->assertSame('hello', $p->getOutput());
 
         // Test remote
-        $p = (new Process([$phar, 'pyrech:hello-example'], cwd: $castorOutputDirPath))->mustRun();
+        $p = (new Process([$phar, 'pyrech:hello-example'], cwd: $castorAppDirPath))->mustRun();
         $this->assertSame("\nHello from example!\n===================\n\n", $p->getOutput());
 
         // Ensure the Root is well set
-        $p = (new Process([$phar, 'ls'], cwd: $castorOutputDirPath))->mustRun();
+        $p = (new Process([$phar, 'ls'], cwd: $castorAppDirPath))->mustRun();
         $this->assertEquals('my-app.linux-amd64.phar', trim($p->getOutput()));
     }
 }

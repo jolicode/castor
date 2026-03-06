@@ -2,10 +2,10 @@
 
 namespace Castor\Tests\Slow;
 
-use Castor\Tests\TaskTestCase;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Process\Process;
 
-abstract class AbstractRepackCommandTestCase extends TaskTestCase
+class RepackHelper
 {
     public static function setupRepackedCastorApp(string $castorAppDirName): string
     {
@@ -63,22 +63,25 @@ abstract class AbstractRepackCommandTestCase extends TaskTestCase
             INI
         );
 
-        // Only for the compile test
-        $fs->dumpFile($castorAppDirPath . '/simple-logo-file.php', <<<'SIMPLELOGOFILE'
-            <?php
-            return 'My LOGO';
-            SIMPLELOGOFILE
-        );
-
-        // Only for the compile test
-        $fs->dumpFile($castorAppDirPath . '/closure-logo-file.php', <<<'CLOSURELOGOFILE'
-            <?php
-            return function (string $appName, string $appVersion) {
-                return '/!\ This Special LOGO for ' . $appName . ' in version ' . $appVersion;
-            };
-            CLOSURELOGOFILE
-        );
-
         return $castorAppDirPath;
+    }
+
+    public static function repackApp(string $castorBin, string $castorAppDirPath, array $repackArgs = []): string
+    {
+        $process = new Process(
+            [
+                $castorBin,
+                'repack',
+                '--os', 'linux',
+                ...$repackArgs,
+            ],
+            cwd: $castorAppDirPath
+        );
+        if ($_SERVER['GITHUB_TOKEN'] ?? false) {
+            $process->setEnv(['GITHUB_TOKEN' => $_SERVER['GITHUB_TOKEN']]);
+        }
+        $process->mustRun();
+
+        return $castorAppDirPath . '/my-app.linux-amd64.phar';
     }
 }
