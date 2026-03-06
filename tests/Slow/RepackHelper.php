@@ -66,17 +66,35 @@ class RepackHelper
         return $castorAppDirPath;
     }
 
-    public static function repackApp(string $castorBin, string $castorAppDirPath, array $repackArgs = []): string
-    {
-        $process = new Process(
-            [
-                $castorBin,
-                'repack',
-                '--os', 'linux',
-                ...$repackArgs,
-            ],
-            cwd: $castorAppDirPath
-        );
+    public static function repackApp(
+        string $castorBin,
+        string $castorAppDirPath,
+        array $repackArgs = [],
+        bool $useGithubRelease = false,
+    ): string {
+        $command = [
+            $castorBin,
+            'repack',
+            '--os', 'linux',
+            ...$repackArgs,
+        ];
+
+        // In the test suite, we do not use the phar from github, because it
+        // forbid us to test unreleased version. So we need to repack the app with
+        // the current castor version
+        if ($useGithubRelease) {
+            $command[] = '--castor-version';
+            $command[] = 'v1.2.0';
+        } else {
+            $castorPhar = __DIR__ . '/../../tools/phar/build/castor.linux-amd64.phar';
+            if (!file_exists($castorPhar)) {
+                (new Process([$castorBin, 'castor:phar:linux']))->mustRun();
+            }
+            $command[] = '--castor-phar';
+            $command[] = $castorPhar;
+        }
+
+        $process = new Process($command, cwd: $castorAppDirPath);
         if ($_SERVER['GITHUB_TOKEN'] ?? false) {
             $process->setEnv(['GITHUB_TOKEN' => $_SERVER['GITHUB_TOKEN']]);
         }
