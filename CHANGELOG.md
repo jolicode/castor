@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+## 1.3.0 (2026-03-06)
+
 ### Features
 
 * Allow to compile castor with PHP 8.5
