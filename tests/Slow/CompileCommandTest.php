@@ -17,16 +17,9 @@ class CompileCommandTest extends TaskTestCase
             $this->markTestSkipped('box is not installed.');
         }
 
-        $castorAppDirPath = RepackCommandTest::setupRepackedCastorApp('castor-test-compile');
+        $castorAppDirPath = RepackHelper::setupRepackedCastorApp('castor-test-compile');
 
-        (new Process(
-            [
-                self::$castorBin,
-                'repack',
-                '--os', 'linux',
-            ],
-            cwd: $castorAppDirPath)
-        )->mustRun();
+        $phar = RepackHelper::repackApp(self::$castorBin, $castorAppDirPath);
 
         $binary = $castorAppDirPath . '/castor';
 
@@ -34,7 +27,7 @@ class CompileCommandTest extends TaskTestCase
         (new Process(
             [
                 self::$castorBin,
-                'compile', $castorAppDirPath . '/my-app.linux-amd64.phar',
+                'compile', $phar,
                 '--os', 'linux',
                 '--binary-path', $binary,
                 '--php-extensions', 'filter,mbstring,phar,posix,tokenizer',

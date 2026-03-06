@@ -2,12 +2,14 @@
 
 namespace Castor\Tests\Slow;
 
+use Castor\Tests\TaskTestCase;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
-class RepackCommandWithExternalLogoTest extends AbstractRepackCommandTestCase
+class RepackCommandWithExternalLogoTest extends TaskTestCase
 {
-    public function test()
+    protected function setUp(): void
     {
         $finder = new ExecutableFinder();
         $box = $finder->find('box');
@@ -15,28 +17,39 @@ class RepackCommandWithExternalLogoTest extends AbstractRepackCommandTestCase
         if (null === $box) {
             $this->markTestSkipped('box is not installed.');
         }
+    }
 
-        $castorAppDirPath = self::setupRepackedCastorApp('castor-test-repack-with-external-logo');
-        $phar = $castorAppDirPath . '/my-app.linux-amd64.phar';
+    public function testWithLogoAsFile()
+    {
+        $castorAppDirPath = RepackHelper::setupRepackedCastorApp('castor-test-repack-with-external-logo-file');
+        $fs = new Filesystem();
+        $fs->dumpFile($castorAppDirPath . '/simple-logo-file.php', <<<'SIMPLELOGOFILE'
+            <?php
+            return 'My LOGO';
+            SIMPLELOGOFILE
+        );
 
-        (new Process([
-            self::$castorBin,
-            'repack',
-            '--os', 'linux',
-            '--logo-file', 'simple-logo-file.php',
-        ], cwd: $castorAppDirPath))->mustRun();
+        $phar = RepackHelper::repackApp(self::$castorBin, $castorAppDirPath, ['--logo-file', 'simple-logo-file.php']);
 
         $this->assertFileExists($phar);
 
         $p = (new Process([$phar], cwd: $castorAppDirPath))->mustRun();
         $this->assertStringStartsWith('My LOGO', $p->getOutput());
+    }
 
-        (new Process([
-            self::$castorBin,
-            'repack',
-            '--os', 'linux',
-            '--logo-file', 'closure-logo-file.php',
-        ], cwd: $castorAppDirPath))->mustRun();
+    public function testWithLogoAsClosure()
+    {
+        $castorAppDirPath = RepackHelper::setupRepackedCastorApp('castor-test-repack-with-external-logo-closure');
+        $fs = new Filesystem();
+        $fs->dumpFile($castorAppDirPath . '/closure-logo-file.php', <<<'CLOSURELOGOFILE'
+            <?php
+            return function (string $appName, string $appVersion) {
+                return '/!\ This Special LOGO for ' . $appName . ' in version ' . $appVersion;
+            };
+            CLOSURELOGOFILE
+        );
+
+        $phar = RepackHelper::repackApp(self::$castorBin, $castorAppDirPath, ['--logo-file', 'closure-logo-file.php']);
 
         $this->assertFileExists($phar);
 

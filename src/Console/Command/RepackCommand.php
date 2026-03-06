@@ -46,6 +46,7 @@ class RepackCommand extends Command
             ->addOption('os', null, InputOption::VALUE_REQUIRED, 'The targeted OS', 'linux', ['linux', 'darwin', 'windows'])
             ->addOption('arch', null, InputOption::VALUE_REQUIRED, 'The targeted CPU architecture', 'amd64', ['amd64', 'arm64'])
             ->addOption('castor-version', null, InputOption::VALUE_REQUIRED, 'The Castor version to use (vX.Y.Z)', Application::VERSION)
+            ->addOption('castor-phar', null, InputOption::VALUE_REQUIRED, 'A specific castor phar to use (/path/to/castor.phar)')
             ->addOption('no-logo', null, InputOption::VALUE_NONE, 'Hide Castor logo')
             ->addOption('logo-file', null, InputOption::VALUE_OPTIONAL, 'Path to a PHP file that returns a logo as a string, or a closure that returns a logo as a string')
             ->addOption('output-directory', null, InputOption::VALUE_REQUIRED, 'Path to the directory where the phar will be generated', '')
@@ -93,7 +94,7 @@ class RepackCommand extends Command
         }
 
         // Download and extract castor phar from GitHub
-        $castorSourceDir = $this->downloadAndExtractCastorPhar($os, $arch, $input->getOption('castor-version'));
+        $castorSourceDir = $this->downloadAndExtractCastorPhar($os, $arch, $input->getOption('castor-version'), $input->getOption('castor-phar'));
 
         $appName = $input->getOption('app-name');
         $appVersion = $input->getOption('app-version');
@@ -168,8 +169,8 @@ class RepackCommand extends Command
             );
         }
 
-        $this->fs->dumpFile('.box.json', json_encode($boxConfig, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES | \JSON_THROW_ON_ERROR));
-        $this->fs->dumpFile('.main.php', $main);
+        $this->fs->dumpFile(PathHelper::getRoot() . '/.box.json', json_encode($boxConfig, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES | \JSON_THROW_ON_ERROR));
+        $this->fs->dumpFile(PathHelper::getRoot() . '/.main.php', $main);
 
         $this->io->comment('Building phar with box...');
 
@@ -179,9 +180,9 @@ class RepackCommand extends Command
             $process->mustRun(static fn ($type, $buffer) => print $buffer);
         } finally {
             $this->fs->remove([
-                '.box.json',
-                '.main.php',
-                '.castor-vendor',
+                PathHelper::getRoot() . '/.box.json',
+                PathHelper::getRoot() . '/.main.php',
+                PathHelper::getRoot() . '/.castor-vendor',
             ]);
         }
 
@@ -211,7 +212,7 @@ class RepackCommand extends Command
         };
     }
 
-    private function downloadAndExtractCastorPhar(string $os, string $arch, string $version): string
+    private function downloadAndExtractCastorPhar(string $os, string $arch, string $version, ?string $pharPath): string
     {
         $extractDir = PathHelper::getRoot() . '/.castor-vendor';
 
@@ -225,48 +226,53 @@ class RepackCommand extends Command
         $this->fs->remove($extractDir);
         $this->fs->mkdir($extractDir);
 
-        $this->io->comment(\sprintf('Fetching Castor release %s from GitHub...', $version));
+        $removePhar = false;
 
-        $options = [
-            'headers' => [
-                'Accept' => 'application/vnd.github+json',
-            ],
-        ];
-        if ($_SERVER['GITHUB_TOKEN'] ?? false) {
-            $options['headers']['Authorization'] = 'Bearer ' . $_SERVER['GITHUB_TOKEN'];
-        }
+        if (!$pharPath) {
+            $removePhar = true;
+            $this->io->comment(\sprintf('Fetching Castor release %s from GitHub...', $version));
 
-        // Get release info from GitHub API for the specified version
-        $releaseInfo = $this->httpClient
-            ->request('GET', \sprintf('https://api.github.com/repos/jolicode/castor/releases/tags/%s', $version), $options)
-            ->toArray()
-        ;
-
-        // Find the phar asset for the specified OS and architecture
-        $pharName = "castor.{$os}-{$arch}.phar";
-        $pharUrl = null;
-        foreach ($releaseInfo['assets'] as $asset) {
-            if ($pharName === $asset['name']) {
-                $pharUrl = $asset['browser_download_url'];
-
-                break;
+            $options = [
+                'headers' => [
+                    'Accept' => 'application/vnd.github+json',
+                ],
+            ];
+            if ($_SERVER['GITHUB_TOKEN'] ?? false) {
+                $options['headers']['Authorization'] = 'Bearer ' . $_SERVER['GITHUB_TOKEN'];
             }
+
+            // Get release info from GitHub API for the specified version
+            $releaseInfo = $this->httpClient
+                ->request('GET', \sprintf('https://api.github.com/repos/jolicode/castor/releases/tags/%s', $version), $options)
+                ->toArray()
+            ;
+
+            // Find the phar asset for the specified OS and architecture
+            $pharName = "castor.{$os}-{$arch}.phar";
+            $pharUrl = null;
+            foreach ($releaseInfo['assets'] as $asset) {
+                if ($pharName === $asset['name']) {
+                    $pharUrl = $asset['browser_download_url'];
+
+                    break;
+                }
+            }
+
+            if (null === $pharUrl) {
+                throw new \RuntimeException(\sprintf('Could not find %s in the GitHub release %s.', $pharName, $version));
+            }
+
+            $this->io->comment(\sprintf('Downloading Castor %s (%s-%s)...', $releaseInfo['tag_name'], $os, $arch));
+
+            // Download the phar
+            $pharPath = $extractDir . '/' . $pharName;
+            $pharContent = $this->httpClient
+                ->request('GET', $pharUrl, $options)
+                ->getContent()
+            ;
+
+            $this->fs->dumpFile($pharPath, $pharContent);
         }
-
-        if (null === $pharUrl) {
-            throw new \RuntimeException(\sprintf('Could not find %s in the GitHub release %s.', $pharName, $version));
-        }
-
-        $this->io->comment(\sprintf('Downloading Castor %s (%s-%s)...', $releaseInfo['tag_name'], $os, $arch));
-
-        // Download the phar
-        $pharPath = $extractDir . '/' . $pharName;
-        $pharContent = $this->httpClient
-            ->request('GET', $pharUrl, $options)
-            ->getContent()
-        ;
-
-        $this->fs->dumpFile($pharPath, $pharContent);
 
         $this->io->comment('Extracting Castor phar...');
 
@@ -274,7 +280,9 @@ class RepackCommand extends Command
         $phar = new \Phar($pharPath);
         $phar->extractTo($extractDir);
 
-        $this->fs->remove($pharPath);
+        if ($removePhar) {
+            $this->fs->remove($pharPath);
+        }
 
         $this->io->comment('Castor sources extracted to .castor-vendor');
 
