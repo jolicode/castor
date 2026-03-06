@@ -24,6 +24,7 @@ class RepackCommandWithExternalLogoTest extends AbstractRepackCommandTestCase
             'repack',
             '--os', 'linux',
             '--logo-file', 'simple-logo-file.php',
+            '--castor-version', 'v1.2.0',
         ], cwd: $castorAppDirPath))->mustRun();
 
         $this->assertFileExists($phar);

@@ -23,6 +23,7 @@ class RepackCommandTest extends AbstractRepackCommandTestCase
             'repack',
             '--os', 'linux',
             '--output-directory', 'build',
+            '--castor-version', 'v1.2.0',
         ], cwd: $castorAppDirPath))->mustRun();
 
         $castorOutputDirPath = $castorAppDirPath . '/build';

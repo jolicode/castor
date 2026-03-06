@@ -24,6 +24,7 @@ class CompileCommandTest extends TaskTestCase
                 self::$castorBin,
                 'repack',
                 '--os', 'linux',
+                '--castor-version', 'v1.2.0',
             ],
             cwd: $castorAppDirPath
         );
