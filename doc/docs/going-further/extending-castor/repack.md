@@ -25,11 +25,11 @@ documentation](https://www.php.net/manual/en/phar.configuration.php#ini.phar.rea
 Then, run the repack command to create the new phar:
 
 ```bash
-vendor/bin/castor repack
+castor repack
 ```
 
 > [!NOTE]
-> Castor will automatically import all files in the current directly.
+> Castor will automatically import all files in the current directory.
 > So ensure to have the fewer files possible in the directory where you run the
 > repack task to avoid including useless files in the phar.
 <!-- -->
@@ -68,7 +68,7 @@ return '❤️ My LOGO ❤️';
 ```
 
 ```bash
-vendor/bin/castor repack --logo-file repack/my-logo.php
+castor repack --logo-file repack/my-logo.php
 ```
 
 or
@@ -88,7 +88,7 @@ return function (string $appName, string $appVersion) {
 ```
 
 ```bash
-vendor/bin/castor repack --logo-file repack/my-complex-logo.php
+castor repack --logo-file repack/my-complex-logo.php
 ```
 
 ![img.png](../../../assets/custom-logo.png)
