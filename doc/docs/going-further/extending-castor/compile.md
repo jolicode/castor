@@ -37,7 +37,7 @@ containing your Castor application.
 To compile your Castor application, navigate to your project directory and run:
 
 ```bash
-vendor/bin/castor compile my-custom-castor-app.phar
+castor compile my-custom-castor-app.phar
 ```
 
 > [!WARNING]
