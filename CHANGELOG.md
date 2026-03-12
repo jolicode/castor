@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Fixes
+
+* Fix installer to better handle invalid --install-dir option
+
 ## 1.3.0 (2026-03-06)
 
 ### Features
@@ -21,7 +25,7 @@
 * Add a `terminal()` function to get terminal properties
 * Add a `#[AsArgsAfterOptionEnd]` attribute to get all arguments after `--` delimiter
 
-### Fixed
+### Fixes
 
 * Do not generate stub if no castor file, also check for completion command name
 
