@@ -201,7 +201,21 @@ if [ $http_code != 200 ]; then
 fi
 
 if [ ! -d "${binary_dest}" ]; then
+    # Backward-compatible quick fix: if --install-dir points to the castor binary path,
+    # install into its parent directory.
+    # There was a bug fixed in https://github.com/jolicode/castor/pull/786
+    if [ "$(basename "${binary_dest}")" = "${CASTOR_EXECUTABLE}" ]; then
+        binary_dest="$(dirname "${binary_dest}")"
+    fi
+fi
+
+if [ ! -d "${binary_dest}" ]; then
     if ! mkdir -p "${binary_dest}"; then
+        if [ "${custom_dir}" = "true" ]; then
+            output "[castor-installer] Error: invalid value for --install-dir: '${binary_dest}'. Expected a directory, or a full path ending with '/${CASTOR_EXECUTABLE}'." "error"
+            exit 1
+        fi
+
         binary_dest="."
     fi
 fi
