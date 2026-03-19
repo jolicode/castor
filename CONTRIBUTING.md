@@ -48,7 +48,7 @@ changes, improvements or alternatives may be given).
 Run the tests using the following script:
 
 ```bash
-vendor/bin/simple-phpunit
+vendor/bin/phpunit
 ```
 
 Keep in mind tests will also run on CI covering all the different Castor

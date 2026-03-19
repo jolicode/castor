@@ -167,4 +167,22 @@ $ castor path-argument /var/www/[TAB]
 /var/www/foo  /var/www/bar  /var/www/baz
 ```
 
+### Restricting suggestions with `directory` and `filter`
+
+You can use the `directory` parameter to restrict suggestions to a specific
+directory, and the `filter` parameter to only suggest files matching a glob
+pattern (e.g. `'*.yaml'`) or an array of patterns (e.g. `['*.yaml', '*.yml']`).
+Subdirectories are always shown to allow navigation.
+
+```php
+{% include "/examples/basic/arguments/path-option-with-filter.php" start="<?php\n\nnamespace arguments;\n\n" %}
+```
+
+```console
+$ castor lint --file [TAB]
+routes.yaml  services.yaml  packages/
+$ castor lint --file packages/[TAB]
+packages/framework.yaml  packages/security.yaml
+```
+
 See the [autocompletion documentation](../going-further/interacting-with-castor/autocomplete.md) for more information about completion.
