@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Features
+
+* Add `directory` and `filter` parameters to `#[AsPathArgument]` and `#[AsPathOption]` attributes to improve autocomplete
+
 ### Fixes
 
 * Fix installer to better handle invalid --install-dir option

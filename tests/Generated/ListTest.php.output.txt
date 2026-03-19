@@ -21,6 +21,7 @@ arguments:override-option
 arguments:passthru                                       Dumps all arguments and options, without configuration nor validation
 arguments:passthru-after-endoption                       Dumps all arguments and options after the end of options marker (--).
 arguments:path-argument
+arguments:path-option-with-filter                        Provides autocomplete for .yaml files in the config directory
 arguments:phpunit
 arguments:simple
 assertion:ensure-we-are-in-the-future                    Ensure we are in the future

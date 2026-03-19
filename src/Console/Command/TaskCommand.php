@@ -269,24 +269,36 @@ class TaskCommand extends Command implements SignalableCommandInterface
     private function getSuggestedValues(AsArgument|AsOption $attribute): array|\Closure
     {
         if ($attribute instanceof AsPathArgument || $attribute instanceof AsPathOption) {
-            return \Closure::fromCallable(function (CompletionInput $input): array {
+            $directory = $attribute->directory;
+            $filter = $attribute->filter;
+
+            return \Closure::fromCallable(function (CompletionInput $input) use ($directory, $filter): array {
+                $rootDir = PathHelper::getRoot();
+
+                $baseDir = $rootDir;
+                if (null !== $directory) {
+                    $baseDir = $this->fs->isAbsolutePath($directory)
+                        ? $directory
+                        : "{$rootDir}/{$directory}";
+                }
+
                 $value = $input->getCompletionValue();
 
-                // If no value is typed, we suggest items in the root directory
+                // If no value is typed, we suggest items in the base directory
                 if (!$value || '.' === $value) {
-                    return $this->getPathSuggestions(PathHelper::getRoot(), '');
+                    return $this->getPathSuggestions($baseDir, '', $filter);
                 }
 
                 $path = $value;
 
-                // If the currently typed value is not an absolute path, we will suggest items in the root directory
+                // If the currently typed value is not an absolute path, we resolve it against the base directory
                 if (!$this->fs->isAbsolutePath($value)) {
-                    $path = PathHelper::getRoot() . \DIRECTORY_SEPARATOR . $value;
+                    $path = "{$baseDir}/{$value}";
                 }
 
                 // If the typed value exists and is a directory, we will suggest items in that directory
                 if ($this->fs->exists($path) && is_dir($path) && is_readable($path) && !str_ends_with($value, '.')) {
-                    return $this->getPathSuggestions($path, rtrim($value, '/\\') . \DIRECTORY_SEPARATOR);
+                    return $this->getPathSuggestions($path, rtrim($value, '/\\') . \DIRECTORY_SEPARATOR, $filter);
                 }
 
                 $parentDir = \dirname($path);
@@ -306,7 +318,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
                 // - but items should be relative to typed value and start with "foo/"
                 $baseValue = mb_substr($value, 0, 1 + mb_strlen($value) - mb_strlen(str_replace($parentDir, '', $path)));
 
-                return $this->getPathSuggestions($parentDir, $baseValue);
+                return $this->getPathSuggestions($parentDir, $baseValue, $filter);
             });
         }
 
@@ -327,9 +339,11 @@ class TaskCommand extends Command implements SignalableCommandInterface
     }
 
     /**
+     * @param string|array<string>|null $filter A glob pattern or array of glob patterns to filter file suggestions
+     *
      * @return array<string>
      */
-    private function getPathSuggestions(string $path, string $baseValue): array
+    private function getPathSuggestions(string $path, string $baseValue, string|array|null $filter = null): array
     {
         $items = scandir($path);
 
@@ -337,11 +351,33 @@ class TaskCommand extends Command implements SignalableCommandInterface
             return [];
         }
 
+        $filters = null !== $filter ? (array) $filter : null;
+
         return array_map(
-            static fn (string $item): string => $baseValue . $item . (is_dir($baseValue . $item) ? \DIRECTORY_SEPARATOR : ''),
+            static fn (string $item): string => $baseValue . $item . (is_dir("{$path}/{$item}") ? \DIRECTORY_SEPARATOR : ''),
             array_filter(
                 $items,
-                static fn (string $suggestion): bool => '.' !== $suggestion && '..' !== $suggestion,
+                static function (string $item) use ($path, $filters): bool {
+                    if ('.' === $item || '..' === $item) {
+                        return false;
+                    }
+
+                    if (is_dir("{$path}/{$item}")) { // directories are always shown to allow navigation
+                        return true;
+                    }
+
+                    if (null === $filters) {
+                        return true;
+                    }
+
+                    foreach ($filters as $pattern) {
+                        if (fnmatch($pattern, $item)) {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                },
             ),
         );
     }

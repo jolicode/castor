@@ -308,7 +308,7 @@ function add_test(array $args, string $class, ?string $cwd = null, bool $needRem
         },
         '{{ error-assertion }}' => match ((bool) $err) {
             true => <<<'PHP'
-                $this->assertStringEqualsFile(__FILE__ . '.err.txt', $process->getErrorOutput());
+                $this->assertStringEqualsFileWithCleaning(__FILE__ . '.err.txt', $process->getErrorOutput());
                 PHP,
             default => <<<'PHP'
                 $this->assertSame('', $process->getErrorOutput());
@@ -347,7 +347,7 @@ class {{ class_name }} extends TaskTestCase
             throw new ProcessFailedException($process);
         }
 
-        $this->assertStringEqualsFile(__FILE__ . '.output.txt', $process->getOutput());
+        $this->assertStringEqualsFileWithCleaning(__FILE__ . '.output.txt', $process->getOutput());
         {{ error-assertion }}
     }
 }

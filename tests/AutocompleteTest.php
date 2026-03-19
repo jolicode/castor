@@ -88,6 +88,7 @@ class AutocompleteTest extends TaskTestCase
         $fs = new Filesystem();
 
         $tmpDir = sys_get_temp_dir() . '/castor-test';
+        $fs->remove($tmpDir);
         $fs->mkdir($tmpDir . '/foo');
         $fs->mkdir($tmpDir . '/bar');
         $fs->touch($tmpDir . '/foo/baz.txt');
@@ -119,6 +120,24 @@ class AutocompleteTest extends TaskTestCase
         yield [task_with_path_option(...), ['--option', $tmpDir . '/.'], [$tmpDir . '/bar/', $tmpDir . '/foo/'], true];
         yield [task_with_path_option(...), ['--option', $tmpDir . '/./'], [$tmpDir . '/./bar/', $tmpDir . '/./foo/'], true];
         yield [task_with_path_option(...), ['--option', $tmpDir . '/f'], [$tmpDir . '/bar/', $tmpDir . '/foo/'], true];
+
+        yield [task_with_path_argument_directory(...), [''], ['config.yaml', 'routes.yaml', 'schema.xml', 'templates/'], true];
+        yield [task_with_path_argument_directory(...), ['.'], ['config.yaml', 'routes.yaml', 'schema.xml', 'templates/'], true];
+
+        $filterTmpDir = sys_get_temp_dir() . '/castor-filter-test';
+        $fs->remove($filterTmpDir);
+        $fs->mkdir($filterTmpDir);
+        $fs->touch($filterTmpDir . '/app.php');
+        $fs->touch($filterTmpDir . '/index.php');
+        $fs->touch($filterTmpDir . '/readme.md');
+        $fs->touch($filterTmpDir . '/index.html.twig');
+        $fs->mkdir($filterTmpDir . '/subdir');
+
+        yield [task_with_path_argument_filter(...), [$filterTmpDir . '/'], [$filterTmpDir . '/app.php', $filterTmpDir . '/index.php', $filterTmpDir . '/subdir/'], true];
+        yield [task_with_path_argument_filters(...), [$filterTmpDir . '/'], [$filterTmpDir . '/index.html.twig', $filterTmpDir . '/readme.md', $filterTmpDir . '/subdir/'], true];
+
+        yield [task_with_path_option_directory_filter(...), ['--option'], ['config.yaml', 'routes.yaml', 'templates/'], true];
+        yield [task_with_path_option_directory_filter(...), ['--option', 'templates/'], [], true];
     }
 }
 
@@ -168,6 +187,30 @@ function task_with_path_argument(
 
 function task_with_path_option(
     #[AsPathOption(name: 'option')]
+    string $path,
+): void {
+}
+
+function task_with_path_argument_directory(
+    #[AsPathArgument(name: 'argument', directory: 'tests/fixtures/autocomplete')]
+    string $path,
+): void {
+}
+
+function task_with_path_argument_filter(
+    #[AsPathArgument(name: 'argument', filter: '*.php')]
+    string $path,
+): void {
+}
+
+function task_with_path_argument_filters(
+    #[AsPathArgument(name: 'argument', filter: ['*.twig', '*.md'])]
+    string $path,
+): void {
+}
+
+function task_with_path_option_directory_filter(
+    #[AsPathOption(name: 'option', directory: 'tests/fixtures/autocomplete', filter: '*.yaml')]
     string $path,
 ): void {
 }
