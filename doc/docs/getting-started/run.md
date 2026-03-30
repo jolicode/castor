@@ -96,3 +96,16 @@ the process:
 ```php
 {% include "/examples/basic/run/pty.php" start="<?php\n\nnamespace run;\n\n" %}
 ```
+
+## Providing input to a process
+
+You can provide input to a process via stdin using the `input` option on the
+context. This is useful for commands that require input but you don't want to
+expose sensitive data (like passwords) in command line arguments:
+
+```php
+{% include "/examples/basic/run/input.php" start="<?php\n\nnamespace run;\n\n" %}
+```
+
+The `input` option accepts a string, a `\Stringable`, a resource, or an
+`\Iterator<string>`.

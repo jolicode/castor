@@ -12,8 +12,9 @@ class Context implements \ArrayAccess
     public readonly string $workingDirectory;
 
     /**
-     * @param array<string, string|\Stringable|int> $environment      A list of environment variables to add to the task
-     * @param string[]                              $verboseArguments A list of arguments to pass to the command to enable verbose output
+     * @param array<string, string|\Stringable|int>              $environment      A list of environment variables to add to the task
+     * @param string[]                                           $verboseArguments A list of arguments to pass to the command to enable verbose output
+     * @param string|\Stringable|resource|\Iterator<string>|null $input            The input to send to the process stdin
      *
      * @phpstan-param ContextData $data The input parameter accepts an array or an Object
      */
@@ -35,6 +36,7 @@ class Context implements \ArrayAccess
         public readonly string $name = '',
         public readonly string $notificationTitle = '',
         public readonly array $verboseArguments = [],
+        public readonly mixed $input = null,
     ) {
         $this->workingDirectory = $workingDirectory ?? PathHelper::getRoot(false);
     }
@@ -91,6 +93,7 @@ class Context implements \ArrayAccess
             $this->name,
             $this->notificationTitle,
             $this->verboseArguments,
+            $this->input,
         );
     }
 
@@ -111,6 +114,7 @@ class Context implements \ArrayAccess
             $this->name,
             $this->notificationTitle,
             $this->verboseArguments,
+            $this->input,
         );
     }
 
@@ -130,6 +134,7 @@ class Context implements \ArrayAccess
             $this->name,
             $this->notificationTitle,
             $this->verboseArguments,
+            $this->input,
         );
     }
 
@@ -149,6 +154,7 @@ class Context implements \ArrayAccess
             $this->name,
             $this->notificationTitle,
             $this->verboseArguments,
+            $this->input,
         );
     }
 
@@ -168,6 +174,7 @@ class Context implements \ArrayAccess
             $this->name,
             $this->notificationTitle,
             $this->verboseArguments,
+            $this->input,
         );
     }
 
@@ -187,6 +194,7 @@ class Context implements \ArrayAccess
             $this->name,
             $this->notificationTitle,
             $this->verboseArguments,
+            $this->input,
         );
     }
 
@@ -206,6 +214,7 @@ class Context implements \ArrayAccess
             $this->name,
             $this->notificationTitle,
             $this->verboseArguments,
+            $this->input,
         );
     }
 
@@ -225,6 +234,7 @@ class Context implements \ArrayAccess
             $this->name,
             $this->notificationTitle,
             $this->verboseArguments,
+            $this->input,
         );
     }
 
@@ -244,6 +254,7 @@ class Context implements \ArrayAccess
             $this->name,
             $this->notificationTitle,
             $this->verboseArguments,
+            $this->input,
         );
     }
 
@@ -263,6 +274,7 @@ class Context implements \ArrayAccess
             $this->name,
             $this->notificationTitle,
             $this->verboseArguments,
+            $this->input,
         );
     }
 
@@ -286,6 +298,7 @@ class Context implements \ArrayAccess
             $name,
             $this->notificationTitle,
             $this->verboseArguments,
+            $this->input,
         );
     }
 
@@ -305,6 +318,7 @@ class Context implements \ArrayAccess
             $this->name,
             $notificationTitle,
             $this->verboseArguments,
+            $this->input,
         );
     }
 
@@ -325,6 +339,28 @@ class Context implements \ArrayAccess
             $this->name,
             $this->notificationTitle,
             $arguments,
+            $this->input,
+        );
+    }
+
+    /** @param string|\Stringable|resource|\Iterator<string>|null $input */
+    public function withInput(mixed $input): self
+    {
+        return new self(
+            $this->data,
+            $this->environment,
+            $this->workingDirectory,
+            $this->tty,
+            $this->pty,
+            $this->timeout,
+            $this->quiet,
+            $this->allowFailure,
+            $this->notify,
+            $this->verbosityLevel,
+            $this->name,
+            $this->notificationTitle,
+            $this->verboseArguments,
+            $input,
         );
     }
 

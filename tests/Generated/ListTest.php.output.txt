@@ -115,6 +115,7 @@ run:process-helper                                       Run a sub-process and d
 run:pty                                                  Run a command with PTY disabled
 run:quiet                                                Executes something but does not output anything
 run:run                                                  Run a sub-process
+run:run-with-input                                       Run a sub-process with stdin input
 run:tty                                                  Run a command with TTY enabled
 run:variables                                            Run a sub-process with environment variables and display information about it
 run:verbose-arguments                                    A failing task that will suggest to re-run with verbose arguments
