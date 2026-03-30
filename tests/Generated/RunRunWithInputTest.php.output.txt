@@ -1,0 +1,3 @@
+Hello from stdin!
+Output: Hello from stdin!
+

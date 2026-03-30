@@ -76,8 +76,11 @@ class ProcessRunner
             ;
         }
 
-        // TTY does not work on windows, and PTY is a mess, so let's skip everything!
-        if (!OsHelper::isWindows()) {
+        // When input is provided, we need to disable TTY and PTY because they require interactive terminal
+        if (null !== $context->input) {
+            $process->setInput($context->input);
+        } elseif (!OsHelper::isWindows()) {
+            // TTY does not work on windows, and PTY is a mess, so let's skip everything!
             if ($context->tty) {
                 $process->setTty(true);
                 $process->setInput(\STDIN);
