@@ -272,7 +272,7 @@ class SelfUpdateCommand extends Command
             $assets = array_filter($assets, static fn (array $asset): bool => str_ends_with((string) $asset['name'], '.phar'));
         }
 
-        $asset = reset($assets);
+        $asset = array_first($assets);
 
         return $asset['browser_download_url'] ?? null;
     }
