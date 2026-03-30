@@ -73,8 +73,10 @@ castor self-update
 - `--rollback` or `-r`: Rollback to the previous version
 
 > [!NOTE]
-> The `self-update` command is not available for Composer or source installations.
-> Use `composer update jolicode/castor` instead.
+> The `self-update` command is not available for source installations or Composer
+> project dependencies. For global Composer installs (`composer global require`),
+> `self-update` runs `composer global update` under the hood. For project
+> dependencies, use `composer update jolicode/castor` instead.
 
 ## Other installation methods
 

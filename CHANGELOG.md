@@ -5,6 +5,7 @@
 ### Features
 
 * Add `directory` and `filter` parameters to `#[AsPathArgument]` and `#[AsPathOption]` attributes to improve autocomplete
+* Add `input` option to Context to pass data to process stdin (useful for sensitive data like passwords)
 * Add `self-update` command to update Castor to the latest version
 
 ### Fixes
