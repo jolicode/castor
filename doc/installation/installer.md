@@ -66,7 +66,7 @@ update it to the latest version using the `self-update` command:
 castor self-update
 ```
 
-### Options
+### Self-update options
 
 - `--force` or `-f`: Force update even if already up to date
 - `--no-backup`: Skip creating a backup of the current binary
