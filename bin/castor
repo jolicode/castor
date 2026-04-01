@@ -1,7 +1,6 @@
 #!/usr/bin/env php
 <?php
 
-use Castor\Console\Application;
 use Castor\Console\ApplicationFactory;
 
 $memoryLimit = $_SERVER['CASTOR_MEMORY_LIMIT'] ?? false;
