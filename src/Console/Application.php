@@ -2,7 +2,6 @@
 
 namespace Castor\Console;
 
-use Castor\Container;
 use Castor\Exception\ProblemException;
 use Castor\Helper\PlatformHelper;
 use Castor\Kernel;
@@ -17,7 +16,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
 /** @internal */
@@ -31,7 +29,6 @@ class Application extends SymfonyApplication
     private Command $command;
 
     public function __construct(
-        private readonly ContainerBuilder $containerBuilder,
         private readonly Kernel $kernel,
         #[Autowire(lazy: true)]
         private readonly SymfonyStyle $io,
@@ -59,13 +56,7 @@ class Application extends SymfonyApplication
             return parent::doRun($input, $output);
         }
 
-        $this->containerBuilder->set(InputInterface::class, $input);
-        $this->containerBuilder->set(OutputInterface::class, $output);
-
-        // @phpstan-ignore argument.type
-        Container::set($this->containerBuilder->get(Container::class));
-
-        $this->kernel->boot($input, $output);
+        $this->kernel->init($input, $output);
 
         try {
             return parent::doRun($input, $output);
