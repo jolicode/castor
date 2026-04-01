@@ -25,12 +25,6 @@ parameters:
 			path: examples/basic/assertion/ensure.php
 
 		-
-			message: '#^Class RepackedApplication not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Console/ApplicationFactory.php
-
-		-
 			message: '#^Default value of the parameter \#1 \$data \(array\{\}\) of method Castor\\Context\:\:__construct\(\) is incompatible with type array\{name\: string, production\: bool, foo\?\: string\}\.$#'
 			identifier: parameter.defaultValue
 			count: 1

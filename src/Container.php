@@ -5,6 +5,8 @@ namespace Castor;
 use Castor\Console\Application;
 use Castor\Console\Output\SectionOutput;
 use Castor\Fingerprint\FingerprintHelper;
+use Castor\Function\FunctionLoader;
+use Castor\Function\FunctionResolver;
 use Castor\Helper\Notifier;
 use Castor\Helper\Slugger;
 use Castor\Helper\SymmetricCrypto;
@@ -12,6 +14,7 @@ use Castor\Helper\Waiter;
 use Castor\Helper\ZipArchiver;
 use Castor\Http\HttpDownloader;
 use Castor\Import\Importer;
+use Castor\Import\Remote\Composer;
 use Castor\Runner\ParallelRunner;
 use Castor\Runner\PhpRunner;
 use Castor\Runner\ProcessRunner;
@@ -37,11 +40,13 @@ final class Container
     public function __construct(
         public readonly Application $application,
         public readonly CacheItemPoolInterface&CacheInterface $cache,
+        public readonly Composer $composer,
         public readonly ContextRegistry $contextRegistry,
-        public readonly ContextRegistry $outputInterface,
         public readonly EventDispatcherInterface $eventDispatcher,
         public readonly Filesystem $fs,
         public readonly FingerprintHelper $fingerprintHelper,
+        public readonly FunctionLoader $functionLoader,
+        public readonly FunctionResolver $functionResolver,
         public readonly HttpClientInterface $httpClient,
         public readonly HttpDownloader $httpDownloader,
         public readonly Importer $importer,

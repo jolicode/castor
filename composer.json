@@ -44,7 +44,7 @@
         "symfony/cache": "^7.4.5",
         "symfony/config": "^7.4.4",
         "symfony/console": "^7.4.4",
-        "symfony/dependency-injection": "^7.4.5",
+        "symfony/dependency-injection": "dev-di-kernel",
         "symfony/deprecation-contracts": "^3.6.0",
         "symfony/dotenv": "^7.4.0",
         "symfony/error-handler": "^7.4.4",
@@ -58,19 +58,26 @@
         "symfony/string": "^7.4.4",
         "symfony/translation-contracts": "^3.6.1",
         "symfony/var-dumper": "^7.4.4",
+        "symfony/var-exporter": "^8.1.x-dev",
         "symfony/yaml": "^7.4.1"
     },
     "require-dev": {
         "phpunit/php-code-coverage": "^11.0.12",
         "phpunit/phpunit": "^11.5.53"
     },
+    "repositories": [
+        {
+            "url": "../symfony/symfony/src/Symfony/Component/DependencyInjection",
+            "type": "path"
+        }
+    ],
     "bin": [
         "bin/castor"
     ],
     "config": {
         "bump-after-update": true,
         "platform": {
-            "php": "8.2.27"
+            "php": "8.5"
         },
         "sort-packages": true
     }
