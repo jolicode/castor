@@ -56,7 +56,6 @@
         "symfony/monolog-bridge": "^7.4.4",
         "symfony/process": "^7.4.5",
         "symfony/string": "^7.4.4",
-        "symfony/translation-contracts": "^3.6.1",
         "symfony/var-dumper": "^7.4.4",
         "symfony/yaml": "^7.4.1"
     },

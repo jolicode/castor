@@ -11,6 +11,10 @@
 
 * Fix installer to better handle invalid --install-dir option
 
+### Internal
+
+* Remove useless dependency on `symfony/translation-contracts`
+
 ## 1.3.0 (2026-03-06)
 
 ### Features
