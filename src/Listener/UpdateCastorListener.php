@@ -148,7 +148,7 @@ class UpdateCastorListener
                 $assets = array_filter($assets, static fn (array $asset): bool => str_ends_with((string) $asset['name'], '.phar'));
             }
 
-            $latestReleaseUrl = reset($assets)['browser_download_url'] ?? null;
+            $latestReleaseUrl = array_first($assets)['browser_download_url'] ?? null;
 
             if (!$latestReleaseUrl) {
                 $this->logger->info('Failed to fetch latest artefact URL.');

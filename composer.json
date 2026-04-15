@@ -54,6 +54,7 @@
         "symfony/http-client": "^7.4.5",
         "symfony/mime": "^7.4.5",
         "symfony/monolog-bridge": "^7.4.4",
+        "symfony/polyfill-php84": "^1.33",
         "symfony/process": "^7.4.5",
         "symfony/string": "^7.4.4",
         "symfony/translation-contracts": "^3.6.1",
