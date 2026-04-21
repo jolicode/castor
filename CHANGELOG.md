@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+## 1.4.0 (2026-04-28)
+
 ### Features
 
 * Add `directory` and `filter` parameters to `#[AsPathArgument]` and `#[AsPathOption]` attributes to improve autocomplete
