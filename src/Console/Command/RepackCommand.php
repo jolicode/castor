@@ -177,7 +177,9 @@ class RepackCommand extends Command
         $process = new Process([$box, 'compile', '--config=.box.json']);
 
         try {
-            $process->mustRun(static fn ($type, $buffer) => print $buffer);
+            $process->mustRun(static function (string $type, string $buffer): void {
+                echo $buffer;
+            });
         } finally {
             $this->fs->remove([
                 PathHelper::getRoot() . '/.box.json',

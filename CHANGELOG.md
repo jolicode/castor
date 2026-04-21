@@ -12,6 +12,10 @@
 
 * Fix installer to better handle invalid --install-dir option
 
+### Internal
+
+* Update all PHP vendor
+
 ## 1.3.0 (2026-03-06)
 
 ### Features

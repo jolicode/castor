@@ -8,7 +8,7 @@ use Symfony\Component\Process\Process;
 
 class CompileCommandTest extends TaskTestCase
 {
-    public function test()
+    public function test(): void
     {
         $finder = new ExecutableFinder();
         $box = $finder->find('box');

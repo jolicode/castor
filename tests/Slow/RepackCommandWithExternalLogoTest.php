@@ -19,7 +19,7 @@ class RepackCommandWithExternalLogoTest extends TaskTestCase
         }
     }
 
-    public function testWithLogoAsFile()
+    public function testWithLogoAsFile(): void
     {
         $castorAppDirPath = RepackHelper::setupRepackedCastorApp('castor-test-repack-with-external-logo-file');
         $fs = new Filesystem();
@@ -37,7 +37,7 @@ class RepackCommandWithExternalLogoTest extends TaskTestCase
         $this->assertStringStartsWith('My LOGO', $p->getOutput());
     }
 
-    public function testWithLogoAsClosure()
+    public function testWithLogoAsClosure(): void
     {
         $castorAppDirPath = RepackHelper::setupRepackedCastorApp('castor-test-repack-with-external-logo-closure');
         $fs = new Filesystem();

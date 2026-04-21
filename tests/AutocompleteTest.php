@@ -21,7 +21,7 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
 class AutocompleteTest extends TaskTestCase
 {
     #[DataProvider('provideCompletionTests')]
-    public function testCompletion(\Closure $function, array $expectedValues, string $input = '')
+    public function testCompletion(\Closure $function, array $expectedValues, string $input = ''): void
     {
         $descriptor = new TaskDescriptor(new AsTask('task'), new \ReflectionFunction($function));
 
@@ -49,7 +49,7 @@ class AutocompleteTest extends TaskTestCase
     }
 
     #[DataProvider('providePathCompletionTests')]
-    public function testPathCompletion(\Closure $function, array $input, array $expectedItems, bool $exactExpectations = false)
+    public function testPathCompletion(\Closure $function, array $input, array $expectedItems, bool $exactExpectations = false): void
     {
         $descriptor = new TaskDescriptor(new AsTask('task'), new \ReflectionFunction($function));
 

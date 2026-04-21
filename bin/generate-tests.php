@@ -242,7 +242,7 @@ add_test(['composer', 'list', '--', '--help'], 'ComposerHelp');
 
 echo "\nDone.\n";
 
-function add_test(array $args, string $class, ?string $cwd = null, bool $needRemote = false, bool $skipOnBinary = false, bool $needResetVendor = false, bool $needResetCache = true, ?string $input = null)
+function add_test(array $args, string $class, ?string $cwd = null, bool $needRemote = false, bool $skipOnBinary = false, bool $needResetVendor = false, bool $needResetCache = true, ?string $input = null): void
 {
     $class .= 'Test';
     $fp = fopen(__FILE__, 'r');
@@ -323,7 +323,7 @@ function add_test(array $args, string $class, ?string $cwd = null, bool $needRem
     }
 }
 
-function displayTitle(string $title)
+function displayTitle(string $title): void
 {
     echo "\n-- {$title} --\n\n";
 }
