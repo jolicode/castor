@@ -35,9 +35,3 @@ parameters:
 			identifier: parameter.defaultValue
 			count: 1
 			path: src/Context.php
-
-		-
-			message: '#^Parameter \#1 \$data of class Castor\\Context constructor expects array\{name\: string, production\: bool, foo\?\: string\}, array\<int\|string, mixed\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Context.php

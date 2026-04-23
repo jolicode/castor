@@ -79,203 +79,73 @@ class Context implements \ArrayAccess
             }
         }
 
-        return new self(
-            $data,
-            $this->environment,
-            $this->workingDirectory,
-            $this->tty,
-            $this->pty,
-            $this->timeout,
-            $this->quiet,
-            $this->allowFailure,
-            $this->notify,
-            $this->verbosityLevel,
-            $this->name,
-            $this->notificationTitle,
-            $this->verboseArguments,
-            $this->input,
-        );
+        return $this->clone([
+            'data' => $data,
+        ]);
     }
 
     /** @param array<string, string|\Stringable|int> $environment */
     public function withEnvironment(array $environment, bool $keepExisting = true): self
     {
-        return new self(
-            $this->data,
-            $keepExisting ? [...$this->environment, ...$environment] : $environment,
-            $this->workingDirectory,
-            $this->tty,
-            $this->pty,
-            $this->timeout,
-            $this->quiet,
-            $this->allowFailure,
-            $this->notify,
-            $this->verbosityLevel,
-            $this->name,
-            $this->notificationTitle,
-            $this->verboseArguments,
-            $this->input,
-        );
+        return $this->clone([
+            'environment' => $keepExisting ? [...$this->environment, ...$environment] : $environment
+        ]);
     }
 
     public function withWorkingDirectory(string $workingDirectory): self
     {
-        return new self(
-            $this->data,
-            $this->environment,
-            str_starts_with($workingDirectory, '/') ? $workingDirectory : PathHelper::realpath($this->workingDirectory . '/' . $workingDirectory),
-            $this->tty,
-            $this->pty,
-            $this->timeout,
-            $this->quiet,
-            $this->allowFailure,
-            $this->notify,
-            $this->verbosityLevel,
-            $this->name,
-            $this->notificationTitle,
-            $this->verboseArguments,
-            $this->input,
-        );
+        return $this->clone([
+            'workingDirectory' => str_starts_with($workingDirectory, '/') ? $workingDirectory : PathHelper::realpath($this->workingDirectory . '/' . $workingDirectory),
+        ]);
     }
 
     public function withTty(bool $tty = true): self
     {
-        return new self(
-            $this->data,
-            $this->environment,
-            $this->workingDirectory,
-            $tty,
-            $this->pty,
-            $this->timeout,
-            $this->quiet,
-            $this->allowFailure,
-            $this->notify,
-            $this->verbosityLevel,
-            $this->name,
-            $this->notificationTitle,
-            $this->verboseArguments,
-            $this->input,
-        );
+        return $this->clone([
+            'tty' => $tty,
+        ]);
     }
 
     public function withPty(bool $pty = true): self
     {
-        return new self(
-            $this->data,
-            $this->environment,
-            $this->workingDirectory,
-            $this->tty,
-            $pty,
-            $this->timeout,
-            $this->quiet,
-            $this->allowFailure,
-            $this->notify,
-            $this->verbosityLevel,
-            $this->name,
-            $this->notificationTitle,
-            $this->verboseArguments,
-            $this->input,
-        );
+        return $this->clone([
+            'pty' => $pty,
+        ]);
     }
 
     public function withTimeout(?float $timeout): self
     {
-        return new self(
-            $this->data,
-            $this->environment,
-            $this->workingDirectory,
-            $this->tty,
-            $this->pty,
-            $timeout,
-            $this->quiet,
-            $this->allowFailure,
-            $this->notify,
-            $this->verbosityLevel,
-            $this->name,
-            $this->notificationTitle,
-            $this->verboseArguments,
-            $this->input,
-        );
+        return $this->clone([
+            'timeout' => $timeout,
+        ]);
     }
 
     public function withQuiet(bool $quiet = true): self
     {
-        return new self(
-            $this->data,
-            $this->environment,
-            $this->workingDirectory,
-            $this->tty,
-            $this->pty,
-            $this->timeout,
-            $quiet,
-            $this->allowFailure,
-            $this->notify,
-            $this->verbosityLevel,
-            $this->name,
-            $this->notificationTitle,
-            $this->verboseArguments,
-            $this->input,
-        );
+        return $this->clone([
+            'quiet' => $quiet,
+        ]);
     }
 
     public function withAllowFailure(bool $allowFailure = true): self
     {
-        return new self(
-            $this->data,
-            $this->environment,
-            $this->workingDirectory,
-            $this->tty,
-            $this->pty,
-            $this->timeout,
-            $this->quiet,
-            $allowFailure,
-            $this->notify,
-            $this->verbosityLevel,
-            $this->name,
-            $this->notificationTitle,
-            $this->verboseArguments,
-            $this->input,
-        );
+        return $this->clone([
+            'allowFailure' => $allowFailure,
+        ]);
     }
 
     public function withNotify(?bool $notify = true): self
     {
-        return new self(
-            $this->data,
-            $this->environment,
-            $this->workingDirectory,
-            $this->tty,
-            $this->pty,
-            $this->timeout,
-            $this->quiet,
-            $this->allowFailure,
-            $notify,
-            $this->verbosityLevel,
-            $this->name,
-            $this->notificationTitle,
-            $this->verboseArguments,
-            $this->input,
-        );
+        return $this->clone([
+            'notify' => $notify,
+        ]);
     }
 
     public function withVerbosityLevel(VerbosityLevel $verbosityLevel): self
     {
-        return new self(
-            $this->data,
-            $this->environment,
-            $this->workingDirectory,
-            $this->tty,
-            $this->pty,
-            $this->timeout,
-            $this->quiet,
-            $this->allowFailure,
-            $this->notify,
-            $verbosityLevel,
-            $this->name,
-            $this->notificationTitle,
-            $this->verboseArguments,
-            $this->input,
-        );
+        return $this->clone([
+            'verbosityLevel' => $verbosityLevel,
+        ]);
     }
 
     /**
@@ -284,84 +154,32 @@ class Context implements \ArrayAccess
      */
     public function withName(string $name): self
     {
-        return new self(
-            $this->data,
-            $this->environment,
-            $this->workingDirectory,
-            $this->tty,
-            $this->pty,
-            $this->timeout,
-            $this->quiet,
-            $this->allowFailure,
-            $this->notify,
-            $this->verbosityLevel,
-            $name,
-            $this->notificationTitle,
-            $this->verboseArguments,
-            $this->input,
-        );
+        return $this->clone([
+            'name' => $name,
+        ]);
     }
 
     public function withNotificationTitle(string $notificationTitle): self
     {
-        return new self(
-            $this->data,
-            $this->environment,
-            $this->workingDirectory,
-            $this->tty,
-            $this->pty,
-            $this->timeout,
-            $this->quiet,
-            $this->allowFailure,
-            $this->notify,
-            $this->verbosityLevel,
-            $this->name,
-            $notificationTitle,
-            $this->verboseArguments,
-            $this->input,
-        );
+        return $this->clone([
+            'notificationTitle' => $notificationTitle,
+        ]);
     }
 
     /** @param string[] $arguments */
     public function withVerboseArguments(array $arguments = []): self
     {
-        return new self(
-            $this->data,
-            $this->environment,
-            $this->workingDirectory,
-            $this->tty,
-            $this->pty,
-            $this->timeout,
-            $this->quiet,
-            $this->allowFailure,
-            $this->notify,
-            $this->verbosityLevel,
-            $this->name,
-            $this->notificationTitle,
-            $arguments,
-            $this->input,
-        );
+        return $this->clone([
+            'verboseArguments' => $arguments,
+        ]);
     }
 
     /** @param string|\Stringable|resource|\Iterator<string>|null $input */
     public function withInput(mixed $input): self
     {
-        return new self(
-            $this->data,
-            $this->environment,
-            $this->workingDirectory,
-            $this->tty,
-            $this->pty,
-            $this->timeout,
-            $this->quiet,
-            $this->allowFailure,
-            $this->notify,
-            $this->verbosityLevel,
-            $this->name,
-            $this->notificationTitle,
-            $this->verboseArguments,
-            $input,
-        );
+        return $this->clone([
+            'input' => $input,
+        ]);
     }
 
     public function toInteractive(): self
@@ -416,5 +234,19 @@ class Context implements \ArrayAccess
         }
 
         return $merged;
+    }
+
+    /**
+     * @param array<string, mixed> $args
+     */
+    private function clone($args): self {
+        if (PHP_VERSION_ID >= 80500) {
+            /* @phpstan-ignore-next-line */
+            return \clone($this, $args);
+        }
+
+        $vars = array_merge(get_object_vars($this), $args);
+
+        return new self(...$vars);
     }
 }
