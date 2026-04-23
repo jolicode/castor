@@ -17,3 +17,20 @@ function castor_require(string $file): void
 
     require_once $file;
 }
+
+function clone($object, $args) {
+    if (PHP_VERSION_ID >= 80500) {
+        return \clone($object, ...$args);
+    }
+
+    $cloned = clone $object;
+    // use reflection to clone
+    $reflection = new \ReflectionClass($object);
+
+    foreach ($args as $name => $value) {
+        $prop = $reflection->getProperty($name);
+        $prop->setRawValue($cloned, $value);
+    }
+
+    return $cloned;
+}
