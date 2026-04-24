@@ -11,10 +11,15 @@ class Context implements \ArrayAccess
 {
     public readonly string $workingDirectory;
 
+    public readonly bool $supportsInteraction;
+
     /**
-     * @param array<string, string|\Stringable|int>              $environment      A list of environment variables to add to the task
-     * @param string[]                                           $verboseArguments A list of arguments to pass to the command to enable verbose output
-     * @param string|\Stringable|resource|\Iterator<string>|null $input            The input to send to the process stdin
+     * @param array<string, string|\Stringable|int>              $environment         A list of environment variables to add to the task
+     * @param string[]                                           $verboseArguments    A list of arguments to pass to the command to enable verbose output
+     * @param string|\Stringable|resource|\Iterator<string>|null $input               The input to send to the process stdin
+     * @param ?bool                                              $supportsInteraction Whether the surrounding environment supports interactive
+     *                                                                                commands. When null (default), it is auto-detected from
+     *                                                                                well-known signals (CI env var, STDIN being a TTY).
      *
      * @phpstan-param ContextData $data The input parameter accepts an array or an Object
      */
@@ -37,8 +42,10 @@ class Context implements \ArrayAccess
         public readonly string $notificationTitle = '',
         public readonly array $verboseArguments = [],
         public readonly mixed $input = null,
+        ?bool $supportsInteraction = null,
     ) {
         $this->workingDirectory = $workingDirectory ?? PathHelper::getRoot(false);
+        $this->supportsInteraction = $supportsInteraction ?? self::detectSupportsInteraction();
     }
 
     // @phpstan-ignore missingType.iterableValue
@@ -57,6 +64,7 @@ class Context implements \ArrayAccess
             'notify' => $this->notify,
             'verbosityLevel' => $this->verbosityLevel,
             'notificationTitle' => $this->notificationTitle,
+            'supportsInteraction' => $this->supportsInteraction,
         ];
     }
 
@@ -182,8 +190,33 @@ class Context implements \ArrayAccess
         ]);
     }
 
-    public function toInteractive(): self
+    public function withSupportsInteraction(bool $supportsInteraction = true): self
     {
+        return $this->clone([
+            'supportsInteraction' => $supportsInteraction,
+        ]);
+    }
+
+    public function supportsInteraction(): bool
+    {
+        return $this->supportsInteraction;
+    }
+
+    /**
+     * Switches the context to interactive mode (TTY enabled, no timeout, allow
+     * failure) so that commands like a shell can be run.
+     *
+     * When the surrounding environment is not interactive (CI, AI agent, piped
+     * stdin, ...) this throws a {@see \LogicException} to prevent silent hangs.
+     * Pass {@code $throwOnNonInteractiveEnv: false} to bypass this check and
+     * force interactive flags anyway.
+     */
+    public function toInteractive(bool $throwOnNonInteractiveEnv = true): self
+    {
+        if ($throwOnNonInteractiveEnv && !$this->supportsInteraction) {
+            throw new \LogicException('Cannot switch context to interactive mode: the surrounding environment is not interactive (CI, agent, or non-TTY stdin). Call toInteractive(throwOnNonInteractiveEnv: false) to force it, or guard the call with Context::supportsInteraction().');
+        }
+
         return $this
             ->withTimeout(null)
             ->withTty()
@@ -248,5 +281,18 @@ class Context implements \ArrayAccess
         $vars = array_merge(get_object_vars($this), $args);
 
         return new self(...$vars);
+    }
+
+    private static function detectSupportsInteraction(): bool
+    {
+        if (false !== getenv('CI')) {
+            return false;
+        }
+
+        if (\defined('STDIN') && \function_exists('stream_isatty') && !@stream_isatty(\STDIN)) {
+            return false;
+        }
+
+        return true;
     }
 }

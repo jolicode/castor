@@ -6,6 +6,7 @@
 
 * Add `directory` and `filter` parameters to `#[AsPathArgument]` and `#[AsPathOption]` attributes to improve autocomplete
 * Add `input` option to Context to pass data to process stdin (useful for sensitive data like passwords)
+* Add `Context::supportsInteraction()` / `Context::withSupportsInteraction()` to expose whether the surrounding environment supports interactive commands (auto-detected from `CI` env var and STDIN being a TTY); `Context::toInteractive()` now throws a `LogicException` when called in a non-interactive environment, with `toInteractive(throwOnNonInteractiveEnv: false)` to bypass
 
 ### Fixes
 
