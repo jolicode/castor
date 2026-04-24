@@ -339,6 +339,51 @@ function foo(): void
 }
 ```
 
+### Interactive environment
+
+Some commands (a shell, `vim`, an interactive prompt, ...) only make sense
+when Castor runs in an interactive environment. Castor auto-detects this and
+exposes it via `supportsInteraction()`:
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\context;
+use function Castor\run;
+
+#[AsTask()]
+function shell(): void
+{
+    $c = context();
+
+    if ($c->supportsInteraction()) {
+        $c = $c->toInteractive();
+    }
+
+    run('bash', context: $c);
+}
+```
+
+Auto-detection considers the environment **non-interactive** when:
+
+* the `CI` environment variable is set, or
+* `STDIN` is not attached to a TTY (piped input, AI agent runners, ...).
+
+You can also force the value yourself with `withSupportsInteraction()`, for
+example to flag your own AI agent runner:
+
+```php
+$c = context()->withSupportsInteraction(false);
+```
+
+Calling `toInteractive()` in a non-interactive environment throws a
+`LogicException` to prevent silent hangs. If you really want to force
+interactive flags anyway, pass `throwOnNonInteractiveEnv: false`:
+
+```php
+$c = context()->toInteractive(throwOnNonInteractiveEnv: false);
+```
+
 ### Passing verbose arguments
 
 Castor allow you to pass verbose arguments (like the universal `-v` option) to
