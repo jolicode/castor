@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+## 1.4.0 (2026-04-28)
+
 ### Features
 
 * Add `directory` and `filter` parameters to `#[AsPathArgument]` and `#[AsPathOption]` attributes to improve autocomplete
@@ -11,6 +13,10 @@
 ### Fixes
 
 * Fix installer to better handle invalid --install-dir option
+
+### Internal
+
+* Update all PHP vendor
 
 ## 1.3.0 (2026-03-06)
 

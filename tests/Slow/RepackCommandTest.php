@@ -19,7 +19,7 @@ class RepackCommandTest extends TaskTestCase
         }
     }
 
-    public function testWithCurrentCode()
+    public function testWithCurrentCode(): void
     {
         $castorAppDirPath = RepackHelper::setupRepackedCastorApp('castor-test-repack');
 
@@ -46,7 +46,7 @@ class RepackCommandTest extends TaskTestCase
         $this->assertEquals('my-app.linux-amd64.phar', trim($p->getOutput()));
     }
 
-    public function testWithGithubRelease()
+    public function testWithGithubRelease(): void
     {
         $castorAppDirPath = RepackHelper::setupRepackedCastorApp('castor-test-repack');
         $fs = new Filesystem();

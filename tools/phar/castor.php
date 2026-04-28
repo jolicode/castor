@@ -9,27 +9,27 @@ use function Castor\parallel;
 use function Castor\run;
 
 #[AsTask(description: 'Build phar for Linux system')]
-function linux()
+function linux(): void
 {
     compile(static fn () => run('vendor/bin/box compile -c box.linux-amd64.json'));
     compile(static fn () => run('vendor/bin/box compile -c box.linux-arm64.json'));
 }
 
 #[AsTask(description: 'Build phar for MacOS system')]
-function darwin()
+function darwin(): void
 {
     compile(static fn () => run('vendor/bin/box compile -c box.darwin-amd64.json'));
     compile(static fn () => run('vendor/bin/box compile -c box.darwin-arm64.json'));
 }
 
 #[AsTask(description: 'Build phar for Windows system')]
-function windows()
+function windows(): void
 {
     compile(static fn () => run('vendor/bin/box compile -c box.windows-amd64.json'));
 }
 
 #[AsTask(description: 'Build phar for all systems')]
-function build()
+function build(): void
 {
     parallel(linux(...), darwin(...), windows(...));
 }
@@ -47,7 +47,7 @@ function update(): void
     run(['composer', 'update']);
 }
 
-function compile(callable $compiler)
+function compile(callable $compiler): void
 {
     // When we compile the phar, we use the current castor application, with its autoloader.
     // It has a name, like  `ComposerAutoloaderInit2a521a46f932896859028f670feabe03`.

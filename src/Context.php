@@ -96,7 +96,7 @@ class Context implements \ArrayAccess
     public function withEnvironment(array $environment, bool $keepExisting = true): self
     {
         return $this->clone([
-            'environment' => $keepExisting ? [...$this->environment, ...$environment] : $environment
+            'environment' => $keepExisting ? [...$this->environment, ...$environment] : $environment,
         ]);
     }
 
@@ -272,8 +272,10 @@ class Context implements \ArrayAccess
     /**
      * @param array<string, mixed> $args
      */
-    private function clone($args): self {
-        if (PHP_VERSION_ID >= 80500) {
+    private function clone($args): self
+    {
+        if (\PHP_VERSION_ID >= 80500) {
+            // Leading \ is really important here, to make it work on older PHP versions
             /* @phpstan-ignore-next-line */
             return \clone($this, $args);
         }
