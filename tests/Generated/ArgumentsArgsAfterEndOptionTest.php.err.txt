@@ -1,6 +1,0 @@
-
-  Not enough arguments (missing: "args-after-option-end").
-
-
-arguments:args-after-end-option <before> <args-after-option-end>...
-

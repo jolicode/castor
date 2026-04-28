@@ -118,11 +118,12 @@ class TaskCommand extends Command implements SignalableCommandInterface
                 continue;
             }
 
+            $isArgsAfterOptionEnd = (bool) ($parameter->getAttributes(AsArgsAfterOptionEnd::class)[0] ?? null);
             $taskArgumentAttribute = $parameter->getAttributes(AsCommandArgument::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null;
 
             if ($taskArgumentAttribute) {
                 $taskArgumentAttribute = $taskArgumentAttribute->newInstance();
-            } elseif ($parameter->isOptional()) {
+            } elseif ($parameter->isOptional() && !$isArgsAfterOptionEnd) {
                 $taskArgumentAttribute = new AsOption();
             } else {
                 $taskArgumentAttribute = new AsArgument();
@@ -132,7 +133,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
 
             try {
                 if ($taskArgumentAttribute instanceof AsArgument) {
-                    if ($parameter->isOptional()) {
+                    if ($parameter->isOptional() || $isArgsAfterOptionEnd) {
                         $mode = InputArgument::OPTIONAL;
                     } else {
                         $mode = InputArgument::REQUIRED;
@@ -145,7 +146,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
                         $name,
                         $mode,
                         $taskArgumentAttribute->description,
-                        $parameter->isOptional() ? $parameter->getDefaultValue() : null,
+                        $parameter->isOptional() ? $parameter->getDefaultValue() : ($isArgsAfterOptionEnd ? [] : null),
                         $this->getSuggestedValues($taskArgumentAttribute),
                     );
                 } elseif ($taskArgumentAttribute instanceof AsOption) {

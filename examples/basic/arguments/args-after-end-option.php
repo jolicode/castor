@@ -5,7 +5,7 @@ namespace arguments;
 use Castor\Attribute\AsArgsAfterOptionEnd;
 use Castor\Attribute\AsTask;
 
-use function Castor\run;
+use function Castor\io;
 
 /**
  * @param string[] $argsAfterOptionEnd
@@ -14,8 +14,10 @@ use function Castor\run;
 function args_after_end_option(string $before, #[AsArgsAfterOptionEnd] array $argsAfterOptionEnd): void
 {
     if ('first' === $before) {
-        run(['task1', ...$argsAfterOptionEnd]);
+        io()->writeln(\sprintf('We could run : `%s %s`.', $before, implode(' ', $argsAfterOptionEnd)));
+
+        return;
     }
 
-    run(['task2', ...$argsAfterOptionEnd]);
+    io()->writeln(\sprintf('We might run : `%s %s`.', $before, implode(' ', $argsAfterOptionEnd)));
 }

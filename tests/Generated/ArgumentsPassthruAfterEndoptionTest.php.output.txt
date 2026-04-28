@@ -1,0 +1,4 @@
+string(17) "FIXME(before-arg)"
+bool(true)
+array(0) {
+}
