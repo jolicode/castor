@@ -12,11 +12,11 @@ class ArgumentsPassthruAfterEndoptionTest extends TaskTestCase
     {
         $process = $this->runTask(['arguments:passthru-after-endoption', 'FIXME(before-arg)', '--custom-option']);
 
-        if (1 !== $process->getExitCode()) {
+        if (0 !== $process->getExitCode()) {
             throw new ProcessFailedException($process);
         }
 
         $this->assertStringEqualsFileWithCleaning(__FILE__ . '.output.txt', $process->getOutput());
-        $this->assertStringEqualsFileWithCleaning(__FILE__ . '.err.txt', $process->getErrorOutput());
+        $this->assertSame('', $process->getErrorOutput());
     }
 }

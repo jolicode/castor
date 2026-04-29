@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Fixes
+
+* Fix usage of `#[AsArgsAfterOptionEnd]`, CLI arguments are not mandatory anymore, and PHP parameters can be optional with default value
+
 ## 1.4.0 (2026-04-28)
 
 ### Features

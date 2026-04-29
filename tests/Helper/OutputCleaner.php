@@ -33,6 +33,9 @@ final class OutputCleaner
         // Process has not always the same exit number
         $string = preg_replace('{The following process did not finish successfully \(exit code \d+\):}m', 'The following process did not finish successfully (exit code XX): ', $string);
 
+        // Terminal Size
+        $string = preg_replace('{Current terminal height: \d+}m', 'Current terminal height: XXXX', $string);
+
         // Clean the time
         $string = preg_replace('{^Current time: \d\d:\d\d:\d\d}m', 'hh:mm:ss ', $string);
         $string = preg_replace('{^\d\d:\d\d:\d\d }m', 'hh:mm:ss ', $string);

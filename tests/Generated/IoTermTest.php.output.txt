@@ -1,2 +1,2 @@
 Current terminal width: 1000
-Current terminal height: 50
+Current terminal height: XXXX
