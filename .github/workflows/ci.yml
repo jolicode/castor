@@ -64,7 +64,7 @@ jobs:
           need_phar: 'false'
 
       - name: PHP CS Fixer
-        run: bin/castor cs
+        run: bin/castor cs --dry-run
 
   phpstan:
     name: Static Analysis
