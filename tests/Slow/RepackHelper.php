@@ -88,7 +88,7 @@ class RepackHelper
         } else {
             $castorPhar = __DIR__ . '/../../tools/phar/build/castor.linux-amd64.phar';
             if (!file_exists($castorPhar)) {
-                (new Process([$castorBin, 'castor:phar:linux']))->mustRun();
+                new Process([$castorBin, 'castor:phar:linux'])->mustRun();
             }
             $command[] = '--castor-phar';
             $command[] = $castorPhar;

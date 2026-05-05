@@ -69,7 +69,7 @@ class ApplicationFactory
 
         if (!$repacked) {
             // Try to see if we want to load a different castor file
-            $castorFile = (new ArgvInput())->getParameterOption('--castor-file', null);
+            $castorFile = new ArgvInput()->getParameterOption('--castor-file', null);
 
             if ($castorFile) {
                 $rootDir = \dirname($castorFile);

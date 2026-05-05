@@ -117,7 +117,7 @@ final readonly class StubsGenerator
         ];
 
         foreach ($frequentlyUsedClasses as $class) {
-            $file = (new \ReflectionClass($class))->getFileName();
+            $file = new \ReflectionClass($class)->getFileName();
             if (!$file) {
                 continue;
             }
@@ -143,7 +143,7 @@ final readonly class StubsGenerator
             ],
         ]));
 
-        $code = (new Standard())->prettyPrintFile($stmts) . \PHP_EOL;
+        $code = new Standard()->prettyPrintFile($stmts) . \PHP_EOL;
 
         file_put_contents($dest, $code);
     }
@@ -155,7 +155,7 @@ final readonly class StubsGenerator
      */
     private function doGenerate(array $files): array
     {
-        $parser = (new ParserFactory())->createForHostVersion();
+        $parser = new ParserFactory()->createForHostVersion();
         $stmts = [];
 
         $nameResolver = new NameResolver();

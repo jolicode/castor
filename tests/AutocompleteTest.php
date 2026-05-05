@@ -69,7 +69,7 @@ class AutocompleteTest extends TaskTestCase
         $suggestions = $tester->complete($input);
 
         $message = \sprintf('%s - Suggestions: %s',
-            (new \ReflectionFunction($function))->getName(),
+            new \ReflectionFunction($function)->getName(),
             implode(', ', $suggestions)
         );
 

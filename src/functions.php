@@ -712,7 +712,7 @@ function open(string ...$urls): void
         default => 'xdg-open',
     };
 
-    if (null === (new ExecutableFinder())->find($command)) {
+    if (null === new ExecutableFinder()->find($command)) {
         throw new ExecutableNotFoundException($command);
     }
 
