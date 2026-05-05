@@ -4,12 +4,12 @@
     "type": "project",
     "license": "MIT",
     "require": {
-        "friendsofphp/php-cs-fixer": "^3.95.1"
+        "friendsofphp/php-cs-fixer": "^3.95.2"
     },
     "config": {
         "bump-after-update": true,
         "platform": {
-            "php": "8.2.27"
+            "php": "8.4.1"
         },
         "sort-packages": true
     }

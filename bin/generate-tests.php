@@ -29,7 +29,7 @@ $fs = new Filesystem();
 $fs->remove($_SERVER['CASTOR_CACHE_DIR']);
 $fs->remove(__DIR__ . '/../tests/Generated');
 $fs->mkdir(__DIR__ . '/../tests/Generated');
-$fs->remove((new Finder())
+$fs->remove(new Finder()
     ->in(__DIR__ . '/../tests/fixtures')
     ->in(__DIR__ . '/../tests/fixtures')
     ->path('composer.installed')
@@ -179,7 +179,7 @@ echo "\nDone.\n";
 
 displayTitle('Generating tests for broken fixtures');
 
-$dirs = (new Finder())
+$dirs = new Finder()
     ->in($basePath = __DIR__ . '/../tests/fixtures/broken')
     ->depth(1)
 ;

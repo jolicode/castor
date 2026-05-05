@@ -22,7 +22,7 @@ class CryptoEncryptTest extends TaskTestCase
         $output = OutputCleaner::cleanOutput($process->getOutput());
 
         $this->assertSame(93, \strlen($output));
-        $this->assertSame('hello there', (new SymmetricCrypto(new NullLogger()))->decrypt($output, 'my super secret password'));
+        $this->assertSame('hello there', new SymmetricCrypto(new NullLogger())->decrypt($output, 'my super secret password'));
         $this->assertSame('', $process->getErrorOutput());
     }
 }

@@ -337,6 +337,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
         }
 
         if (\is_array($attribute->autocomplete)) {
+            // @phpstan-ignore return.type (bug phpstan)
             return $attribute->autocomplete;
         }
 

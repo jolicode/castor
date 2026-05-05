@@ -180,8 +180,8 @@ class Application extends SymfonyApplication
                 }
             }
 
-            (new \ReflectionProperty(\Exception::class, 'file'))->setValue($exception, $frame['file']);
-            (new \ReflectionProperty(\Exception::class, 'line'))->setValue($exception, $frame['line']);
+            new \ReflectionProperty(\Exception::class, 'file')->setValue($exception, $frame['file']);
+            new \ReflectionProperty(\Exception::class, 'line')->setValue($exception, $frame['line']);
 
             break;
         }

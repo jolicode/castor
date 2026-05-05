@@ -33,7 +33,7 @@ class RepackCommandWithExternalLogoTest extends TaskTestCase
 
         $this->assertFileExists($phar);
 
-        $p = (new Process([$phar], cwd: $castorAppDirPath))->mustRun();
+        $p = new Process([$phar], cwd: $castorAppDirPath)->mustRun();
         $this->assertStringStartsWith('My LOGO', $p->getOutput());
     }
 
@@ -53,7 +53,7 @@ class RepackCommandWithExternalLogoTest extends TaskTestCase
 
         $this->assertFileExists($phar);
 
-        $p = (new Process([$phar], cwd: $castorAppDirPath))->mustRun();
+        $p = new Process([$phar], cwd: $castorAppDirPath)->mustRun();
         $this->assertStringStartsWith('/!\ This Special LOGO for my-app in version 1.0.0', $p->getOutput());
     }
 }

@@ -16,11 +16,11 @@ $finder = PhpCsFixer\Finder::create()
     ])
 ;
 
-return (new PhpCsFixer\Config())
+return new PhpCsFixer\Config()
     ->setParallelConfig(PhpCsFixer\Runner\Parallel\ParallelConfigFactory::detect())
     ->setRiskyAllowed(true)
     ->setRules([
-        '@PHP82Migration' => true,
+        '@PHP84Migration' => true,
         '@PhpCsFixer' => true,
         '@Symfony' => true,
         '@Symfony:risky' => true,
