@@ -138,7 +138,7 @@ $taskFilterList = [
 $optionFilterList = array_flip(['help', 'quiet', 'verbose', 'silent', 'version', 'ansi', 'no-ansi', 'no-interaction', 'context', 'no-remote', 'update-remotes']);
 
 foreach ($applicationDescription['commands'] as $task) {
-    if (in_array($task['name'], $taskFilterList, true)) {
+    if (\in_array($task['name'], $taskFilterList, true)) {
         continue;
     }
 
@@ -156,7 +156,7 @@ foreach ($applicationDescription['commands'] as $task) {
         if (isset($argument['default'])) {
             continue;
         }
-        $args[] = sprintf('FIXME(%s)', $argument['name']);
+        $args[] = \sprintf('FIXME(%s)', $argument['name']);
     }
     foreach ($options as $option) {
         if ('--castor-file' === $option['name']) {
