@@ -31,6 +31,7 @@ return (new PhpCsFixer\Config())
         'blank_line_before_statement' => true, // Symfony(PSR12) override the default value, but we don't want it
         'method_chaining_indentation' => false, // Does not work with tree builder
         'concat_space' => ['spacing' => 'one'],
+        'native_function_invocation' => ['include' => ['@compiler_optimized', 'clone']],
     ])
     ->setFinder($finder)
 ;
