@@ -31,7 +31,7 @@ class ShebangTest extends TaskTestCase
     // shebang-task
     public function test(): void
     {
-        (new Filesystem())->copy(
+        new Filesystem()->copy(
             __DIR__ . '/../../examples/advanced/castor-file/shebang.php',
             self::$shebangTaskFile
         );

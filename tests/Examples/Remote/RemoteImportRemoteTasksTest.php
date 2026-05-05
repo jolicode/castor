@@ -10,7 +10,7 @@ class RemoteImportRemoteTasksTest extends TaskTestCase
     // remote-import:remote-tasks
     public function test(): void
     {
-        (new Filesystem())->remove(__DIR__ . '/../../../.castor/vendor');
+        new Filesystem()->remove(__DIR__ . '/../../../.castor/vendor');
 
         // No vendor => should download
         $process = $this->runTask(['remote-import:remote-tasks'], needRemote: true);

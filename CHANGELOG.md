@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Features
+
+* Drop support for PHP 8.2 and 8.3, minimum supported version is now PHP 8.4
+
 ### Fixes
 
 * Fix usage of `#[AsArgsAfterOptionEnd]`, CLI arguments are not mandatory anymore, and PHP parameters can be optional with default value

@@ -97,7 +97,7 @@ class ReferenceTest extends TestCase
     {
         $file = __DIR__ . '/../../src/functions.php';
 
-        $parser = (new ParserFactory())->createForHostVersion();
+        $parser = new ParserFactory()->createForHostVersion();
 
         $visitor = new class extends NodeVisitorAbstract {
             public $functions = [];

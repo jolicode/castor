@@ -29,13 +29,13 @@ function release(): int
     check(
         'Check if Git is installed',
         'Git is not installed. Please install it before.',
-        static fn () => (new ExecutableFinder())->find('git'),
+        static fn () => new ExecutableFinder()->find('git'),
     );
 
     check(
         'Check if GitHub CLI is installed',
         'GitHub CLI is not installed. Please install it before.',
-        static fn () => (new ExecutableFinder())->find('gh'),
+        static fn () => new ExecutableFinder()->find('gh'),
     );
 
     check(

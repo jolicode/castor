@@ -24,7 +24,7 @@ class CompileCommandTest extends TaskTestCase
         $binary = $castorAppDirPath . '/castor';
 
         // If you update this command, you must also update the command in .github/actions/cache/action.yaml
-        (new Process(
+        new Process(
             [
                 self::$castorBin,
                 'compile', $phar,
@@ -35,23 +35,25 @@ class CompileCommandTest extends TaskTestCase
                 '-vvv',
             ],
             cwd: $castorAppDirPath,
-            timeout: 5 * 60)
-        )->mustRun();
+            timeout: 5 * 60
+        )
+            ->mustRun()
+        ;
 
         $this->assertFileExists($binary);
 
-        (new Process([$binary], cwd: $castorAppDirPath))->mustRun();
+        new Process([$binary], cwd: $castorAppDirPath)->mustRun();
 
-        $p = (new Process([$binary, 'hello'], cwd: $castorAppDirPath))->mustRun();
+        $p = new Process([$binary, 'hello'], cwd: $castorAppDirPath)->mustRun();
         $this->assertSame('hello', $p->getOutput());
 
         // Twice, because we want to be sure the phar is not corrupted after a
         // run
-        $p = (new Process([$binary, 'hello'], cwd: $castorAppDirPath))->mustRun();
+        $p = new Process([$binary, 'hello'], cwd: $castorAppDirPath)->mustRun();
         $this->assertSame('hello', $p->getOutput());
 
         // Test php.ini
-        $p = (new Process([$binary, 'timezone'], cwd: $castorAppDirPath))->mustRun();
+        $p = new Process([$binary, 'timezone'], cwd: $castorAppDirPath)->mustRun();
         $this->assertSame('Arctic/Longyearbyen', $p->getOutput());
     }
 }

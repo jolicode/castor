@@ -4,7 +4,7 @@
     "type": "project",
     "license": "MIT",
     "require": {
-        "phpstan/phpstan": "^2.1.51"
+        "phpstan/phpstan": "^2.1.54"
     },
     "autoload": {
         "psr-4": {
@@ -14,7 +14,7 @@
     "config": {
         "bump-after-update": true,
         "platform": {
-            "php": "8.2.27"
+            "php": "8.4.1"
         },
         "sort-packages": true
     }

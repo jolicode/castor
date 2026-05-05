@@ -24,7 +24,7 @@ class Notifier
             return;
         }
 
-        $notification = (new Notification())
+        $notification = new Notification()
             ->setTitle($title ?? $this->getNotifyTitle())
             ->setBody($message)
         ;
