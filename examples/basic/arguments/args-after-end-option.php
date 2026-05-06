@@ -14,10 +14,10 @@ use function Castor\io;
 function args_after_end_option(string $before, #[AsArgsAfterOptionEnd] array $argsAfterOptionEnd): void
 {
     if ('first' === $before) {
-        io()->writeln(\sprintf('We could run : `%s %s`.', $before, implode(' ', $argsAfterOptionEnd)));
+        io()->writeln(\sprintf('We could run : `%s %s`.', $before, implode(' ', array_map(escapeshellarg(...), $argsAfterOptionEnd))));
 
         return;
     }
 
-    io()->writeln(\sprintf('We might run : `%s %s`.', $before, implode(' ', $argsAfterOptionEnd)));
+    io()->writeln(\sprintf('We might run : `%s %s`.', $before, implode(' ', array_map(escapeshellarg(...), $argsAfterOptionEnd))));
 }
