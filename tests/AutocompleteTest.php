@@ -14,6 +14,7 @@ use Castor\Helper\Slugger;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Console\Completion\CompletionInput;
 use Symfony\Component\Console\Tester\CommandCompletionTester;
+use Symfony\Component\ErrorHandler\ErrorRenderer\FileLinkFormatter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\String\Slugger\AsciiSlugger;
@@ -32,6 +33,7 @@ class AutocompleteTest extends TaskTestCase
             $this->createMock(ContextRegistry::class),
             new Slugger(new AsciiSlugger()),
             new Filesystem(),
+            new FileLinkFormatter(),
         );
 
         $tester = new CommandCompletionTester($command);
@@ -53,15 +55,14 @@ class AutocompleteTest extends TaskTestCase
     {
         $descriptor = new TaskDescriptor(new AsTask('task'), new \ReflectionFunction($function));
 
-        $fs = new Filesystem();
-
         $command = new TaskCommand(
             $descriptor,
             $this->createMock(ExpressionLanguage::class),
             $this->createMock(EventDispatcherInterface::class),
             $this->createMock(ContextRegistry::class),
             new Slugger(new AsciiSlugger()),
-            $fs,
+            new Filesystem(),
+            new FileLinkFormatter(),
         );
 
         $tester = new CommandCompletionTester($command);

@@ -32,6 +32,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\ErrorHandler\ErrorHandler;
+use Symfony\Component\ErrorHandler\ErrorRenderer\FileLinkFormatter;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -223,6 +224,8 @@ class ApplicationFactory
 
             ->set(ErrorHandler::class)
                 ->synthetic()
+
+            ->set(FileLinkFormatter::class)
         ;
 
         $app = $services->set(Application::class, $repacked ? \RepackedApplication::class : null)
