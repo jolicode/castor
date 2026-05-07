@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Features
+
+* Add link to the task definition in the help of the task
+
 ### Fixes
 
 * Fix usage of `#[AsArgsAfterOptionEnd]`, CLI arguments are not mandatory anymore, and PHP parameters can be optional with default value

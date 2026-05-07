@@ -28,6 +28,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
+use Symfony\Component\ErrorHandler\ErrorRenderer\FileLinkFormatter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -49,6 +50,7 @@ class TaskCommand extends Command implements SignalableCommandInterface
         private readonly ContextRegistry $contextRegistry,
         private readonly Slugger $slugger,
         private readonly Filesystem $fs,
+        FileLinkFormatter $fileLinkFormatter,
     ) {
         $taskName = $taskDescriptor->taskAttribute->name;
 
@@ -62,6 +64,13 @@ class TaskCommand extends Command implements SignalableCommandInterface
         $this->setAliases($taskDescriptor->taskAttribute->aliases);
 
         $this->setProcessTitle(Application::NAME . ':' . $taskName);
+
+        $file = $taskDescriptor->function->getFileName();
+        $line = $taskDescriptor->function->getStartLine();
+        if ($file && $line) {
+            $link = $fileLinkFormatter->format($file, $line);
+            $this->setHelp('Defined in <href=' . ($link ?: 'file://' . $file) . '>' . $file . ':' . $line . '</>');
+        }
     }
 
     /**
