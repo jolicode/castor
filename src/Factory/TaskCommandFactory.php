@@ -7,6 +7,7 @@ use Castor\ContextRegistry;
 use Castor\Descriptor\TaskDescriptor;
 use Castor\ExpressionLanguage;
 use Castor\Helper\Slugger;
+use Symfony\Component\ErrorHandler\ErrorRenderer\FileLinkFormatter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -18,6 +19,7 @@ class TaskCommandFactory
         private readonly ContextRegistry $contextRegistry,
         private readonly Slugger $slugger,
         private readonly Filesystem $fs,
+        private readonly FileLinkFormatter $fileLinkFormatter,
     ) {
     }
 
@@ -30,6 +32,7 @@ class TaskCommandFactory
             $this->contextRegistry,
             $this->slugger,
             $this->fs,
+            $this->fileLinkFormatter,
         );
     }
 }
