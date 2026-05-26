@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+## 1.5.0 (2026-05-27)
+
 ### Features
 
 * Add link to the task definition in the help of the task
