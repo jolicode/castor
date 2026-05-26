@@ -9,6 +9,7 @@
 ### Fixes
 
 * Fix usage of `#[AsArgsAfterOptionEnd]`, CLI arguments are not mandatory anymore, and PHP parameters can be optional with default value
+* Fix implementation of `Context::supportsInteraction()`
 
 ### Security
 
