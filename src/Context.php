@@ -214,7 +214,7 @@ class Context implements \ArrayAccess
     public function toInteractive(bool $throwOnNonInteractiveEnv = true): self
     {
         if ($throwOnNonInteractiveEnv && !$this->supportsInteraction) {
-            throw new \LogicException('Cannot switch context to interactive mode: the surrounding environment is not interactive (CI, agent, or non-TTY stdin). Call toInteractive(throwOnNonInteractiveEnv: false) to force it, or guard the call with Context::supportsInteraction().');
+            throw new \LogicException('Cannot switch context to interactive mode: the surrounding environment is not interactive (CI, agent, or non-TTY stdin/stdout). Call Context::toInteractive(throwOnNonInteractiveEnv: false) to force it, or guard the call with Context::supportsInteraction().');
         }
 
         return $this
@@ -291,7 +291,15 @@ class Context implements \ArrayAccess
             return false;
         }
 
-        if (\defined('STDIN') && \function_exists('stream_isatty') && !@stream_isatty(\STDIN)) {
+        if (!\function_exists('stream_isatty')) {
+            return false;
+        }
+
+        if (!stream_isatty(\STDIN) || !stream_isatty(\STDOUT)) {
+            return false;
+        }
+
+        if (!@is_writable('/dev/tty')) {
             return false;
         }
 
