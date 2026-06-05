@@ -19,14 +19,16 @@ runs:
   using: composite
   steps:
     - name: Setup PHP
-      uses: shivammathur/setup-php@v2
+      uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # v2
       with:
         php-version: '${{ inputs.php-version }}'
         coverage: none
 
     - name: Install dependencies (project)
-      run: composer install --prefer-dist --no-progress --optimize-autoloader --classmap-authoritative ${{ inputs.composer-flags }}
+      run: composer install --prefer-dist --no-progress --optimize-autoloader --classmap-authoritative ${INPUTS_COMPOSER_FLAGS}
       shell: bash
+      env:
+        INPUTS_COMPOSER_FLAGS: ${{ inputs.composer-flags }}
 
     - name: Install dependencies (phar builder)
       run: composer install --prefer-dist --no-progress --optimize-autoloader --classmap-authoritative
