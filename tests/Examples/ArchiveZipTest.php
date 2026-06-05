@@ -73,12 +73,12 @@ class ArchiveZipTest extends TaskTestCase
 
     private function clean(): void
     {
-        $files = (new Finder())
+        $files = new Finder()
             ->in(self::EXAMPLE_DIR)
             ->name('*.zip')
         ;
 
-        (new Filesystem())->remove($files);
+        new Filesystem()->remove($files);
     }
 
     private function assertZipIsPasswordProtected(string $zipPath, string $filePath): void

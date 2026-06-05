@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Features
+
+* Drop support for PHP 8.2 and 8.3, minimum supported version is now PHP 8.4
+
 ## Security
 
 * Harden the security of our GitHub Actions Workflows

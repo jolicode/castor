@@ -16,7 +16,7 @@
     "bump-after-update": true,
     "optimize-autoloader": true,
     "platform": {
-      "php": "8.2.27"
+      "php": "8.4.1"
     },
     "sort-packages": true
   }

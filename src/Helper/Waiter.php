@@ -232,7 +232,7 @@ final readonly class Waiter
         ?callable $containerChecker = null,
         array $portsToCheck = [],
     ): void {
-        if (null === (new ExecutableFinder())->find('docker')) {
+        if (null === new ExecutableFinder()->find('docker')) {
             throw new ExecutableNotFoundException('docker');
         }
         $this->waitFor(

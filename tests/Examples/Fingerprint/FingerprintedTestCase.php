@@ -23,7 +23,7 @@ abstract class FingerprintedTestCase extends TaskTestCase
 
         if (is_dir($cacheDir)) {
             foreach (
-                (new Finder())
+                new Finder()
                     ->in($cacheDir)
                     ->contains('.fingerprint')
                     ->files() as $file
@@ -32,7 +32,7 @@ abstract class FingerprintedTestCase extends TaskTestCase
             }
 
             foreach (
-                (new Finder())
+                new Finder()
                     ->in($cacheDir)
                     ->notContains('.fingerprint')
                     ->directories() as $directory
@@ -41,7 +41,7 @@ abstract class FingerprintedTestCase extends TaskTestCase
             }
         }
 
-        $examplesFingerprintFile = (new Finder())
+        $examplesFingerprintFile = new Finder()
             ->in(\dirname(__DIR__, 3) . '/examples')
             ->name('*.fingerprint_*')
             ->notName('*.php')

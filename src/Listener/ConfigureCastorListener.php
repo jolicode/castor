@@ -47,10 +47,6 @@ class ConfigureCastorListener
             \E_USER_ERROR => LogLevel::ERROR,
         ];
 
-        if (\PHP_VERSION_ID < 80400) {
-            $map[\E_STRICT] = LogLevel::ERROR;
-        }
-
         $this->errorHandler->setDefaultLogger($this->logger, $map);
     }
 }

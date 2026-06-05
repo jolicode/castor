@@ -26,7 +26,7 @@ class ContextTest extends TestCase
 
     public function testSupportsInteractionIsPreservedAcrossOtherWithers(): void
     {
-        $context = (new Context(supportsInteraction: false))
+        $context = new Context(supportsInteraction: false)
             ->withWorkingDirectory('/tmp')
             ->withQuiet()
             ->withAllowFailure()
@@ -38,7 +38,7 @@ class ContextTest extends TestCase
 
     public function testToInteractiveSwitchesFlagsWhenEnvSupportsInteraction(): void
     {
-        $context = (new Context(supportsInteraction: true))->toInteractive();
+        $context = new Context(supportsInteraction: true)->toInteractive();
 
         $this->assertTrue($context->tty);
         $this->assertNull($context->timeout);
@@ -57,7 +57,7 @@ class ContextTest extends TestCase
 
     public function testToInteractiveCanBypassTheCheck(): void
     {
-        $context = (new Context(supportsInteraction: false))->toInteractive(throwOnNonInteractiveEnv: false);
+        $context = new Context(supportsInteraction: false)->toInteractive(throwOnNonInteractiveEnv: false);
 
         $this->assertTrue($context->tty);
         $this->assertNull($context->timeout);
