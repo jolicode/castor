@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+## Security
+
+* Harden the security of our GitHub Actions Workflows
+
 ## 1.5.0 (2026-05-27)
 
 ### Features
