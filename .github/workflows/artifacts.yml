@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 permissions:
-  contents: write
+  contents: write # zizmor: ignore[excessive-permissions]
 
 jobs:
   phars:
@@ -14,7 +14,9 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
 
       - uses: ./.github/actions/install
         with:
@@ -23,35 +25,36 @@ jobs:
       - uses: ./.github/actions/phar
 
       - name: Upload the Linux phar (linux-amd64)
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: castor.linux-amd64.phar
           path: tools/phar/build/castor.linux-amd64.phar
           if-no-files-found: error
 
+
       - name: Upload the Linux phar (linux-arm64)
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: castor.linux-arm64.phar
           path: tools/phar/build/castor.linux-arm64.phar
           if-no-files-found: error
 
       - name: Upload the Darwin phar (darwin-amd64)
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: castor.darwin-amd64.phar
           path: tools/phar/build/castor.darwin-amd64.phar
           if-no-files-found: error
 
       - name: Upload the Darwin phar (darwin-arm64)
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: castor.darwin-arm64.phar
           path: tools/phar/build/castor.darwin-arm64.phar
           if-no-files-found: error
 
       - name: Upload the Windows phar (windows-amd64)
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: castor-windows-amd64.phar
           path: tools/phar/build/castor.windows-amd64.phar
@@ -63,7 +66,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
 
       - uses: ./.github/actions/install
 
@@ -72,7 +77,7 @@ jobs:
           target: linux-amd64
 
       - name: retrieve phar artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
         with:
           path: tools/phar/build
           merge-multiple: true
@@ -84,7 +89,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload the Linux amd64 static binary
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: castor.linux-amd64
           path: ./castor.linux-amd64
@@ -96,7 +101,9 @@ jobs:
     runs-on: ubuntu-24.04-arm
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
 
       - uses: ./.github/actions/install
 
@@ -105,7 +112,7 @@ jobs:
           target: linux-arm64
 
       - name: retrieve phar artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
         with:
           path: tools/phar/build
           merge-multiple: true
@@ -117,7 +124,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload the Linux arm64 static binary
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: castor.linux-arm64
           path: ./castor.linux-arm64
@@ -129,7 +136,9 @@ jobs:
     runs-on: macos-15-intel
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
 
       - uses: ./.github/actions/install
 
@@ -138,7 +147,7 @@ jobs:
           target: darwin-amd64
 
       - name: retrieve phar artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
         with:
           path: tools/phar/build
           merge-multiple: true
@@ -150,7 +159,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload the MacOs amd64 static binary
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: castor.darwin-amd64
           path: ./castor.darwin-amd64
@@ -162,7 +171,9 @@ jobs:
     runs-on: macos-15
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
 
       - uses: ./.github/actions/install
 
@@ -171,7 +182,7 @@ jobs:
           target: darwin-arm64
 
       - name: retrieve phar artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
         with:
           path: tools/phar/build
           merge-multiple: true
@@ -183,7 +194,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload the MacOs arm64 static binary
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: castor.darwin-arm64
           path: ./castor.darwin-arm64
