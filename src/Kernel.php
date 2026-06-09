@@ -14,6 +14,8 @@ use Castor\Helper\PlatformHelper;
 use Castor\Import\Importer;
 use Castor\Import\Mount;
 use Castor\Import\Remote\Composer;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\Console\Event\ConsoleErrorEvent;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -43,6 +45,7 @@ final class Kernel
         private readonly ContextRegistry $contextRegistry,
         private readonly bool $hasCastorFile,
         private readonly ?string $castorFilePath,
+        private readonly LoggerInterface $logger = new NullLogger(),
     ) {
     }
 
@@ -162,6 +165,27 @@ final class Kernel
         }
     }
 
+    /**
+     * @param array<string> $contextNames
+     */
+    private function readDotContextFile(array $contextNames): ?string
+    {
+        $contextFile = $this->rootDir . '/.castor.context';
+        if (!file_exists($contextFile)) {
+            return null;
+        }
+
+        $content = trim((string) file_get_contents($contextFile));
+
+        if (!$content || !\in_array($content, $contextNames, true)) {
+            $this->logger->error(\sprintf('The context "%s" defined in ".castor.context" file is not a valid context. Available contexts: %s.', $content ?: '(empty)', implode(', ', $contextNames)));
+
+            return null;
+        }
+
+        return $content;
+    }
+
     private function configureContext(InputInterface $input, OutputInterface $output): void
     {
         $this->contextRegistry->setDefaultIfEmpty();
@@ -186,6 +210,7 @@ final class Kernel
 
         $currentContextName = $input->getParameterOption($contextOptions)
             ?: PlatformHelper::getEnv('CASTOR_CONTEXT')
+            ?: $this->readDotContextFile($contextNames)
             ?: $this->contextRegistry->getDefaultName();
 
         $applicationDefinition = $this->application->getDefinition();
