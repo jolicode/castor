@@ -3,6 +3,7 @@
 namespace Castor\Helper;
 
 use JoliCode\PhpOsHelper\OsHelper;
+use Laravel\AgentDetector\AgentDetector;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 /**
@@ -26,6 +27,13 @@ final class PlatformHelper
         }
 
         return getenv($name);
+    }
+
+    public static function isRunningInAgentContext(): bool
+    {
+        static $result = null;
+
+        return $result ??= AgentDetector::detect()->isAgent;
     }
 
     public static function getDefaultCacheDirectory(): string

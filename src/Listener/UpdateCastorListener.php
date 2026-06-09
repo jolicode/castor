@@ -54,6 +54,10 @@ class UpdateCastorListener
             return;
         }
 
+        if (PlatformHelper::isRunningInAgentContext()) {
+            return;
+        }
+
         $command = $event->getCommand();
         if (!$command) {
             return;

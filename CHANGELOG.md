@@ -5,6 +5,7 @@
 ### Features
 
 * Drop support for PHP 8.2 and 8.3, minimum supported version is now PHP 8.4
+* Remove castor header and upgrade output when running inside an ai agent
 
 ## Security
 
