@@ -4,6 +4,7 @@ namespace Castor\Console;
 
 use Castor\Container;
 use Castor\Exception\ProblemException;
+use Castor\Helper\PlatformHelper;
 use Castor\Kernel;
 use Castor\Runner\ProcessRunner;
 use Symfony\Component\Console\Application as SymfonyApplication;
@@ -190,6 +191,10 @@ class Application extends SymfonyApplication
     private function getLogo(): string
     {
         if (static::HIDE_LOGO) {
+            return '';
+        }
+
+        if (PlatformHelper::isRunningInAgentContext()) {
             return '';
         }
 

@@ -37,6 +37,7 @@
         "composer/composer": "^2.9.8",
         "jolicode/jolinotif": "^3.3",
         "jolicode/php-os-helper": "^0.3.0",
+        "laravel/agent-detector": "^2.0",
         "monolog/monolog": "^3.10.0",
         "nikic/php-parser": "^5.7.0",
         "phpstan/phpdoc-parser": "^2.3.2",
