@@ -45,3 +45,18 @@ update the tool once in a day.
 
 This behavior can be disabled by setting the `CASTOR_DISABLE_VERSION_CHECK`
 environment variable to `1` or `true`.
+
+## AI agent context
+
+Castor automatically detects when it is running inside an AI agent (e.g. Claude
+Code, GitHub Copilot Workspace, or any environment where `STDIN` is not a TTY).
+In that context, Castor reduces its output to avoid polluting the agent's
+context window: the ASCII logo is hidden and update reminders are suppressed.
+
+If the detection produces a false positive — for instance in a CI pipeline that
+looks like an agent — you can disable it by setting the
+`CASTOR_DISABLE_AGENT_DETECTION` environment variable to any non-empty value:
+
+```bash
+CASTOR_DISABLE_AGENT_DETECTION=true castor my-task
+```

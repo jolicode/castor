@@ -35,6 +35,7 @@ abstract class TaskTestCase extends TestCase
             'ENDPOINT' => $_SERVER['ENDPOINT'],
             'CASTOR_CACHE_DIR' => self::$castorCacheDir,
             'CASTOR_TEST' => 'true',
+            'CASTOR_DISABLE_AGENT_DETECTION' => 'true',
         ];
 
         if (!$needRemote) {
