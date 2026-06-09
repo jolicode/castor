@@ -77,12 +77,20 @@ class SymfonyTaskCommand extends Command
                 continue;
             }
 
+            $optionMode = match (true) {
+                !$option['accept_value'] => InputOption::VALUE_NONE,
+                $option['is_value_required'] => InputOption::VALUE_REQUIRED,
+                default => InputOption::VALUE_OPTIONAL,
+            };
+
+            if ($option['is_multiple']) {
+                $optionMode |= InputOption::VALUE_IS_ARRAY;
+            }
+
             $this->addOption(
                 $option['name'],
                 $option['shortcut'],
-                ($option['accept_value'] ? 0 : InputOption::VALUE_NONE)
-                    | ($option['is_value_required'] ? InputOption::VALUE_REQUIRED : InputOption::VALUE_OPTIONAL)
-                    | ($option['is_multiple'] ? InputOption::VALUE_IS_ARRAY : 0),
+                $optionMode,
                 $option['description'],
                 $option['accept_value'] ? $option['default'] : null,
             );
