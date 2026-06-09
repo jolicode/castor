@@ -31,6 +31,10 @@ final class PlatformHelper
 
     public static function isRunningInAgentContext(): bool
     {
+        if (self::getEnv('CASTOR_DISABLE_AGENT_DETECTION')) {
+            return false;
+        }
+
         static $result = null;
 
         return $result ??= AgentDetector::detect()->isAgent;

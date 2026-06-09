@@ -20,6 +20,7 @@ $_SERVER['CASTOR_CACHE_DIR'] ??= '/tmp/castor-tests/cache';
 if (!$_SERVER['CASTOR_CACHE_DIR']) {
     throw new RuntimeException('CASTOR_CACHE_DIR is not set or empty.');
 }
+$_SERVER['CASTOR_DISABLE_AGENT_DETECTION'] = 'true';
 
 WebServerHelper::start();
 
