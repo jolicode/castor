@@ -1,0 +1,2 @@
+hh:mm:ss ERROR     [castor] The context "invalid-context" defined in ".castor.context" file is not a valid context. Available contexts: foo.
+foo

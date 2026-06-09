@@ -218,6 +218,34 @@ foo=BAR
 CASTOR_CONTEXT=my_context castor foo
 ```
 
+### Using a `.castor.context` file
+
+You can also create a `.castor.context` file at the root of your project
+(next to `castor.php`) to set the context for all team members or CI runs
+without touching environment variables:
+
+```text
+my_context
+```
+
+The file must contain a single line with the name of a valid context.
+If the context name is unknown, Castor will log an error and fall back to
+the default context.
+
+The context selection precedence is, from highest to lowest:
+
+1. `--context` CLI option
+2. `CASTOR_CONTEXT` environment variable
+3. `.castor.context` file
+4. The context marked `default: true`
+
+> [!TIP]
+> The `.castor.context` file is useful when you want to commit a default
+> context for your project (e.g. `production`) while still allowing each
+> developer to override it locally via the `--context` flag or the
+> `CASTOR_CONTEXT` environment variable. Add it to `.gitignore` if you
+> want each developer to manage their own local context.
+
 ## Context features
 
 ### Failure
