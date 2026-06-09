@@ -10,8 +10,9 @@ use Symfony\Component\DependencyInjection\Attribute\Exclude;
 class Context implements \ArrayAccess
 {
     public readonly string $workingDirectory;
-
     public readonly bool $supportsInteraction;
+    public readonly bool $tty;
+    public readonly bool $pty;
 
     /**
      * @param array<string, string|\Stringable|int>              $environment         A list of environment variables to add to the task
@@ -27,8 +28,8 @@ class Context implements \ArrayAccess
         public readonly array $data = [],
         public readonly array $environment = [],
         ?string $workingDirectory = null,
-        public readonly bool $tty = false,
-        public readonly bool $pty = true,
+        ?bool $tty = null,
+        ?bool $pty = null,
         public readonly ?float $timeout = null,
         public readonly bool $quiet = false,
         public readonly bool $allowFailure = false,
@@ -46,6 +47,18 @@ class Context implements \ArrayAccess
     ) {
         $this->workingDirectory = $workingDirectory ?? PathHelper::getRoot(false);
         $this->supportsInteraction = $supportsInteraction ?? self::detectSupportsInteraction();
+        if (null === $tty && null === $pty) {
+            if ($this->supportsInteraction) {
+                $this->tty = true;
+                $this->pty = false;
+            } else {
+                $this->tty = false;
+                $this->pty = true;
+            }
+        } else {
+            $this->tty = $tty ?? false;
+            $this->pty = $pty ?? false;
+        }
     }
 
     // @phpstan-ignore missingType.iterableValue

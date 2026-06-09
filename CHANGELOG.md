@@ -5,8 +5,9 @@
 ### Features
 
 * Drop support for PHP 8.2 and 8.3, minimum supported version is now PHP 8.4
-* Remove castor header and upgrade output when running inside an ai agent
 * Add support for `.castor.context` file to set the default context (lowest precedence after `--context` flag and `CASTOR_CONTEXT` env var)
+* Use best of TTY/PTY according to the surrounding environment capabilities
+* Remove castor header and upgrade output when running inside an ai agent
 
 ## Security
 

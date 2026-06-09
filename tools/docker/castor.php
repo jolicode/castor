@@ -22,7 +22,7 @@ function docker_run(string $imageName, array $runCommand, ?string $workDir = nul
         '--network=host',
     ];
 
-    if (!$context->quiet && false !== $context->tty && false !== $context->pty) {
+    if (!$context->quiet && $context->tty) {
         $command[] = '-i';
     }
 
