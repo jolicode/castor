@@ -170,7 +170,7 @@
             "version": "v1.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/pyrech/castor-example-package-not-published.git",
+                "url": "git@github.com:pyrech/castor-example-package-not-published.git",
                 "reference": "e87fa3f71b9784800caadca8ca3e001bb646f201"
             },
             "dist": {
@@ -183,10 +183,6 @@
             "license": [
                 "MIT"
             ],
-            "support": {
-                "source": "https://github.com/pyrech/castor-example-package-not-published/tree/v1.0.0",
-                "issues": "https://github.com/pyrech/castor-example-package-not-published/issues"
-            },
             "time": "2024-02-26T13:09:56+00:00"
         },
         {

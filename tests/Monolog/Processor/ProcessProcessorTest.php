@@ -6,18 +6,20 @@ use Castor\Monolog\Processor\ProcessProcessor;
 use Castor\Runner\ProcessRunner;
 use Monolog\Level;
 use Monolog\LogRecord;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\Process;
 
 class ProcessProcessorTest extends TestCase
 {
+    #[AllowMockObjectsWithoutExpectations()]
     public function test(): void
     {
         $process = new Process(['ls', '-alh'], '/tmp', [
             'foo' => 'b\'"`\ar',
             'argc' => 3,
             'argv' => ['/home/foo/.local/bin//castor', 'builder', '-vvv'],
-            'null' => null,
+            'false' => false,
         ]);
         $log = new LogRecord(
             datetime: new \DateTimeImmutable(),
@@ -36,7 +38,7 @@ class ProcessProcessorTest extends TestCase
                     'foo' => 'b\'"`\ar',
                     'argc' => 3,
                     'argv' => ['/home/foo/.local/bin//castor', 'builder', '-vvv'],
-                    'null' => null,
+                    'false' => false,
                 ],
                 'runnable' => <<<'TXT'
                     foo='b'\''"`\ar' 'ls' '-alh'
