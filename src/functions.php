@@ -359,9 +359,9 @@ function load_dot_env(?string $path = null): array
 /**
  * @template T
  *
- * @param (callable(Context) :T)                     $callback
- * @param array<string, string|\Stringable|int>|null $data
- * @param array<string, string|\Stringable|int>|null $environment
+ * @param (callable(Context) :T)                       $callback
+ * @param array<string, string|\Stringable|false>|null $data
+ * @param array<string, string|\Stringable|false>|null $environment
  */
 function with(
     callable $callback,

@@ -12,9 +12,13 @@
 
 * Harden the security of our GitHub Actions Workflows
 
-## Fixed
+## Fixes
 
 * Fix option mode detection from Symfony command definition
+
+## Internal
+
+* Upgrade to Symfony 8.1
 
 ## 1.5.0 (2026-05-27)
 

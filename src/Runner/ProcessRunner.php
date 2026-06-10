@@ -58,6 +58,8 @@ class ProcessRunner
                 $command = array_merge($command, $context->verboseArguments);
             }
 
+            $command = array_map(static fn ($part) => (string) $part, $command);
+
             $process = new Process($command, $context->workingDirectory, $context->environment, null, $context->timeout);
         } else {
             if ($context->verbosityLevel->isVerbose() && $context->verboseArguments) {
@@ -205,7 +207,7 @@ class ProcessRunner
         $runnable = $process->getCommandLine();
 
         foreach ($process->getEnv() as $key => $value) {
-            if (null === $value || 'argv' === $key || 'argc' === $key) {
+            if (false === $value || 'argv' === $key || 'argc' === $key) {
                 continue;
             }
             $runnable = \sprintf('%s=%s %s ', $key, escapeshellarg((string) $value), $runnable);

@@ -14,7 +14,7 @@ class Context implements \ArrayAccess
     public readonly bool $supportsInteraction;
 
     /**
-     * @param array<string, string|\Stringable|int>              $environment         A list of environment variables to add to the task
+     * @param array<string, string|\Stringable|false>            $environment         A list of environment variables to add to the task
      * @param string[]                                           $verboseArguments    A list of arguments to pass to the command to enable verbose output
      * @param string|\Stringable|resource|\Iterator<string>|null $input               The input to send to the process stdin
      * @param ?bool                                              $supportsInteraction Whether the surrounding environment supports interactive
@@ -92,7 +92,7 @@ class Context implements \ArrayAccess
         ]);
     }
 
-    /** @param array<string, string|\Stringable|int> $environment */
+    /** @param array<string, string|\Stringable|false> $environment */
     public function withEnvironment(array $environment, bool $keepExisting = true): self
     {
         return $this->clone([

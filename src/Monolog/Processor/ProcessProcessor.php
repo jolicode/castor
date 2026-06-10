@@ -34,7 +34,7 @@ final readonly class ProcessProcessor implements ProcessorInterface
     }
 
     /**
-     * @return array{cwd: ?string, env: array<string, string>, runnable: string}
+     * @return array{cwd: ?string, env: array<string, string|\Stringable|false>, runnable: string}
      */
     private function formatProcess(Process $process): array
     {
