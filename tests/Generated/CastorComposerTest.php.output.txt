@@ -46,6 +46,7 @@ Available commands:
   licenses             Shows information about licenses of dependencies
   list                 List commands
   outdated             Shows a list of installed packages that have updates available, including their latest version
+  policy               Manages custom dependency policies and their sources
   prohibits            [why-not] Shows which packages prevent the given package from being installed
   reinstall            Uninstalls and reinstalls the given package names
   remove               [rm|uninstall] Removes a package from the require or require-dev

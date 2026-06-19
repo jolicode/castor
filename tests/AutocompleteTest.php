@@ -28,9 +28,9 @@ class AutocompleteTest extends TaskTestCase
 
         $command = new TaskCommand(
             $descriptor,
-            $this->createMock(ExpressionLanguage::class),
-            $this->createMock(EventDispatcherInterface::class),
-            $this->createMock(ContextRegistry::class),
+            $this->createStub(ExpressionLanguage::class),
+            $this->createStub(EventDispatcherInterface::class),
+            $this->createStub(ContextRegistry::class),
             new Slugger(new AsciiSlugger()),
             new Filesystem(),
             new FileLinkFormatter(),
@@ -57,9 +57,9 @@ class AutocompleteTest extends TaskTestCase
 
         $command = new TaskCommand(
             $descriptor,
-            $this->createMock(ExpressionLanguage::class),
-            $this->createMock(EventDispatcherInterface::class),
-            $this->createMock(ContextRegistry::class),
+            $this->createStub(ExpressionLanguage::class),
+            $this->createStub(EventDispatcherInterface::class),
+            $this->createStub(ContextRegistry::class),
             new Slugger(new AsciiSlugger()),
             new Filesystem(),
             new FileLinkFormatter(),
