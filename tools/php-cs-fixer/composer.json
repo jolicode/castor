@@ -4,7 +4,7 @@
     "type": "project",
     "license": "MIT",
     "require": {
-        "friendsofphp/php-cs-fixer": "^3.95.5"
+        "friendsofphp/php-cs-fixer": "^3.95.11"
     },
     "config": {
         "bump-after-update": true,
