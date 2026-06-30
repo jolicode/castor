@@ -279,8 +279,20 @@ function add_test(array $args, string $class, ?string $cwd = null, bool $needRem
     );
     if ($inputStream) {
         $process->start();
-        usleep(500_000);
-        $inputStream->write($input);
+
+        // Wait for the interactive prompt to appear before writing input, to
+        // avoid the race condition where the PTY I/O loop for the subprocess
+        // would consume the input from STDIN before the question is asked.
+        $outputBuffer = '';
+        if ($process->waitUntil(static function (string $type, string $data) use (&$outputBuffer): bool {
+            if (Process::OUT === $type) {
+                $outputBuffer .= $data;
+            }
+
+            return str_contains($outputBuffer, ' > ');
+        })) {
+            $inputStream->write($input);
+        }
         $inputStream->close();
         $process->wait();
     } else {
