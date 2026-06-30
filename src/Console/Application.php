@@ -108,6 +108,8 @@ class Application extends SymfonyApplication
                 $this->io->writeln("<fg=yellow>{$runnable}</>");
                 $this->io->newLine();
 
+                $this->io->comment('Re-run the command with the <fg=yellow>-v</> option to see more details.');
+
                 return;
             }
         }

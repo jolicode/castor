@@ -4,3 +4,5 @@ In failure.php line XXXX:
 
 bash -c i_do_not_exist
 
+ // Re-run the command with the -v option to see more details.
+

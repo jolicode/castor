@@ -6,3 +6,5 @@ In exception.php line XXXX:
 
 echo foo; echo bar>&2;exit 1
 
+ // Re-run the command with the -v option to see more details.
+
