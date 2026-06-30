@@ -88,7 +88,13 @@ class ProcessRunner
                 $process->setInput(\STDIN);
             } elseif ($context->pty) {
                 $process->setPty(true);
-                $process->setInput(\STDIN);
+                // Only forward STDIN to the subprocess when it is an actual terminal.
+                // When STDIN is a pipe (CI, tests, scripts), forwarding it would allow the
+                // PTY I/O loop to consume data meant for castor's own interactive prompts
+                // (e.g. the "retry with verbose arguments?" confirmation question).
+                if (stream_isatty(\STDIN)) {
+                    $process->setInput(\STDIN);
+                }
             }
         }
 
