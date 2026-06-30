@@ -4,3 +4,5 @@ In upload.php line XXXX:
 
 scp -r .../examples/basic/ssh/upload.php debian@server-1.example.com:/var/www/index.html
 
+ // Re-run the command with the -v option to see more details.
+

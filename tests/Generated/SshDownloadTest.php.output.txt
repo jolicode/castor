@@ -4,3 +4,5 @@ In download.php line XXXX:
 
 scp -r debian@server-1.example.com:/tmp/test.html /var/www/index.html
 
+ // Re-run the command with the -v option to see more details.
+

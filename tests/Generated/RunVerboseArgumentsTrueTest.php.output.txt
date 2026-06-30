@@ -6,3 +6,5 @@ In verbose_arguments.php line XXXX:
 
 bash -c i_do_not_exist -x -e
 
+ // Re-run the command with the -v option to see more details.
+
