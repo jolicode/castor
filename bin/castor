@@ -1,6 +1,13 @@
 #!/usr/bin/env php
 <?php
 
+if (!isset($_SERVER['CASTOR_TEST']) && PHP_VERSION_ID < 80400) {
+    fwrite(STDERR, sprintf("Castor requires PHP >= 8.4.0, but you are running PHP %s.\n", PHP_VERSION));
+    fwrite(STDERR, "You can still use castor, but you must install the static version of castor.\n");
+    fwrite(STDERR, "Read more at https://castor.jolicode.com/installation/installer/static\n");
+    exit(1);
+}
+
 use Castor\Console\Application;
 use Castor\Console\ApplicationFactory;
 

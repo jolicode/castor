@@ -2,6 +2,12 @@
 
 ## Not released yet
 
+## 1.6.1 (2026-07-02)
+
+### Features
+
+* Display a nice message when the user is using an unsupported PHP version (8.2 or 8.3) and suggest to use the static binary instead
+
 ## 1.6.0 (2026-06-30)
 
 ### Features
