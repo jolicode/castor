@@ -25,7 +25,7 @@ curl "https://castor.jolicode.com/install" | bash
 
 ### Options
 
-### --static
+### --static {: #static }
 
 If you don't have PHP available on your system, Castor can be installed with a
 static binary that embeds PHP, so it can be run anywhere.
@@ -36,7 +36,7 @@ Use the `--static` option to install Castor this way:
 curl "https://castor.jolicode.com/install" | bash -s -- --static
 ```
 
-### --install-dir
+### --install-dir {: #install-dir }
 
 By default, the installer will install Castor in the current user's
 `$HOME/.local/bin` directory.
@@ -47,7 +47,7 @@ You can change that by using the `--install-dir` option:
 curl "https://castor.jolicode.com/install" | bash -s -- --install-dir /usr/local/bin
 ```
 
-### --version
+### --version {: #version }
 
 By default, the installer will install the latest version of Castor.
 
