@@ -26,6 +26,9 @@ use Symfony\Component\Console\Terminal;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Intl\Countries;
+use Symfony\Component\Intl\Currencies;
+use Symfony\Component\Intl\Locales;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
@@ -783,4 +786,43 @@ function terminal(): Terminal
     return Container::get()
         ->terminal
     ;
+}
+
+/**
+ * @return string[]
+ */
+function locale_codes(): array
+{
+    return Locales::getLocales();
+}
+
+function locale_exists(string $locale): bool
+{
+    return Locales::exists($locale);
+}
+
+/**
+ * @return string[]
+ */
+function country_codes(): array
+{
+    return Countries::getCountryCodes();
+}
+
+function country_exists(string $country): bool
+{
+    return Countries::exists($country);
+}
+
+/**
+ * @return string[]
+ */
+function currency_codes(): array
+{
+    return Currencies::getCurrencyCodes();
+}
+
+function currency_exists(string $currency): bool
+{
+    return Currencies::exists($currency);
 }

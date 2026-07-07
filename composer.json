@@ -53,6 +53,7 @@
         "symfony/filesystem": "^8.1",
         "symfony/finder": "^8.1.1",
         "symfony/http-client": "^8.1.1",
+        "symfony/intl": "^8.1",
         "symfony/mime": "^8.1",
         "symfony/monolog-bridge": "^8.1",
         "symfony/process": "^8.1",
