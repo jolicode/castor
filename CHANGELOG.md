@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Fixes
+
+* Fix `enable_strict_check` and `password_authentication` ssh options being ignored
+
 ## 1.6.1 (2026-07-02)
 
 ### Features
