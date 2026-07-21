@@ -1,0 +1,6 @@
+
+  Not enough arguments (missing: "before").
+
+
+arguments:args-after-end-option <before> [<args-after-option-end>...]
+

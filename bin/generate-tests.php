@@ -105,6 +105,7 @@ $taskFilterList = [
     'archive:zip',
     'archive:zip-binary',
     'archive:zip-php',
+    'arguments:args-after-end-option',
     'arguments:no-validation',
     'arguments:optional',
     'crypto:decrypt',
@@ -210,6 +211,10 @@ echo "\nDone.\n";
 
 displayTitle('Generating additional tests');
 
+add_test(['arguments:args-after-end-option', 'aa', '--', 'bb'], 'ArgumentsArgsAfterEndOption');
+add_test(['arguments:args-after-end-option', 'aa', 'bb'], 'ArgumentsArgsAfterEndOptionTooManyArguments');
+add_test(['arguments:args-after-end-option', '--', 'aa', 'bb'], 'ArgumentsArgsAfterEndOptionNotEnoughArguments');
+add_test(['arguments:args-after-end-option', 'foobar', '--', '-c', 'test'], 'ArgumentsArgsAfterEndOptionContextAfterDelimiter');
 add_test(['arguments:no-validation', '--unknown-option', 'value'], 'ArgumentsNoValidation');
 add_test(['arguments:optional', 'foo'], 'ArgumentsOptional');
 add_test(['arguments:optional', 'foo', '--second-arg=bar'], 'ArgumentsOptionalWithSecondArg');

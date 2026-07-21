@@ -5,6 +5,9 @@
 ### Fixes
 
 * Fix `enable_strict_check` and `password_authentication` ssh options being ignored
+* Fix `AsArgsAfterOptionEnd` not validating arguments properly: extra arguments given without a `--` were silently dropped instead of raising an error, and required arguments given after `--` were not detected as missing
+* Fix `-c`/`--context` being wrongly parsed from arguments passed after `--`, causing an unrelated `Context "..." not found` error
+* Prevent the `AsArgsAfterOptionEnd` attribute from being used on more than one parameter of the same task
 
 ## 1.6.1 (2026-07-02)
 

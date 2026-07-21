@@ -17,8 +17,7 @@ trait GetRawTokenTrait
             throw new \RuntimeException('The input must be an instance of ArgvInput.');
         }
 
-        // @phpstan-ignore-next-line
-        $tokens = (fn () => $this->tokens)->bindTo($input, ArgvInput::class)();
+        $tokens = $this->getRawArgvTokens($input);
 
         $parameters = [];
         $keep = false;
@@ -47,5 +46,14 @@ trait GetRawTokenTrait
         }
 
         return $parameters;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function getRawArgvTokens(ArgvInput $input): array
+    {
+        // @phpstan-ignore-next-line
+        return (fn () => $this->tokens)->bindTo($input, ArgvInput::class)();
     }
 }

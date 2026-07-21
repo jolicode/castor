@@ -1,0 +1,7 @@
+In TaskCommand.php line XXXX:
+
+  Function "duplicate_args_after_option_end()" is not properly configured:
+  The "AsArgsAfterOptionEnd" attribute cannot be used on more than one parameter.
+  Defined in "castor.php" line 7.
+
+
