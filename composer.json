@@ -34,13 +34,13 @@
     },
     "require": {
         "php": ">=8.4",
-        "composer/composer": "^2.10.1",
+        "composer/composer": "^2.10.2",
         "jolicode/jolinotif": "^3.3",
         "jolicode/php-os-helper": "^0.3.0",
         "laravel/agent-detector": "^2.0.2",
         "monolog/monolog": "^3.10.0",
-        "nikic/php-parser": "^5.7.0",
-        "phpstan/phpdoc-parser": "^2.3.2",
+        "nikic/php-parser": "^5.8.0",
+        "phpstan/phpdoc-parser": "^2.3.3",
         "spatie/ssh": "^1.13.1",
         "symfony/cache": "^8.1.1",
         "symfony/config": "^8.1.1",
@@ -62,7 +62,7 @@
         "symfony/yaml": "^8.1.1"
     },
     "require-dev": {
-        "phpunit/phpunit": "^13.2.2"
+        "phpunit/phpunit": "^13.2.4"
     },
     "bin": [
         "bin/castor"
