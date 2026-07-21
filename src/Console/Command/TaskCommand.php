@@ -23,6 +23,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\SignalableCommandInterface;
 use Symfony\Component\Console\Completion\CompletionInput;
 use Symfony\Component\Console\Exception\LogicException;
+use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -120,6 +121,15 @@ class TaskCommand extends Command implements SignalableCommandInterface
             $this->ignoreValidationErrors();
         }
 
+        $argsAfterOptionEndParameters = array_filter(
+            $this->taskDescriptor->function->getParameters(),
+            static fn (\ReflectionParameter $parameter): bool => (bool) ($parameter->getAttributes(AsArgsAfterOptionEnd::class)[0] ?? null),
+        );
+
+        if (\count($argsAfterOptionEndParameters) > 1) {
+            throw new FunctionConfigurationException('The "AsArgsAfterOptionEnd" attribute cannot be used on more than one parameter.', $this->taskDescriptor->function);
+        }
+
         foreach ($this->taskDescriptor->function->getParameters() as $parameter) {
             if (($attribute = $parameter->getAttributes(AsRawTokens::class, \ReflectionAttribute::IS_INSTANCEOF)[0] ?? null) && AsArgsAfterOptionEnd::class !== $attribute->getName()) {
                 $this->ignoreValidationErrors();
@@ -191,6 +201,11 @@ class TaskCommand extends Command implements SignalableCommandInterface
         }
     }
 
+    protected function initialize(InputInterface $input, OutputInterface $output): void
+    {
+        $this->validateArgsAfterOptionEnd($input);
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $args = [];
@@ -257,6 +272,49 @@ class TaskCommand extends Command implements SignalableCommandInterface
         }
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * Tokens placed after the first "--" belong exclusively to the
+     * AsArgsAfterOptionEnd argument. Symfony's own binding/validation does
+     * not know about that rule (it happily lets a trailing array argument
+     * swallow extra tokens, or lets required arguments be filled from
+     * tokens located after "--"), so we replay the tokens preceding "--"
+     * (or all of them, when there is no "--") against a definition that
+     * excludes the AsArgsAfterOptionEnd argument. This reuses Symfony's own
+     * parser to get correctly worded "not enough arguments" / "too many
+     * arguments" errors.
+     */
+    private function validateArgsAfterOptionEnd(InputInterface $input): void
+    {
+        if (!$input instanceof ArgvInput) {
+            return;
+        }
+
+        $rawArgumentNames = [];
+        foreach ($this->taskDescriptor->function->getParameters() as $parameter) {
+            if ($parameter->getAttributes(AsArgsAfterOptionEnd::class)[0] ?? null) {
+                $rawArgumentNames[] = $this->getParameterName($parameter);
+            }
+        }
+
+        if (!$rawArgumentNames) {
+            return;
+        }
+
+        $tokens = $this->getRawArgvTokens($input);
+
+        $delimiterIndex = array_search('--', $tokens, true);
+        $tokensBeforeDelimiter = false === $delimiterIndex ? $tokens : \array_slice($tokens, 0, $delimiterIndex);
+
+        $definition = clone $this->getDefinition();
+        $arguments = $definition->getArguments();
+        foreach ($rawArgumentNames as $name) {
+            unset($arguments[$name]);
+        }
+        $definition->setArguments($arguments);
+
+        new ArgvInput(['castor', ...$tokensBeforeDelimiter], $definition);
     }
 
     private function setParameterName(\ReflectionParameter $parameter, ?string $name): string

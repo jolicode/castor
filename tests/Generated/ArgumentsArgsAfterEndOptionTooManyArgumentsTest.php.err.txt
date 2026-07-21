@@ -1,0 +1,6 @@
+
+  Too many arguments to "arguments:args-after-end-option" command, expected arguments "before".
+
+
+arguments:args-after-end-option <before> [<args-after-option-end>...]
+
