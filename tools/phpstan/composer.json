@@ -4,7 +4,7 @@
     "type": "project",
     "license": "MIT",
     "require": {
-        "phpstan/phpstan": "^2.2.2"
+        "phpstan/phpstan": "^2.2.5"
     },
     "autoload": {
         "psr-4": {

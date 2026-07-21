@@ -32,13 +32,13 @@ class RemoteExecutionTest extends TaskTestCase
 
     public function testVersion(): void
     {
-        $process = $this->runTask(['execute', 'composer/composer:2.9.*@composer', '-v']);
+        $process = $this->runTask(['execute', 'composer/composer:2.10.*@composer', '-v']);
 
         if (0 !== $process->getExitCode()) {
             throw new ProcessFailedException($process);
         }
 
-        $this->assertStringContainsString('Installing composer/composer (2.9', $process->getErrorOutput());
-        $this->assertStringContainsString('Composer version 2.9', $process->getOutput());
+        $this->assertStringContainsString('Installing composer/composer (2.10', $process->getErrorOutput());
+        $this->assertStringContainsString('Composer version 2.10', $process->getOutput());
     }
 }
