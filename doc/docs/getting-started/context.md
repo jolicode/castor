@@ -68,6 +68,55 @@ function foo(): void
 }
 ```
 
+### Typing the context data
+
+Castor cannot know the shape of your context data, so `Context::$data` and
+`variable()` are described by a PHPStan [type
+alias](https://phpstan.org/writing-php-code/phpdoc-types#global-type-aliases)
+named `ContextData`. It defaults to `array<string, mixed>`, which means
+`variable()` returns `mixed` out of the box.
+
+If you use PHPStan, you can redeclare that alias in your own `phpstan.neon` to
+describe your own variables:
+
+```neon
+parameters:
+    typeAliases:
+        ContextData: '''
+            array{
+                name: string,
+                production: bool,
+                foo?: string,
+            }
+        '''
+```
+
+`variable()` then returns precise types instead of `mixed`:
+
+```php
+$name = variable('name');                // string
+$production = variable('production');    // bool
+$unknown = variable('unknown', 42);      // int, inferred from the default value
+```
+
+Your declaration takes precedence over the default one, so there is nothing
+else to remove or disable.
+
+> [!NOTE]
+> The default alias lives in `extension.neon` at the root of the Castor
+> package. It is registered automatically if you use
+> [phpstan/extension-installer](https://github.com/phpstan/extension-installer).
+> Otherwise, include it by hand:
+>
+> ```neon
+> includes:
+>     - vendor/jolicode/castor/extension.neon
+> ```
+>
+> When you run Castor as a phar or as a standalone binary there is no
+> `vendor/jolicode/castor` directory: declare the alias yourself, either with your
+> own shape or with the permissive default `ContextData: 'array<string, mixed>'`.
+
 ## Creating a new context
 
 You can create a new context by declaring a function with
