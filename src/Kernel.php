@@ -131,7 +131,9 @@ final class Kernel
 
         $event = new FunctionsResolvedEvent(
             $descriptorsCollection->taskDescriptors,
-            $descriptorsCollection->symfonyTaskDescriptors
+            $descriptorsCollection->symfonyTaskDescriptors,
+            $mount->path,
+            $mount->path === $this->rootDir,
         );
         $this->eventDispatcher->dispatch($event);
 

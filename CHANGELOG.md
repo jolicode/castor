@@ -5,6 +5,7 @@
 ### Features
 
 * Add `dispatch()` and `event_dispatcher()` functions to dispatch events and access the event dispatcher
+* Add `mountPath` and `isRootMount` properties to `FunctionsResolvedEvent`, so listeners can tell the root application apart from mounted ones (the event is dispatched once per mount)
 
 ### Fixes
 

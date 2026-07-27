@@ -74,7 +74,10 @@ Here is the built-in events triggered by Castor:
 
 * `Castor\Event\FunctionsResolvedEvent`: This event is triggered after the
   functions has been resolved. It provides access to an array of
-  `TaskDescriptor` and `SymfonyTaskDescriptor` objects;
+  `TaskDescriptor` and `SymfonyTaskDescriptor` objects. It also exposes the
+  `mountPath` (the path of the mount being resolved) and `isRootMount` (whether
+  it is the root application or a mounted one) properties. See
+  [Functions resolved and mounts](#functions-resolved-and-mounts) below;
 
 * `Castor\Event\AfterBootEvent`: This event is triggered when the application is
   ready to execute task
@@ -100,6 +103,39 @@ Here is the built-in events triggered by Castor:
 * `Castor\Event\ContextCreatedEvent`: This event is triggered after a context
   has been created. It allows to update the `Context` that will be used by the
   application.
+
+## Functions resolved and mounts
+
+The `FunctionsResolvedEvent` is dispatched **once per mount**, not once per
+application. When you [mount another application](mount.md), Castor resolves the
+functions of the root application and then of each mounted application
+separately, dispatching a `FunctionsResolvedEvent` for each of them.
+
+This means a listener attached to `FunctionsResolvedEvent` runs several times
+when mounts are involved: once for the root application and once for every
+mount. Each dispatch only carries the `TaskDescriptor` and
+`SymfonyTaskDescriptor` objects resolved for that specific mount, so a listener
+that performs a global, one-time side effect could run more than once.
+
+To only act once, for the root application, guard your listener with the
+`isRootMount` property. The `mountPath` property gives you the filesystem path
+of the mount currently being resolved:
+
+```php
+use Castor\Attribute\AsListener;
+use Castor\Event\FunctionsResolvedEvent;
+
+#[AsListener(event: FunctionsResolvedEvent::class)]
+function on_functions_resolved(FunctionsResolvedEvent $event): void
+{
+    if (!$event->isRootMount) {
+        // Skip mounted applications, only run for the root application
+        return;
+    }
+
+    // Custom logic that must run only once
+}
+```
 
 ## Console events
 
