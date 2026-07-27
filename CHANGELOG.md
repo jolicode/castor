@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Features
+
+* Add `dispatch()` and `event_dispatcher()` functions to dispatch events and access the event dispatcher
+
 ### Fixes
 
 * Fix `enable_strict_check` and `password_authentication` ssh options being ignored

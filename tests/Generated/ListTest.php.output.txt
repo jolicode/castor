@@ -63,6 +63,7 @@ crypto:encrypt                                           Encrypt content with a 
 crypto:encrypt-file                                      Encrypt file with a password
 event-listener:before-execute-task                       A dummy task with before execute task event listener
 event-listener:console-terminate                         A dummy task with console terminate event listener
+event-listener:dispatch-event                            Dispatch a custom event and collect data from its listeners
 event-listener:loggable                                  A dummy task to demonstrate accessing attributes of a task
 event-listener:multiple                                  A dummy task with many event listeners attached
 event-listener:priority                                  A dummy task with event listeners that have priority
