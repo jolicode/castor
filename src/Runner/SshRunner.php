@@ -6,7 +6,19 @@ use Castor\ContextRegistry;
 use Spatie\Ssh\Ssh;
 use Symfony\Component\Process\Process;
 
-/** @internal */
+/**
+ * @internal
+ *
+ * @phpstan-type SshOptions array{
+ *     'port'?: int,
+ *     'path_private_key'?: string,
+ *     'jump_host'?: string,
+ *     'multiplexing_control_path'?: string,
+ *     'multiplexing_control_persist'?: string,
+ *     'enable_strict_check'?: bool,
+ *     'password_authentication'?: bool,
+ * }
+ */
 final readonly class SshRunner
 {
     public function __construct(
