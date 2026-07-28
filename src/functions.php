@@ -24,6 +24,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Terminal;
 use Symfony\Component\Dotenv\Dotenv;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\ExecutableFinder;
@@ -222,6 +223,25 @@ function logger(): LoggerInterface
 function app(): Application
 {
     return Container::get()->application;
+}
+
+/**
+ * Dispatch an event through Castor's event dispatcher.
+ *
+ * @template T of object
+ *
+ * @param T $event
+ *
+ * @return T
+ */
+function dispatch(object $event, ?string $eventName = null): object
+{
+    return Container::get()->eventDispatcher->dispatch($event, $eventName);
+}
+
+function event_dispatcher(): EventDispatcherInterface
+{
+    return Container::get()->eventDispatcher;
 }
 
 function input(): InputInterface

@@ -36,6 +36,38 @@ function my_event_listener(AfterExecuteTaskEvent|FunctionsResolvedEvent $event):
 > The `priority` argument is optional and defaults to `0`. The higher the
 > priority, the earlier the listener will be executed.
 
+## Dispatching events
+
+You can dispatch your own events, which is especially useful when writing a
+Castor extension that wants to let other projects hook into its lifecycle.
+
+Use the `Castor\dispatch()` function to dispatch an event. It returns the same
+event instance, so you can read back any data mutated by the listeners:
+
+```php
+use function Castor\dispatch;
+
+$event = dispatch(new MyCustomEvent('some payload'));
+```
+
+Any listener registered with `#[Castor\Attribute\AsListener()]` for that event
+class will be called.
+
+If you need finer control over the dispatcher, for instance to register or
+remove listeners dynamically or to introspect the registered listeners, you can
+retrieve the dispatcher itself with the `Castor\event_dispatcher()` function:
+
+```php
+use function Castor\event_dispatcher;
+
+event_dispatcher()->addListener(MyCustomEvent::class, function (MyCustomEvent $event): void {
+    // Custom logic to handle the event
+});
+```
+
+It returns a `Symfony\Component\EventDispatcher\EventDispatcherInterface`
+instance.
+
 ## Built-in events
 
 Here is the built-in events triggered by Castor:
