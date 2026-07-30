@@ -51,7 +51,7 @@ final readonly class WatchRunner
             },
             OsHelper::isWindows() => 'watcher-windows.exe',
             default => match ($architecture) {
-                Architecture::Arm64 => 'watcher-darwin-arm64',
+                Architecture::Arm64 => 'watcher-linux-arm64',
                 Architecture::Amd64 => 'watcher-linux-amd64',
             },
         };
