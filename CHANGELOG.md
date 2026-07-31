@@ -15,6 +15,7 @@
 * Turn the `SshOptions` type alias into a `@phpstan-type` declared on `SshRunner`, so it resolves without any PHPStan configuration
 * Ship a default `ContextData: 'array<string, mixed>'` PHPStan type alias in `extension.neon`, so projects that do not declare their own context data shape no longer get `class.notFound` errors on `Context::$data` and `variable()`. Declaring the alias in your own `phpstan.neon` still takes precedence, and is now documented in the [context documentation](https://castor.jolicode.com/getting-started/context/#typing-the-context-data)
 * Fix watcher to use correct binary on Linux ARM64
+* Fix `watch()` failing when given an array of paths
 
 ## 1.6.1 (2026-07-02)
 

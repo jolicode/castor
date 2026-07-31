@@ -34,7 +34,7 @@ final readonly class WatchRunner
             $parallelCallbacks = [];
 
             foreach ($path as $p) {
-                $parallelCallbacks[] = static fn () => self::watch($p, $function, $context);
+                $parallelCallbacks[] = fn () => $this->watch($p, $function, $context);
             }
 
             $this->parallelRunner->parallel(...$parallelCallbacks);
