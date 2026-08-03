@@ -24,7 +24,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 class Application extends SymfonyApplication
 {
     public const NAME = 'castor';
-    public const VERSION = 'v1.6.1';
+    public const VERSION = 'v1.7.0';
     public const HIDE_LOGO = false;
     public const EXTERNAL_LOGO = '';
 
