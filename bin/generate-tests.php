@@ -198,6 +198,7 @@ displayTitle('Generating tests for valid fixtures');
 add_test(['hello'], 'ContextFile', '{{ base }}/tests/fixtures/valid/context-file');
 add_test(['hello', '--context', 'foo'], 'ContextFileOverriddenByCli', '{{ base }}/tests/fixtures/valid/context-file');
 add_test(['hello'], 'ContextFileInvalid', '{{ base }}/tests/fixtures/valid/context-file-invalid');
+add_test(['hello'], 'FunctionsResolvedMount', '{{ base }}/tests/fixtures/valid/functions-resolved-mount');
 add_test(['list'], 'LayoutWithFolder', '{{ base }}/tests/fixtures/valid/layout-with-folder');
 add_test([], 'ImportSamePackageWithDefaultVersion', '{{ base }}/tests/fixtures/valid/import-same-package-with-default-version', needRemote: true, needResetVendor: true);
 add_test(['fs-watch'], 'WatchWithForcedTimeout', '{{ base }}/tests/fixtures/valid/watch-with-forced-timeout');

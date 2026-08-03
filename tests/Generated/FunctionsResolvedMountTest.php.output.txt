@@ -1,0 +1,3 @@
+FunctionsResolvedEvent dispatched (mountPath: functions-resolved-mount, isRootMount: true) with 1 task(s)
+FunctionsResolvedEvent dispatched (mountPath: mounted, isRootMount: false) with 1 task(s)
+Hello from root
