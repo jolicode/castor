@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+## 1.7.0 (2026-08-03)
+
 ### Features
 
 * Add `dispatch()` and `event_dispatcher()` functions to dispatch events and access the event dispatcher
