@@ -30,20 +30,14 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Terminal;
-use Symfony\Component\DependencyInjection\ChildDefinition;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Kernel\AbstractKernel;
 use Symfony\Component\DependencyInjection\Kernel\KernelTrait;
+use Symfony\Component\DependencyInjection\Kernel\ServicesBundle;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\ErrorHandler\ErrorHandler;
 use Symfony\Component\ErrorHandler\ErrorRenderer\FileLinkFormatter;
-use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
-use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -76,6 +70,9 @@ final class Kernel extends AbstractKernel
 
     public function getProjectDir(): string
     {
+        // The default implementation auto-detects the project dir from the kernel class
+        // file location, which would resolve to Castor's own install dir (or the phar),
+        // not the user's project.
         return $this->rootDir;
     }
 
@@ -86,17 +83,18 @@ final class Kernel extends AbstractKernel
 
     public function getLogDir(): ?string
     {
+        // The default implementation returns "{projectDir}/var/log" (or APP_LOG_DIR from
+        // the environment), i.e. a directory inside the user's project, while Castor
+        // never writes logs there. Null keeps "kernel.logs_dir" out of the parameters.
         return null;
     }
 
     public function getShareDir(): ?string
     {
+        // Castor has no share-dir concept. The default implementation falls back to the
+        // cache dir or the APP_SHARE_DIR env var, and since Castor often runs inside a
+        // Symfony app, the user's APP_* env vars would leak into the kernel parameters.
         return null;
-    }
-
-    public function getBuildDir(): string
-    {
-        return $this->getCacheDir();
     }
 
     public function boot(): void
@@ -196,12 +194,6 @@ final class Kernel extends AbstractKernel
                 ])
             ->alias(LoggerInterface::class, Logger::class)
 
-            ->set(EventDispatcher::class)
-            ->alias(EventDispatcherInterface::class, EventDispatcher::class)
-            ->alias('event_dispatcher', EventDispatcherInterface::class)
-
-            ->set(Filesystem::class)
-
             ->set(AsciiSlugger::class)
 
             ->set(DefaultNotifier::class)
@@ -251,24 +243,6 @@ final class Kernel extends AbstractKernel
         }
     }
 
-    protected function build(ContainerBuilder $container): void
-    {
-        $container->registerForAutoconfiguration(EventSubscriberInterface::class)
-            ->addTag('kernel.event_subscriber')
-        ;
-        $container->addCompilerPass(new RegisterListenersPass());
-        $container->registerAttributeForAutoconfiguration(AsEventListener::class, static function (ChildDefinition $definition, AsEventListener $attribute, \Reflector $reflector): void {
-            $tagAttributes = get_object_vars($attribute);
-            if ($reflector instanceof \ReflectionMethod) {
-                if (isset($tagAttributes['method'])) {
-                    throw new \LogicException(\sprintf('AsEventListener attribute cannot declare a method on "%s::%s()".', $reflector->class, $reflector->name));
-                }
-                $tagAttributes['method'] = $reflector->getName();
-            }
-            $definition->addTag('kernel.event_listener', $tagAttributes);
-        });
-    }
-
     /**
      * @return array<string, mixed>
      */
@@ -294,6 +268,8 @@ final class Kernel extends AbstractKernel
 
     protected function initializeContainer(): void
     {
+        // KernelTrait would dump the compiled container to disk and reuse it on the next
+        // runs. Compile it fresh instead, to keep the same behavior as before.
         $container = $this->buildContainer();
         $container->compile(true);
         $this->container = $container;
@@ -301,6 +277,13 @@ final class Kernel extends AbstractKernel
 
     protected function initializeBundles(): void
     {
+        // KernelTrait discovers bundles from "{projectDir}/config/bundles.php", but the
+        // project dir is the *user's* project (possibly a Symfony app): never read it.
+        // ServicesBundle provides the core DI infrastructure (event dispatcher,
+        // filesystem, listeners/subscribers autoconfiguration, ...).
+        $bundle = new ServicesBundle();
+
+        $this->bundles = [$bundle->getName() => $bundle];
     }
 
     private function mount(InputInterface $input, OutputInterface $output): void
