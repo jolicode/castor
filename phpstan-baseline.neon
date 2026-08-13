@@ -28,7 +28,7 @@ parameters:
 			message: '#^Class RepackedApplication not found\.$#'
 			identifier: class.notFound
 			count: 1
-			path: src/Console/ApplicationFactory.php
+			path: src/Kernel.php
 
 		-
 			message: '#^Default value of the parameter \#1 \$data \(array\{\}\) of method Castor\\Context\:\:__construct\(\) is incompatible with type array\{name\: string, production\: bool, foo\?\: string\}\.$#'
