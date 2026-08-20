@@ -42,7 +42,7 @@ class ReleaseHelper
         try {
             $latestVersion = $this
                 ->httpClient
-                ->request('GET', 'https://api.github.com/repos/jolicode/castor/releases/latest', [
+                ->request('GET', PlatformHelper::getEnv('CASTOR_RELEASES_URL') ?: 'https://api.github.com/repos/jolicode/castor/releases/latest', [
                     'timeout' => $timeout,
                 ])
                 ->toArray()

@@ -147,6 +147,7 @@ class SelfUpdateCommand extends Command
 
             if (!$verifyProcess->isSuccessful()) {
                 $io->error('The downloaded binary appears to be corrupted. Update aborted.');
+                $this->filesystem->remove($tempFile);
 
                 return Command::FAILURE;
             }
@@ -155,18 +156,14 @@ class SelfUpdateCommand extends Command
                 $io->text(\sprintf('Creating backup at: <comment>%s</comment>', $backupPath));
                 $this->filesystem->copy($currentPath, $backupPath, true);
             }
-
-            $io->text('Replacing current binary...');
-            $this->filesystem->rename($tempFile, $currentPath, true);
-            $this->filesystem->chmod($currentPath, 0o755);
         } catch (IOExceptionInterface|\RuntimeException $e) {
             $io->error(\sprintf('Failed to update Castor: %s', $e->getMessage()));
+            $this->filesystem->remove($tempFile);
 
             return Command::FAILURE;
-        } finally {
-            $this->filesystem->remove($tempFile);
         }
 
+        $io->text('Replacing current binary...');
         $io->newLine();
         $io->success(\sprintf('Castor has been updated from %s to %s!', $currentVersion, $latestTag));
 
@@ -174,7 +171,32 @@ class SelfUpdateCommand extends Command
             $io->note('A backup of the previous version has been saved. Use --rollback to restore it.');
         }
 
-        return Command::SUCCESS;
+        $this->replaceRunningBinary($tempFile, $currentPath);
+    }
+
+    /**
+     * Replaces the file of the currently running binary, then exits
+     * immediately.
+     *
+     * The running phar or static binary lazily re-reads its own file, by path,
+     * every time a new class is loaded: executing any further code once the
+     * file has been replaced crashes with a phar corruption error. So all
+     * output must be done before calling this method, and nothing can run
+     * after it.
+     */
+    private function replaceRunningBinary(string $newBinary, string $currentPath): never
+    {
+        try {
+            $this->filesystem->rename($newBinary, $currentPath, true);
+        } catch (IOExceptionInterface $e) {
+            // Keep $newBinary in place: when rolling back, it is the only
+            // remaining copy of the previous version
+            fwrite(\STDERR, \sprintf('Failed to replace the binary: %s', $e->getMessage()) . \PHP_EOL);
+
+            exit(Command::FAILURE);
+        }
+
+        exit(Command::SUCCESS);
     }
 
     private function handleUnsupportedInstallationMethod(SymfonyStyle $io, InstallationMethod $installationMethod): int
@@ -227,11 +249,10 @@ class SelfUpdateCommand extends Command
 
         $io->section('Rolling back to previous version...');
 
-        $this->filesystem->rename($backupPath, $currentPath, true);
-        $this->filesystem->chmod($currentPath, 0o755);
+        $this->filesystem->chmod($backupPath, 0o755);
 
         $io->success('Successfully rolled back to the previous version.');
 
-        return Command::SUCCESS;
+        $this->replaceRunningBinary($backupPath, $currentPath);
     }
 }
