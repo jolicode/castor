@@ -32,6 +32,7 @@ Available commands:
   completion            Dump the shell completion script
   help                  Display help for a command
   list                  List commands
+  self-update           [self:update] Updates Castor to the latest version
  castor
   castor:composer       [composer] Interact with built-in Composer for castor
   castor:execute        [execute] Execute a remote task from a packagist directory

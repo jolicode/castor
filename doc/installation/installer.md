@@ -57,6 +57,27 @@ You can install a specific version of Castor by using the `--version` option:
 curl "https://castor.jolicode.com/install" | bash -s -- --version=v1.0.0
 ```
 
+## Updating Castor
+
+If you installed Castor using the installer (phar or static binary), you can
+update it to the latest version using the `self-update` command:
+
+```bash
+castor self-update
+```
+
+### Self-update options
+
+- `--force` or `-f`: Force update even if already up to date
+- `--no-backup`: Skip creating a backup of the current binary
+- `--rollback` or `-r`: Rollback to the previous version
+
+> [!NOTE]
+> The `self-update` command is not available for source installations or Composer
+> project dependencies. For global Composer installs (`composer global require`),
+> `self-update` runs `composer global update` under the hood. For project
+> dependencies, use `composer update jolicode/castor` instead.
+
 ## Other installation methods
 
 If you cannot use the installer, see

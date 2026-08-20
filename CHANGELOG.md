@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Features
+
+* Add `self-update` command to update Castor to the latest version
+
 ### Fixes
 
 * Fix `run()` ignoring the timeout when executed inside `parallel()`: the process was waited for in its own fiber loop, so Symfony's timeout check never ran and the process could run forever
