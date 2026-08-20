@@ -5,17 +5,17 @@ namespace Castor\Console\Command;
 use Castor\Console\Application;
 use Castor\Helper\Installation;
 use Castor\Helper\InstallationMethod;
+use Castor\Helper\ReleaseHelper;
 use Castor\Http\HttpDownloader;
-use JoliCode\PhpOsHelper\OsHelper;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /** @internal */
 #[AsCommand(
@@ -26,7 +26,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class SelfUpdateCommand extends Command
 {
     public function __construct(
-        private readonly HttpClientInterface $httpClient,
+        private readonly ReleaseHelper $releaseHelper,
         private readonly HttpDownloader $httpDownloader,
         private readonly Installation $installation,
         private readonly Filesystem $filesystem,
@@ -62,7 +62,7 @@ class SelfUpdateCommand extends Command
             return $this->updateViaComposer($io);
         }
 
-        return $this->updateBinary($io, $input, $installationMethod, $currentPath);
+        return $this->updateBinary($io, $input, $currentPath);
     }
 
     private function updateViaComposer(SymfonyStyle $io): int
@@ -86,11 +86,13 @@ class SelfUpdateCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function updateBinary(SymfonyStyle $io, InputInterface $input, InstallationMethod $installationMethod, string $currentPath): int
+    private function updateBinary(SymfonyStyle $io, InputInterface $input, string $currentPath): int
     {
         $io->section('Checking for updates...');
 
-        $latestVersion = $this->fetchLatestVersion();
+        // Always hit GitHub here: the user explicitly asked for an update, a
+        // day-old cached release would be misleading
+        $latestVersion = $this->releaseHelper->getLatest(useCache: false, timeout: 10);
 
         if (null === $latestVersion) {
             $io->error('Failed to fetch latest version information from GitHub.');
@@ -111,7 +113,7 @@ class SelfUpdateCommand extends Command
             return Command::SUCCESS;
         }
 
-        $downloadUrl = $this->getDownloadUrl($latestVersion, $installationMethod);
+        $downloadUrl = $this->releaseHelper->getDownloadUrl($latestVersion);
 
         if (null === $downloadUrl) {
             $io->error('Could not find a suitable download for your platform.');
@@ -130,43 +132,45 @@ class SelfUpdateCommand extends Command
 
         $io->text(\sprintf('Downloading from: <comment>%s</comment>', $downloadUrl));
 
-        $tempFile = sys_get_temp_dir() . '/castor-update-' . uniqid();
+        // Download next to the current binary: the final rename() must happen
+        // on the same filesystem, and the temp dir is often a different one
+        $tempFile = $currentPath . '.tmp';
+        $backupPath = $input->getOption('no-backup') ? null : $currentPath . '.backup';
 
         try {
             $this->httpDownloader->download($downloadUrl, $tempFile);
-        } catch (\Throwable $e) {
-            $io->error(\sprintf('Failed to download update: %s', $e->getMessage()));
+            $this->filesystem->chmod($tempFile, 0o755);
+
+            $io->text('Verifying new binary...');
+            $verifyProcess = new Process([$tempFile, '--version']);
+            $verifyProcess->run();
+
+            if (!$verifyProcess->isSuccessful()) {
+                $io->error('The downloaded binary appears to be corrupted. Update aborted.');
+
+                return Command::FAILURE;
+            }
+
+            if ($backupPath) {
+                $io->text(\sprintf('Creating backup at: <comment>%s</comment>', $backupPath));
+                $this->filesystem->copy($currentPath, $backupPath, true);
+            }
+
+            $io->text('Replacing current binary...');
+            $this->filesystem->rename($tempFile, $currentPath, true);
+            $this->filesystem->chmod($currentPath, 0o755);
+        } catch (IOExceptionInterface|\RuntimeException $e) {
+            $io->error(\sprintf('Failed to update Castor: %s', $e->getMessage()));
 
             return Command::FAILURE;
-        }
-
-        if (!$input->getOption('no-backup')) {
-            $backupPath = $currentPath . '.backup';
-            $io->text(\sprintf('Creating backup at: <comment>%s</comment>', $backupPath));
-            $this->filesystem->copy($currentPath, $backupPath, true);
-        }
-
-        $this->filesystem->chmod($tempFile, 0o755);
-
-        $io->text('Verifying new binary...');
-        $verifyProcess = new Process([$tempFile, '--version']);
-        $verifyProcess->run();
-
-        if (!$verifyProcess->isSuccessful()) {
-            $io->error('The downloaded binary appears to be corrupted. Update aborted.');
+        } finally {
             $this->filesystem->remove($tempFile);
-
-            return Command::FAILURE;
         }
-
-        $io->text('Replacing current binary...');
-        $this->filesystem->rename($tempFile, $currentPath, true);
-        $this->filesystem->chmod($currentPath, 0o755);
 
         $io->newLine();
         $io->success(\sprintf('Castor has been updated from %s to %s!', $currentVersion, $latestTag));
 
-        if (!$input->getOption('no-backup')) {
+        if ($backupPath) {
             $io->note('A backup of the previous version has been saved. Use --rollback to restore it.');
         }
 
@@ -229,51 +233,5 @@ class SelfUpdateCommand extends Command
         $io->success('Successfully rolled back to the previous version.');
 
         return Command::SUCCESS;
-    }
-
-    /**
-     * @return array<string, mixed>|null
-     */
-    private function fetchLatestVersion(): ?array
-    {
-        try {
-            return $this
-                ->httpClient
-                ->request('GET', 'https://api.github.com/repos/jolicode/castor/releases/latest', [
-                    'timeout' => 10,
-                ])
-                ->toArray()
-            ;
-        } catch (\Throwable) {
-            return null;
-        }
-    }
-
-    /**
-     * @param array<string, mixed> $latestVersion
-     */
-    private function getDownloadUrl(array $latestVersion, InstallationMethod $installationMethod): ?string
-    {
-        $assets = $latestVersion['assets'] ?? [];
-
-        $assets = match (true) {
-            OsHelper::isWindows() || OsHelper::isWindowsSubsystemForLinux() => array_filter($assets, static fn (array $asset): bool => str_contains((string) $asset['name'], 'windows')),
-            OsHelper::isMacOS() => array_filter($assets, static fn (array $asset): bool => str_contains((string) $asset['name'], 'darwin')),
-            OsHelper::isUnix() => array_filter($assets, static fn (array $asset): bool => str_contains((string) $asset['name'], 'linux')),
-            default => [],
-        };
-
-        $architecture = $this->installation->getArchitecture();
-        $assets = array_filter($assets, static fn (array $asset): bool => str_contains((string) $asset['name'], $architecture->value));
-
-        if (InstallationMethod::Static === $installationMethod) {
-            $assets = array_filter($assets, static fn (array $asset): bool => !str_ends_with((string) $asset['name'], '.phar'));
-        } else {
-            $assets = array_filter($assets, static fn (array $asset): bool => str_ends_with((string) $asset['name'], '.phar'));
-        }
-
-        $asset = array_first($assets);
-
-        return $asset['browser_download_url'] ?? null;
     }
 }

@@ -7,8 +7,8 @@ use Castor\Exception\MinimumVersionRequirementNotMetException;
 use Castor\Helper\Installation;
 use Castor\Helper\InstallationMethod;
 use Castor\Helper\PlatformHelper;
+use Castor\Helper\ReleaseHelper;
 use JoliCode\PhpOsHelper\OsHelper;
-use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
@@ -18,16 +18,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
-use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /** @internal */
 class UpdateCastorListener
 {
     public function __construct(
-        private readonly CacheItemPoolInterface&CacheInterface $cache,
-        private readonly HttpClientInterface $httpClient,
+        private readonly ReleaseHelper $releaseHelper,
         private readonly Installation $installation,
         #[Autowire('%repacked%')]
         private readonly bool $repacked,
@@ -90,30 +86,7 @@ class UpdateCastorListener
 
     private function displayUpdateWarningIfNeeded(InputInterface $input, OutputInterface $output, bool $useCache = true): void
     {
-        $item = $this->cache->getItem('castor-releases');
-
-        if ($item->isHit() && $useCache) {
-            $latestVersion = $item->get();
-        } else {
-            $latestVersion = null;
-            $item->expiresAfter(60 * 60 * 24);
-
-            try {
-                $latestVersion = $this
-                    ->httpClient
-                    ->request('GET', 'https://api.github.com/repos/jolicode/castor/releases/latest', [
-                        'timeout' => 1,
-                    ])
-                    ->toArray()
-                ;
-            } catch (ExceptionInterface) {
-                $this->logger->info('Failed to fetch latest Castor version from GitHub.');
-
-                $item->expiresAfter(60 * 10);
-            }
-
-            $this->cache->save($item->set($latestVersion));
-        }
+        $latestVersion = $this->releaseHelper->getLatest($useCache);
 
         if (!$latestVersion) {
             return;
@@ -130,32 +103,10 @@ class UpdateCastorListener
         $installationMethod = $this->installation->getMethod();
 
         if (\in_array($installationMethod, [InstallationMethod::Phar, InstallationMethod::Static], true)) {
-            $assets = match (true) {
-                OsHelper::isWindows() || OsHelper::isWindowsSubsystemForLinux() => array_filter($latestVersion['assets'], static fn (array $asset): bool => str_contains((string) $asset['name'], 'windows')),
-                OsHelper::isMacOS() => array_filter($latestVersion['assets'], static fn (array $asset): bool => str_contains((string) $asset['name'], 'darwin')),
-                OsHelper::isUnix() => array_filter($latestVersion['assets'], static fn (array $asset): bool => str_contains((string) $asset['name'], 'linux')),
-                default => [],
-            };
-
-            $architecture = $this->installation->getArchitecture();
-            $assets = array_filter($assets, static fn (array $asset): bool => str_contains((string) $asset['name'], $architecture->value));
-
-            if (!$assets) {
-                $this->logger->info('Failed to detect the correct release URL adapted to your system.');
-
-                return;
-            }
-
-            if (InstallationMethod::Static === $installationMethod) {
-                $assets = array_filter($assets, static fn (array $asset): bool => !str_ends_with((string) $asset['name'], '.phar'));
-            } else {
-                $assets = array_filter($assets, static fn (array $asset): bool => str_ends_with((string) $asset['name'], '.phar'));
-            }
-
-            $latestReleaseUrl = array_first($assets)['browser_download_url'] ?? null;
+            $latestReleaseUrl = $this->releaseHelper->getDownloadUrl($latestVersion);
 
             if (!$latestReleaseUrl) {
-                $this->logger->info('Failed to fetch latest artefact URL.');
+                $this->logger->info('Failed to detect the correct release URL adapted to your system.');
 
                 return;
             }

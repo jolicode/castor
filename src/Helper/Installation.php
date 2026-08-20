@@ -61,7 +61,7 @@ class Installation
         }
 
         $this->architecture = match (php_uname('m')) {
-            'arm64' => Architecture::Arm64,
+            'arm64', 'aarch64' => Architecture::Arm64,
             default => Architecture::Amd64,
         };
     }
