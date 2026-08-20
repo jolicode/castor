@@ -202,6 +202,7 @@ add_test(['hello'], 'FunctionsResolvedMount', '{{ base }}/tests/fixtures/valid/f
 add_test(['list'], 'LayoutWithFolder', '{{ base }}/tests/fixtures/valid/layout-with-folder');
 add_test([], 'ImportSamePackageWithDefaultVersion', '{{ base }}/tests/fixtures/valid/import-same-package-with-default-version', needRemote: true, needResetVendor: true);
 add_test(['fs-watch'], 'WatchWithForcedTimeout', '{{ base }}/tests/fixtures/valid/watch-with-forced-timeout');
+add_test(['parallel-timeout'], 'ParallelTimeout', '{{ base }}/tests/fixtures/valid/parallel-timeout');
 add_test([], 'DefaultTask', '{{ base }}/tests/fixtures/valid/default-task');
 add_test([], 'ContextRunWithoutContext', '{{ base }}/tests/fixtures/valid/context-run-without-context');
 add_test(['--castor-file', 'idonotexist', 'hello'], 'CastorFileDoesNotExist');

@@ -1,0 +1,15 @@
+In castor.php line XXXX:
+
+  The process "sleep 30" exceeded the timeout of 1 seconds.
+
+
+parallel-timeout
+
+
+In castor.php line XXXX:
+
+  One or more exceptions were thrown in parallel.
+
+
+parallel-timeout
+
