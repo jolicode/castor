@@ -73,9 +73,9 @@ castor self-update
 - `--rollback` or `-r`: Rollback to the previous version
 
 When the [GitHub CLI](https://cli.github.com/) is installed and authenticated,
-`self-update` also verifies the provenance of the downloaded binary: it checks,
-with `gh attestation verify`, that the binary was built by Castor's own GitHub
-Actions workflow.
+the installer and `self-update` also verify the provenance of the downloaded
+binary: they check, with `gh attestation verify`, that the binary was built by
+Castor's own GitHub Actions workflow.
 
 > [!NOTE]
 > The `self-update` command is not available for source installations or Composer

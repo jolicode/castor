@@ -200,6 +200,25 @@ if [ $http_code != 200 ]; then
     exit 1
 fi
 
+# Verify the binary provenance with the GitHub CLI when it is installed and
+# authenticated (the attestations API rejects anonymous requests).
+output "\nProvenance check" "heading"
+if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
+    if verify_output=$(gh attestation verify "${CASTOR_TMPDIR}/${CASTOR_TMP_NAME}" --repo jolicode/castor 2>&1); then
+        output "  [*] The binary was built by the Castor GitHub Actions workflow" "success"
+    elif [[ "${verify_output}" == *"HTTP 404"* || "${verify_output}" == *"no attestations found"* ]]; then
+        # Releases published before attestations were introduced have none
+        output "  [ ] WARNING: no attestation found for this binary, its provenance cannot be verified" "warning"
+    else
+        output "  [ ] ERROR: the provenance of the downloaded binary could not be verified" "error"
+        output "${verify_output}" "error"
+        rm "${CASTOR_TMPDIR}/${CASTOR_TMP_NAME}"
+        exit 1
+    fi
+else
+    output "  [ ] Provenance not verified: install and log in to the GitHub CLI (gh) to verify downloads" "warning"
+fi
+
 if [ ! -d "${binary_dest}" ]; then
     # Backward-compatible quick fix: if --install-dir points to the castor binary path,
     # install into its parent directory.
