@@ -114,15 +114,16 @@ class ProcessRunner
 
         $this->eventDispatcher->dispatch(new ProcessStartEvent($process));
 
-        if (\Fiber::getCurrent()) {
-            while ($process->isRunning()) {
-                $this->sectionOutput->tickProcess($process);
-                \Fiber::suspend();
-                usleep(20_000);
-            }
-        }
-
         try {
+            if (\Fiber::getCurrent()) {
+                while ($process->isRunning()) {
+                    $this->sectionOutput->tickProcess($process);
+                    $process->checkTimeout();
+                    \Fiber::suspend();
+                    usleep(20_000);
+                }
+            }
+
             $exitCode = $process->wait();
         } finally {
             $this->sectionOutput->finishProcess($process);
