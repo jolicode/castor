@@ -5,7 +5,7 @@
 ### Features
 
 * Add `self-update` command to update Castor to the latest version
-* Publish [artifact attestations](https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations) for the phars and static binaries, and verify them in the installer and in `self-update` when the GitHub CLI is installed and authenticated
+* Publish [artifact attestations](https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations) for the phars and static binaries, and verify them in the installer, in `self-update` and in `castor:repack` when the GitHub CLI is installed and authenticated
 
 ### Fixes
 

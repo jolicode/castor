@@ -3,6 +3,8 @@
 namespace Castor\Console\Command;
 
 use Castor\Console\Application;
+use Castor\Helper\AttestationHelper;
+use Castor\Helper\AttestationStatus;
 use Castor\Helper\PathHelper;
 use Castor\Import\Importer;
 use Castor\Import\Remote\Composer;
@@ -32,6 +34,7 @@ class RepackCommand extends Command
         private readonly Filesystem $fs,
         #[Autowire(lazy: true)]
         private readonly SymfonyStyle $io,
+        private readonly AttestationHelper $attestationHelper,
     ) {
         parent::__construct();
     }
@@ -274,6 +277,8 @@ class RepackCommand extends Command
             ;
 
             $this->fs->dumpFile($pharPath, $pharContent);
+
+            $this->verifyProvenance($pharPath);
         }
 
         $this->io->comment('Extracting Castor phar...');
@@ -289,5 +294,22 @@ class RepackCommand extends Command
         $this->io->comment('Castor sources extracted to .castor-vendor');
 
         return $extractDir;
+    }
+
+    private function verifyProvenance(string $pharPath): void
+    {
+        try {
+            $status = $this->attestationHelper->verify($pharPath);
+        } catch (\RuntimeException $e) {
+            $this->fs->remove($pharPath);
+
+            throw $e;
+        }
+
+        match ($status) {
+            AttestationStatus::Verified => $this->io->comment('Castor phar provenance verified.'),
+            AttestationStatus::NotAttested => $this->io->warning('No attestation found for this Castor release, its provenance cannot be verified.'),
+            AttestationStatus::Skipped => $this->io->comment('Install and log in to the GitHub CLI (gh) to verify the provenance of the downloaded Castor phar.'),
+        };
     }
 }
