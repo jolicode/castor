@@ -8,10 +8,8 @@ use Castor\Helper\InstallationMethod;
 use Castor\Helper\ReleaseHelper;
 use Castor\Http\HttpDownloader;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Attribute\Option;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -19,42 +17,37 @@ use Symfony\Component\Process\Process;
 
 /** @internal */
 #[AsCommand(
-    name: 'self-update',
+    name: 'castor:self-update',
     description: 'Updates Castor to the latest version',
-    aliases: ['self:update'],
+    aliases: ['self-update'],
 )]
-class SelfUpdateCommand extends Command
+final readonly class SelfUpdateCommand
 {
     public function __construct(
-        private readonly ReleaseHelper $releaseHelper,
-        private readonly HttpDownloader $httpDownloader,
-        private readonly Installation $installation,
-        private readonly Filesystem $filesystem,
+        private ReleaseHelper $releaseHelper,
+        private HttpDownloader $httpDownloader,
+        private Installation $installation,
+        private Filesystem $filesystem,
     ) {
-        parent::__construct();
     }
 
-    protected function configure(): void
-    {
-        $this
-            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force update even if already up to date')
-            ->addOption('no-backup', null, InputOption::VALUE_NONE, 'Skip creating a backup of the current binary')
-            ->addOption('rollback', 'r', InputOption::VALUE_NONE, 'Rollback to the previous version')
-        ;
-    }
-
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
-        $io = new SymfonyStyle($input, $output);
-
+    public function __invoke(
+        SymfonyStyle $io,
+        #[Option(description: 'Force update even if already up to date', shortcut: 'f')]
+        bool $force = false,
+        #[Option(description: 'Skip creating a backup of the current binary')]
+        bool $noBackup = false,
+        #[Option(description: 'Rollback to the previous version', shortcut: 'r')]
+        bool $rollback = false,
+    ): int {
         $installationMethod = $this->installation->getMethod();
         $currentPath = $this->installation->getPath();
 
-        if ($input->getOption('rollback')) {
+        if ($rollback) {
             return $this->rollback($io, $currentPath);
         }
 
-        if (!\in_array($installationMethod, [InstallationMethod::Phar, InstallationMethod::Static, InstallationMethod::ComposerGlobal], true)) {
+        if (!$installationMethod->isSelfUpdateable()) {
             return $this->handleUnsupportedInstallationMethod($io, $installationMethod);
         }
 
@@ -62,7 +55,7 @@ class SelfUpdateCommand extends Command
             return $this->updateViaComposer($io);
         }
 
-        return $this->updateBinary($io, $input, $currentPath);
+        return $this->updateBinary($io, $force, $noBackup, $currentPath);
     }
 
     private function updateViaComposer(SymfonyStyle $io): int
@@ -71,22 +64,16 @@ class SelfUpdateCommand extends Command
 
         $process = new Process(['composer', 'global', 'update', 'jolicode/castor']);
         $process->setTimeout(300);
-        $process->run(static function (string $type, string $buffer) use ($io): void {
+        $process->mustRun(static function (string $type, string $buffer) use ($io): void {
             $io->write($buffer);
         });
-
-        if (!$process->isSuccessful()) {
-            $io->error('Failed to update Castor via Composer.');
-
-            return Command::FAILURE;
-        }
 
         $io->success('Castor has been updated successfully!');
 
         return Command::SUCCESS;
     }
 
-    private function updateBinary(SymfonyStyle $io, InputInterface $input, string $currentPath): int
+    private function updateBinary(SymfonyStyle $io, bool $force, bool $noBackup, string $currentPath): int
     {
         $io->section('Checking for updates...');
 
@@ -107,7 +94,7 @@ class SelfUpdateCommand extends Command
         $io->text(\sprintf('Latest version:  <info>%s</info>', $latestTag));
         $io->newLine();
 
-        if (!$input->getOption('force') && version_compare($latestTag, $currentVersion, '<=')) {
+        if (!$force && version_compare($latestTag, $currentVersion, '<=')) {
             $io->success('You are already using the latest version of Castor.');
 
             return Command::SUCCESS;
@@ -135,7 +122,7 @@ class SelfUpdateCommand extends Command
         // Download next to the current binary: the final rename() must happen
         // on the same filesystem, and the temp dir is often a different one
         $tempFile = $currentPath . '.tmp';
-        $backupPath = $input->getOption('no-backup') ? null : $currentPath . '.backup';
+        $backupPath = $noBackup ? null : $currentPath . '.backup';
 
         try {
             $this->httpDownloader->download($downloadUrl, $tempFile);
@@ -155,6 +142,8 @@ class SelfUpdateCommand extends Command
             if ($backupPath) {
                 $io->text(\sprintf('Creating backup at: <comment>%s</comment>', $backupPath));
                 $this->filesystem->copy($currentPath, $backupPath, true);
+
+                $io->note('A backup of the previous version has been saved. Use --rollback to restore it.');
             }
         } catch (IOExceptionInterface|\RuntimeException $e) {
             $io->error(\sprintf('Failed to update Castor: %s', $e->getMessage()));
@@ -164,39 +153,8 @@ class SelfUpdateCommand extends Command
         }
 
         $io->text('Replacing current binary...');
-        $io->newLine();
-        $io->success(\sprintf('Castor has been updated from %s to %s!', $currentVersion, $latestTag));
 
-        if ($backupPath) {
-            $io->note('A backup of the previous version has been saved. Use --rollback to restore it.');
-        }
-
-        $this->replaceRunningBinary($tempFile, $currentPath);
-    }
-
-    /**
-     * Replaces the file of the currently running binary, then exits
-     * immediately.
-     *
-     * The running phar or static binary lazily re-reads its own file, by path,
-     * every time a new class is loaded: executing any further code once the
-     * file has been replaced crashes with a phar corruption error. So all
-     * output must be done before calling this method, and nothing can run
-     * after it.
-     */
-    private function replaceRunningBinary(string $newBinary, string $currentPath): never
-    {
-        try {
-            $this->filesystem->rename($newBinary, $currentPath, true);
-        } catch (IOExceptionInterface $e) {
-            // Keep $newBinary in place: when rolling back, it is the only
-            // remaining copy of the previous version
-            fwrite(\STDERR, \sprintf('Failed to replace the binary: %s', $e->getMessage()) . \PHP_EOL);
-
-            exit(Command::FAILURE);
-        }
-
-        exit(Command::SUCCESS);
+        $this->replaceRunningBinary($tempFile, $currentPath, \sprintf('Castor has been updated from %s to %s!', $currentVersion, $latestTag));
     }
 
     private function handleUnsupportedInstallationMethod(SymfonyStyle $io, InstallationMethod $installationMethod): int
@@ -251,8 +209,34 @@ class SelfUpdateCommand extends Command
 
         $this->filesystem->chmod($backupPath, 0o755);
 
-        $io->success('Successfully rolled back to the previous version.');
+        $this->replaceRunningBinary($backupPath, $currentPath, 'Successfully rolled back to the previous version.');
+    }
 
-        $this->replaceRunningBinary($backupPath, $currentPath);
+    /**
+     * Replaces the file of the currently running binary, then exits
+     * immediately.
+     *
+     * The running phar or static binary lazily re-reads its own file, by path,
+     * every time a new class is loaded: executing any further code once the
+     * file has been replaced crashes with a phar corruption error. So this
+     * method must be the very last thing the command does, and the success
+     * message is written with fwrite() because nothing may be lazy-loaded
+     * anymore.
+     */
+    private function replaceRunningBinary(string $newBinary, string $currentPath, string $successMessage): never
+    {
+        try {
+            $this->filesystem->rename($newBinary, $currentPath, true);
+        } catch (IOExceptionInterface $e) {
+            // Keep $newBinary in place: when rolling back, it is the only
+            // remaining copy of the previous version
+            fwrite(\STDERR, \sprintf('Failed to replace the binary: %s', $e->getMessage()) . \PHP_EOL);
+
+            exit(Command::FAILURE);
+        }
+
+        fwrite(\STDOUT, \PHP_EOL . ' [OK] ' . $successMessage . \PHP_EOL);
+
+        exit(Command::SUCCESS);
     }
 }

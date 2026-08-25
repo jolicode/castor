@@ -5,12 +5,12 @@ namespace Castor\Tests\Generated;
 use Castor\Tests\TaskTestCase;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
-class SelfUpdateTest extends TaskTestCase
+class CastorSelfUpdateTest extends TaskTestCase
 {
-    // self-update
+    // castor:self-update
     public function test(): void
     {
-        $process = $this->runTask(['self-update', '--force', '--no-backup', '--rollback']);
+        $process = $this->runTask(['castor:self-update', '--force', '--no-backup', '--rollback']);
 
         if (1 !== $process->getExitCode()) {
             throw new ProcessFailedException($process);

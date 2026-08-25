@@ -103,26 +103,18 @@ class UpdateCastorListener
         $installationMethod = $this->installation->getMethod();
 
         if (\in_array($installationMethod, [InstallationMethod::Phar, InstallationMethod::Static], true)) {
-            $latestReleaseUrl = $this->releaseHelper->getDownloadUrl($latestVersion);
-
-            if (!$latestReleaseUrl) {
-                $this->logger->info('Failed to detect the correct release URL adapted to your system.');
-
-                return;
-            }
-
             if (OsHelper::isUnix()) {
-                $installerOptions = [
-                    '--install-dir ' . \dirname($this->installation->getPath()),
-                ];
+                $symfonyStyle->block('Run the following command to update Castor:');
+                $symfonyStyle->block('<comment>castor self-update</comment>', escape: false);
+            } else {
+                $latestReleaseUrl = $this->releaseHelper->getDownloadUrl($latestVersion);
 
-                if (InstallationMethod::Static === $installationMethod) {
-                    $installerOptions[] = '--static';
+                if (!$latestReleaseUrl) {
+                    $this->logger->info('Failed to detect the correct release URL adapted to your system.');
+
+                    return;
                 }
 
-                $symfonyStyle->block('Run the following command to update Castor:');
-                $symfonyStyle->block(\sprintf('<comment>curl "https://castor.jolicode.com/install" | bash -s -- %s</comment>', implode(' ', $installerOptions)), escape: false);
-            } else {
                 $symfonyStyle->block(\sprintf('Download the latest version at <comment>%s</comment>', $latestReleaseUrl), escape: false);
             }
 
@@ -133,7 +125,7 @@ class UpdateCastorListener
 
         if (InstallationMethod::ComposerGlobal === $installationMethod) {
             $symfonyStyle->block('Run the following command to update Castor:');
-            $symfonyStyle->block('<comment>composer global update jolicode/castor</comment>', escape: false);
+            $symfonyStyle->block('<comment>castor self-update</comment>', escape: false);
         }
     }
 }

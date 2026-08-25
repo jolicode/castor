@@ -11,13 +11,13 @@ use Symfony\Contracts\HttpClient\Exception\ExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /** @internal */
-class ReleaseHelper
+final readonly class ReleaseHelper
 {
     public function __construct(
-        private readonly CacheItemPoolInterface&CacheInterface $cache,
-        private readonly HttpClientInterface $httpClient,
-        private readonly Installation $installation,
-        private readonly LoggerInterface $logger = new NullLogger(),
+        private CacheItemPoolInterface&CacheInterface $cache,
+        private HttpClientInterface $httpClient,
+        private Installation $installation,
+        private LoggerInterface $logger = new NullLogger(),
     ) {
     }
 

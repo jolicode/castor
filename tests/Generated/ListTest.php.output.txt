@@ -3,7 +3,6 @@ hello
 help                                                     Display help for a command
 list                                                     List commands
 no-namespace                                             Task without a namespace
-self-update                                              Updates Castor to the latest version
 shebang-task
 update                                                   Update all dependencies
 archive:zip                                              Compress files into a zip archive using native binary or fallback to ZipArchive php class
@@ -43,6 +42,7 @@ castor:phar:linux                                        Build phar for Linux sy
 castor:phar:update                                       update dependencies
 castor:phar:windows                                      Build phar for Windows system
 castor:release:release                                   Release a new version of castor
+castor:self-update                                       Updates Castor to the latest version
 castor:static:darwin-amd64                               Build static binary for MacOS (amd64) system
 castor:static:darwin-arm64                               Build static binary for MacOS (arm64) system
 castor:static:linux-amd64                                Build static binary for Linux (amd64) system

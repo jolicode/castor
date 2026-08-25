@@ -53,7 +53,7 @@ class SelfUpdateCommandTest extends TaskTestCase
     private function runSelfUpdate(string $castor, string ...$args): Process
     {
         $process = new Process(
-            [$castor, 'self-update', '--no-ansi', ...$args],
+            [$castor, 'castor:self-update', '--no-ansi', ...$args],
             cwd: \dirname($castor),
             env: [
                 'CASTOR_RELEASES_URL' => $_SERVER['ENDPOINT'] . '/self-update/release.php',
