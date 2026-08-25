@@ -13,6 +13,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
 /** @internal */
@@ -128,6 +129,12 @@ final readonly class SelfUpdateCommand
             $this->httpDownloader->download($downloadUrl, $tempFile);
             $this->filesystem->chmod($tempFile, 0o755);
 
+            if (!$this->verifyProvenance($io, $tempFile)) {
+                $this->filesystem->remove($tempFile);
+
+                return Command::FAILURE;
+            }
+
             $io->text('Verifying new binary...');
             $verifyProcess = new Process([$tempFile, '--version']);
             $verifyProcess->run();
@@ -155,6 +162,44 @@ final readonly class SelfUpdateCommand
         $io->text('Replacing current binary...');
 
         $this->replaceRunningBinary($tempFile, $currentPath, \sprintf('Castor has been updated from %s to %s!', $currentVersion, $latestTag));
+    }
+
+    /**
+     * Checks that the binary was built by our GitHub Actions workflow, using
+     * the artifact attestation published with each build.
+     *
+     * This needs the GitHub CLI, installed and authenticated: the attestations
+     * API rejects anonymous requests. Without it, the update goes on unverified.
+     */
+    private function verifyProvenance(SymfonyStyle $io, string $binary): bool
+    {
+        $gh = new ExecutableFinder()->find('gh');
+
+        if (null === $gh || 0 !== new Process([$gh, 'auth', 'status'])->run()) {
+            $io->note('Install and log in to the GitHub CLI (gh) to verify the provenance of the downloaded binary.');
+
+            return true;
+        }
+
+        $io->text('Verifying the binary provenance...');
+
+        $process = new Process([$gh, 'attestation', 'verify', $binary, '--repo', 'jolicode/castor']);
+        $process->setTimeout(60);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            $error = trim($process->getErrorOutput());
+
+            if (str_contains($error, 'HTTP 404') || str_contains($error, 'no attestations found')) {
+                $io->error('No attestation found on GitHub for the downloaded binary, so it cannot be trusted as a Castor build. Update aborted.');
+            } else {
+                $io->error(['The provenance of the downloaded binary could not be verified. Update aborted.', $error]);
+            }
+
+            return false;
+        }
+
+        return true;
     }
 
     private function handleUnsupportedInstallationMethod(SymfonyStyle $io, InstallationMethod $installationMethod): int

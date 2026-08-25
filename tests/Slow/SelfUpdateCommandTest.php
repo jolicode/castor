@@ -31,6 +31,7 @@ class SelfUpdateCommandTest extends TaskTestCase
 
         $process = $this->runSelfUpdate($castor);
         $this->assertSame(0, $process->getExitCode(), $process->getOutput() . $process->getErrorOutput());
+        $this->assertStringContainsString('to verify the provenance', $process->getOutput());
         $this->assertStringContainsString('to v99.0.0!', $process->getOutput());
         $this->assertNotSame($inode, fileinode($castor), 'The binary has been replaced');
         $this->assertFileEquals(self::$castorBin, $castor);
@@ -56,6 +57,11 @@ class SelfUpdateCommandTest extends TaskTestCase
             [$castor, 'castor:self-update', '--no-ansi', ...$args],
             cwd: \dirname($castor),
             env: [
+                // Make sure gh is not authenticated: the fake release has no
+                // attestation, so the provenance check must be skipped
+                'GH_CONFIG_DIR' => \dirname($castor) . '/gh-config',
+                'GH_TOKEN' => false,
+                'GITHUB_TOKEN' => false,
                 'CASTOR_RELEASES_URL' => $_SERVER['ENDPOINT'] . '/self-update/release.php',
                 'CASTOR_CACHE_DIR' => self::$castorCacheDir,
                 'CASTOR_DISABLE_AGENT_DETECTION' => 'true',
