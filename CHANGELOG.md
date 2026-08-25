@@ -2,8 +2,13 @@
 
 ## Not released yet
 
+### Features
+
+* Add `self-update` command to update Castor to the latest version
+
 ### Fixes
 
+* Fix architecture detection on Linux ARM64 (`aarch64`), which made the watcher and the update hints pick the amd64 binaries
 * Fix `run()` ignoring the timeout when executed inside `parallel()`: the process was waited for in its own fiber loop, so Symfony's timeout check never ran and the process could run forever
 
 ## 1.7.0 (2026-08-03)

@@ -9,6 +9,7 @@ use Castor\Console\Command\DebugCommand;
 use Castor\Console\Command\ExecuteCommand;
 use Castor\Console\Command\InitCommand;
 use Castor\Console\Command\RepackCommand;
+use Castor\Console\Command\SelfUpdateCommand;
 use Castor\Console\Output\VerbosityLevel;
 use Castor\Event\AfterBootEvent;
 use Castor\Event\BeforeBootEvent;
@@ -227,6 +228,9 @@ final class Kernel extends AbstractKernel
                 ->call('setDispatcher', [service(EventDispatcherInterface::class)])
                 ->call('setCatchErrors', [true])
         ;
+        if (!$repacked) {
+            $app->call('addCommand', [service(SelfUpdateCommand::class)]);
+        }
         if (!$repacked && $hasCastorFile) {
             $app
                 ->call('addCommand', [service(ComposerCommand::class)])

@@ -35,5 +35,6 @@ Available commands:
  castor
   castor:composer       [composer] Interact with built-in Composer for castor
   castor:execute        [execute] Execute a remote task from a packagist directory
+  castor:self-update    [self-update] Updates Castor to the latest version
  pyrech
   pyrech:hello-example  Hello from example!

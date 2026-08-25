@@ -42,6 +42,7 @@ castor:phar:linux                                        Build phar for Linux sy
 castor:phar:update                                       update dependencies
 castor:phar:windows                                      Build phar for Windows system
 castor:release:release                                   Release a new version of castor
+castor:self-update                                       Updates Castor to the latest version
 castor:static:darwin-amd64                               Build static binary for MacOS (amd64) system
 castor:static:darwin-arm64                               Build static binary for MacOS (arm64) system
 castor:static:linux-amd64                                Build static binary for Linux (amd64) system
