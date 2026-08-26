@@ -118,6 +118,19 @@ class ContextRegistry
     public function setCurrentContext(Context $context): void
     {
         $this->currentContext = $context;
+
+        // Keep the process where the context says it is, so that fs() and the raw PHP
+        // functions resolve their relative paths against the same directory run() executes
+        // in, including inside a with(workingDirectory: ...) block and once it is left.
+        if ($context->workingDirectory === getcwd()) {
+            return;
+        }
+
+        if (!is_dir($context->workingDirectory)) {
+            throw new \RuntimeException(\sprintf('The working directory "%s" of the context does not exist.', $context->workingDirectory));
+        }
+
+        chdir($context->workingDirectory);
     }
 
     public function getCurrentContext(): Context

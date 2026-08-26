@@ -48,6 +48,16 @@ class ApplicationFactory
             }
         }
 
+        if (!$repacked) {
+            // Anchor the whole process to the project root, the directory run() has always
+            // executed in. Without this, fs() and the raw PHP functions (mkdir(), unlink(),
+            // file_get_contents(), ...) resolve their relative paths against whichever
+            // directory castor happened to be invoked from. A repacked application already
+            // roots itself at the current directory, so it stays where it is.
+            $rootDir = Path::makeAbsolute((string) $rootDir, getcwd() ?: '.');
+            chdir($rootDir);
+        }
+
         $kernel = new Kernel('dev', true, $rootDir, $hasCastorFile, $castorFilePath, $repacked);
         $kernel->boot();
 
