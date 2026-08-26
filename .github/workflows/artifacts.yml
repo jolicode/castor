@@ -6,6 +6,8 @@ on:
 
 permissions:
   contents: write # zizmor: ignore[excessive-permissions]
+  id-token: write # zizmor: ignore[excessive-permissions]
+  attestations: write # zizmor: ignore[excessive-permissions]
 
 jobs:
   phars:
@@ -23,6 +25,11 @@ jobs:
           composer-flags: --no-dev
 
       - uses: ./.github/actions/phar
+
+      - name: Attest the phars provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: tools/phar/build/castor.*.phar
 
       - name: Upload the Linux phar (linux-amd64)
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -88,6 +95,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Attest the static binary provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: ./castor.linux-amd64
+
       - name: Upload the Linux amd64 static binary
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -122,6 +134,11 @@ jobs:
           os: linux-arm64
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Attest the static binary provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: ./castor.linux-arm64
 
       - name: Upload the Linux arm64 static binary
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -158,6 +175,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Attest the static binary provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: ./castor.darwin-amd64
+
       - name: Upload the MacOs amd64 static binary
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -192,6 +214,11 @@ jobs:
           os: darwin-arm64
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Attest the static binary provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: ./castor.darwin-arm64
 
       - name: Upload the MacOs arm64 static binary
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

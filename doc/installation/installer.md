@@ -72,6 +72,11 @@ castor self-update
 - `--no-backup`: Skip creating a backup of the current binary
 - `--rollback` or `-r`: Rollback to the previous version
 
+When the [GitHub CLI](https://cli.github.com/) is installed and authenticated,
+the installer and `self-update` also verify the provenance of the downloaded
+binary: they check, with `gh attestation verify`, that the binary was built by
+Castor's own GitHub Actions workflow.
+
 > [!NOTE]
 > The `self-update` command is not available for source installations or Composer
 > project dependencies. For global Composer installs (`composer global require`),

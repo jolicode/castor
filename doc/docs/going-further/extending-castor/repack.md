@@ -43,6 +43,11 @@ castor repack
 > If some classes are missing in your phar, it might be because they are
 > excluded by castor's `box.json` file. In this case, you should override the
 > default configuration with a local `box.json` file
+<!-- -->
+> [!NOTE]
+> The Castor phar embedded in your application is downloaded from the GitHub
+> releases. When the [GitHub CLI](https://cli.github.com/) is installed and
+> authenticated, its provenance is verified with `gh attestation verify`.
 
 {% include-markdown "/build/command_castor-repack.md" start="`castor:repack`\n---------------" %}
 

@@ -3,6 +3,8 @@
 namespace Castor\Console\Command;
 
 use Castor\Console\Application;
+use Castor\Helper\AttestationHelper;
+use Castor\Helper\AttestationStatus;
 use Castor\Helper\Installation;
 use Castor\Helper\InstallationMethod;
 use Castor\Helper\ReleaseHelper;
@@ -25,6 +27,7 @@ final readonly class SelfUpdateCommand
 {
     public function __construct(
         private ReleaseHelper $releaseHelper,
+        private AttestationHelper $attestationHelper,
         private HttpDownloader $httpDownloader,
         private Installation $installation,
         private Filesystem $filesystem,
@@ -128,6 +131,12 @@ final readonly class SelfUpdateCommand
             $this->httpDownloader->download($downloadUrl, $tempFile);
             $this->filesystem->chmod($tempFile, 0o755);
 
+            if (!$this->verifyProvenance($io, $tempFile)) {
+                $this->filesystem->remove($tempFile);
+
+                return Command::FAILURE;
+            }
+
             $io->text('Verifying new binary...');
             $verifyProcess = new Process([$tempFile, '--version']);
             $verifyProcess->run();
@@ -155,6 +164,29 @@ final readonly class SelfUpdateCommand
         $io->text('Replacing current binary...');
 
         $this->replaceRunningBinary($tempFile, $currentPath, \sprintf('Castor has been updated from %s to %s!', $currentVersion, $latestTag));
+    }
+
+    /**
+     * Aborts the update when the binary has no attestation: the latest release
+     * always has one, so a missing attestation means this is not our build.
+     * Without an authenticated GitHub CLI, the update goes on unverified.
+     */
+    private function verifyProvenance(SymfonyStyle $io, string $binary): bool
+    {
+        $io->text('Verifying the binary provenance...');
+
+        switch ($this->attestationHelper->verify($binary)) {
+            case AttestationStatus::Skipped:
+                $io->note('Install and log in to the GitHub CLI (gh) to verify the provenance of the downloaded binary.');
+
+                return true;
+            case AttestationStatus::Verified:
+                return true;
+            case AttestationStatus::NotAttested:
+                $io->error('No attestation found on GitHub for the downloaded binary, so it cannot be trusted as a Castor build. Update aborted.');
+
+                return false;
+        }
     }
 
     private function handleUnsupportedInstallationMethod(SymfonyStyle $io, InstallationMethod $installationMethod): int
