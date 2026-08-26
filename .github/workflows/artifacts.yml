@@ -19,6 +19,8 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          # The tags are needed to compute the snapshot version
+          fetch-depth: 0
 
       - uses: ./.github/actions/install
         with:
@@ -226,3 +228,35 @@ jobs:
           name: castor.darwin-arm64
           path: ./castor.darwin-arm64
           if-no-files-found: error
+
+  snapshot:
+    needs: [phars, static-linux-amd64, static-linux-arm64, static-darwin-amd64, static-darwin-arm64]
+    name: Publish the snapshot pre-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Retrieve all artifacts
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Publish the artifacts to the snapshot pre-release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          version=$(git describe --tags --match 'v*')
+          notes="Snapshot of the main branch, built from ${GITHUB_SHA}. Install it with \`--version=snapshot\` or \`castor self-update --snapshot\`."
+          if gh release view snapshot >/dev/null 2>&1; then
+            gh api --method PATCH "repos/${GITHUB_REPOSITORY}/git/refs/tags/snapshot" -f sha="${GITHUB_SHA}" -F force=true
+            gh release edit snapshot --prerelease --title "${version}" --notes "${notes}"
+          else
+            gh release create snapshot --target "${GITHUB_SHA}" --prerelease --title "${version}" --notes "${notes}"
+          fi
+          gh release upload snapshot artifacts/* --clobber

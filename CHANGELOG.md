@@ -5,6 +5,8 @@
 ### Features
 
 * Add `self-update` command to update Castor to the latest version
+* Publish a `snapshot` pre-release of the `main` branch on each push, installable with the installer `--version=snapshot` option or `castor self-update --snapshot`
+* Phars and static binaries built from a commit that is not a release now report a snapshot version, like `v1.7.0-14-g4531440`
 * Publish [artifact attestations](https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations) for the phars and static binaries, and verify them in the installer, in `self-update` and in `castor:repack` when the GitHub CLI is installed and authenticated
 
 ### Fixes
