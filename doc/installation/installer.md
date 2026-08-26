@@ -102,6 +102,11 @@ A snapshot reports a version like `v1.7.0-14-g4531440`: the last release, the
 number of commits since, and the commit it was built from. To go back to the
 latest release, run `castor self-update` without `--snapshot`.
 
+> [!NOTE]
+> Right after a push, the installer may still get the previous snapshot for a
+> few minutes: GitHub caches the release downloads by name. `self-update`
+> is not affected.
+
 ## Other installation methods
 
 If you cannot use the installer, see

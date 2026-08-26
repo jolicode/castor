@@ -6,6 +6,7 @@ use Castor\Console\Application;
 use Castor\Helper\AttestationHelper;
 use Castor\Helper\AttestationStatus;
 use Castor\Helper\PathHelper;
+use Castor\Helper\ReleaseHelper;
 use Castor\Import\Importer;
 use Castor\Import\Remote\Composer;
 use Symfony\Component\Console\Command\Command;
@@ -48,7 +49,7 @@ class RepackCommand extends Command
             ->addOption('app-version', null, InputOption::VALUE_REQUIRED, 'The version of the phar application', '1.0.0')
             ->addOption('os', null, InputOption::VALUE_REQUIRED, 'The targeted OS', 'linux', ['linux', 'darwin', 'windows'])
             ->addOption('arch', null, InputOption::VALUE_REQUIRED, 'The targeted CPU architecture', 'amd64', ['amd64', 'arm64'])
-            ->addOption('castor-version', null, InputOption::VALUE_REQUIRED, 'The Castor version to use (vX.Y.Z)', Application::VERSION)
+            ->addOption('castor-version', null, InputOption::VALUE_REQUIRED, 'The Castor version to use (vX.Y.Z, or snapshot)', Application::isSnapshot() ? ReleaseHelper::SNAPSHOT_TAG : Application::VERSION)
             ->addOption('castor-phar', null, InputOption::VALUE_REQUIRED, 'A specific castor phar to use (/path/to/castor.phar)')
             ->addOption('no-logo', null, InputOption::VALUE_NONE, 'Hide Castor logo')
             ->addOption('logo-file', null, InputOption::VALUE_OPTIONAL, 'Path to a PHP file that returns a logo as a string, or a closure that returns a logo as a string')
