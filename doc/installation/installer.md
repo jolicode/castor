@@ -83,6 +83,30 @@ Castor's own GitHub Actions workflow.
 > `self-update` runs `composer global update` under the hood. For project
 > dependencies, use `composer update jolicode/castor` instead.
 
+## Snapshot builds
+
+Every push on the `main` branch publishes a `snapshot` pre-release, so you can
+try what is coming next before it is released. Install it with:
+
+```bash
+curl "https://castor.jolicode.com/install" | bash -s -- --version=snapshot
+```
+
+or, from an existing installation:
+
+```bash
+castor self-update --snapshot
+```
+
+A snapshot reports a version like `v1.7.0-14-g4531440`: the last release, the
+number of commits since, and the commit it was built from. To go back to the
+latest release, run `castor self-update` without `--snapshot`.
+
+> [!NOTE]
+> Right after a push, the installer may still get the previous snapshot for a
+> few minutes: GitHub caches the release downloads by name. `self-update`
+> is not affected.
+
 ## Other installation methods
 
 If you cannot use the installer, see

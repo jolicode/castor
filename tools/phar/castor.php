@@ -3,7 +3,10 @@
 namespace castor\phar;
 
 use Castor\Attribute\AsTask;
+use Castor\Console\Application;
 
+use function Castor\capture;
+use function Castor\context;
 use function Castor\io;
 use function Castor\parallel;
 use function Castor\run;
@@ -65,10 +68,42 @@ function compile(callable $compiler): void
     $composerData = json_decode($composerJson, true);
     $composerData['config']['autoloader-suffix'] = 'CastorPharb0674093dafe41cab39902efe0941c3f';
 
+    // A build that is not a release gets a snapshot version, like "v1.7.0-14-g4531440"
+    $applicationFile = __DIR__ . '/../../src/Console/Application.php';
+    $applicationSource = file_get_contents($applicationFile);
+    $snapshotVersion = snapshot_version();
+
     try {
         file_put_contents($composerFile, json_encode($composerData, \JSON_PRETTY_PRINT | \JSON_UNESCAPED_SLASHES));
+        if ($snapshotVersion) {
+            io()->comment("Building a snapshot, version {$snapshotVersion}");
+            file_put_contents($applicationFile, str_replace(
+                "public const VERSION = '" . Application::VERSION . "';",
+                "public const VERSION = '{$snapshotVersion}';",
+                $applicationSource,
+            ));
+        }
         $compiler();
     } finally {
         file_put_contents($composerFile, $composerJson);
+        file_put_contents($applicationFile, $applicationSource);
     }
+}
+
+/**
+ * The release commit is built before its tag is created (see tools/release),
+ * so as long as Application::VERSION is not tagged, this is a release build
+ * that keeps its version. Once the tag exists, every later commit is a
+ * snapshot, versioned by git describe: last release, number of commits since,
+ * and commit hash.
+ */
+function snapshot_version(): ?string
+{
+    $context = context()->withQuiet()->withAllowFailure();
+
+    if (!run(['git', 'rev-parse', '-q', '--verify', 'refs/tags/' . Application::VERSION], context: $context)->isSuccessful()) {
+        return null;
+    }
+
+    return trim(capture(['git', 'describe', '--tags', '--match', 'v*'], context: $context)) ?: null;
 }

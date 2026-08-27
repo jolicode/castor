@@ -48,6 +48,12 @@ class SelfUpdateCommandTest extends TaskTestCase
         $this->assertSame(1, $process->getExitCode());
         $this->assertStringContainsString('No backup found', $process->getOutput());
 
+        $process = $this->runSelfUpdate($castor, '--snapshot');
+        $this->assertSame(0, $process->getExitCode(), $process->getOutput() . $process->getErrorOutput());
+        $this->assertStringContainsString('Latest snapshot: v99.0.0-3-gabcdef0', $process->getOutput());
+        $this->assertStringContainsString('to v99.0.0-3-gabcdef0!', $process->getOutput());
+        new Process([$castor, '--version'])->mustRun();
+
         $fs->remove($dir);
     }
 
@@ -62,6 +68,7 @@ class SelfUpdateCommandTest extends TaskTestCase
                 'GH_CONFIG_DIR' => \dirname($castor) . '/gh-config',
                 'GH_TOKEN' => false,
                 'GITHUB_TOKEN' => false,
+                // Base URL of the fake releases API, see release.php
                 'CASTOR_RELEASES_URL' => $_SERVER['ENDPOINT'] . '/self-update/release.php',
                 'CASTOR_CACHE_DIR' => self::$castorCacheDir,
                 'CASTOR_DISABLE_AGENT_DETECTION' => 'true',

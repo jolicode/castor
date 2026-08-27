@@ -86,6 +86,12 @@ class UpdateCastorListener
 
     private function displayUpdateWarningIfNeeded(InputInterface $input, OutputInterface $output, bool $useCache = true): void
     {
+        if (Application::isSnapshot()) {
+            $this->displaySnapshotUpdateWarningIfNeeded($input, $output, $useCache);
+
+            return;
+        }
+
         $latestVersion = $this->releaseHelper->getLatest($useCache);
 
         if (!$latestVersion) {
@@ -127,5 +133,22 @@ class UpdateCastorListener
             $symfonyStyle->block('Run the following command to update Castor:');
             $symfonyStyle->block('<comment>castor self-update</comment>', escape: false);
         }
+    }
+
+    private function displaySnapshotUpdateWarningIfNeeded(InputInterface $input, OutputInterface $output, bool $useCache): void
+    {
+        $snapshot = $this->releaseHelper->getRelease(ReleaseHelper::SNAPSHOT_TAG, $useCache);
+
+        // The snapshot pre-release is named after the version it was built from
+        if (!$snapshot || ($snapshot['name'] ?? null) === Application::VERSION) {
+            return;
+        }
+
+        $symfonyStyle = new SymfonyStyle($input, $output);
+
+        $symfonyStyle->block(\sprintf('<info>A new Castor snapshot is available</info> (<comment>%s</comment>, currently running <comment>%s</comment>).', $snapshot['name'], Application::VERSION), escape: false);
+        $symfonyStyle->block('Run the following command to update Castor:');
+        $symfonyStyle->block('<comment>castor self-update --snapshot</comment>', escape: false);
+        $symfonyStyle->newLine();
     }
 }

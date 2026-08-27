@@ -10,7 +10,7 @@ class CastorSelfUpdateTest extends TaskTestCase
     // castor:self-update
     public function test(): void
     {
-        $process = $this->runTask(['castor:self-update', '--force', '--no-backup', '--rollback']);
+        $process = $this->runTask(['castor:self-update', '--force', '--no-backup', '--rollback', '--snapshot']);
 
         if (1 !== $process->getExitCode()) {
             throw new ProcessFailedException($process);

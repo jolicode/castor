@@ -42,6 +42,15 @@ class Application extends SymfonyApplication
     }
 
     /**
+     * Whether this build comes from a commit that is not a release: the phar
+     * build then sets a version like "v1.7.0-14-g4531440".
+     */
+    public static function isSnapshot(): bool
+    {
+        return str_contains(self::VERSION, '-');
+    }
+
+    /**
      * @return ($allowNull is true ? ?Command : Command)
      */
     public function getCommand(bool $allowNull = false): ?Command

@@ -58,7 +58,7 @@ final class OutputCleaner
         $string = preg_replace('{Composer version \d+.\d+.\d+ \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}}', 'Composer version 1.2.3', $string);
 
         // castor version
-        $string = preg_replace('{you are using v\d+.\d+.\d+.}m', 'you are using vX.Y.Z.', $string);
+        $string = preg_replace('{you are using v\d+\.\d+\.\d+(-\d+-g[0-9a-f]+)?\.}m', 'you are using vX.Y.Z.', $string);
 
         // binary
         $string = str_replace('tests/../', '', $string);
@@ -66,6 +66,6 @@ final class OutputCleaner
         $string = str_replace('.../castor', 'castor', $string);
         $string = preg_replace('#\S+?tools/phar/build/castor\S*#', 'castor', $string);
 
-        return preg_replace('{castor v\d+.\d+.\d+}m', 'castor v.X.Y.Z', $string);
+        return preg_replace('{castor v\d+\.\d+\.\d+(-\d+-g[0-9a-f]+)?}m', 'castor v.X.Y.Z', $string);
     }
 }
