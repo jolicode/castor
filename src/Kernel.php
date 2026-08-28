@@ -58,6 +58,8 @@ final class Kernel extends AbstractKernel
      */
     private array $mounts = [];
 
+    private bool $chdirDeprecationTriggered = false;
+
     public function __construct(
         string $environment,
         bool $debug,
@@ -430,6 +432,16 @@ final class Kernel extends AbstractKernel
 
     private function configureContext(InputInterface $input, OutputInterface $output, ContextRegistry $contextRegistry): void
     {
+        // Only worth telling when there is a castor.php to put the define in, so never for a
+        // repacked application, whose castor.php is baked in and not the user's to edit, and
+        // never while completing, where the output must stay clean. This method runs once per
+        // mount, so it is told only once.
+        if (!$this->chdirDeprecationTriggered && $this->hasCastorFile && !$this->repacked && '_complete' !== $input->getFirstArgument() && !\defined('CASTOR_USE_CHDIR')) {
+            $this->chdirDeprecationTriggered = true;
+
+            trigger_deprecation('castor/castor', '1.8.0', 'Not defining the "CASTOR_USE_CHDIR" constant is deprecated. Add "define(\'CASTOR_USE_CHDIR\', true);" at the top of your castor.php so Castor changes its current directory to the working directory of the context (the default in Castor 2.0), or define it to false to keep the current behavior.');
+        }
+
         $contextRegistry->setDefaultIfEmpty();
 
         $contextNames = $contextRegistry->getNames();

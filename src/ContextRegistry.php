@@ -20,11 +20,21 @@ class ContextRegistry
 
     private Context $currentContext;
 
+    private readonly string|false $originalWorkingDirectory;
+
     public function __construct(
         private readonly EventDispatcherInterface $eventDispatcher,
         #[Autowire('%context%')]
         private ?string $defaultName = null,
     ) {
+        // This service is built before castor.php is loaded, so this is the directory
+        // castor was invoked from, whatever the contexts move the process to afterwards.
+        $this->originalWorkingDirectory = getcwd();
+    }
+
+    public function getOriginalWorkingDirectory(): string|false
+    {
+        return $this->originalWorkingDirectory;
     }
 
     public function addDescriptor(ContextDescriptor $descriptor): void
@@ -118,6 +128,20 @@ class ContextRegistry
     public function setCurrentContext(Context $context): void
     {
         $this->currentContext = $context;
+
+        // Keep the process where the context says it is, so that fs() and the raw PHP
+        // functions resolve their relative paths against the same directory run() executes
+        // in, including inside a with(workingDirectory: ...) block and once it is left.
+        // Opt-in until Castor 2.0, where it becomes the default.
+        if (!(\defined('CASTOR_USE_CHDIR') && CASTOR_USE_CHDIR) || $context->workingDirectory === getcwd()) {
+            return;
+        }
+
+        if (!is_dir($context->workingDirectory)) {
+            throw new \RuntimeException(\sprintf('The working directory "%s" of the context does not exist.', $context->workingDirectory));
+        }
+
+        chdir($context->workingDirectory);
     }
 
     public function getCurrentContext(): Context

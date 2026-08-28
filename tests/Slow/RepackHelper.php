@@ -29,6 +29,8 @@ class RepackHelper
         $fs->dumpFile($castorAppDirPath . '/castor.php', <<<'PHP'
             <?php
 
+            define('CASTOR_USE_CHDIR', true);
+
             use Castor\Attribute\AsTask;
 
             use function Castor\import;

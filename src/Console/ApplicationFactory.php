@@ -48,6 +48,12 @@ class ApplicationFactory
             }
         }
 
+        if (!$repacked) {
+            // Once the process moves to the working directory of the context, a relative
+            // root would resolve against the wrong directory.
+            $rootDir = Path::makeAbsolute((string) $rootDir, getcwd() ?: '.');
+        }
+
         $kernel = new Kernel('dev', true, $rootDir, $hasCastorFile, $castorFilePath, $repacked);
         $kernel->boot();
 
