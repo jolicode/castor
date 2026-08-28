@@ -1,1 +1,1 @@
-bash: ligne 1: i_do_not_exist: commande introuvable
+bash: line 1: i_do_not_exist: command not found
