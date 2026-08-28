@@ -18,6 +18,21 @@ class WorkingDirectoryTest extends TaskTestCase
             TXT, $process->getOutput());
     }
 
+    public function testTheCurrentDirectoryIsLeftAloneWithoutTheConstant(): void
+    {
+        $process = $this->runTask(['cwd'], '{{ base }}/tests/fixtures/valid/working-directory-legacy/sub');
+
+        $this->assertSame(0, $process->getExitCode(), $process->getErrorOutput());
+        $this->assertStringContainsString('Not defining the "CASTOR_USE_CHDIR" constant is deprecated', $process->getOutput());
+        $this->assertStringEndsWith(<<<'TXT'
+            cwd: sub
+            context: working-directory-legacy
+            run: working-directory-legacy
+            fs: castor.php not found
+
+            TXT, $process->getOutput());
+    }
+
     public function testTheCurrentDirectoryFollowsAWithWorkingDirectoryBlock(): void
     {
         $process = $this->runTask(['cwd-with'], '{{ base }}/tests/fixtures/valid/working-directory');

@@ -50,10 +50,10 @@ function foo()
 > [Symfony documentation](https://symfony.com/doc/current/components/filesystem.html)
 > for more information about this component and how to use it.
 
-A relative path given to `fs()` is resolved against the
-[working directory of the context](../../getting-started/context.md#the-working-directory),
-which is the directory holding your `castor.php` file by default, and not the
-directory you called `castor` from.
+When [`CASTOR_USE_CHDIR`](../../getting-started/context.md#the-working-directory)
+is enabled, a relative path given to `fs()` is resolved against the working
+directory of the context, which is the directory holding your `castor.php` file
+by default, instead of the directory you called `castor` from.
 
 ## The `finder()` function
 

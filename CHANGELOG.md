@@ -4,9 +4,14 @@
 
 ### Features
 
-* [BC Break] Castor now changes its own current directory to the working directory of the context, so `fs()`, `finder()` and the raw PHP functions (`mkdir()`, `unlink()`, `file_get_contents()`, ...) resolve relative paths where `run()` executes, instead of wherever `castor` was invoked from. It follows `with(workingDirectory: ...)` too, and is restored when the block ends
 * Add `self-update` command to update Castor to the latest version
 * Publish [artifact attestations](https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations) for the phars and static binaries, and verify them in the installer, in `self-update` and in `castor:repack` when the GitHub CLI is installed and authenticated
+
+### Deprecations
+
+* Not defining the `CASTOR_USE_CHDIR` constant is deprecated. Add `define('CASTOR_USE_CHDIR', true);` at the top of your `castor.php` to opt in: Castor then changes its own current directory to the working directory of the context, so `fs()`, `finder()` and the raw PHP functions (`mkdir()`, `unlink()`, `file_get_contents()`, ...) resolve relative paths where `run()` executes, instead of wherever `castor` was invoked from. It follows `with(workingDirectory: ...)` too, and is restored when the block ends. This becomes the default in Castor 2.0. Define the constant to `false` to keep the current behavior without the deprecation.
+
+    Once enabled, a relative path given as a CLI argument (`castor castor:compile foo.phar`, task arguments, ...) is resolved from the project root rather than from the directory you invoked `castor` in, which matters when you run Castor from a subdirectory.
 
 ### Fixes
 

@@ -44,15 +44,23 @@ function foo(): void
 
 ### The working directory
 
-Castor changes the current directory of its own process to the working directory
-of the context, whatever directory you called `castor` from. Relative paths
-therefore mean the same thing everywhere: `run()`, `fs()`, `finder()` and the raw
-PHP functions such as `mkdir()` or `file_get_contents()` all resolve them against
-the context working directory, which defaults to the directory holding your
-`castor.php` file.
+By default, only `run()` executes in the working directory of the context.
+Everything else, `fs()`, `finder()` and the raw PHP functions such as `mkdir()`
+or `file_get_contents()`, resolves relative paths from the directory you called
+`castor` from.
 
-This also applies while a `with(workingDirectory: ...)` block runs, and the
-previous directory is restored when it ends:
+You can opt in to a single, consistent behavior by defining a constant at the top
+of your `castor.php` file:
+
+```php
+define('CASTOR_USE_CHDIR', true);
+```
+
+Castor then changes the current directory of its own process to the working
+directory of the context, so relative paths mean the same thing everywhere,
+whatever directory you called `castor` from. This also applies while a
+`with(workingDirectory: ...)` block runs, and the previous directory is restored
+when it ends:
 
 ```php
 use Castor\Attribute\AsTask;
@@ -73,6 +81,11 @@ function foo(): void
     io()->writeln(getcwd()); // the directory of the castor.php file, again
 }
 ```
+
+> [!NOTE]
+> This becomes the default in Castor 2.0. Until then, Castor emits a deprecation
+> when the constant is not defined. Define it to `false` to keep the current
+> behavior without the deprecation.
 
 ### The `variable()` function
 

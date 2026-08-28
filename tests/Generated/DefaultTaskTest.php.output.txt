@@ -1,1 +1,2 @@
+hh:mm:ss WARNING   [castor] User Deprecated: Since castor/castor 1.8.0: Not defining the "CASTOR_USE_CHDIR" constant is deprecated. Add "define('CASTOR_USE_CHDIR', true);" at the top of your castor.php so Castor changes its current directory to the working directory of the context (the default in Castor 2.0), or define it to false to keep the current behavior. ["exception" => ErrorException { …}]
 about
