@@ -91,6 +91,8 @@ run:with-process-helper
 shell:bash
 shell:sh
 signal:sigusr2
+signal:trap
+signal:trap-with-on-signals
 ssh:download
 ssh:ls
 ssh:real-time-output
