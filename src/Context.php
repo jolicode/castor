@@ -20,6 +20,8 @@ class Context implements \ArrayAccess
      * @param ?bool                                              $supportsInteraction Whether the surrounding environment supports interactive
      *                                                                                commands. When null (default), it is auto-detected from
      *                                                                                well-known signals (CI env var, STDIN being a TTY).
+     * @param int[]                                              $trappedSignals      A list of signals Castor must trap and forward to the
+     *                                                                                process it runs, instead of being interrupted by them
      *
      * @phpstan-param ContextData $data The input parameter accepts an array or an Object
      */
@@ -43,6 +45,7 @@ class Context implements \ArrayAccess
         public readonly array $verboseArguments = [],
         public readonly mixed $input = null,
         ?bool $supportsInteraction = null,
+        public readonly array $trappedSignals = [],
     ) {
         $this->workingDirectory = $workingDirectory ?? PathHelper::getRoot(false);
         $this->supportsInteraction = $supportsInteraction ?? self::detectSupportsInteraction();
@@ -65,6 +68,7 @@ class Context implements \ArrayAccess
             'verbosityLevel' => $this->verbosityLevel,
             'notificationTitle' => $this->notificationTitle,
             'supportsInteraction' => $this->supportsInteraction,
+            'trappedSignals' => $this->trappedSignals,
         ];
     }
 
@@ -194,6 +198,27 @@ class Context implements \ArrayAccess
     {
         return $this->clone([
             'supportsInteraction' => $supportsInteraction,
+        ]);
+    }
+
+    /**
+     * Traps the given signals: when Castor receives one of them while running a
+     * process with this context, the signal is forwarded to that process
+     * instead of interrupting Castor itself.
+     *
+     * This allows, for example, to stop a long running process with CTRL+C
+     * without killing Castor, and to keep executing the rest of the task.
+     *
+     * @param int[]|null $signals The signals to trap. Defaults to SIGINT and
+     *                            SIGTERM. Pass an empty array to restore the
+     *                            default behavior.
+     */
+    public function withTrappedSignals(?array $signals = null): self
+    {
+        $signals ??= \defined('SIGINT') && \defined('SIGTERM') ? [\SIGINT, \SIGTERM] : [];
+
+        return $this->clone([
+            'trappedSignals' => array_values(array_unique($signals)),
         ]);
     }
 
