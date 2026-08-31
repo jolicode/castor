@@ -17,6 +17,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Exception\ProcessSignaledException;
 use Symfony\Component\Process\Process;
 
 use function Symfony\Component\String\u;
@@ -31,6 +32,7 @@ class ProcessRunner
         private readonly Notifier $notifier,
         private readonly LoggerInterface $logger,
         private readonly SymfonyStyle $io,
+        private readonly SignalTrapper $signalTrapper,
     ) {
     }
 
@@ -112,6 +114,8 @@ class ProcessRunner
             }
         });
 
+        $this->signalTrapper->trap($process, $context->trappedSignals);
+
         $this->eventDispatcher->dispatch(new ProcessStartEvent($process));
 
         try {
@@ -125,7 +129,14 @@ class ProcessRunner
             }
 
             $exitCode = $process->wait();
+        } catch (ProcessSignaledException $e) {
+            if (!\in_array($e->getSignal(), $context->trappedSignals, true)) {
+                throw $e;
+            }
+
+            $exitCode = $process->getExitCode() ?? 128 + $e->getSignal();
         } finally {
+            $this->signalTrapper->release($process, $context->trappedSignals);
             $this->sectionOutput->finishProcess($process);
             $this->eventDispatcher->dispatch(new ProcessTerminateEvent($process));
         }

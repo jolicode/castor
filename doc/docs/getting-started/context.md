@@ -416,6 +416,35 @@ function foo(): void
 }
 ```
 
+### Trapping signals
+
+By default, a signal sent to Castor - like the `SIGINT` triggered by a `CTRL+C` -
+stops Castor itself. You can ask Castor to trap some signals and forward them to
+the process it runs, with the `withTrappedSignals` method:
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\context;
+use function Castor\run;
+
+#[AsTask()]
+function foo(): void
+{
+    // A CTRL+C stops the server, but not the task
+    run('./my-server', context: context()->withTrappedSignals()->withAllowFailure());
+
+    run('echo "the server has been stopped"');
+}
+```
+
+Without any argument, this method traps `SIGINT` and `SIGTERM`. You can also
+pass the list of signals you want to trap, like
+`withTrappedSignals([\SIGINT, \SIGQUIT])`.
+
+See [the signals documentation](../going-further/interacting-with-castor/signals.md#trapping-signals-sent-to-castor)
+for more information.
+
 ### Interactive environment
 
 Some commands (a shell, `vim`, an interactive prompt, ...) only make sense

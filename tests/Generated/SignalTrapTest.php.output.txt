@@ -1,0 +1,3 @@
+Running a process that sends a SIGINT to Castor, like a CTRL+C would do
+The process has been stopped with the exit code 130
+And Castor is still running!
