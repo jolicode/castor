@@ -15,6 +15,7 @@
 * Never download the remote packages during a shell completion: the packages already installed are used, and the completion goes on without the remote imports when there is none
 * Publish a `SHA256SUMS` file, attested too, with each release and the snapshot pre-release, and verify the checksum of the downloaded binary in `self-update`
 * Only accept attestations signed by the Artifacts workflow when verifying the provenance of a binary, and skip the verification with a GitHub CLI too old to know about attestations instead of failing
+* Verify the SHA-256 checksum of the static-php-cli archive downloaded by `castor:compile`: the checksums of the default `--spc-version` are known, any other version needs the new `--spc-sha256` option
 
 ### Fixes
 
