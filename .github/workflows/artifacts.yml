@@ -4,8 +4,10 @@ on:
   push:
     branches: [ main ]
 
+# The build jobs attest their artifacts, only the snapshot job needs to write
+# to the repository (see below)
 permissions:
-  contents: write # zizmor: ignore[excessive-permissions]
+  contents: read
   id-token: write # zizmor: ignore[excessive-permissions]
   attestations: write # zizmor: ignore[excessive-permissions]
 
@@ -265,6 +267,8 @@ jobs:
     needs: [checksums]
     name: Publish the snapshot pre-release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # zizmor: ignore[excessive-permissions]
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

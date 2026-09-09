@@ -1,5 +1,13 @@
 version: 2
 updates:
+    # Security updates only: the dependencies are updated by hand with "castor update"
+    - package-ecosystem: 'composer'
+      directory: '/'
+      target-branch: 'main'
+      schedule:
+          interval: 'monthly'
+      open-pull-requests-limit: 0
+
     - package-ecosystem: 'github-actions'
       directory: '/'
       schedule:

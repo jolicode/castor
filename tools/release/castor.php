@@ -153,10 +153,11 @@ function checkCi(array $run): void
     io()->comment("{$run['name']}'s run id <comment>{$run['databaseId']}</comment>");
 
     if ('completed' === $run['status']) {
-        if ('failure' === $run['conclusion']) {
+        // Anything but a success (failure, cancelled, timed_out...) must not be released
+        if ('success' !== $run['conclusion']) {
             run(['gh', 'run', 'view', $run['databaseId']]);
 
-            throw new ProblemException("The CI {$run['name']} has failed. Please fix it before releasing.");
+            throw new ProblemException("The CI {$run['name']} has not succeeded (conclusion: {$run['conclusion']}). Please fix it before releasing.");
         }
     } else {
         $process = run(['gh', 'run', 'watch', $run['databaseId'], '--exit-status'], context: context()->toInteractive());
