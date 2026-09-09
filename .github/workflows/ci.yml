@@ -18,10 +18,36 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Composer Validate
-        uses: docker://composer:2.7.1
+      - name: Setup PHP
+        uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # v2
         with:
-          args: validate
+          php-version: 8.4
+          coverage: none
+
+      - name: Composer Validate
+        run: composer validate
+
+  check-composer-audit:
+    name: Composer audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # v2
+        with:
+          php-version: 8.4
+          coverage: none
+
+      - name: Composer audit (castor)
+        run: composer audit --locked
+
+      - name: Composer audit (phar tooling)
+        run: composer audit --locked
+        working-directory: tools/phar
 
   markdown:
     name: Lint markdown files
