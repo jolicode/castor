@@ -29,7 +29,11 @@ function encrypt(#[AsArgument()] string $content = "Hello you!"): void
 ```
 
 > [!NOTE]
-> Under the hood, Castor use libsodium for encryption.
+> Under the hood, Castor use libsodium for encryption: the key is derived from
+> the password with Argon2id, using the "moderate" limits of libsodium (3
+> passes, 256 MiB of memory), and the content is sealed with XSalsa20-Poly1305.
+> Content encrypted by an older version of Castor is still decrypted, but
+> decrypting needs a Castor at least as recent as the one that encrypted.
 
 ## The `decrypt_with_password()` function
 
