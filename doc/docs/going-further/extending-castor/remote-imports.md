@@ -59,6 +59,12 @@ castor composer update
 
 ## Preventing remote imports
 
+Remote packages are code downloaded from Packagist (or the repositories
+declared in `castor.composer.json`) and executed on your machine, like the
+`castor.php` file itself. They are installed the first time Castor runs in the
+project, whatever the command (`castor list` included), except during a shell
+completion, which never downloads anything.
+
 In case you have trouble with the imported functions (or if you don't trust
 them), you can prevent Castor from importing and running any of them. Add the
 `--no-remote` option when calling any Castor tasks:

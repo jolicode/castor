@@ -12,6 +12,7 @@
 
 * Publish [artifact attestations](https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations) for the phars and static binaries, and verify them in the installer, in `self-update` and in `castor:repack` when the GitHub CLI is installed and authenticated
 * Restrict the file name chosen by the server in `http_download()`: only the last segment of the `Content-Disposition` file name (or of the URL path) is kept, so the download always lands in the project directory
+* Never download the remote packages during a shell completion: the packages already installed are used, and the completion goes on without the remote imports when there is none
 
 ### Fixes
 
