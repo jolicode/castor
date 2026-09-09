@@ -109,3 +109,9 @@ expose sensitive data (like passwords) in command line arguments:
 
 The `input` option accepts a string, a `\Stringable`, a resource, or an
 `\Iterator<string>`.
+
+> [!WARNING]
+> Environment variables set with `withEnvironment()` are not a safe place for
+> secrets either: they are displayed, with their values, when the process fails
+> and in the verbose logs. See the [context
+> documentation](context.md#environment-variables).
