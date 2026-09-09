@@ -20,6 +20,8 @@ class Context implements \ArrayAccess
      * @param ?bool                                              $supportsInteraction Whether the surrounding environment supports interactive
      *                                                                                commands. When null (default), it is auto-detected from
      *                                                                                well-known signals (CI env var, STDIN being a TTY).
+     * @param int[]                                              $trappedSignals      A list of signals Castor must trap and forward to the
+     *                                                                                process it runs, instead of being interrupted by them
      *
      * @phpstan-param ContextData $data The input parameter accepts an array or an Object
      */
@@ -43,6 +45,7 @@ class Context implements \ArrayAccess
         public readonly array $verboseArguments = [],
         public readonly mixed $input = null,
         ?bool $supportsInteraction = null,
+        public readonly array $trappedSignals = [],
     ) {
         $this->workingDirectory = $workingDirectory ?? PathHelper::getRoot(false);
         $this->supportsInteraction = $supportsInteraction ?? self::detectSupportsInteraction();
@@ -65,6 +68,7 @@ class Context implements \ArrayAccess
             'verbosityLevel' => $this->verbosityLevel,
             'notificationTitle' => $this->notificationTitle,
             'supportsInteraction' => $this->supportsInteraction,
+            'trappedSignals' => $this->trappedSignals,
         ];
     }
 
@@ -197,6 +201,33 @@ class Context implements \ArrayAccess
         ]);
     }
 
+    /**
+     * Traps the given signals: when Castor receives one of them while running a
+     * process with this context, the signal is forwarded to that process
+     * instead of interrupting Castor itself.
+     *
+     * This allows, for example, to stop a long running process with CTRL+C
+     * without killing Castor, and to keep executing the rest of the task.
+     *
+     * @param int[]|null $signals The signals to trap. Defaults to SIGINT and
+     *                            SIGTERM. Pass an empty array to restore the
+     *                            default behavior.
+     *
+     * @throws \InvalidArgumentException When one of the signals cannot be caught (SIGKILL, SIGSTOP)
+     */
+    public function withTrappedSignals(?array $signals = null): self
+    {
+        $signals ??= \defined('SIGINT') && \defined('SIGTERM') ? [\SIGINT, \SIGTERM] : [];
+
+        foreach ($signals as $signal) {
+            $this->assertSignalCanBeTrapped($signal);
+        }
+
+        return $this->clone([
+            'trappedSignals' => array_values(array_unique($signals)),
+        ]);
+    }
+
     public function supportsInteraction(): bool
     {
         return $this->supportsInteraction;
@@ -246,6 +277,15 @@ class Context implements \ArrayAccess
     public function offsetUnset(mixed $offset): void
     {
         throw new \LogicException('Context is immutable.');
+    }
+
+    private function assertSignalCanBeTrapped(int $signal): void
+    {
+        foreach (['SIGKILL', 'SIGSTOP'] as $name) {
+            if (\defined($name) && \constant($name) === $signal) {
+                throw new \InvalidArgumentException(\sprintf('The signal "%s" cannot be trapped: the operating system does not allow it to be caught.', $name));
+            }
+        }
     }
 
     /**

@@ -55,6 +55,59 @@ class ContextTest extends TestCase
         $context->toInteractive();
     }
 
+    public function testTrappedSignalsAreEmptyByDefault(): void
+    {
+        $this->assertSame([], new Context()->trappedSignals);
+    }
+
+    public function testWithTrappedSignalsDefaultsToSigintAndSigterm(): void
+    {
+        $context = new Context()->withTrappedSignals();
+
+        $this->assertSame([\SIGINT, \SIGTERM], $context->trappedSignals);
+    }
+
+    public function testWithTrappedSignalsAcceptsACustomListOfSignals(): void
+    {
+        $context = new Context()->withTrappedSignals([\SIGUSR1, \SIGUSR1, \SIGHUP]);
+
+        $this->assertSame([\SIGUSR1, \SIGHUP], $context->trappedSignals);
+    }
+
+    public function testWithTrappedSignalsCanRestoreTheDefaultBehavior(): void
+    {
+        $context = new Context()->withTrappedSignals()->withTrappedSignals([]);
+
+        $this->assertSame([], $context->trappedSignals);
+    }
+
+    public function testWithTrappedSignalsRejectsSignalsThatCannotBeCaught(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('The signal "SIGKILL" cannot be trapped');
+
+        new Context()->withTrappedSignals([\SIGINT, \SIGKILL]);
+    }
+
+    public function testWithTrappedSignalsRejectsSigstop(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('The signal "SIGSTOP" cannot be trapped');
+
+        new Context()->withTrappedSignals([\SIGSTOP]);
+    }
+
+    public function testTrappedSignalsArePreservedAcrossOtherWithers(): void
+    {
+        $context = new Context()
+            ->withTrappedSignals([\SIGINT])
+            ->withQuiet()
+            ->withWorkingDirectory('/tmp')
+        ;
+
+        $this->assertSame([\SIGINT], $context->trappedSignals);
+    }
+
     public function testToInteractiveCanBypassTheCheck(): void
     {
         $context = new Context(supportsInteraction: false)->toInteractive(throwOnNonInteractiveEnv: false);
