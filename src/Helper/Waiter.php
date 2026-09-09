@@ -240,9 +240,9 @@ final readonly class Waiter
             callback: function () use ($timeout, $io, $portsToCheck, $containerChecker, $containerName): bool {
                 $context = $this->contextRegistry->getCurrentContext()->withAllowFailure();
 
-                $containerId = $this->processRunner->capture("docker ps -a -q --filter name={$containerName}", context: $context);
+                $containerId = $this->processRunner->capture(['docker', 'ps', '-a', '-q', '--filter', "name={$containerName}"], context: $context);
                 $isContainerExist = (bool) $containerId;
-                $isContainerRunning = (bool) $this->processRunner->capture("docker inspect -f '{{.State.Running}}' {$containerId}", context: $context);
+                $isContainerRunning = (bool) $this->processRunner->capture(['docker', 'inspect', '-f', '{{.State.Running}}', $containerId], context: $context);
 
                 if (false === $isContainerExist) {
                     throw new DockerContainerStateException($containerName, 'not exist');

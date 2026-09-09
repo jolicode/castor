@@ -34,6 +34,13 @@ connection will automatically terminate (default: no)
 - `password_authentication` (bool): whether to use password authentication
   (default: false)
 
+> [!NOTE]
+> The host, the user and the options are placed on the `ssh` command line as
+> they are: Castor refuses a value that is empty or contains a whitespace or a
+> shell metacharacter (`;`, `&`, `|`, `$`, quotes, ...), so a value coming from
+> user input cannot turn into a local command. The `path` given to `ssh_run()`
+> is quoted for the remote shell, a leading `~` is still expanded.
+
 ## The `ssh_run()` function
 
 Castor supports running commands on remote servers through SSH with the

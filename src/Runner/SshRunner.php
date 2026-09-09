@@ -43,7 +43,7 @@ final readonly class SshRunner
         $ssh = $this->buildSsh($host, $user, $sshOptions);
 
         if ($path) {
-            $command = \sprintf('cd %s && %s', $path, $command);
+            $command = \sprintf('cd %s && %s', self::quotePath($path), $command);
         }
 
         return $this->run($ssh->getExecuteCommand($command), $quiet, $allowFailure, $notify, $timeout, $callback);
@@ -108,12 +108,28 @@ final readonly class SshRunner
         );
     }
 
-    /** @phpstan-param SshOptions $sshOptions */
+    /**
+     * The host, user and options end up unquoted in a shell command line
+     * (see Ssh::getExecuteCommand()), so a value containing a shell
+     * metacharacter would not be an invalid host, but a local command.
+     *
+     * @phpstan-param SshOptions $sshOptions
+     */
     private function buildSsh(
         string $host,
         ?string $user = null,
         array $sshOptions = [],
     ): Ssh {
+        self::assertShellSafe('host', $host);
+        if (null !== $user) {
+            self::assertShellSafe('user', $user);
+        }
+        foreach (['path_private_key', 'jump_host', 'multiplexing_control_path', 'multiplexing_control_persist'] as $option) {
+            if (isset($sshOptions[$option])) {
+                self::assertShellSafe($option, $sshOptions[$option]);
+            }
+        }
+
         $ssh = Ssh::create($user, $host, $sshOptions['port'] ?? null);
 
         if ($sshOptions['path_private_key'] ?? false) {
@@ -133,5 +149,25 @@ final readonly class SshRunner
         }
 
         return $ssh;
+    }
+
+    private static function assertShellSafe(string $name, string $value): void
+    {
+        if ('' === $value || preg_match('/[\s\'"`$\\\;&|<>(){}*?]/', $value)) {
+            throw new \InvalidArgumentException(\sprintf('The ssh %s "%s" is not valid: it is empty, or contains a shell metacharacter.', $name, $value));
+        }
+    }
+
+    /**
+     * Quotes the remote path for the remote shell, keeping a leading "~" or
+     * "~user" unquoted so that it is still expanded.
+     */
+    private static function quotePath(string $path): string
+    {
+        if (preg_match('/^(?<home>~[^\/]*)(?<rest>.*)$/s', $path, $matches)) {
+            return $matches['home'] . ('' === $matches['rest'] ? '' : escapeshellarg($matches['rest']));
+        }
+
+        return escapeshellarg($path);
     }
 }
