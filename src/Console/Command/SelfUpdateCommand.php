@@ -16,6 +16,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /** @internal */
 #[AsCommand(
@@ -29,6 +30,7 @@ final readonly class SelfUpdateCommand
         private ReleaseHelper $releaseHelper,
         private AttestationHelper $attestationHelper,
         private HttpDownloader $httpDownloader,
+        private HttpClientInterface $httpClient,
         private Installation $installation,
         private Filesystem $filesystem,
     ) {
@@ -149,7 +151,7 @@ final readonly class SelfUpdateCommand
             $this->httpDownloader->download($asset['url'], $tempFile, options: ['headers' => ['Accept' => 'application/octet-stream']]);
             $this->filesystem->chmod($tempFile, 0o755);
 
-            if (!$this->verifyProvenance($io, $tempFile)) {
+            if (!$this->verifyChecksum($io, $latestVersion, $asset['name'], $tempFile) || !$this->verifyProvenance($io, $tempFile)) {
                 $this->filesystem->remove($tempFile);
 
                 return Command::FAILURE;
@@ -185,6 +187,42 @@ final readonly class SelfUpdateCommand
     }
 
     /**
+     * Compares the SHA-256 checksum of the downloaded binary with the one
+     * listed in the SHA256SUMS asset of the release. Releases published
+     * before that file existed are updated without this check.
+     *
+     * @param array<string, mixed> $release
+     */
+    private function verifyChecksum(SymfonyStyle $io, array $release, string $assetName, string $binary): bool
+    {
+        $io->text('Verifying the binary checksum...');
+
+        $checksumsAsset = $this->releaseHelper->getChecksumsAsset($release);
+
+        if (null === $checksumsAsset) {
+            $io->warning(\sprintf('This release has no %s file, so the checksum of the downloaded binary cannot be verified.', ReleaseHelper::CHECKSUMS_FILE));
+
+            return true;
+        }
+
+        $checksums = $this->httpClient
+            ->request('GET', $checksumsAsset['url'], ['headers' => ['Accept' => 'application/octet-stream'], 'timeout' => 10])
+            ->getContent()
+        ;
+
+        $expected = $this->releaseHelper->getExpectedChecksum($checksums, $assetName);
+        $actual = hash_file('sha256', $binary);
+
+        if (!hash_equals($expected, (string) $actual)) {
+            $io->error(\sprintf('The checksum of the downloaded binary does not match the one listed in %s. Update aborted.', ReleaseHelper::CHECKSUMS_FILE));
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Aborts the update when the binary has no attestation: the latest release
      * always has one, so a missing attestation means this is not our build.
      * Without an authenticated GitHub CLI, the update goes on unverified.
@@ -195,7 +233,7 @@ final readonly class SelfUpdateCommand
 
         switch ($this->attestationHelper->verify($binary)) {
             case AttestationStatus::Skipped:
-                $io->note('Install and log in to the GitHub CLI (gh) to verify the provenance of the downloaded binary.');
+                $io->warning('Install and log in to the GitHub CLI (gh 2.49 or later) to verify the provenance of the downloaded binary.');
 
                 return true;
             case AttestationStatus::Verified:

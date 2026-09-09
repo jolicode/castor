@@ -11,13 +11,15 @@ use Symfony\Component\Process\ExecutableFinder;
 use function Castor\capture;
 use function Castor\check;
 use function Castor\context;
+use function Castor\exit_code;
 use function Castor\finder;
 use function Castor\fs;
 use function Castor\io;
 use function Castor\run;
 
 const REPO = 'jolicode/castor';
-const EXPECTED_ARTIFACTS = 9;
+// 9 binaries and their SHA256SUMS file
+const EXPECTED_ARTIFACTS = 10;
 
 #[AsTask(description: 'Release a new version of castor', aliases: ['release'])]
 function release(): int
@@ -115,9 +117,15 @@ function release(): int
         'Some artifacts are empty.',
         static fn () => !array_filter(
             iterator_to_array($files),
-            // A least 3MB
-            static fn (SplFileInfo $file) => 3_000_000 > $file->getSize()
+            // A least 3MB, except the checksums file
+            static fn (SplFileInfo $file) => 'SHA256SUMS' !== $file->getFilename() && 3_000_000 > $file->getSize()
         ),
+    );
+
+    check(
+        'Check the artifacts checksums',
+        'The artifacts do not match their SHA256SUMS file.',
+        static fn () => 0 === exit_code(['sha256sum', '--check', '--quiet', 'SHA256SUMS'], context: context()->withWorkingDirectory($artifactsDir)->withQuiet()),
     );
 
     io()->write('Publishing the release');

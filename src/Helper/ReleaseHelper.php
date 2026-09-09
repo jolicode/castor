@@ -16,6 +16,9 @@ final readonly class ReleaseHelper
     /** The rolling pre-release of the main branch, see the Artifacts workflow */
     public const string SNAPSHOT_TAG = 'snapshot';
 
+    /** Release asset listing the SHA-256 checksum of every other asset */
+    public const string CHECKSUMS_FILE = 'SHA256SUMS';
+
     private const string API_URL = 'https://api.github.com/repos/jolicode/castor/releases';
 
     public function __construct(
@@ -93,6 +96,42 @@ final readonly class ReleaseHelper
         }
 
         return array_first($assets);
+    }
+
+    /**
+     * Returns the asset holding the SHA-256 checksums of all the release assets,
+     * or null for releases published without it.
+     *
+     * @param array<string, mixed> $release
+     *
+     * @return array<string, mixed>|null
+     */
+    public function getChecksumsAsset(array $release): ?array
+    {
+        foreach ($release['assets'] ?? [] as $asset) {
+            if (self::CHECKSUMS_FILE === ($asset['name'] ?? null)) {
+                return $asset;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the expected SHA-256 checksum of the given asset, as listed in
+     * the SHA256SUMS file (one "<checksum>  <file name>" line per asset).
+     *
+     * @throws \RuntimeException when the file has no entry for the asset
+     */
+    public function getExpectedChecksum(string $checksumsFileContent, string $assetName): string
+    {
+        foreach (preg_split('/\R/', $checksumsFileContent) ?: [] as $line) {
+            if (preg_match('/^(?<checksum>[0-9a-f]{64})\s+\*?(?<name>.+)$/i', trim($line), $matches) && $matches['name'] === $assetName) {
+                return strtolower($matches['checksum']);
+            }
+        }
+
+        throw new \RuntimeException(\sprintf('The %s file has no entry for "%s".', self::CHECKSUMS_FILE, $assetName));
     }
 
     /**

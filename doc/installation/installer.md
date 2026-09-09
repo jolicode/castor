@@ -72,10 +72,18 @@ castor self-update
 - `--no-backup`: Skip creating a backup of the current binary
 - `--rollback` or `-r`: Rollback to the previous version
 
-When the [GitHub CLI](https://cli.github.com/) is installed and authenticated,
-the installer and `self-update` also verify the provenance of the downloaded
-binary: they check, with `gh attestation verify`, that the binary was built by
-Castor's own GitHub Actions workflow.
+Each release ships a `SHA256SUMS` file listing the checksum of every binary:
+`self-update` refuses a downloaded binary whose checksum does not match it.
+
+When the [GitHub CLI](https://cli.github.com/) (2.49 or later) is installed and
+authenticated, the installer and `self-update` also verify the provenance of the
+downloaded binary: they check, with `gh attestation verify`, that the binary was
+built by Castor's own GitHub Actions workflow. The `SHA256SUMS` file is attested
+too, so its provenance can be verified the same way:
+
+```bash
+gh attestation verify SHA256SUMS --repo jolicode/castor
+```
 
 > [!NOTE]
 > The `self-update` command is not available for source installations or Composer
