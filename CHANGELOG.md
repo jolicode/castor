@@ -20,6 +20,7 @@
 
 * Quote the remote `path` of `ssh_run()`, and reject a `host`, `user`, `jump_host`, `path_private_key` or `multiplexing_control_path` containing a shell metacharacter: they end up in a local shell command line, so a value coming from user input could run a command instead of opening a connection
 * Pass the container name of `wait_for_docker_container()` to `docker` as an argument instead of building a shell command with it
+* Extract the watcher binary used by `watch()` in the phar and static builds to the user cache directory, under the Castor version, instead of a fixed path in the system temporary directory shared by all users, and replace it when its content is not the expected one
 * Fix architecture detection on Linux ARM64 (`aarch64`), which made the watcher and the update hints pick the amd64 binaries
 * Fix `run()` ignoring the timeout when executed inside `parallel()`: the process was waited for in its own fiber loop, so Symfony's timeout check never ran and the process could run forever
 

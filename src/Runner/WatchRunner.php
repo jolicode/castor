@@ -2,12 +2,14 @@
 
 namespace Castor\Runner;
 
+use Castor\Console\Application;
 use Castor\Console\Output\SectionOutput;
 use Castor\Context;
 use Castor\ContextRegistry;
 use Castor\Helper\Architecture;
 use Castor\Helper\Installation;
 use JoliCode\PhpOsHelper\OsHelper;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 
 /** @internal */
@@ -19,6 +21,8 @@ final readonly class WatchRunner
         private ProcessRunner $processRunner,
         private SectionOutput $sectionOutput,
         private Installation $installation,
+        private Filesystem $filesystem,
+        private string $cacheDir,
     ) {
     }
 
@@ -59,15 +63,7 @@ final readonly class WatchRunner
         $binaryPath = __DIR__ . '/../../tools/watcher/bin/' . $binary;
 
         if (str_starts_with(__FILE__, 'phar:')) {
-            static $tmpPath;
-
-            if (null === $tmpPath) {
-                $tmpPath = sys_get_temp_dir() . '/' . $binary;
-                copy($binaryPath, $tmpPath);
-                chmod($tmpPath, 0o755);
-            }
-
-            $binaryPath = $tmpPath;
+            $binaryPath = $this->extractBinary($binaryPath, $binary);
         }
 
         $watchContext = $context->withTty(false)->withPty(false)->withTimeout(null);
@@ -109,5 +105,23 @@ final readonly class WatchRunner
                 $this->sectionOutput->writeProcessOutput($type, $bytes, $process);
             }
         });
+    }
+
+    /**
+     * A binary cannot be executed from inside a phar: the watcher is extracted
+     * to the user cache directory, under the Castor version, and reused on the
+     * next runs as long as its content is the expected one.
+     */
+    private function extractBinary(string $binaryPath, string $binary): string
+    {
+        $target = $this->cacheDir . '/watcher/' . Application::VERSION . '/' . $binary;
+
+        if (!is_file($target) || hash_file('sha256', $target) !== hash_file('sha256', $binaryPath)) {
+            $this->filesystem->mkdir(\dirname($target), 0o700);
+            $this->filesystem->copy($binaryPath, $target, true);
+            $this->filesystem->chmod($target, 0o755);
+        }
+
+        return $target;
     }
 }

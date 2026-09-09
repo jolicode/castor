@@ -52,7 +52,7 @@ final class OutputCleaner
 
         // Fix the watcher path when running the tests with local project VS in the phar / static
         $string = str_replace('.../src/Runner/../../tools/watcher/bin/watcher-linux-amd64', 'watcher', $string);
-        $string = str_replace('/tmp/watcher-linux-amd64', 'watcher', $string);
+        $string = preg_replace('{[^\s\'"]+/watcher/[^/\'"]+/watcher-linux-amd64}', 'watcher', $string);
 
         // composer version
         $string = preg_replace('{Composer version \d+.\d+.\d+ \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}}', 'Composer version 1.2.3', $string);
