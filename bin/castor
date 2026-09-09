@@ -16,10 +16,17 @@ if ($memoryLimit && function_exists('ini_set')) {
     ini_set('memory_limit', $memoryLimit);
 }
 
-$phpFile = $_SERVER['CASTOR_PHP_REPLACE'] ?? false;
-if ($phpFile) {
-    // Avoid infinite loop if we exec castor inside castor
-    unset($_SERVER['CASTOR_PHP_REPLACE']);
+// run_php() runs a PHP script or phar through this very binary, which is the
+// only PHP available with the static build. The script is given as the first
+// argument, then removed from argv so the script sees its own arguments.
+$phpReplacePrefix = '--castor-php-replace=';
+if (isset($_SERVER['argv'][1]) && str_starts_with($_SERVER['argv'][1], $phpReplacePrefix)) {
+    $phpFile = substr($_SERVER['argv'][1], strlen($phpReplacePrefix));
+
+    array_splice($_SERVER['argv'], 1, 1);
+    $_SERVER['argc'] = count($_SERVER['argv']);
+    $argv = $_SERVER['argv'];
+    $argc = $_SERVER['argc'];
 
     // override script filename env var
     $_SERVER['SCRIPT_FILENAME'] = $phpFile;
