@@ -21,6 +21,7 @@
 * Prefer the PHP zip extension over the zip binary in `zip()` when a password is given: the binary gets the password as a command line argument, readable by every user of the machine while the archive is created. `zip_binary()` still does, and now warns about it
 * Pass the script run by `run_php()` to the Castor process as an argument instead of the `CASTOR_PHP_REPLACE` environment variable, which made any Castor process include an arbitrary file when set in its environment
 * Refuse a Castor phar without provenance attestation in `castor:repack`, like `self-update` does, unless the new `--allow-unattested` option is passed for a release published before attestations existed
+* Derive the key of `encrypt_with_password()` and `encrypt_file_with_password()` with the "moderate" limits of libsodium (Argon2id, 3 passes, 256 MiB) instead of the "interactive" ones, and store the limits in the encrypted payload. Content encrypted by previous versions is still decrypted, but content encrypted by this version needs it, or a later one, to be decrypted
 
 ### Fixes
 
