@@ -42,6 +42,51 @@ function foo(): void
 }
 ```
 
+### The working directory
+
+By default, only `run()` executes in the working directory of the context.
+Everything else, `fs()`, `finder()` and the raw PHP functions such as `mkdir()`
+or `file_get_contents()`, resolves relative paths from the directory you called
+`castor` from.
+
+You can opt in to a single, consistent behavior by defining a constant at the top
+of your `castor.php` file:
+
+```php
+define('CASTOR_USE_CHDIR', true);
+```
+
+Castor then changes the current directory of its own process to the working
+directory of the context, so relative paths mean the same thing everywhere,
+whatever directory you called `castor` from. This also applies while a
+`with(workingDirectory: ...)` block runs, and the previous directory is restored
+when it ends:
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\io;
+use function Castor\with;
+
+#[AsTask()]
+function foo(): void
+{
+    io()->writeln(getcwd()); // the directory of the castor.php file
+
+    with(static function () {
+        io()->writeln(getcwd()); // "/tmp"
+        file_put_contents('foo.txt', 'bar'); // writes "/tmp/foo.txt"
+    }, workingDirectory: '/tmp');
+
+    io()->writeln(getcwd()); // the directory of the castor.php file, again
+}
+```
+
+> [!NOTE]
+> This becomes the default in Castor 2.0. Until then, Castor emits a deprecation
+> when the constant is not defined. Define it to `false` to keep the current
+> behavior without the deprecation.
+
 ### The `variable()` function
 
 Castor also provides a `variable()` function to get the value of a variable
