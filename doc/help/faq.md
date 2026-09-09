@@ -106,6 +106,22 @@ Usually, tasks are very small, like 1 or 2 lines of code. So you probably don't
 want to waste your project with ops command that are not strictly related to the
 business.
 
+## Is it safe to run Castor in a project I do not trust?
+
+No more than running `make`, `composer install` or `npm install` there: the
+`castor.php` file is PHP code, and Castor runs it to discover the tasks. So
+**every** Castor command runs it, including `castor list`, `castor --help` and
+the shell completion, before any task is executed. The same goes for the
+[remote packages](../docs/going-further/extending-castor/remote-imports.md)
+declared in `castor.composer.json`, which are downloaded and loaded the first
+time Castor runs in the project (never during a shell completion).
+
+So, before running Castor in a project you just cloned, read its `castor.php`
+file, and its `castor.composer.json` and `castor.composer.lock` files, like you
+would read a `Makefile` or a `composer.json`. The `--no-remote` option, or the
+`CASTOR_NO_REMOTE` environment variable, keeps Castor from installing and
+loading the remote packages.
+
 ## Why "Castor"?
 
 Castor means "beaver" in french. It's an animal building stuff. And this is what

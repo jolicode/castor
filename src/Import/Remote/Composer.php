@@ -24,6 +24,9 @@ class Composer
 {
     public const VENDOR_DIR = '.castor/vendor';
 
+    /** Whether the remote packages were needed, but not installed, by a shell completion */
+    private bool $skippedForCompletion = false;
+
     public function __construct(
         private readonly Kernel $kernel,
         private readonly InputInterface $input,
@@ -37,7 +40,7 @@ class Composer
 
     public function isRemoteAllowed(): bool
     {
-        if ($this->disableRemote) {
+        if ($this->disableRemote || $this->skippedForCompletion) {
             return false;
         }
 
@@ -68,6 +71,16 @@ class Composer
         $vendorDirectory = $entrypointDirectory . '/' . self::VENDOR_DIR;
 
         if (!$update && $this->isInstalled($vendorDirectory, $composerLockFile)) {
+            return;
+        }
+
+        // A shell completion must not download and run anything: the packages
+        // already installed, even outdated, are used, and the completion goes
+        // on without the remote imports when there is none
+        if ('_complete' === $this->input->getFirstArgument()) {
+            $this->skippedForCompletion = !file_exists($vendorDirectory . '/autoload.php');
+            $this->logger->debug('The remote packages are not installed during a shell completion.');
+
             return;
         }
 
@@ -109,6 +122,10 @@ class Composer
 
     public function importFromPackage(string $scheme, string $package, ?string $file = null): void
     {
+        if ($this->skippedForCompletion) {
+            throw new RemoteNotAllowed('Remote packages are not installed during a shell completion.', silent: true);
+        }
+
         if (!$this->isRemoteAllowed()) {
             throw new RemoteNotAllowed('Remote imports are disabled.');
         }

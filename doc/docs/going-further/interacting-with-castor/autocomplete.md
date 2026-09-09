@@ -26,6 +26,13 @@ shells and their dedicated instructions, run:
 castor completion --help
 ```
 
+> [!NOTE]
+> To know the tasks to suggest, the completion loads the `castor.php` file of
+> the current directory, so its code runs each time you press <kbd>Tab</kbd>.
+> The [remote packages](../extending-castor/remote-imports.md) are never
+> downloaded by the completion though: when they are not installed yet, the
+> tasks they provide are simply not suggested.
+
 ## Autocomplete arguments
 
 You have two options to make your arguments autocompleted.

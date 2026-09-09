@@ -7,6 +7,7 @@ use Castor\Import\Exception\RemoteNotAllowed;
 use Castor\Import\Remote\Composer;
 use JoliCode\PhpOsHelper\OsHelper;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Symfony\Component\Finder\Finder;
 
 use function Castor\Internal\castor_require;
@@ -48,7 +49,7 @@ class Importer
             } catch (ImportError $e) {
                 throw $this->createImportException($package, $e->getMessage());
             } catch (RemoteNotAllowed $e) {
-                $this->logger->warning(\sprintf('Could not import "%s": %s', $path, $e->getMessage()));
+                $this->logger->log($e->silent ? LogLevel::DEBUG : LogLevel::WARNING, \sprintf('Could not import "%s": %s', $path, $e->getMessage()));
 
                 return;
             }
