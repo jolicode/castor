@@ -30,6 +30,8 @@ function compress_file(string $file, string $destination): void
 
 > [!NOTE]
 > The `zip()` function automatically selects the best available method (binary or PHP) based on your system configuration.
+> When a password is given, the PHP zip extension is preferred: it encrypts with AES-256 and keeps the password private,
+> while the zip binary takes it as a command line argument (see `zip_binary()` below).
 >
 > The `source` parameter can be either a file path or a directory path. Both are fully supported.
 <!-- -->
@@ -39,6 +41,10 @@ function compress_file(string $file, string $destination): void
 ## The `zip_binary()` function
 
 Castor provides a `zip_binary()` function to compress files using the native zip binary:
+
+> [!WARNING]
+> The zip binary only accepts a password as a command line argument, which is readable by every user of the machine
+> (in `ps` for instance) while the archive is created. Use `zip()` or `zip_php()` when the password must stay private.
 
 ```php
 use Castor\Attribute\AsArgument;
