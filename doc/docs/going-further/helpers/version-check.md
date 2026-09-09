@@ -43,6 +43,13 @@ to check certain conditions by checking a pattern task name.
 When a new version is available, Castor will periodically remind the user to
 update the tool once in a day.
 
+To know about new versions, Castor fetches the latest release from the GitHub
+API (`api.github.com`) at most once a day, and caches the answer. This is the
+only network request Castor makes on its own: it carries nothing but the
+Castor version, in the `User-Agent` header, and no usage data is ever
+collected. The request is skipped in CI, when running inside an AI agent, and
+when the output is JSON.
+
 This behavior can be disabled by setting the `CASTOR_DISABLE_VERSION_CHECK`
 environment variable to `1` or `true`.
 
