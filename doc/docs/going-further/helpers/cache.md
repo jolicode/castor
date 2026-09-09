@@ -56,13 +56,17 @@ $result = cache('a-key', expansive_call(...), true);
 
 ## Cache location on the filesystem
 
-By default, Castor caches items on the filesystem, in the `<home directory>/.cache/castor`
-directory. If you want to change the cache directory, you can set the `CASTOR_CACHE_DIR`
+By default, Castor caches items on the filesystem, in the `$XDG_CACHE_HOME/castor`
+directory, or `<home directory>/.cache/castor` when `XDG_CACHE_HOME` is not set.
+If you want to change the cache directory, you can set the `CASTOR_CACHE_DIR`
 environment variable.
 
 ```bash
 CASTOR_CACHE_DIR=/tmp/castor-cache castor foo
 ```
+
+The cache directory is created readable by its owner only (mode `0700`), as
+it may hold data written by your tasks.
 
 ## The `get_cache()` function
 

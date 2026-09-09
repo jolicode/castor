@@ -40,16 +40,31 @@ final class PlatformHelper
         return $result ??= AgentDetector::detect()->isAgent;
     }
 
+    /**
+     * $XDG_CACHE_HOME/castor, or ~/.cache/castor. When the home directory
+     * cannot be determined, a per-user directory in the system temporary
+     * directory is used: the cache holds data written by the tasks, it must
+     * not be shared with the other users of the machine.
+     */
     public static function getDefaultCacheDirectory(): string
     {
-        try {
-            $home = self::getUserDirectory();
-            $directory = $home ? $home . '/.cache' : sys_get_temp_dir();
-        } catch (\RuntimeException) {
-            $directory = sys_get_temp_dir();
+        if ($xdgCacheHome = self::getEnv('XDG_CACHE_HOME')) {
+            return $xdgCacheHome . '/castor';
         }
 
-        return $directory . '/castor';
+        try {
+            $home = self::getUserDirectory();
+        } catch (\RuntimeException) {
+            $home = '';
+        }
+
+        if ($home) {
+            return $home . '/.cache/castor';
+        }
+
+        $uid = \function_exists('posix_getuid') ? posix_getuid() : get_current_user();
+
+        return sys_get_temp_dir() . '/castor-' . $uid;
     }
 
     /**
