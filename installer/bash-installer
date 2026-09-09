@@ -24,10 +24,10 @@
 set -euo pipefail
 
 CASTOR_EXECUTABLE="castor"
-CASTOR_TMP_NAME="$CASTOR_EXECUTABLE-"$(date +"%s")
 CASTOR_NAME="🦫  Castor"
 CASTOR_DOWNLOAD_URL_PATTERN="https://github.com/jolicode/castor/releases/~versionPath~/castor.~platform~.phar"
 CASTOR_DOWNLOAD_STATIC_URL_PATTERN="https://github.com/jolicode/castor/releases/~versionPath~/castor.~platform~"
+CASTOR_CHECKSUMS_URL_PATTERN="https://github.com/jolicode/castor/releases/~versionPath~/SHA256SUMS"
 CASTOR_TMPDIR="${TMPDIR:-/tmp}"
 
 function output {
@@ -61,218 +61,268 @@ function output {
     builtin echo -e "${style_start}${1}${style_end}"
 }
 
-output "${CASTOR_NAME} installer" "heading"
+# Downloads the given URL to the given file, and prints the HTTP status code
+function download {
+    case $downloader in
+        "curl")
+            curl -s -o "$2" -w "%{http_code}" --location "$1"
+            ;;
+        "wget")
+            wget -q --server-response -O "$2" "$1" 2>&1 | awk '/^  HTTP/{print $2}' | tail -1 || true
+            ;;
+    esac
+}
 
-binary_dest="${HOME}/.local/bin"
-custom_dir="false"
-static="false"
-version="latest"
+# Prints the SHA-256 checksum of the given file, or nothing when no tool can compute it
+function sha256 {
+    if command -v sha256sum >/dev/null 2>&1; then
+        sha256sum "$1" | awk '{print $1}'
+    elif command -v shasum >/dev/null 2>&1; then
+        shasum -a 256 "$1" | awk '{print $1}'
+    fi
+}
 
-# Getops does not support long option names
-while [[ $# -gt 0 ]]; do
-case $1 in
-    --install-dir=*)
-        binary_dest="${1#*=}"
-        custom_dir="true"
-        shift # past argument=value
-        ;;
-    --install-dir)
-        binary_dest="${2:-}"
-        custom_dir="true"
-        shift # past argument
-        shift # past value
-        ;;
-    --version=*)
-        version="${1#*=}"
-        shift # past argument=value
-        ;;
-    --version)
-        version="${2:-}"
-        shift # past argument
-        shift # past value
-        ;;
-    --static)
-        static="true"
-        shift # past argument
-        ;;
-    *)
-        output "Unknown option $1" "error"
-        output "Usage: ${0} [--install-dir=dir] [--version=version]"
-        exit 1
-        ;;
-esac
-done
+function main {
+    output "${CASTOR_NAME} installer" "heading"
 
-# Run environment checks.
-output "\nEnvironment check" "heading"
+    binary_dest="${HOME}/.local/bin"
+    custom_dir="false"
+    static="false"
+    version="latest"
 
-# Check that cURL or wget is installed.
-downloader=""
-if command -v curl >/dev/null 2>&1; then
-    downloader="curl"
-    output "  [*] cURL is installed" "success"
-elif command -v wget >/dev/null 2>&1; then
-    downloader="wget"
-    output "  [*] wget is installed" "success"
-else
-    output "  [ ] ERROR: cURL or wget is required for installation" "error"
-    exit 1
-fi
+    # Getops does not support long option names
+    while [[ $# -gt 0 ]]; do
+    case $1 in
+        --install-dir=*)
+            binary_dest="${1#*=}"
+            custom_dir="true"
+            shift # past argument=value
+            ;;
+        --install-dir)
+            binary_dest="${2:-}"
+            custom_dir="true"
+            shift # past argument
+            shift # past value
+            ;;
+        --version=*)
+            version="${1#*=}"
+            shift # past argument=value
+            ;;
+        --version)
+            version="${2:-}"
+            shift # past argument
+            shift # past value
+            ;;
+        --static)
+            static="true"
+            shift # past argument
+            ;;
+        *)
+            output "Unknown option $1" "error"
+            output "Usage: ${0} [--install-dir=dir] [--version=version] [--static]"
+            exit 1
+            ;;
+    esac
+    done
 
-if [ "${static}" == "false" ]; then
-    # Check that PHP is installed.
-    if command -v php >/dev/null 2>&1; then
-        output "  [*] PHP is installed" "success"
+    # Run environment checks.
+    output "\nEnvironment check" "heading"
+
+    # Check that cURL or wget is installed.
+    downloader=""
+    if command -v curl >/dev/null 2>&1; then
+        downloader="curl"
+        output "  [*] cURL is installed" "success"
+    elif command -v wget >/dev/null 2>&1; then
+        downloader="wget"
+        output "  [*] wget is installed" "success"
     else
-        output "  [ ] ERROR: PHP is required for installation" "error"
+        output "  [ ] ERROR: cURL or wget is required for installation" "error"
         exit 1
     fi
 
-    if [[ "1" == "$(php -r 'echo version_compare(PHP_VERSION, "8.2", ">=");')" ]]; then
-        output "  [*] PHP version: $(php -r 'echo PHP_VERSION;')" "success"
-    else
-        output "  [ ] ERROR: PHP version $(php -r 'echo PHP_VERSION;') is not 8.2 or greater" "error"
-        exit 1
-    fi
-fi
-
-kernel=$(uname -s 2>/dev/null || /usr/bin/uname -s)
-case ${kernel} in
-    "Linux"|"linux")
-        kernel="linux"
-        ;;
-    "Darwin"|"darwin")
-        kernel="darwin"
-        ;;
-    *)
-        output "OS '${kernel}' not supported" "error"
-        exit 1
-        ;;
-esac
-
-machine=$(uname -m 2>/dev/null || /usr/bin/uname -m)
-case ${machine} in
-    aarch64*|armv8*|arm64)
-        machine="arm64"
-        ;;
-    x86_64)
-        machine="amd64"
-        ;;
-    *)
-        output "  [ ] Your architecture (${machine}) is not currently supported" "error"
-        exit 1
-        ;;
-esac
-
-output "  [*] Your architecture (${machine}) is supported" "success"
-
-platform="${kernel}-${machine}"
-
-# The necessary checks have passed. Start downloading the right version.
-output "\nDownload" "heading"
-
-versionPath="latest/download"
-[ "$version" != "latest" ] && versionPath="download/${version}"
-
-download_url=$CASTOR_DOWNLOAD_URL_PATTERN
-[ "$static" = "true" ] && download_url=$CASTOR_DOWNLOAD_STATIC_URL_PATTERN
-download_url=${download_url/~platform~/${platform}}
-download_url=${download_url/~versionPath~/${versionPath}}
-
-output "  Downloading ${download_url}.";
-case $downloader in
-    "curl")
-        http_code=$(curl -s -o "${CASTOR_TMPDIR}/${CASTOR_TMP_NAME}" -w "%{http_code}" --location "${download_url}")
-        ;;
-    "wget")
-        http_code=$(wget -q --show-progress --server-response -O "${CASTOR_TMPDIR}/${CASTOR_TMP_NAME}" "${download_url}" 2>&1 | awk '/^  HTTP/{print $2}' | tail -1) || true
-        ;;
-esac
-
-# shellcheck disable=SC2181
-if [ $http_code != 200 ]; then
-    if [[ "${http_code}" = "404" ]]; then
-        output "[castor-installer] Error: version '${version}' does not seem to exist for this platform '${platform}'." "error"
-        output "[castor-installer] Try another version or leave empty for 'latest'." "error"
-    else
-        output "  The download failed. http_code=${http_code}" "error"
-    fi
-    exit 1
-fi
-
-# Verify the binary provenance with the GitHub CLI when it is installed and
-# authenticated (the attestations API rejects anonymous requests).
-output "\nProvenance check" "heading"
-if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
-    if verify_output=$(gh attestation verify "${CASTOR_TMPDIR}/${CASTOR_TMP_NAME}" --repo jolicode/castor 2>&1); then
-        output "  [*] The binary was built by the Castor GitHub Actions workflow" "success"
-    elif [[ "${verify_output}" == *"HTTP 404"* || "${verify_output}" == *"no attestations found"* ]]; then
-        # Releases published before attestations were introduced have none
-        output "  [ ] WARNING: no attestation found for this binary, its provenance cannot be verified" "warning"
-    else
-        output "  [ ] ERROR: the provenance of the downloaded binary could not be verified" "error"
-        output "${verify_output}" "error"
-        rm "${CASTOR_TMPDIR}/${CASTOR_TMP_NAME}"
-        exit 1
-    fi
-else
-    output "  [ ] Provenance not verified: install and log in to the GitHub CLI (gh) to verify downloads" "warning"
-fi
-
-if [ ! -d "${binary_dest}" ]; then
-    # Backward-compatible quick fix: if --install-dir points to the castor binary path,
-    # install into its parent directory.
-    # There was a bug fixed in https://github.com/jolicode/castor/pull/786
-    if [ "$(basename "${binary_dest}")" = "${CASTOR_EXECUTABLE}" ]; then
-        binary_dest="$(dirname "${binary_dest}")"
-    fi
-fi
-
-if [ ! -d "${binary_dest}" ]; then
-    if ! mkdir -p "${binary_dest}"; then
-        if [ "${custom_dir}" = "true" ]; then
-            output "[castor-installer] Error: invalid value for --install-dir: '${binary_dest}'. Expected a directory, or a full path ending with '/${CASTOR_EXECUTABLE}'." "error"
+    if [ "${static}" == "false" ]; then
+        # Check that PHP is installed.
+        if command -v php >/dev/null 2>&1; then
+            output "  [*] PHP is installed" "success"
+        else
+            output "  [ ] ERROR: PHP is required for installation" "error"
             exit 1
         fi
 
-        binary_dest="."
+        if [[ "1" == "$(php -r 'echo version_compare(PHP_VERSION, "8.2", ">=");')" ]]; then
+            output "  [*] PHP version: $(php -r 'echo PHP_VERSION;')" "success"
+        else
+            output "  [ ] ERROR: PHP version $(php -r 'echo PHP_VERSION;') is not 8.2 or greater" "error"
+            exit 1
+        fi
     fi
-fi
 
-if [ "${custom_dir}" == "true" ]; then
-    output "  Installing castor into ${binary_dest}."
-else
-    output "  Installing castor into your home directory."
-fi
+    kernel=$(uname -s 2>/dev/null || /usr/bin/uname -s)
+    case ${kernel} in
+        "Linux"|"linux")
+            kernel="linux"
+            ;;
+        "Darwin"|"darwin")
+            kernel="darwin"
+            ;;
+        *)
+            output "OS '${kernel}' not supported" "error"
+            exit 1
+            ;;
+    esac
 
-if mv "${CASTOR_TMPDIR}/${CASTOR_TMP_NAME}" "${binary_dest}/${CASTOR_EXECUTABLE}"; then
-    output "  Castor executable was moved to: ${binary_dest}/${CASTOR_EXECUTABLE}."
-else
-    output "  Failed to move the executable to ${binary_dest}." "error"
-    rm "${CASTOR_TMPDIR}/${CASTOR_EXECUTABLE}"
-    exit 1
-fi
+    machine=$(uname -m 2>/dev/null || /usr/bin/uname -m)
+    case ${machine} in
+        aarch64*|armv8*|arm64)
+            machine="arm64"
+            ;;
+        x86_64)
+            machine="amd64"
+            ;;
+        *)
+            output "  [ ] Your architecture (${machine}) is not currently supported" "error"
+            exit 1
+            ;;
+    esac
 
-output "  Fixing the executable permissions."
-chmod u+x "${binary_dest}/${CASTOR_EXECUTABLE}"
+    output "  [*] Your architecture (${machine}) is supported" "success"
 
-output "\n🦫  $("${binary_dest}/${CASTOR_EXECUTABLE}" --version) was installed successfully!" "success"
+    platform="${kernel}-${machine}"
 
-if [ "${custom_dir}" == "false" ]; then
-    output "\n" "important"
-    output "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" "important"
-    output "!! It's almost done. Please read the following instructions carefully !!" "important"
-    output "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" "important"
+    # The necessary checks have passed. Start downloading the right version.
+    output "\nDownload" "heading"
 
-    output "\nUse it as a local file:" "info"
-    output "  ${binary_dest}/${CASTOR_EXECUTABLE}"
-    output "\nOr add the following line to your shell configuration file:" "info"
-    output "  export PATH=\"\$HOME/.local/bin:\$PATH\""
-    output "\nOr install it globally on your system:" "info"
-    output " mv ${binary_dest}/${CASTOR_EXECUTABLE} /usr/local/bin/${CASTOR_EXECUTABLE}"
-    output "\nIf moving the file does not work, you might have to prefix the command with sudo."
-    output "\nThen start a new shell and run '${CASTOR_EXECUTABLE}'" "info"
+    versionPath="latest/download"
+    [ "$version" != "latest" ] && versionPath="download/${version}"
 
-    output "\nSetup the autocompletion (optional):" "info"
-    output " Run 'castor completion --help' and follow instructions."
-fi
+    download_url=$CASTOR_DOWNLOAD_URL_PATTERN
+    [ "$static" = "true" ] && download_url=$CASTOR_DOWNLOAD_STATIC_URL_PATTERN
+    download_url=${download_url/~platform~/${platform}}
+    download_url=${download_url/~versionPath~/${versionPath}}
+    checksums_url=${CASTOR_CHECKSUMS_URL_PATTERN/~versionPath~/${versionPath}}
+
+    # Private temporary files, removed whatever happens next
+    binary_tmp=$(mktemp "${CASTOR_TMPDIR}/${CASTOR_EXECUTABLE}.XXXXXXXXXX")
+    checksums_tmp=$(mktemp "${CASTOR_TMPDIR}/${CASTOR_EXECUTABLE}-checksums.XXXXXXXXXX")
+    trap 'rm -f "${binary_tmp}" "${checksums_tmp}"' EXIT
+
+    output "  Downloading ${download_url}.";
+    http_code=$(download "${download_url}" "${binary_tmp}")
+
+    if [ "${http_code}" != 200 ]; then
+        if [[ "${http_code}" = "404" ]]; then
+            output "[castor-installer] Error: version '${version}' does not seem to exist for this platform '${platform}'." "error"
+            output "[castor-installer] Try another version or leave empty for 'latest'." "error"
+        else
+            output "  The download failed. http_code=${http_code}" "error"
+        fi
+        exit 1
+    fi
+
+    # Check the binary against the SHA256SUMS file published with the release.
+    output "\nChecksum check" "heading"
+    http_code=$(download "${checksums_url}" "${checksums_tmp}")
+    if [ "${http_code}" == 200 ]; then
+        expected_checksum=$(awk -v name="$(basename "${download_url}")" '{ sub(/^\*/, "", $2); if ($2 == name) print $1 }' "${checksums_tmp}")
+        actual_checksum=$(sha256 "${binary_tmp}")
+        if [ -z "${expected_checksum}" ]; then
+            output "  [ ] ERROR: the SHA256SUMS file of the release has no entry for $(basename "${download_url}")" "error"
+            exit 1
+        elif [ -z "${actual_checksum}" ]; then
+            output "  [ ] WARNING: neither sha256sum nor shasum is installed, the checksum of the binary cannot be verified" "warning"
+        elif [ "${expected_checksum}" != "${actual_checksum}" ]; then
+            output "  [ ] ERROR: the checksum of the downloaded binary (${actual_checksum}) does not match the SHA256SUMS file of the release (${expected_checksum})" "error"
+            exit 1
+        else
+            output "  [*] The binary matches the SHA256SUMS file of the release" "success"
+        fi
+    elif [[ "${http_code}" = "404" ]]; then
+        # Releases published before the SHA256SUMS file existed
+        output "  [ ] WARNING: this release has no SHA256SUMS file, the checksum of the binary cannot be verified" "warning"
+    else
+        output "  [ ] ERROR: the SHA256SUMS file of the release could not be downloaded. http_code=${http_code}" "error"
+        exit 1
+    fi
+
+    # Verify the binary provenance with the GitHub CLI when it is installed and
+    # authenticated (the attestations API rejects anonymous requests).
+    output "\nProvenance check" "heading"
+    if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
+        if verify_output=$(gh attestation verify "${binary_tmp}" --repo jolicode/castor --signer-workflow jolicode/castor/.github/workflows/artifacts.yml 2>&1); then
+            output "  [*] The binary was built by the Castor GitHub Actions workflow" "success"
+        elif [[ "${verify_output}" == *"HTTP 404"* || "${verify_output}" == *"no attestations found"* ]]; then
+            # Releases published before attestations were introduced have none
+            output "  [ ] WARNING: no attestation found for this binary, its provenance cannot be verified" "warning"
+        elif [[ "${verify_output}" == *'unknown command "attestation"'* ]]; then
+            output "  [ ] Provenance not verified: update the GitHub CLI (gh) to 2.49 or later to verify downloads" "warning"
+        else
+            output "  [ ] ERROR: the provenance of the downloaded binary could not be verified" "error"
+            output "${verify_output}" "error"
+            exit 1
+        fi
+    else
+        output "  [ ] Provenance not verified: install and log in to the GitHub CLI (gh) to verify downloads" "warning"
+    fi
+
+    if [ ! -d "${binary_dest}" ]; then
+        # Backward-compatible quick fix: if --install-dir points to the castor binary path,
+        # install into its parent directory.
+        # There was a bug fixed in https://github.com/jolicode/castor/pull/786
+        if [ "$(basename "${binary_dest}")" = "${CASTOR_EXECUTABLE}" ]; then
+            binary_dest="$(dirname "${binary_dest}")"
+        fi
+    fi
+
+    if [ ! -d "${binary_dest}" ]; then
+        if ! mkdir -p "${binary_dest}"; then
+            if [ "${custom_dir}" = "true" ]; then
+                output "[castor-installer] Error: invalid value for --install-dir: '${binary_dest}'. Expected a directory, or a full path ending with '/${CASTOR_EXECUTABLE}'." "error"
+                exit 1
+            fi
+
+            binary_dest="."
+        fi
+    fi
+
+    if [ "${custom_dir}" == "true" ]; then
+        output "  Installing castor into ${binary_dest}."
+    else
+        output "  Installing castor into your home directory."
+    fi
+
+    if mv "${binary_tmp}" "${binary_dest}/${CASTOR_EXECUTABLE}"; then
+        output "  Castor executable was moved to: ${binary_dest}/${CASTOR_EXECUTABLE}."
+    else
+        output "  Failed to move the executable to ${binary_dest}." "error"
+        exit 1
+    fi
+
+    output "  Fixing the executable permissions."
+    chmod u+x "${binary_dest}/${CASTOR_EXECUTABLE}"
+
+    output "\n🦫  $("${binary_dest}/${CASTOR_EXECUTABLE}" --version) was installed successfully!" "success"
+
+    if [ "${custom_dir}" == "false" ]; then
+        output "\n" "important"
+        output "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" "important"
+        output "!! It's almost done. Please read the following instructions carefully !!" "important"
+        output "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" "important"
+
+        output "\nUse it as a local file:" "info"
+        output "  ${binary_dest}/${CASTOR_EXECUTABLE}"
+        output "\nOr add the following line to your shell configuration file:" "info"
+        output "  export PATH=\"\$HOME/.local/bin:\$PATH\""
+        output "\nOr install it globally on your system:" "info"
+        output " mv ${binary_dest}/${CASTOR_EXECUTABLE} /usr/local/bin/${CASTOR_EXECUTABLE}"
+        output "\nIf moving the file does not work, you might have to prefix the command with sudo."
+        output "\nThen start a new shell and run '${CASTOR_EXECUTABLE}'" "info"
+
+        output "\nSetup the autocompletion (optional):" "info"
+        output " Run 'castor completion --help' and follow instructions."
+    fi
+}
+
+# The whole script is read before anything runs: a truncated download (curl | bash)
+# cannot execute a partial script
+main "$@"

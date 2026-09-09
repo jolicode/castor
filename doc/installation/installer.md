@@ -73,7 +73,8 @@ castor self-update
 - `--rollback` or `-r`: Rollback to the previous version
 
 Each release ships a `SHA256SUMS` file listing the checksum of every binary:
-`self-update` refuses a downloaded binary whose checksum does not match it.
+the installer and `self-update` refuse a downloaded binary whose checksum does
+not match it.
 
 When the [GitHub CLI](https://cli.github.com/) (2.49 or later) is installed and
 authenticated, the installer and `self-update` also verify the provenance of the
