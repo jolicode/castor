@@ -35,7 +35,7 @@
     "require": {
         "php": ">=8.4",
         "composer/composer": "^2.10.2",
-        "jolicode/jolinotif": "^3.3.1",
+        "jolicode/jolinotif": "^3.4.0",
         "jolicode/php-os-helper": "^0.3.0",
         "laravel/agent-detector": "^2.0.2",
         "monolog/monolog": "^3.10.0",

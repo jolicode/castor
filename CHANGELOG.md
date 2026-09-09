@@ -11,6 +11,7 @@
 ### Security
 
 * Publish [artifact attestations](https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations) for the phars and static binaries, and verify them in the installer, in `self-update` and in `castor:repack` when the GitHub CLI is installed and authenticated
+* Update JoliNotif to 3.4.0, which fixes a script injection in its AppleScript and PowerShell drivers: the content of a notification, like the command line of a process sent with `notify`, could break out of the generated script
 
 ### Fixes
 
