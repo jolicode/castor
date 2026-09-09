@@ -156,6 +156,11 @@ class HttpDownloader
         return \sprintf('%.2f %s', $size, $units[$pow - 1]);
     }
 
+    /**
+     * The file name comes from the remote server (Content-Disposition header,
+     * or the URL path): only its last path segment is kept, so the server can
+     * never make the download land outside the target directory.
+     */
     private function extractFileName(ResponseInterface $response, string $url): string
     {
         $disposition = $response->getHeaders(false)['content-disposition'][0] ?? null;
@@ -166,7 +171,14 @@ class HttpDownloader
             if (!\is_string($parsedUrl)) {
                 throw new \RuntimeException(\sprintf('Could not extract file name from URL: %s', $url));
             }
-            $filename = basename($parsedUrl);
+            $filename = $parsedUrl;
+        }
+
+        $filename = basename(str_replace('\\', '/', $filename));
+        $filename = (string) preg_replace('/[\x00-\x1F\x7F]/', '', $filename);
+
+        if ('' === $filename || '.' === $filename || '..' === $filename) {
+            throw new \RuntimeException(\sprintf('Could not determine a valid file name for the download of "%s", pass the file path explicitly.', $url));
         }
 
         return $filename;
