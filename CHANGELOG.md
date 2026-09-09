@@ -17,6 +17,7 @@
 * Only accept attestations signed by the Artifacts workflow when verifying the provenance of a binary, and skip the verification with a GitHub CLI too old to know about attestations instead of failing
 * Verify the SHA-256 checksum of the static-php-cli archive downloaded by `castor:compile`: the checksums of the default `--spc-version` are known, any other version needs the new `--spc-sha256` option
 * Verify the checksum of the binary downloaded by the installer against the `SHA256SUMS` file of the release, download it to a private temporary file removed whatever happens, and read the whole installer script before running anything
+* Prefer the PHP zip extension over the zip binary in `zip()` when a password is given: the binary gets the password as a command line argument, readable by every user of the machine while the archive is created. `zip_binary()` still does, and now warns about it
 
 ### Fixes
 

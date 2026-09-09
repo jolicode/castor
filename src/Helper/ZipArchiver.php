@@ -25,16 +25,24 @@ class ZipArchiver
         int $compressionLevel = 6,
         bool $overwrite = false,
     ): void {
-        if ($this->isZipBinaryAvailable() && CompressionMethod::ZSTD !== $compressionMethod) {
-            $this->zipWithBinary($source, $destination, $password, $compressionMethod, $compressionLevel, $overwrite);
+        $zipBinaryAvailable = CompressionMethod::ZSTD !== $compressionMethod && $this->isZipBinaryAvailable();
+        $zipExtensionAvailable = class_exists(\ZipArchive::class);
+
+        // The zip binary gets the password as a command line argument, readable
+        // by every user of the machine while the archive is created: PHP keeps
+        // it private, so it comes first when there is a password
+        if ($zipExtensionAvailable && (null !== $password || !$zipBinaryAvailable)) {
+            if (!$zipBinaryAvailable) {
+                $this->logger->notice('Native zip binary not available or ZSTD compression method is requested, falling back to PHP ZipArchive');
+            }
+
+            $this->zipWithPhp($source, $destination, $password, $compressionMethod, $compressionLevel, $overwrite);
 
             return;
         }
 
-        $this->logger->notice('Native zip binary not available or ZSTD compression method is requested, falling back to PHP ZipArchive');
-
-        if (class_exists(\ZipArchive::class)) {
-            $this->zipWithPhp($source, $destination, $password, $compressionMethod, $compressionLevel, $overwrite);
+        if ($zipBinaryAvailable) {
+            $this->zipWithBinary($source, $destination, $password, $compressionMethod, $compressionLevel, $overwrite);
 
             return;
         }
@@ -57,7 +65,11 @@ class ZipArchiver
         $zipCommand = ['zip', '-r', $destination, '-Z', $compressionMethod->value, '-' . $compressionLevel];
 
         if (null !== $password) {
-            // @todo improve security by using -e instead, when run() will allow input to be set before running the command
+            // The zip binary only takes a password as an argument (-e reads it
+            // from the terminal, not from stdin), so it shows up in the process
+            // list until the archive is created
+            $this->logger->warning('The password is passed to the zip binary as a command line argument, readable by every user of the machine while the archive is created. Use zip_php() to keep it private.');
+
             $zipCommand = [...$zipCommand, '-P', $password];
         }
 
