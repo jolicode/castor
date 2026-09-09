@@ -354,6 +354,14 @@ function foo(): void
 }
 ```
 
+> [!WARNING]
+> The environment variables of the context are displayed, with their values,
+> in the command Castor reports when a process fails, and in the verbose logs
+> (`-v`). Keep secrets out of `withEnvironment()` when that output can be read
+> by others, in CI logs for instance. Variables inherited from the parent
+> process (exported in your shell, or loaded with `load_dot_env()`) are passed
+> to the process too, but are never displayed.
+
 ### Timeout
 
 By default, Castor allow your `run()` calls to go indefinitly.
