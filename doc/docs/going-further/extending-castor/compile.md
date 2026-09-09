@@ -51,7 +51,9 @@ The `compile` command performs several steps:
 
 1. Downloads or uses an existing [Static PHP CLI
    tool](https://github.com/crazywhalecc/static-php-cli) to compile PHP and the
-   phar into a binary.
+   phar into a binary. The downloaded archive is checked against its SHA-256
+   checksum: Castor knows the checksums of the default `--spc-version`, any
+   other version needs its checksum passed with the `--spc-sha256` option.
 2. If required, it automatically installs dependencies and compiles PHP with the
    specified extensions.
 3. Combines the compiled PHP and your phar file into a single executable.

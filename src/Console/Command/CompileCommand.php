@@ -22,6 +22,20 @@ class CompileCommand extends Command
     private const CACHE_VERSION = '5';
     private const DEFAULT_SPC_VERSION = '2.8.2';
 
+    /**
+     * SHA-256 checksums of the static-php-cli (spc) archives, by version and
+     * target, computed from the assets of the GitHub releases. The download
+     * is checked against them, or against --spc-sha256 for other versions.
+     */
+    private const array SPC_CHECKSUMS = [
+        '2.8.2' => [
+            'linux-x86_64' => '42b410182875ed2076e147db63c6c17f7feb4ba77652b4bb24ae06adb40747dd',
+            'linux-aarch64' => '28206b05c4028826615c6cd348831d7c5025ffd0e57a9309a4aa04c51fe35d58',
+            'macos-x86_64' => 'c98e6059e6e64bfe8710cd76186598bf51dc3ccfe4cafcc504c471d4fc8e3f07',
+            'macos-aarch64' => 'c934c323df75b6b5d258a90a85e204479341217b23819fcf5546845d8579e39e',
+        ],
+    ];
+
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly Filesystem $fs,
@@ -37,6 +51,7 @@ class CompileCommand extends Command
             ->setAliases(['compile'])
             ->addArgument('phar-path', InputArgument::REQUIRED, 'Path to phar to compile along PHP')
             ->addOption('spc-version', null, InputOption::VALUE_REQUIRED, 'Version of the static-php-cli (spc) tool to use', self::DEFAULT_SPC_VERSION)
+            ->addOption('spc-sha256', null, InputOption::VALUE_REQUIRED, 'SHA-256 checksum of the static-php-cli (spc) archive to download, required for a version other than the default one')
             ->addOption('binary-path', null, InputOption::VALUE_REQUIRED, 'Path to compiled static binary. It can be the parent dirname too', PathHelper::getRoot(false))
             ->addOption('os', null, InputOption::VALUE_REQUIRED, 'Target OS for PHP compilation', 'linux', ['linux', 'macos'])
             ->addOption('arch', null, InputOption::VALUE_REQUIRED, 'Target architecture for PHP compilation', 'x86_64', ['x86_64', 'aarch64'])
@@ -69,6 +84,7 @@ class CompileCommand extends Command
             $os,
             $arch,
             $input->getOption('spc-version'),
+            $input->getOption('spc-sha256'),
         );
 
         if (!$this->fs->exists($spcBinaryDir . '/buildroot/bin/micro.sfx') || $input->getOption('php-rebuild')) {
@@ -126,10 +142,15 @@ class CompileCommand extends Command
             throw new \InvalidArgumentException(\sprintf('The phar file "%s" does not exist.', $input->getArgument('phar-path')));
         }
 
+        $spcChecksum = $input->getOption('spc-sha256');
+        if (null !== $spcChecksum && !preg_match('/^[0-9a-f]{64}$/i', $spcChecksum)) {
+            throw new \InvalidArgumentException('The --spc-sha256 option must be a SHA-256 checksum, 64 hexadecimal characters.');
+        }
+
         $input->setArgument('phar-path', Path::makeAbsolute($input->getArgument('phar-path'), getcwd() ?: PathHelper::getRoot()));
     }
 
-    private function downloadSPC(string $spcSourceUrl, string $spcBinaryDestination, SymfonyStyle $io): void
+    private function downloadSPC(string $spcSourceUrl, string $spcBinaryDestination, SymfonyStyle $io, string $expectedChecksum): void
     {
         $response = $this->httpClient->request('GET', $spcSourceUrl);
         $contentLength = $response->getHeaders()['content-length'][0] ?? 0;
@@ -148,6 +169,17 @@ class CompileCommand extends Command
         }
 
         fclose($outputStream);
+        $progressBar->finish();
+        $io->newLine();
+
+        $checksum = (string) hash_file('sha256', $spcTarGzDestination);
+        if (!hash_equals(strtolower($expectedChecksum), $checksum)) {
+            $this->fs->remove($spcTarGzDestination);
+
+            throw new \RuntimeException(\sprintf('The checksum of the static-php-cli archive downloaded from "%s" is "%s", but "%s" was expected. The archive has been discarded.', $spcSourceUrl, $checksum, $expectedChecksum));
+        }
+
+        $io->text('The checksum of the static-php-cli archive matches the expected one.');
 
         $extractProcess = new Process(
             command: ['tar', 'xf', $spcTarGzDestination],
@@ -160,8 +192,6 @@ class CompileCommand extends Command
             echo $buffer;
         });
         chmod($spcBinaryDestination, 0o755);
-
-        $progressBar->finish();
     }
 
     private function installPHPBuildTools(string $spcBinaryPath, string $spcBinaryDir, SymfonyStyle $io): void
@@ -254,18 +284,26 @@ class CompileCommand extends Command
         });
     }
 
-    private function setupSPC(string $spcBinaryDir, string $spcBinaryPath, SymfonyStyle $io, mixed $os, mixed $arch, string $spcVersion): void
+    private function setupSPC(string $spcBinaryDir, string $spcBinaryPath, SymfonyStyle $io, mixed $os, mixed $arch, string $spcVersion, ?string $spcChecksum): void
     {
         $this->fs->mkdir($spcBinaryDir, 0o755);
 
         if ($this->fs->exists($spcBinaryPath)) {
             $io->text(\sprintf('Using the static-php-cli (spc) tool from "%s"', $spcBinaryPath));
-        } else {
-            $spcSourceUrl = \sprintf('https://github.com/crazywhalecc/static-php-cli/releases/download/%s/spc-%s-%s.tar.gz', $spcVersion, $os, $arch);
-            $io->text(\sprintf('Downloading the static-php-cli (spc) tool from "%s" to "%s"', $spcSourceUrl, $spcBinaryPath));
-            $this->downloadSPC($spcSourceUrl, $spcBinaryPath, $io);
-            $io->newLine(2);
+
+            return;
         }
+
+        $expectedChecksum = $spcChecksum ?? self::SPC_CHECKSUMS[$spcVersion]["{$os}-{$arch}"] ?? null;
+
+        if (null === $expectedChecksum) {
+            throw new \InvalidArgumentException(\sprintf('The checksum of the static-php-cli %s archive for %s-%s is not known: pass it with the --spc-sha256 option (the archives are published at https://github.com/crazywhalecc/static-php-cli/releases).', $spcVersion, $os, $arch));
+        }
+
+        $spcSourceUrl = \sprintf('https://github.com/crazywhalecc/static-php-cli/releases/download/%s/spc-%s-%s.tar.gz', $spcVersion, $os, $arch);
+        $io->text(\sprintf('Downloading the static-php-cli (spc) tool from "%s" to "%s"', $spcSourceUrl, $spcBinaryPath));
+        $this->downloadSPC($spcSourceUrl, $spcBinaryPath, $io, $expectedChecksum);
+        $io->newLine();
     }
 
     private function getBinaryPath(InputInterface $input): string
