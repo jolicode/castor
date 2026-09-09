@@ -11,6 +11,7 @@
 ### Security
 
 * Publish [artifact attestations](https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations) for the phars and static binaries, and verify them in the installer, in `self-update` and in `castor:repack` when the GitHub CLI is installed and authenticated
+* Update the embedded Composer to 2.10.3, which fixes an arbitrary command execution through the Perforce source URL of a malicious package ([GHSA-rvx4-ffvw-m9q3](https://github.com/advisories/GHSA-rvx4-ffvw-m9q3))
 
 ### Fixes
 
