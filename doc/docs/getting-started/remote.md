@@ -21,6 +21,11 @@ This will download the package and its dependencies, and then run the first
 binary command it finds in the package. In this case, it will run the `php-cs-fixer`
 binary command with the `fix` argument.
 
+> [!WARNING]
+> Like `npx` or `pipx run`, this downloads code from Packagist and runs it on
+> your machine, with your permissions. Only execute packages you trust, and
+> pin their version (see below) to know exactly what runs.
+
 All options after the package name will be passed to the binary command.
 
 ## Specific binary of package
