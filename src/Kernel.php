@@ -39,6 +39,8 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use Symfony\Component\ErrorHandler\ErrorHandler;
 use Symfony\Component\ErrorHandler\ErrorRenderer\FileLinkFormatter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -121,6 +123,8 @@ final class Kernel extends AbstractKernel
         // KernelTrait aliases self::class to the synthetic "kernel" service
         $container->set('kernel', $this);
         $container->set(ContainerInterface::class, $container);
+
+        $this->restrictCacheDirectory($this->getCacheDir());
     }
 
     public function init(InputInterface $input, OutputInterface $output): void
@@ -288,6 +292,33 @@ final class Kernel extends AbstractKernel
         $bundle = new ServicesBundle();
 
         $this->bundles = [$bundle->getName() => $bundle];
+    }
+
+    /**
+     * The cache holds data written by the tasks, and what the update check
+     * fetched: it is only readable by its owner. An existing directory that
+     * is more permissive is restricted, when it belongs to the current user.
+     * Failures are left to the cache adapter, which reports them when it
+     * cannot write.
+     */
+    private function restrictCacheDirectory(string $directory): void
+    {
+        $filesystem = new Filesystem();
+
+        try {
+            if (!is_dir($directory)) {
+                $filesystem->mkdir($directory, 0o700);
+
+                return;
+            }
+
+            $ownedByCurrentUser = !\function_exists('posix_getuid') || fileowner($directory) === posix_getuid();
+
+            if ($ownedByCurrentUser && 0 !== (fileperms($directory) & 0o077)) {
+                $filesystem->chmod($directory, 0o700);
+            }
+        } catch (IOExceptionInterface) {
+        }
     }
 
     private function mount(InputInterface $input, OutputInterface $output): void
