@@ -13,6 +13,9 @@ foreach (['linux-amd64', 'linux-arm64', 'darwin-amd64', 'darwin-arm64'] as $plat
 }
 $assets[] = ['name' => 'castor.windows-amd64.phar', 'url' => $binaryUrl, 'browser_download_url' => $binaryUrl];
 
+$checksumsUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/self-update/checksums.php';
+$assets[] = ['name' => 'SHA256SUMS', 'url' => $checksumsUrl, 'browser_download_url' => $checksumsUrl];
+
 $release = '/tags/snapshot' === ($_SERVER['PATH_INFO'] ?? '/latest')
     ? ['tag_name' => 'snapshot', 'name' => 'v99.0.0-3-gabcdef0']
     : ['tag_name' => 'v99.0.0', 'name' => 'v99.0.0'];

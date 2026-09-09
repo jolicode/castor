@@ -29,9 +29,18 @@ class SelfUpdateCommandTest extends TaskTestCase
         $fs->chmod($castor, 0o755);
         $inode = fileinode($castor);
 
+        // The checksums file of the fake release does not match the binary
+        touch($dir . '/corrupt-checksums');
+        $process = $this->runSelfUpdate($castor);
+        $this->assertSame(1, $process->getExitCode(), $process->getOutput() . $process->getErrorOutput());
+        $this->assertStringContainsString('checksum of the downloaded binary does not match', $process->getOutput());
+        $this->assertSame($inode, fileinode($castor), 'The binary has not been replaced');
+        $this->assertFileDoesNotExist($castor . '.tmp');
+        unlink($dir . '/corrupt-checksums');
+
         $process = $this->runSelfUpdate($castor);
         $this->assertSame(0, $process->getExitCode(), $process->getOutput() . $process->getErrorOutput());
-        $this->assertStringContainsString('to verify the provenance', $process->getOutput());
+        $this->assertStringContainsString('log in to the GitHub CLI', $process->getOutput());
         $this->assertStringContainsString('to v99.0.0!', $process->getOutput());
         $this->assertNotSame($inode, fileinode($castor), 'The binary has been replaced');
         $this->assertFileEquals(self::$castorBin, $castor);
