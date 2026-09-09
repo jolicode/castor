@@ -51,6 +51,7 @@ class RepackCommand extends Command
             ->addOption('arch', null, InputOption::VALUE_REQUIRED, 'The targeted CPU architecture', 'amd64', ['amd64', 'arm64'])
             ->addOption('castor-version', null, InputOption::VALUE_REQUIRED, 'The Castor version to use (vX.Y.Z, or snapshot)', Application::isSnapshot() ? ReleaseHelper::SNAPSHOT_TAG : Application::VERSION)
             ->addOption('castor-phar', null, InputOption::VALUE_REQUIRED, 'A specific castor phar to use (/path/to/castor.phar)')
+            ->addOption('allow-unattested', null, InputOption::VALUE_NONE, 'Accept a Castor phar downloaded from GitHub without provenance attestation (releases published before attestations existed)')
             ->addOption('no-logo', null, InputOption::VALUE_NONE, 'Hide Castor logo')
             ->addOption('logo-file', null, InputOption::VALUE_OPTIONAL, 'Path to a PHP file that returns a logo as a string, or a closure that returns a logo as a string')
             ->addOption('output-directory', null, InputOption::VALUE_REQUIRED, 'Path to the directory where the phar will be generated', '')
@@ -98,7 +99,7 @@ class RepackCommand extends Command
         }
 
         // Download and extract castor phar from GitHub
-        $castorSourceDir = $this->downloadAndExtractCastorPhar($os, $arch, $input->getOption('castor-version'), $input->getOption('castor-phar'));
+        $castorSourceDir = $this->downloadAndExtractCastorPhar($os, $arch, $input->getOption('castor-version'), $input->getOption('castor-phar'), $input->getOption('allow-unattested'));
 
         $appName = $input->getOption('app-name');
         $appVersion = $input->getOption('app-version');
@@ -218,7 +219,7 @@ class RepackCommand extends Command
         };
     }
 
-    private function downloadAndExtractCastorPhar(string $os, string $arch, string $version, ?string $pharPath): string
+    private function downloadAndExtractCastorPhar(string $os, string $arch, string $version, ?string $pharPath, bool $allowUnattested): string
     {
         $extractDir = PathHelper::getRoot() . '/.castor-vendor';
 
@@ -279,7 +280,7 @@ class RepackCommand extends Command
 
             $this->fs->dumpFile($pharPath, $pharContent);
 
-            $this->verifyProvenance($pharPath);
+            $this->verifyProvenance($pharPath, $allowUnattested);
         }
 
         $this->io->comment('Extracting Castor phar...');
@@ -297,7 +298,13 @@ class RepackCommand extends Command
         return $extractDir;
     }
 
-    private function verifyProvenance(string $pharPath): void
+    /**
+     * The downloaded phar gets embedded in the application and distributed
+     * with it, so a phar without attestation is refused: the releases
+     * published before attestations existed need --allow-unattested. Without
+     * an authenticated GitHub CLI, the phar is used unverified.
+     */
+    private function verifyProvenance(string $pharPath, bool $allowUnattested): void
     {
         try {
             $status = $this->attestationHelper->verify($pharPath);
@@ -307,10 +314,16 @@ class RepackCommand extends Command
             throw $e;
         }
 
+        if (AttestationStatus::NotAttested === $status && !$allowUnattested) {
+            $this->fs->remove($pharPath);
+
+            throw new \RuntimeException('No attestation found on GitHub for the downloaded Castor phar, so it cannot be trusted as a Castor build. Pass --allow-unattested to accept a release published before attestations existed.');
+        }
+
         match ($status) {
             AttestationStatus::Verified => $this->io->comment('Castor phar provenance verified.'),
-            AttestationStatus::NotAttested => $this->io->warning('No attestation found for this Castor release, its provenance cannot be verified.'),
-            AttestationStatus::Skipped => $this->io->comment('Install and log in to the GitHub CLI (gh) to verify the provenance of the downloaded Castor phar.'),
+            AttestationStatus::NotAttested => $this->io->warning('No attestation found for this Castor release, its provenance cannot be verified. It is accepted because of --allow-unattested.'),
+            AttestationStatus::Skipped => $this->io->warning('Install and log in to the GitHub CLI (gh 2.49 or later) to verify the provenance of the downloaded Castor phar.'),
         };
     }
 }

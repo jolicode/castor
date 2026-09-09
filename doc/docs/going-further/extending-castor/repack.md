@@ -46,8 +46,12 @@ castor repack
 <!-- -->
 > [!NOTE]
 > The Castor phar embedded in your application is downloaded from the GitHub
-> releases. When the [GitHub CLI](https://cli.github.com/) is installed and
-> authenticated, its provenance is verified with `gh attestation verify`.
+> releases, with the `GITHUB_TOKEN` environment variable as credentials when it
+> is set (it raises the API rate limit in CI). When the
+> [GitHub CLI](https://cli.github.com/) is installed and authenticated, the
+> provenance of the phar is verified with `gh attestation verify`, and a phar
+> without attestation is refused: pass the `--allow-unattested` option to
+> embed a Castor release published before attestations existed.
 
 {% include-markdown "/build/command_castor-repack.md" start="`castor:repack`\n---------------" %}
 

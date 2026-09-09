@@ -85,6 +85,8 @@ class RepackHelper
         if ($useGithubRelease) {
             $command[] = '--castor-version';
             $command[] = 'v1.2.0';
+            // This release predates the attestations
+            $command[] = '--allow-unattested';
         } else {
             $castorPhar = __DIR__ . '/../../tools/phar/build/castor.linux-amd64.phar';
             if (!file_exists($castorPhar)) {
