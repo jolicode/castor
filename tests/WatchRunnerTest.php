@@ -43,7 +43,7 @@ class WatchRunnerTest extends TestCase
 
         $runner = new WatchRunner(
             $this->createStub(ContextRegistry::class),
-            new ParallelRunner($this->createStub(Application::class), new NullOutput()),
+            new ParallelRunner($this->createStub(Application::class), new NullOutput(), $this->createStub(ContextRegistry::class)),
             $this->createStub(ProcessRunner::class),
             $this->createStub(SectionOutput::class),
             $this->createStub(Installation::class),
@@ -95,7 +95,7 @@ class WatchRunnerTest extends TestCase
 
         new WatchRunner(
             $this->createStub(ContextRegistry::class),
-            new ParallelRunner($this->createStub(Application::class), new NullOutput()),
+            new ParallelRunner($this->createStub(Application::class), new NullOutput(), $this->createStub(ContextRegistry::class)),
             $processRunner,
             $this->createStub(SectionOutput::class),
             $installation,
