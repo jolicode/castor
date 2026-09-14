@@ -400,6 +400,7 @@ final class Kernel extends AbstractKernel
         // depending on the context. And it must be before executing
         // listeners too, to get the context there.
         $c->functionLoader->loadContexts($descriptorsCollection->contextDescriptors, $descriptorsCollection->contextGeneratorDescriptors);
+        $this->guardCastorUseChdir($input);
         $this->configureContext($input, $output, $c->contextRegistry);
 
         $event = new FunctionsResolvedEvent(
@@ -461,23 +462,42 @@ final class Kernel extends AbstractKernel
         return $content;
     }
 
-    private function configureContext(InputInterface $input, OutputInterface $output, ContextRegistry $contextRegistry): void
+    private function guardCastorUseChdir(InputInterface $input): void
     {
         // Only worth telling when there is a castor.php to put the define in, so never for a
         // repacked application, whose castor.php is baked in and not the user's to edit, and
         // never when the output is meant to be parsed: the deprecation goes through the logger,
         // so it would land in the middle of "list --format=json" or of the completion script.
         // This method runs once per mount, so it is told only once.
-        $firstArgument = $input->getFirstArgument();
-        $machineReadable = \in_array($firstArgument, ['_complete', 'completion'], true)
-            || 'txt' !== $input->getParameterOption('--format', 'txt');
-
-        if (!$this->chdirDeprecationTriggered && $this->hasCastorFile && !$this->repacked && !$machineReadable && !\defined('CASTOR_USE_CHDIR')) {
-            $this->chdirDeprecationTriggered = true;
-
-            trigger_deprecation('castor/castor', '1.8.0', 'Not defining the "CASTOR_USE_CHDIR" constant is deprecated. Add "defined(\'CASTOR_USE_CHDIR\') || define(\'CASTOR_USE_CHDIR\', true);" at the top of your castor.php so Castor changes its current directory to the working directory of the context (the default in Castor 2.0), or define it to false to keep the current behavior.');
+        if (\defined('CASTOR_USE_CHDIR')) {
+            return;
         }
 
+        if ($this->chdirDeprecationTriggered) {
+            return;
+        }
+
+        if ($this->repacked) {
+            return;
+        }
+
+        if (!$this->hasCastorFile) {
+            return;
+        }
+
+        $machineReadable = \in_array($input->getFirstArgument(), ['_complete', 'completion'], true)
+            || 'txt' !== $input->getParameterOption('--format', 'txt');
+        if ($machineReadable) {
+            return;
+        }
+
+        $this->chdirDeprecationTriggered = true;
+
+        trigger_deprecation('castor/castor', '1.8.0', 'Not defining the "CASTOR_USE_CHDIR" constant is deprecated. Add "defined(\'CASTOR_USE_CHDIR\') || define(\'CASTOR_USE_CHDIR\', true);" at the top of your castor.php so Castor changes its current directory to the working directory of the context (the default in Castor 2.0), or define it to false to keep the current behavior.');
+    }
+
+    private function configureContext(InputInterface $input, OutputInterface $output, ContextRegistry $contextRegistry): void
+    {
         $contextRegistry->setDefaultIfEmpty();
 
         $contextNames = $contextRegistry->getNames();
