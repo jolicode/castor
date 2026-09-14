@@ -48,10 +48,12 @@ class ApplicationFactory
             }
         }
 
-        if (!$repacked) {
-            // Once the process moves to the working directory of the context, a relative
-            // root would resolve against the wrong directory.
-            $rootDir = Path::makeAbsolute((string) $rootDir, getcwd() ?: '.');
+        // Once the process moves to the working directory of the context, a relative root would
+        // resolve against the wrong directory. When there is no current directory at all, which
+        // happens when the one the shell sits in has been deleted, there is nothing to resolve
+        // it against, so leave it alone rather than throw before anything else runs.
+        if (!$repacked && false !== ($cwd = getcwd())) {
+            $rootDir = Path::makeAbsolute((string) $rootDir, $cwd);
         }
 
         $kernel = new Kernel('dev', true, $rootDir, $hasCastorFile, $castorFilePath, $repacked);

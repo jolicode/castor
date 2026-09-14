@@ -434,12 +434,17 @@ final class Kernel extends AbstractKernel
     {
         // Only worth telling when there is a castor.php to put the define in, so never for a
         // repacked application, whose castor.php is baked in and not the user's to edit, and
-        // never while completing, where the output must stay clean. This method runs once per
-        // mount, so it is told only once.
-        if (!$this->chdirDeprecationTriggered && $this->hasCastorFile && !$this->repacked && '_complete' !== $input->getFirstArgument() && !\defined('CASTOR_USE_CHDIR')) {
+        // never when the output is meant to be parsed: the deprecation goes through the logger,
+        // so it would land in the middle of "list --format=json" or of the completion script.
+        // This method runs once per mount, so it is told only once.
+        $firstArgument = $input->getFirstArgument();
+        $machineReadable = \in_array($firstArgument, ['_complete', 'completion'], true)
+            || 'txt' !== $input->getParameterOption('--format', 'txt');
+
+        if (!$this->chdirDeprecationTriggered && $this->hasCastorFile && !$this->repacked && !$machineReadable && !\defined('CASTOR_USE_CHDIR')) {
             $this->chdirDeprecationTriggered = true;
 
-            trigger_deprecation('castor/castor', '1.8.0', 'Not defining the "CASTOR_USE_CHDIR" constant is deprecated. Add "define(\'CASTOR_USE_CHDIR\', true);" at the top of your castor.php so Castor changes its current directory to the working directory of the context (the default in Castor 2.0), or define it to false to keep the current behavior.');
+            trigger_deprecation('castor/castor', '1.8.0', 'Not defining the "CASTOR_USE_CHDIR" constant is deprecated. Add "defined(\'CASTOR_USE_CHDIR\') || define(\'CASTOR_USE_CHDIR\', true);" at the top of your castor.php so Castor changes its current directory to the working directory of the context (the default in Castor 2.0), or define it to false to keep the current behavior.');
         }
 
         $contextRegistry->setDefaultIfEmpty();

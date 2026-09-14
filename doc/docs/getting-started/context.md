@@ -53,8 +53,13 @@ You can opt in to a single, consistent behavior by defining a constant at the to
 of your `castor.php` file:
 
 ```php
-define('CASTOR_USE_CHDIR', true);
+defined('CASTOR_USE_CHDIR') || define('CASTOR_USE_CHDIR', true);
 ```
+
+The guard matters as soon as several `castor.php` files run in the same process:
+a mounted project, an imported file or a `composer://` package may define the
+constant too, and a second bare `define()` would raise
+`Constant CASTOR_USE_CHDIR already defined`.
 
 Castor then changes the current directory of its own process to the working
 directory of the context, so relative paths mean the same thing everywhere,

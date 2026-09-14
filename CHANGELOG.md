@@ -9,7 +9,7 @@
 
 ### Deprecations
 
-* Not defining the `CASTOR_USE_CHDIR` constant is deprecated. Add `define('CASTOR_USE_CHDIR', true);` at the top of your `castor.php` to opt in: Castor then changes its own current directory to the working directory of the context, so `fs()`, `finder()` and the raw PHP functions (`mkdir()`, `unlink()`, `file_get_contents()`, ...) resolve relative paths where `run()` executes, instead of wherever `castor` was invoked from. It follows `with(workingDirectory: ...)` too, and is restored when the block ends. This becomes the default in Castor 2.0. Define the constant to `false` to keep the current behavior without the deprecation.
+* Not defining the `CASTOR_USE_CHDIR` constant is deprecated. Add `defined('CASTOR_USE_CHDIR') || define('CASTOR_USE_CHDIR', true);` at the top of your `castor.php` to opt in (the guard keeps a mounted or imported `castor.php` from redefining it): Castor then changes its own current directory to the working directory of the context, so `fs()`, `finder()` and the raw PHP functions (`mkdir()`, `unlink()`, `file_get_contents()`, ...) resolve relative paths where `run()` executes, instead of wherever `castor` was invoked from. It follows `with(workingDirectory: ...)` too, and is restored when the block ends. This becomes the default in Castor 2.0. Define the constant to `false` to keep the current behavior without the deprecation.
 
     Once enabled, a relative path given as a CLI argument (`castor castor:compile foo.phar`, task arguments, ...) is resolved from the project root rather than from the directory you invoked `castor` in, which matters when you run Castor from a subdirectory.
 

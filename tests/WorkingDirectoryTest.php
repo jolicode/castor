@@ -33,6 +33,17 @@ class WorkingDirectoryTest extends TaskTestCase
             TXT, $process->getOutput());
     }
 
+    public function testAMountedCastorFileCanDefineTheConstantToo(): void
+    {
+        // Both castor.php files are loaded in the same process, so a bare define() in the
+        // mounted one would raise "Constant CASTOR_USE_CHDIR already defined", which the
+        // error handler turns into an exception. The guarded form keeps them compatible.
+        $process = $this->runTask(['mounted-cwd'], '{{ base }}/tests/fixtures/valid/working-directory-mount');
+
+        $this->assertSame(0, $process->getExitCode(), $process->getErrorOutput());
+        $this->assertSame("mounted: mounted\n", $process->getOutput());
+    }
+
     public function testTheCurrentDirectoryFollowsAWithWorkingDirectoryBlock(): void
     {
         $process = $this->runTask(['cwd-with'], '{{ base }}/tests/fixtures/valid/working-directory');
