@@ -11,6 +11,10 @@ parameters:
         - tests/autoload/loadme.php
     tmpDir: 'var/phpstan/tmp'
     inferPrivatePropertyTypeFromConstructor: true
+    # Defined by the user in their own castor.php, so its value is not fixed. The examples
+    # define it to true, which would otherwise make the check in ContextRegistry look constant.
+    dynamicConstantNames:
+        - CASTOR_USE_CHDIR
     excludePaths:
         analyse: []
     typeAliases:

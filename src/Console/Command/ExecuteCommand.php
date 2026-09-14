@@ -126,8 +126,9 @@ final class ExecuteCommand extends Command
             $context = $this->contextRegistry->getCurrentContext()->withAllowFailure();
 
             // By default the run command will use the directory of the root castor.php file
-            // but this command should be executed in the same directory as where it was launched
-            if (($workingDir = getcwd()) !== false) {
+            // but this command should be executed in the same directory as where it was launched,
+            // which is not getcwd() anymore once the process followed the context
+            if (false !== ($workingDir = $this->contextRegistry->getOriginalWorkingDirectory())) {
                 $context = $context->withWorkingDirectory($workingDir);
             }
 

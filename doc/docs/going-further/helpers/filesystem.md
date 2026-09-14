@@ -50,6 +50,11 @@ function foo()
 > [Symfony documentation](https://symfony.com/doc/current/components/filesystem.html)
 > for more information about this component and how to use it.
 
+When [`CASTOR_USE_CHDIR`](../../getting-started/context.md#the-working-directory)
+is enabled, a relative path given to `fs()` is resolved against the working
+directory of the context, which is the directory holding your `castor.php` file
+by default, instead of the directory you called `castor` from.
+
 ## The `finder()` function
 
 The `finder()` function returns an object that finds files and directories based
