@@ -24,6 +24,20 @@ runs:
         php-version: '${{ inputs.php-version }}'
         coverage: none
 
+    - name: Get the Composer cache directory
+      id: composer-cache
+      run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+      shell: bash
+
+    # The cached archives do not depend on the platform, so every job shares
+    # the same cache
+    - name: Restore the Composer cache
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: composer-${{ hashFiles('composer.lock', 'tools/phar/composer.lock') }}
+        restore-keys: composer-
+
     - name: Install dependencies (project)
       run: composer install --prefer-dist --no-progress --optimize-autoloader --classmap-authoritative ${INPUTS_COMPOSER_FLAGS}
       shell: bash

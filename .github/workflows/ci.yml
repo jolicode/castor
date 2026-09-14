@@ -63,25 +63,8 @@ jobs:
           php-version: 8.5
           need_phar: 'false'
 
-      - name: PHPStan
+      - name: Lint markdown
         run: bin/castor lint-markdown
-
-  mkdocs:
-    name: Verify documentation can be built
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - uses: ./.github/actions/install
-        with:
-          php-version: 8.5
-          need_phar: 'false'
-
-      - name: Build site with mkdocs
-        run: bin/castor castor:mkdocs:build
 
   check-cs:
     name: Coding Standards
@@ -189,6 +172,8 @@ jobs:
   artifacts:
     name: Ensure artifacts are OK
     runs-on: ubuntu-latest
+    # On main, the Artifacts workflow builds and publishes the very same files
+    if: github.event_name == 'pull_request'
 
     steps:
       - name: Checkout

@@ -4,6 +4,13 @@ on:
   push:
     branches: [ main ]
 
+# Every push on main rebuilds and republishes the snapshot: build one run at a
+# time and keep only the latest queued one. A running build is never
+# cancelled, it may be uploading to the release.
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
 # The build jobs attest their artifacts, only the snapshot job needs to write
 # to the repository (see below)
 permissions:
@@ -67,14 +74,27 @@ jobs:
       - name: Upload the Windows phar (windows-amd64)
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: castor-windows-amd64.phar
+          name: castor.windows-amd64.phar
           path: tools/phar/build/castor.windows-amd64.phar
           if-no-files-found: error
 
-  static-linux-amd64:
+  static:
     needs: phars
-    name: Create Linux amd64 static binary and upload
-    runs-on: ubuntu-latest
+    name: Create ${{ matrix.target }} static binary and upload
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      # A target failing must not cancel the other ones
+      fail-fast: false
+      matrix:
+        include:
+          - target: linux-amd64
+            runs-on: ubuntu-latest
+          - target: linux-arm64
+            runs-on: ubuntu-24.04-arm
+          - target: darwin-amd64
+            runs-on: macos-15-intel
+          - target: darwin-arm64
+            runs-on: macos-15
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -85,7 +105,7 @@ jobs:
 
       - uses: ./.github/actions/cache
         with:
-          target: linux-amd64
+          target: ${{ matrix.target }}
 
       - name: retrieve phar artifacts
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -95,144 +115,24 @@ jobs:
 
       - uses: ./.github/actions/static
         with:
-          os: linux-amd64
+          os: ${{ matrix.target }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Attest the static binary provenance
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
-          subject-path: ./castor.linux-amd64
+          subject-path: ./castor.${{ matrix.target }}
 
-      - name: Upload the Linux amd64 static binary
+      - name: Upload the ${{ matrix.target }} static binary
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: castor.linux-amd64
-          path: ./castor.linux-amd64
-          if-no-files-found: error
-
-  static-linux-arm64:
-    needs: phars
-    name: Create Linux arm64 static binary and upload
-    runs-on: ubuntu-24.04-arm
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - uses: ./.github/actions/install
-
-      - uses: ./.github/actions/cache
-        with:
-          target: linux-arm64
-
-      - name: retrieve phar artifacts
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          path: tools/phar/build
-          merge-multiple: true
-
-      - uses: ./.github/actions/static
-        with:
-          os: linux-arm64
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Attest the static binary provenance
-        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
-        with:
-          subject-path: ./castor.linux-arm64
-
-      - name: Upload the Linux arm64 static binary
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: castor.linux-arm64
-          path: ./castor.linux-arm64
-          if-no-files-found: error
-
-  static-darwin-amd64:
-    needs: phars
-    name: Create MacOs amd64 static binary and upload
-    runs-on: macos-15-intel
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - uses: ./.github/actions/install
-
-      - uses: ./.github/actions/cache
-        with:
-          target: darwin-amd64
-
-      - name: retrieve phar artifacts
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          path: tools/phar/build
-          merge-multiple: true
-
-      - uses: ./.github/actions/static
-        with:
-          os: darwin-amd64
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Attest the static binary provenance
-        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
-        with:
-          subject-path: ./castor.darwin-amd64
-
-      - name: Upload the MacOs amd64 static binary
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: castor.darwin-amd64
-          path: ./castor.darwin-amd64
-          if-no-files-found: error
-
-  static-darwin-arm64:
-    needs: phars
-    name: Create MacOs arm64 static binary and upload
-    runs-on: macos-15
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - uses: ./.github/actions/install
-
-      - uses: ./.github/actions/cache
-        with:
-          target: darwin-arm64
-
-      - name: retrieve phar artifacts
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          path: tools/phar/build
-          merge-multiple: true
-
-      - uses: ./.github/actions/static
-        with:
-          os: darwin-arm64
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Attest the static binary provenance
-        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
-        with:
-          subject-path: ./castor.darwin-arm64
-
-      - name: Upload the MacOs arm64 static binary
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: castor.darwin-arm64
-          path: ./castor.darwin-arm64
+          name: castor.${{ matrix.target }}
+          path: ./castor.${{ matrix.target }}
           if-no-files-found: error
 
   checksums:
-    needs: [phars, static-linux-amd64, static-linux-arm64, static-darwin-amd64, static-darwin-arm64]
+    needs: [phars, static]
     name: Publish the checksums of the artifacts
     runs-on: ubuntu-latest
     steps:

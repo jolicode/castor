@@ -1,62 +1,25 @@
 name: Build static binaries
-description: Builds static binaries for all systems
+description: Builds the static binary for a system
 
 inputs:
   os:
-    description: The operating system to build for
+    description: The system to build for (linux-amd64, linux-arm64, darwin-amd64 or darwin-arm64)
     required: true
 
 runs:
   using: composite
   steps:
-    - name: Build Castor static binary for Linux (linux-amd64)
-      run: bin/castor castor:static:linux-amd64
+    - name: Build Castor static binary for ${{ inputs.os }}
+      run: bin/castor "castor:static:${INPUTS_OS}"
       shell: bash
-      if: ${{ inputs.os == 'linux-amd64' }}
+      env:
+        INPUTS_OS: ${{ inputs.os }}
 
-    - name: Ensure binary is OK (linux-amd64)
+    - name: Ensure binary is OK (${{ inputs.os }})
       run: |
         set -e
-        ./castor.linux-amd64 --version
-        ./castor.linux-amd64 debug
+        "./castor.${INPUTS_OS}" --version
+        "./castor.${INPUTS_OS}" debug
       shell: bash
-      if: ${{ inputs.os == 'linux-amd64' }}
-
-    - name: Build Castor static binary for Linux (linux-arm64)
-      run: bin/castor castor:static:linux-arm64
-      shell: bash
-      if: ${{ inputs.os == 'linux-arm64' }}
-
-    - name: Ensure binary is OK (linux-arm64)
-      run: |
-          set -e
-          ./castor.linux-arm64 --version
-          ./castor.linux-arm64 debug
-      shell: bash
-      if: ${{ inputs.os == 'linux-arm64' }}
-
-    - name: Build Castor static binary for Darwin (darwin-amd64)
-      run: bin/castor castor:static:darwin-amd64
-      shell: bash
-      if: ${{ inputs.os == 'darwin-amd64' }}
-
-    - name: Ensure MacOs - amd64 binary is OK
-      run: |
-        set -e
-        ./castor.darwin-amd64 --version
-        ./castor.darwin-amd64 debug
-      shell: bash
-      if: ${{ inputs.os == 'darwin-amd64' }}
-
-    - name: Build Castor static binary for Darwin (darwin-arm64)
-      run: bin/castor castor:static:darwin-arm64
-      shell: bash
-      if: ${{ inputs.os == 'darwin-arm64' }}
-
-    - name: Ensure MacOs - arm64 binary is OK
-      run: |
-        set -e
-        ./castor.darwin-arm64 --version
-        ./castor.darwin-arm64 debug
-      shell: bash
-      if: ${{ inputs.os == 'darwin-arm64' }}
+      env:
+        INPUTS_OS: ${{ inputs.os }}
