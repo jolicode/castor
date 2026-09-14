@@ -4,6 +4,11 @@ namespace Castor\Tests\Helper;
 
 final class OutputCleaner
 {
+    public static function stripAnsi(string $string): string
+    {
+        return preg_replace('/\e\[[0-9;]*m/', '', $string);
+    }
+
     public static function cleanOutput(string $string): string
     {
         $string = str_replace("\r\n", "\n", $string);

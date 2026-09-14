@@ -2,6 +2,7 @@
 
 namespace Castor\Tests;
 
+use Castor\Tests\Helper\OutputCleaner;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class RemoteExecutionTest extends TaskTestCase
@@ -15,7 +16,7 @@ class RemoteExecutionTest extends TaskTestCase
         }
 
         $this->assertStringContainsString('Installing composer/composer', $process->getErrorOutput());
-        $this->assertStringContainsString('Composer version', $process->getOutput());
+        $this->assertStringContainsString('Composer version', OutputCleaner::stripAnsi($process->getOutput()));
     }
 
     public function testQuiet(): void
@@ -27,7 +28,7 @@ class RemoteExecutionTest extends TaskTestCase
         }
 
         $this->assertStringNotContainsString('Installing composer/composer', $process->getErrorOutput());
-        $this->assertStringContainsString('Composer version', $process->getOutput());
+        $this->assertStringContainsString('Composer version', OutputCleaner::stripAnsi($process->getOutput()));
     }
 
     public function testVersion(): void
@@ -39,6 +40,6 @@ class RemoteExecutionTest extends TaskTestCase
         }
 
         $this->assertStringContainsString('Installing composer/composer (2.10', $process->getErrorOutput());
-        $this->assertStringContainsString('Composer version 2.10', $process->getOutput());
+        $this->assertStringContainsString('Composer version 2.10', OutputCleaner::stripAnsi($process->getOutput()));
     }
 }
