@@ -46,7 +46,7 @@ function darwinArm64(): void
 function cacheDir(string $target): void
 {
     // The cache key does not depend on the phar, any path does
-    echo capture(['tests/bin/compile-get-cache-key', 'phar-location-is-not-used-in-cache-key', ...compile_options($target)]);
+    echo capture(['tests/bin/compile-get-cache-key', 'phar-location-is-not-used-in-cache-key', ...compile_options($target)]), \PHP_EOL;
 }
 
 function build(string $target): void
