@@ -37,6 +37,7 @@
 * Create the cache directory readable by its owner only (mode `0700`), and restrict an existing one, as the cache may hold data written by the tasks; honor `XDG_CACHE_HOME` for its default location, and fall back to a per-user directory in the system temporary directory, instead of one shared by all users, when the home directory cannot be determined
 * Fix architecture detection on Linux ARM64 (`aarch64`), which made the watcher and the update hints pick the amd64 binaries
 * Fix `run()` ignoring the timeout when executed inside `parallel()`: the process was waited for in its own fiber loop, so Symfony's timeout check never ran and the process could run forever
+* Fix `with()` leaking its context between fibers running under `parallel()`: since the current context was tracked globally, a fiber resuming or calling `with()` while another one was suspended inside its own `with()` block could make it resume with the wrong context, and the wrong context could even survive `parallel()` itself
 
 ## 1.7.0 (2026-08-03)
 
