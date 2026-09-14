@@ -20,7 +20,7 @@ class CompileCommand extends Command
     // When something **important** related to the compilation changed, increase
     // this version to invalidate the cache
     private const CACHE_VERSION = '5';
-    private const DEFAULT_SPC_VERSION = '2.8.2';
+    private const DEFAULT_SPC_VERSION = '2.8.5';
 
     /**
      * SHA-256 checksums of the static-php-cli (spc) archives, by version and
@@ -33,6 +33,14 @@ class CompileCommand extends Command
             'linux-aarch64' => '28206b05c4028826615c6cd348831d7c5025ffd0e57a9309a4aa04c51fe35d58',
             'macos-x86_64' => 'c98e6059e6e64bfe8710cd76186598bf51dc3ccfe4cafcc504c471d4fc8e3f07',
             'macos-aarch64' => 'c934c323df75b6b5d258a90a85e204479341217b23819fcf5546845d8579e39e',
+        ],
+        // 2.8.4 is the first version to link zlib in the Windows micro SAPI
+        '2.8.5' => [
+            'linux-x86_64' => '523ba4279c54c7a377156c0dd3a36adf92ee64b01e9a7f5e9e2ec084b8e458e5',
+            'linux-aarch64' => '675a3840dcdc4ed041fe20eaa54310ce019a9984c1c03951df9ec66df5795213',
+            'macos-x86_64' => 'e8b798048f62ca4960764196543b60ae703f7174aa418824cf542aeec1d2cd6a',
+            'macos-aarch64' => 'acf2f25d56d0cbf8e65aa82e5054fef555f7be7c5c38046c6e0819f266d83225',
+            'windows-x86_64' => '425b54ab857e21409c1fd9b818899ffebabd1e2817ef0a0ed5ae8a3d9f5b463b',
         ],
     ];
 
@@ -53,7 +61,7 @@ class CompileCommand extends Command
             ->addOption('spc-version', null, InputOption::VALUE_REQUIRED, 'Version of the static-php-cli (spc) tool to use', self::DEFAULT_SPC_VERSION)
             ->addOption('spc-sha256', null, InputOption::VALUE_REQUIRED, 'SHA-256 checksum of the static-php-cli (spc) archive to download, required for a version other than the default one')
             ->addOption('binary-path', null, InputOption::VALUE_REQUIRED, 'Path to compiled static binary. It can be the parent dirname too', PathHelper::getRoot(false))
-            ->addOption('os', null, InputOption::VALUE_REQUIRED, 'Target OS for PHP compilation', 'linux', ['linux', 'macos'])
+            ->addOption('os', null, InputOption::VALUE_REQUIRED, 'Target OS for PHP compilation', 'linux', ['linux', 'macos', 'windows'])
             ->addOption('arch', null, InputOption::VALUE_REQUIRED, 'Target architecture for PHP compilation', 'x86_64', ['x86_64', 'aarch64'])
             ->addOption('php-version', null, InputOption::VALUE_REQUIRED, 'PHP version in major.minor format', '8.5')
             ->addOption('php-extensions', null, InputOption::VALUE_REQUIRED, 'PHP extensions required, in a comma-separated format. Defaults are the minimum required to run a basic "Hello World" task in Castor.', 'mbstring,phar,posix,tokenizer,curl,filter,openssl')
@@ -71,11 +79,11 @@ class CompileCommand extends Command
 
         $phpBuildCacheKey = $this->generatePHPBuildCacheKey($input);
 
-        $spcBinaryPath = $this->cacheDir . '/castor-php-static-compiler/' . $phpBuildCacheKey . '/spc';
-        $spcBinaryDir = \dirname($spcBinaryPath);
-
         $os = $input->getOption('os');
         $arch = $input->getOption('arch');
+
+        $spcBinaryPath = $this->cacheDir . '/castor-php-static-compiler/' . $phpBuildCacheKey . '/spc' . ('windows' === $os ? '.exe' : '');
+        $spcBinaryDir = \dirname($spcBinaryPath);
 
         $this->setupSPC(
             $spcBinaryDir,
@@ -129,13 +137,17 @@ class CompileCommand extends Command
     private function validateInput(InputInterface $input): void
     {
         $os = $input->getOption('os');
-        if (!\in_array($os, ['linux', 'macos'])) {
-            throw new \InvalidArgumentException('Currently supported target OS are one of "linux" or "macos"');
+        if (!\in_array($os, ['linux', 'macos', 'windows'])) {
+            throw new \InvalidArgumentException('Currently supported target OS are one of "linux", "macos" or "windows"');
         }
 
         $arch = $input->getOption('arch');
         if (!\in_array($arch, ['x86_64', 'aarch64'])) {
             throw new \InvalidArgumentException('Target architecture must be one of "x86_64" or "aarch64"');
+        }
+
+        if ('windows' === $os && 'x86_64' !== $arch) {
+            throw new \InvalidArgumentException('Windows is only supported on the "x86_64" architecture');
         }
 
         if (!is_file($input->getArgument('phar-path'))) {
@@ -155,7 +167,9 @@ class CompileCommand extends Command
         $response = $this->httpClient->request('GET', $spcSourceUrl);
         $contentLength = $response->getHeaders()['content-length'][0] ?? 0;
 
-        $spcTarGzDestination = $spcBinaryDestination . '.tar.gz';
+        // The Windows release is a bare executable, the others are tar.gz archives
+        $isArchive = str_ends_with($spcSourceUrl, '.tar.gz');
+        $spcTarGzDestination = $isArchive ? $spcBinaryDestination . '.tar.gz' : $spcBinaryDestination;
         $outputStream = fopen($spcTarGzDestination, 'w');
         $progressBar = $io->createProgressBar((int) $contentLength);
 
@@ -180,6 +194,10 @@ class CompileCommand extends Command
         }
 
         $io->text('The checksum of the static-php-cli archive matches the expected one.');
+
+        if (!$isArchive) {
+            return;
+        }
 
         $extractProcess = new Process(
             command: ['tar', 'xf', $spcTarGzDestination],
@@ -230,8 +248,14 @@ class CompileCommand extends Command
         $command = [
             $spcBinaryPath, 'build', $phpExtensions,
             '--build-micro',
-            '--with-micro-fake-cli',
         ];
+
+        // The option breaks the nmake command line of static-php-cli 2.8.x on
+        // Windows (a stray quote in its CFLAGS_MICRO), and nothing in Castor
+        // depends on the SAPI name
+        if ('windows' !== $os) {
+            $command[] = '--with-micro-fake-cli';
+        }
 
         if ($debug) {
             $command[] = '--debug';
@@ -300,7 +324,9 @@ class CompileCommand extends Command
             throw new \InvalidArgumentException(\sprintf('The checksum of the static-php-cli %s archive for %s-%s is not known: pass it with the --spc-sha256 option (the archives are published at https://github.com/crazywhalecc/static-php-cli/releases).', $spcVersion, $os, $arch));
         }
 
-        $spcSourceUrl = \sprintf('https://github.com/crazywhalecc/static-php-cli/releases/download/%s/spc-%s-%s.tar.gz', $spcVersion, $os, $arch);
+        $spcSourceUrl = 'windows' === $os
+            ? \sprintf('https://github.com/crazywhalecc/static-php-cli/releases/download/%s/spc-windows-x64.exe', $spcVersion)
+            : \sprintf('https://github.com/crazywhalecc/static-php-cli/releases/download/%s/spc-%s-%s.tar.gz', $spcVersion, $os, $arch);
         $io->text(\sprintf('Downloading the static-php-cli (spc) tool from "%s" to "%s"', $spcSourceUrl, $spcBinaryPath));
         $this->downloadSPC($spcSourceUrl, $spcBinaryPath, $io, $expectedChecksum);
         $io->newLine();
@@ -322,11 +348,12 @@ class CompileCommand extends Command
         $appName = json_decode($p->getOutput(), true)['application']['name'];
 
         return \sprintf(
-            '%s/%s.%s.%s',
+            '%s/%s.%s.%s%s',
             $binaryPath,
             $appName,
             $input->getOption('os'),
             $input->getOption('arch'),
+            'windows' === $input->getOption('os') ? '.exe' : '',
         );
     }
 
@@ -345,6 +372,8 @@ class CompileCommand extends Command
         hash_update($c, self::CACHE_VERSION);
         hash_update($c, (string) $input->getOption('spc-version'));
 
-        return hash_final($c);
+        // Kept short: on Windows, MSVC fails to open the sources whose path
+        // exceeds 260 characters, and the build directory is part of them
+        return substr(hash_final($c), 0, 16);
     }
 }

@@ -95,6 +95,11 @@ jobs:
             runs-on: macos-15-intel
           - target: darwin-arm64
             runs-on: macos-15
+          # static-php-cli looks for Visual Studio 2019 or 2022, windows-latest
+          # ships 2026
+          - target: windows-amd64
+            runs-on: windows-2022
+            suffix: .exe
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -122,13 +127,13 @@ jobs:
       - name: Attest the static binary provenance
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
-          subject-path: ./castor.${{ matrix.target }}
+          subject-path: ./castor.${{ matrix.target }}${{ matrix.suffix }}
 
       - name: Upload the ${{ matrix.target }} static binary
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: castor.${{ matrix.target }}
-          path: ./castor.${{ matrix.target }}
+          name: castor.${{ matrix.target }}${{ matrix.suffix }}
+          path: ./castor.${{ matrix.target }}${{ matrix.suffix }}
           if-no-files-found: error
 
   checksums:
@@ -167,6 +172,7 @@ jobs:
     needs: [checksums]
     name: Publish the snapshot pre-release
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     permissions:
       contents: write # zizmor: ignore[excessive-permissions]
     steps:

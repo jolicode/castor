@@ -16,6 +16,7 @@ const TARGETS = [
     'linux-arm64' => ['os' => 'linux', 'arch' => 'aarch64'],
     'darwin-amd64' => ['os' => 'macos', 'arch' => 'x86_64'],
     'darwin-arm64' => ['os' => 'macos', 'arch' => 'aarch64'],
+    'windows-amd64' => ['os' => 'windows', 'arch' => 'x86_64'],
 ];
 
 #[AsTask(description: 'Build static binary for Linux (amd64) system')]
@@ -42,20 +43,31 @@ function darwinArm64(): void
     build('darwin-arm64');
 }
 
+#[AsTask(description: 'Build static binary for Windows (amd64) system')]
+function windowsAmd64(): void
+{
+    build('windows-amd64');
+}
+
 #[AsTask(description: 'Print the directory where the PHP build of a system is cached (used by the CI)')]
 function cacheDir(string $target): void
 {
-    // The cache key does not depend on the phar, any path does
-    echo capture(['tests/bin/compile-get-cache-key', 'phar-location-is-not-used-in-cache-key', ...compile_options($target)]), \PHP_EOL;
+    // The cache key does not depend on the phar, any path does. The script is
+    // run through PHP: on Windows, cmd.exe cannot run its shebang.
+    echo capture([\PHP_BINARY, 'tests/bin/compile-get-cache-key', 'phar-location-is-not-used-in-cache-key', ...compile_options($target)]), \PHP_EOL;
 }
 
 function build(string $target): void
 {
+    $windows = 'windows' === TARGETS[$target]['os'];
+
     run([
-        'bin/castor',
+        // On Windows, cmd.exe cannot run the bin/castor shebang script, and the
+        // examples imported by the root castor.php do not boot: load this file only
+        ...($windows ? ['php', 'bin/castor', '--castor-file=' . __FILE__] : ['bin/castor']),
         'compile',
         "tools/phar/build/castor.{$target}.phar",
-        "--binary-path=castor.{$target}",
+        "--binary-path=castor.{$target}" . ($windows ? '.exe' : ''),
         ...compile_options($target),
     ], context: context()->withTimeout(0));
 }
@@ -67,9 +79,15 @@ function compile_options(string $target): array
         throw new \InvalidArgumentException(\sprintf('Unknown target "%s", expected one of "%s".', $target, implode('", "', array_keys(TARGETS))));
     }
 
+    $extensions = explode(',', PHP_EXTENSIONS);
+    if ('windows' === TARGETS[$target]['os']) {
+        // The posix and pcntl extensions do not exist on Windows
+        $extensions = array_diff($extensions, ['posix', 'pcntl']);
+    }
+
     return [
         '--os=' . TARGETS[$target]['os'],
         '--arch=' . TARGETS[$target]['arch'],
-        '--php-extensions=' . PHP_EXTENSIONS,
+        '--php-extensions=' . implode(',', $extensions),
     ];
 }

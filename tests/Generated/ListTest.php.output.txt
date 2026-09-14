@@ -48,6 +48,7 @@ castor:static:darwin-amd64                               Build static binary for
 castor:static:darwin-arm64                               Build static binary for MacOS (arm64) system
 castor:static:linux-amd64                                Build static binary for Linux (amd64) system
 castor:static:linux-arm64                                Build static binary for Linux (arm64) system
+castor:static:windows-amd64                              Build static binary for Windows (amd64) system
 castor:watcher:build                                     Build watcher for all systems
 castor:watcher:darwin                                    Build watcher for MacOS system
 castor:watcher:linux                                     Build watcher for Linux system

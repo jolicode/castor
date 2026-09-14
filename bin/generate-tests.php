@@ -90,6 +90,7 @@ $taskFilterList = [
     'castor:static:darwin-arm64',
     'castor:static:linux-amd64',
     'castor:static:linux-arm64',
+    'castor:static:windows-amd64',
     'castor:watcher:build',
     'castor:watcher:darwin',
     'castor:watcher:linux',
