@@ -80,7 +80,10 @@ final readonly class ReleaseHelper
         $assets = $release['assets'] ?? [];
 
         $assets = match (true) {
-            OsHelper::isWindows() || OsHelper::isWindowsSubsystemForLinux() => array_filter($assets, static fn (array $asset): bool => str_contains((string) $asset['name'], 'windows')),
+            OsHelper::isWindows() => array_filter($assets, static fn (array $asset): bool => str_contains((string) $asset['name'], 'windows')),
+            // The Windows phar is the one to use under WSL, but a static binary
+            // running there is a Linux one, and stays so
+            OsHelper::isWindowsSubsystemForLinux() && InstallationMethod::Static !== $this->installation->getMethod() => array_filter($assets, static fn (array $asset): bool => str_contains((string) $asset['name'], 'windows')),
             OsHelper::isMacOS() => array_filter($assets, static fn (array $asset): bool => str_contains((string) $asset['name'], 'darwin')),
             OsHelper::isUnix() => array_filter($assets, static fn (array $asset): bool => str_contains((string) $asset['name'], 'linux')),
             default => [],

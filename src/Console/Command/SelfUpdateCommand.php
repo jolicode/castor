@@ -9,12 +9,14 @@ use Castor\Helper\Installation;
 use Castor\Helper\InstallationMethod;
 use Castor\Helper\ReleaseHelper;
 use Castor\Http\HttpDownloader;
+use JoliCode\PhpOsHelper\OsHelper;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Option;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Process\Process;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -142,8 +144,9 @@ final readonly class SelfUpdateCommand
         $io->text(\sprintf('Downloading <comment>%s</comment>', $asset['browser_download_url']));
 
         // Download next to the current binary: the final rename() must happen
-        // on the same filesystem, and the temp dir is often a different one
-        $tempFile = $currentPath . '.tmp';
+        // on the same filesystem, and the temp dir is often a different one.
+        // Windows only runs .exe files, and the new binary is run to be verified.
+        $tempFile = OsHelper::isWindows() ? Path::changeExtension($currentPath, 'tmp.exe') : $currentPath . '.tmp';
         $backupPath = $noBackup ? null : $currentPath . '.backup';
 
         try {
@@ -314,6 +317,16 @@ final readonly class SelfUpdateCommand
     private function replaceRunningBinary(string $newBinary, string $currentPath, string $successMessage): never
     {
         try {
+            if (OsHelper::isWindows()) {
+                // Windows locks the file of a running executable: it cannot be
+                // overwritten nor deleted, but it can be renamed. So it is
+                // moved out of the way first, and this leftover of the
+                // previous update is removed now that it no longer runs.
+                $oldBinary = $currentPath . '.old';
+                $this->filesystem->remove($oldBinary);
+                $this->filesystem->rename($currentPath, $oldBinary);
+            }
+
             $this->filesystem->rename($newBinary, $currentPath, true);
         } catch (IOExceptionInterface $e) {
             // Keep $newBinary in place: when rolling back, it is the only

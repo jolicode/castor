@@ -18,8 +18,8 @@ use function Castor\io;
 use function Castor\run;
 
 const REPO = 'jolicode/castor';
-// 9 binaries and their SHA256SUMS file
-const EXPECTED_ARTIFACTS = 10;
+// 10 binaries and their SHA256SUMS file
+const EXPECTED_ARTIFACTS = 11;
 
 #[AsTask(description: 'Release a new version of castor', aliases: ['release'])]
 function release(): int

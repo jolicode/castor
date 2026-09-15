@@ -3,7 +3,7 @@ description: Builds the static binary for a system
 
 inputs:
   os:
-    description: The system to build for (linux-amd64, linux-arm64, darwin-amd64 or darwin-arm64)
+    description: The system to build for (linux-amd64, linux-arm64, darwin-amd64, darwin-arm64 or windows-amd64)
     required: true
 
 runs:
@@ -14,12 +14,28 @@ runs:
       shell: bash
       env:
         INPUTS_OS: ${{ inputs.os }}
+      if: runner.os != 'Windows'
+
+    # Not bash: the MSYS tar it puts first in the PATH mangles the Windows
+    # paths that static-php-cli gives it, the system tar handles them. And
+    # only the static tasks are loaded: the examples imported by the root
+    # castor.php do not boot on Windows.
+    - name: Build Castor static binary for ${{ inputs.os }}
+      run: php bin/castor --castor-file=tools/static/castor.php "castor:static:$env:INPUTS_OS"
+      shell: pwsh
+      env:
+        INPUTS_OS: ${{ inputs.os }}
+      if: runner.os == 'Windows'
 
     - name: Ensure binary is OK (${{ inputs.os }})
       run: |
         set -e
-        "./castor.${INPUTS_OS}" --version
-        "./castor.${INPUTS_OS}" debug
+        binary="./castor.${INPUTS_OS}"
+        if [ "${RUNNER_OS}" = Windows ]; then
+          binary="${binary}.exe"
+        fi
+        "${binary}" --version
+        "${binary}" --castor-file=tools/static/castor.php debug
       shell: bash
       env:
         INPUTS_OS: ${{ inputs.os }}

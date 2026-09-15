@@ -72,9 +72,6 @@ and make it available in your shell:
 If you don't have PHP available on your system, Castor can be installed with a
 static binary that embeds PHP.
 
-> [!NOTE]
-> At the moment, static binaries are only available for Linux and MacOS.
-
 Download the correct binary for your OS and architecture from the [releases page](https://github.com/jolicode/castor/releases)
 and make it available in your shell:
 
@@ -112,6 +109,12 @@ and make it available in your shell:
         chmod u+x /usr/local/bin/castor && \
         castor --version || \
         (echo "Could not install castor. Is the target directory writeable?" && (exit 1))
+    ```
+
+=== "Windows or WSL"
+
+    ```bash
+    curl.exe "https://github.com/jolicode/castor/releases/latest/download/castor.windows-amd64.exe" -Lso C:\<a directory in your PATH>\castor.exe
     ```
 
 > [!NOTE]

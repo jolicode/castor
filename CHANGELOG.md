@@ -8,6 +8,7 @@
 * Publish a `snapshot` pre-release of the `main` branch on each push, installable with the installer `--version=snapshot` option or `castor self-update --snapshot`
 * Phars and static binaries built from a commit that is not a release now report a snapshot version, like `v1.7.0-14-g4531440`
 * Add a `withTrappedSignals()` method on the context, to forward the signals received by Castor (like the `SIGINT` of a `CTRL+C`) to the process being run, instead of interrupting Castor itself
+* Publish a static binary for Windows and support `--os=windows` in `castor:compile`
 
 ### Security
 
