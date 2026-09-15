@@ -6,14 +6,15 @@ use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 /** @internal */
 #[Exclude]
-class Mount
+final readonly class Mount
 {
     public function __construct(
-        public readonly string $path,
-        public readonly bool $allowEmptyEntrypoint = false,
-        public readonly ?string $namespacePrefix = null,
-        public readonly bool $allowRemotePackage = true,
-        public readonly ?string $file = null,
+        public string $path,
+        public bool $allowEmptyEntrypoint = false,
+        public ?string $namespacePrefix = null,
+        public bool $allowRemotePackage = true,
+        public ?string $file = null,
+        public ?string $workingDirectory = null,
     ) {
     }
 }

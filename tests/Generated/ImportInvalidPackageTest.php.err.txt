@@ -1,5 +1,5 @@
 In castor.php line XXXX:
 
-  Could not import "foo/bar": The import scheme "package" is not supported.
+  The scheme "package://" is not supported, only "composer://" is.
 
 

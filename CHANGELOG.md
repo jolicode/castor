@@ -9,6 +9,7 @@
 * Phars and static binaries built from a commit that is not a release now report a snapshot version, like `v1.7.0-14-g4531440`
 * Add a `withTrappedSignals()` method on the context, to forward the signals received by Castor (like the `SIGINT` of a `CTRL+C`) to the process being run, instead of interrupting Castor itself
 * Publish a static binary for Windows and support `--os=windows` in `castor:compile`
+* Allow `mount()` to mount a remote Composer package (`mount('composer://org/repo')`), like `import()` already did, with its own namespace prefix and working directory
 
 ### Security
 
@@ -39,6 +40,7 @@
 * Fix architecture detection on Linux ARM64 (`aarch64`), which made the watcher and the update hints pick the amd64 binaries
 * Fix `run()` ignoring the timeout when executed inside `parallel()`: the process was waited for in its own fiber loop, so Symfony's timeout check never ran and the process could run forever
 * Fix `with()` leaking its context between fibers running under `parallel()`: since the current context was tracked globally, a fiber resuming or calling `with()` while another one was suspended inside its own `with()` block could make it resume with the wrong context, and the wrong context could even survive `parallel()` itself
+* Fix `import()` of a remote Composer package changing the working directory of the tasks it defines: only an explicit `mount()` should do that
 
 ## 1.7.0 (2026-08-03)
 
