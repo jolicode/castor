@@ -2,10 +2,12 @@
 
 namespace Castor\Import\Remote;
 
+use Castor\Console\Application;
 use Castor\Helper\PathHelper;
 use Castor\Import\Exception\ComposerError;
 use Castor\Import\Exception\ImportError;
 use Castor\Import\Exception\InvalidImportFormat;
+use Composer\Installer;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Console\Helper\ProgressIndicator;
@@ -28,6 +30,7 @@ class Composer
         private readonly InputInterface $input,
         private readonly OutputInterface $output,
         private readonly Filesystem $filesystem,
+        private readonly BundledPackages $bundledPackages,
         #[Autowire('%composer_no_remote%')]
         private readonly bool $disableRemote,
         private readonly LoggerInterface $logger = new NullLogger(),
@@ -90,13 +93,26 @@ class Composer
             $progressIndicator->start('<comment>Downloading remote packages</comment>');
         }
 
-        $command = $update ? 'update' : 'install';
+        $args = [$update ? 'update' : 'install'];
+        $migratedPackages = $update ? [] : $this->getBundledPackagesInLock($composerJsonFile, $composerLockFile);
 
-        $this->run($composerJsonFile, $vendorDirectory, [$command], callback: static function () use ($progressIndicator): void {
+        if ($migratedPackages) {
+            // The lock lists packages now bundled with Castor (it was written
+            // by a previous Castor version, or by Composer itself): only these
+            // packages are updated, so they leave the lock while the other ones
+            // keep their locked version
+            $args = ['update', ...$migratedPackages];
+        }
+
+        $this->run($composerJsonFile, $vendorDirectory, $args, callback: static function () use ($progressIndicator): void {
             $progressIndicator?->advance();
         });
 
         $progressIndicator?->finish('<info>Remote packages imported</info>');
+
+        if ($migratedPackages && $displayProgress) {
+            $this->output->writeln(\sprintf('<comment>Removed from castor.composer.lock, as bundled with Castor: %s</comment>', implode(', ', $migratedPackages)));
+        }
 
         $this->writeInstalled($vendorDirectory, $composerLockFile);
     }
@@ -173,8 +189,11 @@ class Composer
 
     /**
      * @param list<string> $args
+     * @param bool         $replaceBundledPackages Whether the packages are loaded in the Castor process, like the
+     *                                             remote packages of castor.composer.json are, so they must be
+     *                                             resolved against the packages bundled with Castor
      */
-    public function run(string $composerJsonFilePath, string $vendorDirectory, array $args, callable|OutputInterface $callback, bool $interactive = false, ?string $binDir = null): void
+    public function run(string $composerJsonFilePath, string $vendorDirectory, array $args, callable|OutputInterface $callback, bool $interactive = false, ?string $binDir = null, bool $replaceBundledPackages = true): void
     {
         $this->filesystem->mkdir($vendorDirectory);
 
@@ -198,7 +217,9 @@ class Composer
             $_SERVER['COMPOSER_BIN_DIR'] = $binDir;
         }
 
-        $composerApplication = new ComposerApplication();
+        $replaceBundledPackages = $replaceBundledPackages && $this->isReplaceBundledPackagesEnabled($composerJsonFilePath);
+
+        $composerApplication = new ComposerApplication($this->bundledPackages, $replaceBundledPackages);
         $composerApplication->setAutoExit(false);
 
         $this->logger->debug('Running Composer command.', [
@@ -243,7 +264,7 @@ class Composer
         }
 
         if (0 !== $exitCode) {
-            throw new ComposerError('The Composer process failed: ' . $bufferedOutput);
+            throw new ComposerError('The Composer process failed: ' . $bufferedOutput . $this->getBundledPackagesHint($exitCode, $bufferedOutput, $replaceBundledPackages));
         }
 
         $this->logger->debug('Composer command was successful.', [
@@ -260,7 +281,10 @@ class Composer
 
         $json = json_decode($composerLockContent, true, 512, \JSON_THROW_ON_ERROR);
 
-        file_put_contents("{$path}/composer.installed", $json['content-hash']);
+        file_put_contents("{$path}/composer.installed", json_encode([
+            'content-hash' => $json['content-hash'],
+            'bundled-packages' => $this->bundledPackages->getHash(),
+        ], \JSON_THROW_ON_ERROR));
     }
 
     private function isInstalled(string $path, string $composerLockFile): bool
@@ -279,7 +303,80 @@ class Composer
         }
 
         $hash = json_decode($composerLockContent, true, 512, \JSON_THROW_ON_ERROR)['content-hash'];
+        $installed = json_decode((string) file_get_contents($composerInstalledFile), true);
 
-        return $hash === file_get_contents($composerInstalledFile);
+        if (!\is_array($installed)) {
+            // Written by a previous Castor version, as the bare content hash
+            return false;
+        }
+
+        // The remote packages are resolved against the packages bundled with
+        // Castor, so they are installed again when these change, like after a
+        // Castor update
+        return $hash === ($installed['content-hash'] ?? null)
+            && $this->bundledPackages->getHash() === ($installed['bundled-packages'] ?? null);
+    }
+
+    private function isReplaceBundledPackagesEnabled(string $composerJsonFile): bool
+    {
+        if (!file_exists($composerJsonFile)) {
+            return true;
+        }
+
+        $json = json_decode((string) file_get_contents($composerJsonFile), true);
+        $extra = \is_array($json) ? ($json['extra'] ?? []) : [];
+
+        return BundledPackages::isReplaceEnabled(\is_array($extra) ? $extra : []);
+    }
+
+    /**
+     * The packages listed in the lock file that are bundled with Castor.
+     *
+     * @return list<string>
+     */
+    private function getBundledPackagesInLock(string $composerJsonFile, string $composerLockFile): array
+    {
+        if (!file_exists($composerLockFile) || !$this->isReplaceBundledPackagesEnabled($composerJsonFile)) {
+            return [];
+        }
+
+        $lock = json_decode((string) file_get_contents($composerLockFile), true, 512, \JSON_THROW_ON_ERROR);
+        $names = [];
+
+        foreach (['packages', 'packages-dev'] as $key) {
+            foreach (\is_array($lock) && \is_array($lock[$key] ?? null) ? $lock[$key] : [] as $package) {
+                if (\is_array($package) && \is_string($package['name'] ?? null)) {
+                    $names[] = $package['name'];
+                }
+            }
+        }
+
+        return array_values(array_intersect($names, array_keys($this->bundledPackages->getReplaces())));
+    }
+
+    /**
+     * Explains a dependency resolution failure that may come from the packages
+     * bundled with Castor, which the remote packages are resolved against.
+     */
+    private function getBundledPackagesHint(int $exitCode, string $output, bool $replaceBundledPackages): string
+    {
+        if (!$replaceBundledPackages || Installer::ERROR_DEPENDENCY_RESOLUTION_FAILED !== $exitCode) {
+            return '';
+        }
+
+        $involved = [];
+
+        foreach ($this->bundledPackages->getReplaces() as $name => $version) {
+            if (preg_match('{' . preg_quote($name, '{') . '(?![\w.-])}', $output)) {
+                $involved[] = "{$name} ({$version})";
+            }
+        }
+
+        return \sprintf(
+            "\nThe remote packages are loaded in the same PHP process as Castor %s, which already provides %s: the packages required in castor.composer.json must be compatible with these versions. Run \"castor composer show --self\" to list the packages Castor provides, or set \"extra.castor.%s\" to false in castor.composer.json to install your own copies anyway, at the risk of breaking Castor at runtime.",
+            Application::VERSION,
+            $involved ? implode(', ', $involved) : 'some packages',
+            BundledPackages::EXTRA_KEY,
+        );
     }
 }
