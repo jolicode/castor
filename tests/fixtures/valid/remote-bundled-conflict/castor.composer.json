@@ -1,0 +1,8 @@
+{
+    "config": {
+        "sort-packages": true
+    },
+    "require": {
+        "nikic/php-parser": "^4.0"
+    }
+}

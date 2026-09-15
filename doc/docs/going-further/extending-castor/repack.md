@@ -52,6 +52,14 @@ castor repack
 > provenance of the phar is verified with `gh attestation verify`, and a phar
 > without attestation is refused: pass the `--allow-unattested` option to
 > embed a Castor release published before attestations existed.
+<!-- -->
+> [!NOTE]
+> The remote packages of `castor.composer.json` are installed by the Castor
+> running the command, so they are resolved against
+> [the packages bundled with this version](remote-imports.md#packages-bundled-with-castor).
+> When the `--castor-version` or `--castor-phar` option embeds another Castor
+> version, make sure the remote packages are compatible with the packages it
+> ships too.
 
 {% include-markdown "/build/command_castor-repack.md" start="`castor:repack`\n---------------" %}
 
