@@ -6,9 +6,6 @@ use Castor\Helper\PathHelper;
 use Castor\Import\Exception\ComposerError;
 use Castor\Import\Exception\ImportError;
 use Castor\Import\Exception\InvalidImportFormat;
-use Castor\Import\Exception\RemoteNotAllowed;
-use Castor\Import\Mount;
-use Castor\Kernel;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Console\Helper\ProgressIndicator;
@@ -28,7 +25,6 @@ class Composer
     private bool $skippedForCompletion = false;
 
     public function __construct(
-        private readonly Kernel $kernel,
         private readonly InputInterface $input,
         private readonly OutputInterface $output,
         private readonly Filesystem $filesystem,
@@ -120,42 +116,54 @@ class Composer
         require $autoloadPath;
     }
 
-    public function importFromPackage(string $scheme, string $package, ?string $file = null): void
+    /**
+     * Whether the path refers to a package, like "composer://org/repo", rather
+     * than to a local file or directory.
+     */
+    public function isPackage(string $path): bool
     {
+        return str_starts_with($path, 'composer://');
+    }
+
+    /**
+     * Returns the directory of the installed package the path refers to, or
+     * null when there is nothing to load: the remote packages are disabled
+     * (which is logged), or the path is not a package.
+     */
+    public function resolvePackage(string $path, ?string $file = null): ?string
+    {
+        if (!$this->isPackage($path)) {
+            return null;
+        }
+
         if ($this->skippedForCompletion) {
-            throw new RemoteNotAllowed('Remote packages are not installed during a shell completion.', silent: true);
+            $this->logger->debug(\sprintf('Could not import "%s": Remote packages are not installed during a shell completion.', $path));
+
+            return null;
         }
 
         if (!$this->isRemoteAllowed()) {
-            throw new RemoteNotAllowed('Remote imports are disabled.');
+            $this->logger->warning(\sprintf('Could not import "%s": Remote imports are disabled.', $path));
+
+            return null;
         }
 
-        if (!preg_match('#^(?<organization>[^/]+)/(?<repository>[^/]+)$#', $package)) {
-            throw new InvalidImportFormat(\sprintf('The import path must be formatted like this: "%s://<organization>/<repository>".', $scheme));
+        if (!preg_match('#^composer://(?<package>[^/]+/[^/]+)$#', $path, $matches)) {
+            throw new InvalidImportFormat(\sprintf('The path "%s" must be formatted like this: "composer://<organization>/<repository>".', $path));
         }
 
-        if ('composer' === $scheme) {
-            $packageDirectory = PathHelper::getCastorVendorDir() . '/' . $package;
+        $package = $matches['package'];
+        $packageDirectory = PathHelper::getCastorVendorDir() . '/' . $package;
 
-            if (!file_exists($packageDirectory)) {
-                throw new ImportError(\sprintf('The package "%s" is not installed, make sure you required it in your castor.composer.json file.', $package));
-            }
-
-            if ($file && !file_exists($packageDirectory . '/' . $file)) {
-                throw new ImportError(\sprintf('The file "%s" does not exist in the package "%s".', $file, $package));
-            }
-
-            $this->kernel->addMount(new Mount(
-                PathHelper::getCastorVendorDir() . '/' . $package,
-                allowEmptyEntrypoint: true,
-                allowRemotePackage: false,
-                file: $file,
-            ));
-
-            return;
+        if (!file_exists($packageDirectory)) {
+            throw new ImportError(\sprintf('The package "%s" is not installed, make sure you required it in your castor.composer.json file.', $package));
         }
 
-        throw new InvalidImportFormat(\sprintf('The import scheme "%s" is not supported.', $scheme));
+        if ($file && !file_exists($packageDirectory . '/' . $file)) {
+            throw new ImportError(\sprintf('The file "%s" does not exist in the package "%s".', $file, $package));
+        }
+
+        return $packageDirectory;
     }
 
     public function clean(): void

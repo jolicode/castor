@@ -2,12 +2,8 @@
 
 namespace Castor\Import;
 
-use Castor\Import\Exception\ImportError;
-use Castor\Import\Exception\RemoteNotAllowed;
 use Castor\Import\Remote\Composer;
-use JoliCode\PhpOsHelper\OsHelper;
-use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
+use Castor\Kernel;
 use Symfony\Component\Finder\Finder;
 
 use function Castor\Internal\castor_require;
@@ -22,43 +18,31 @@ class Importer
 
     public function __construct(
         private readonly Composer $composer,
-        private readonly LoggerInterface $logger,
+        private readonly Kernel $kernel,
     ) {
     }
 
     public function import(string $path, ?string $file = null): void
     {
-        $scheme = parse_url($path, \PHP_URL_SCHEME);
+        if ($this->composer->isPackage($path)) {
+            if ($packageDirectory = $this->composer->resolvePackage($path, $file)) {
+                $this->kernel->addMount(new Mount($packageDirectory, allowEmptyEntrypoint: true, allowRemotePackage: false, file: $file));
+            }
 
-        // Windows paths are not URLs even if parse_url() returns a scheme for the drive letter
-        if ($scheme && OsHelper::isWindows() && preg_match('@^\w+:\\\@', $path)) {
-            $scheme = null;
+            return;
         }
 
-        if ($scheme) {
-            $package = mb_substr($path, mb_strlen($scheme) + 3);
+        // PHP would look for a stream wrapper for any other "scheme://" path
+        if (str_contains($path, '://')) {
+            throw new \InvalidArgumentException(\sprintf('The scheme "%s://" is not supported, only "composer://" is.', strstr($path, '://', true)));
+        }
 
-            try {
-                $this->composer->importFromPackage(
-                    $scheme,
-                    $package,
-                    $file,
-                );
-
-                return;
-            } catch (ImportError $e) {
-                throw $this->createImportException($package, $e->getMessage());
-            } catch (RemoteNotAllowed $e) {
-                $this->logger->log($e->silent ? LogLevel::DEBUG : LogLevel::WARNING, \sprintf('Could not import "%s": %s', $path, $e->getMessage()));
-
-                return;
-            }
-        } elseif (null !== $file) {
-            throw $this->createImportException($path, 'The "file" argument can only be used with a remote import.');
+        if (null !== $file) {
+            throw new \InvalidArgumentException(\sprintf('The "file" argument can only be used with a package, "%s" is a local path.', $path));
         }
 
         if (!file_exists($path)) {
-            throw $this->createImportException($path, \sprintf('The file "%s" does not exist.', $path));
+            throw new \InvalidArgumentException(\sprintf('The file "%s" does not exist.', $path));
         }
 
         if (is_file($path)) {
@@ -95,10 +79,5 @@ class Importer
     public function getImports(): array
     {
         return array_keys($this->imports);
-    }
-
-    private function createImportException(string $path, string $message): \InvalidArgumentException
-    {
-        return new \InvalidArgumentException(\sprintf('Could not import "%s": %s', $path, $message));
     }
 }

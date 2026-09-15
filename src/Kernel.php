@@ -382,8 +382,9 @@ final class Kernel extends AbstractKernel
 
         // Apply mounts
         foreach ($descriptorsCollection->taskDescriptors as $taskDescriptor) {
-            if ($mount->path !== $this->rootDir && !class_exists(\RepackedApplication::class)) {
-                $taskDescriptor->workingDirectory = $mount->path;
+            // A repacked application runs from a phar, whose directories cannot be a working directory
+            if ($mount->workingDirectory && !$this->repacked) {
+                $taskDescriptor->workingDirectory = $mount->workingDirectory;
             }
             if ($mount->namespacePrefix) {
                 if ($taskDescriptor->taskAttribute->namespace) {

@@ -12,7 +12,6 @@ use Castor\Exception\WaitFor\TimeoutReachedException;
 use Castor\Helper\CompressionMethod;
 use Castor\Helper\HasherHelper;
 use Castor\Helper\PathHelper;
-use Castor\Import\Mount;
 use JoliCode\PhpOsHelper\OsHelper;
 use Monolog\Level;
 use Psr\Cache\CacheItemInterface;
@@ -353,13 +352,9 @@ function import(string $path, ?string $file = null): void
     Container::get()->importer->import($path, $file);
 }
 
-function mount(string $path, ?string $namespacePrefix = null): void
+function mount(string $path, ?string $namespacePrefix = null, ?string $file = null): void
 {
-    if (!is_dir($path)) {
-        throw new \InvalidArgumentException(\sprintf('The directory "%s" does not exist.', $path));
-    }
-
-    Container::get()->kernel->addMount(new Mount($path, namespacePrefix: $namespacePrefix));
+    Container::get()->mounter->mount($path, $namespacePrefix, $file);
 }
 
 /**

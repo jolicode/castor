@@ -14,6 +14,7 @@ use Castor\Helper\Waiter;
 use Castor\Helper\ZipArchiver;
 use Castor\Http\HttpDownloader;
 use Castor\Import\Importer;
+use Castor\Import\Mounter;
 use Castor\Import\Remote\Composer;
 use Castor\Runner\ParallelRunner;
 use Castor\Runner\PhpRunner;
@@ -53,6 +54,7 @@ final class Container
         public readonly InputInterface $input,
         public readonly Kernel $kernel,
         public readonly LoggerInterface $logger,
+        public readonly Mounter $mounter,
         public readonly Notifier $notifier,
         public readonly OutputInterface $output,
         public readonly ParallelRunner $parallelRunner,

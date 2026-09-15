@@ -46,6 +46,20 @@ mount('projects/A', 'project:a');
 mount('projects/B', 'project:b');
 ```
 
+## Mounting a remote package
+
+Like [`import()`](./remote-imports.md), `mount()` can also mount a Composer
+package instead of a local directory:
+
+```php
+use function Castor\mount;
+
+mount('composer://vendor/package', 'project:package');
+```
+
+The mounted package keeps its own working directory, exactly as a local
+mount would.
+
 ## `mount()` vs `import()`
 
 You may wonder when to use `mount()` vs `import()`. This really depends on the

@@ -1,5 +1,5 @@
 In castor.php line XXXX:
 
-  Could not import "path/to/not/existing/castor.php": The file "path/to/not/existing/castor.php" does not exist.
+  The file "path/to/not/existing/castor.php" does not exist.
 
 
