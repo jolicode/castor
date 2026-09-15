@@ -33,6 +33,7 @@
 
 ### Fixes
 
+* Resolve the remote packages of `castor.composer.json` against the packages bundled with Castor, declared to Composer as metapackages standing for the versions Castor ships: a package Castor ships is not installed a second time in `.castor/vendor`, and a package requiring a version Castor does not ship fails at install time with an explanation, instead of Castor crashing at runtime on a mix of the two versions. In `castor.composer.lock`, these packages follow the versions of the running Castor, and setting `extra.castor.bundled-packages` to `false` in `castor.composer.json` opts out
 * Quote the remote `path` of `ssh_run()`, and reject a `host`, `user`, `jump_host`, `path_private_key` or `multiplexing_control_path` containing a shell metacharacter: they end up in a local shell command line, so a value coming from user input could run a command instead of opening a connection
 * Pass the container name of `wait_for_docker_container()` to `docker` as an argument instead of building a shell command with it
 * Extract the watcher binary used by `watch()` in the phar and static builds to the user cache directory, under the Castor version, instead of a fixed path in the system temporary directory shared by all users, and replace it when its content is not the expected one

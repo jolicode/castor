@@ -3,9 +3,6 @@
     "config": {
         "sort-packages": true
     },
-    "replace": {
-        "castor\/castor": "v0.15.0"
-    },
     "require": {
         "pyrech\/castor-example": "^1.0"
     }

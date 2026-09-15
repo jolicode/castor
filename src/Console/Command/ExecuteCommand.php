@@ -98,7 +98,9 @@ final class ExecuteCommand extends Command
             if (!$verbosityLevel->isVerbose()) {
                 $composerArgs[] = '--quiet';
             }
-            $this->composer->run($composerJsonPath, $vendorDirectory, $composerArgs, $output, $input->isInteractive(), $binaryDirectory);
+            // The package runs in its own PHP process, so it can bring any
+            // version of the packages bundled with Castor
+            $this->composer->run($composerJsonPath, $vendorDirectory, $composerArgs, $output, $input->isInteractive(), $binaryDirectory, useBundledPackages: false);
 
             if (null === $binary) {
                 // / Get first binary declared in the package if none was specified

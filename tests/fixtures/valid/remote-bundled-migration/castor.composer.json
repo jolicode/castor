@@ -1,0 +1,8 @@
+{
+    "config": {
+        "sort-packages": true
+    },
+    "require": {
+        "psr/log": "^3.0"
+    }
+}
