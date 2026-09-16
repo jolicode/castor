@@ -41,7 +41,7 @@ class UpdateCastorListener
         }
 
         if (PlatformHelper::getEnv('DISABLE_VERSION_CHECK')) {
-            trigger_deprecation('castor/castor', '1.1.0', 'The "DISABLE_VERSION_CHECK" environment var is deprecated, use "CASTOR_DISABLE_VERSION_CHECK" instead.');
+            trigger_deprecation('jolicode/castor', '1.1.0', 'The "DISABLE_VERSION_CHECK" environment var is deprecated, use "CASTOR_DISABLE_VERSION_CHECK" instead.');
 
             return;
         }
