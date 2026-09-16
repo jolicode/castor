@@ -494,7 +494,7 @@ final class Kernel extends AbstractKernel
 
         $this->chdirDeprecationTriggered = true;
 
-        trigger_deprecation('castor/castor', '1.8.0', 'Not defining the "CASTOR_USE_CHDIR" constant is deprecated. Add "defined(\'CASTOR_USE_CHDIR\') || define(\'CASTOR_USE_CHDIR\', true);" at the top of your castor.php so Castor changes its current directory to the working directory of the context (the default in Castor 2.0), or define it to false to keep the current behavior.');
+        trigger_deprecation('jolicode/castor', '1.8.0', 'Not defining the "CASTOR_USE_CHDIR" constant is deprecated. Add "defined(\'CASTOR_USE_CHDIR\') || define(\'CASTOR_USE_CHDIR\', true);" at the top of your castor.php so Castor changes its current directory to the working directory of the context (the default in Castor 2.0), or define it to false to keep the current behavior.');
     }
 
     private function configureContext(InputInterface $input, OutputInterface $output, ContextRegistry $contextRegistry): void
