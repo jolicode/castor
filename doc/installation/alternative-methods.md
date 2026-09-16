@@ -25,9 +25,11 @@ and make it available in your shell:
         (echo "Could not install castor. Is the target directory writeable?" && (exit 1))
     ```
 
-    > [!CAUTION]
-    > When using Windows Subsystem for Linux (WSL), you should still use the
-    > Windows phar instead of the Linux phar.
+    > [!NOTE]
+    > Under Windows Subsystem for Linux (WSL), both the Linux and the Windows
+    > phars work. Prefer the Windows one when the same phar is used from Windows
+    > and from WSL: it embeds the tools of both systems, and `self-update` keeps
+    > it that way.
 
 === "Linux ARM64"
 
@@ -56,7 +58,7 @@ and make it available in your shell:
         (echo "Could not install castor. Is the target directory writeable?" && (exit 1))
     ```
 
-=== "Windows or WSL"
+=== "Windows"
 
     ```bash
     curl.exe "https://github.com/jolicode/castor/releases/latest/download/castor.windows-amd64.phar" -Lso C:\<a directory in your PATH>\castor
@@ -83,6 +85,10 @@ and make it available in your shell:
         castor --version || \
         (echo "Could not install castor. Is the target directory writeable?" && (exit 1))
     ```
+
+    > [!NOTE]
+    > Under Windows Subsystem for Linux (WSL), use this Linux binary. The Windows
+    > one runs as a Windows process, outside of your WSL environment.
 
 === "Linux ARM64"
 
@@ -111,7 +117,7 @@ and make it available in your shell:
         (echo "Could not install castor. Is the target directory writeable?" && (exit 1))
     ```
 
-=== "Windows or WSL"
+=== "Windows"
 
     ```bash
     curl.exe "https://github.com/jolicode/castor/releases/latest/download/castor.windows-amd64.exe" -Lso C:\<a directory in your PATH>\castor.exe
