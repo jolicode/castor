@@ -18,7 +18,29 @@ inputs:
 runs:
   using: composite
   steps:
+    # Homebrew no longer ships x86_64 macOS bottles, so setup-php builds PHP
+    # from source on Intel runners and times out. Use a prebuilt static PHP
+    # from static-php-cli instead: https://github.com/shivammathur/setup-php/issues/1112
+    - name: Setup PHP (Intel macOS)
+      if: ${{ runner.os == 'macOS' && runner.arch == 'X64' }}
+      run: |
+        set -e
+        mkdir -p "${RUNNER_TEMP}/php"
+        curl -fsSL "https://dl.static-php.dev/static-php-cli/common/php-${PHP_VERSION}-cli-macos-x86_64.tar.gz" | tar -xz -C "${RUNNER_TEMP}/php"
+        # Composer >= 2.9 uses HTTP/3 when curl supports it, and the curl
+        # bundled in the static PHP crashes on macOS with HTTP/3
+        curl -fsSL -o "${RUNNER_TEMP}/php/composer" https://getcomposer.org/download/2.8.12/composer.phar
+        chmod +x "${RUNNER_TEMP}/php/composer"
+        echo "${RUNNER_TEMP}/php" >> "$GITHUB_PATH"
+        "${RUNNER_TEMP}/php/php" --version
+      shell: bash
+      env:
+        # The full version is required, the php-version input only gives the
+        # minor one
+        PHP_VERSION: '8.4.23'
+
     - name: Setup PHP
+      if: ${{ !(runner.os == 'macOS' && runner.arch == 'X64') }}
       uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # v2
       with:
         php-version: '${{ inputs.php-version }}'
