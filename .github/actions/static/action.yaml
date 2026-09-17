@@ -9,8 +9,11 @@ inputs:
 runs:
   using: composite
   steps:
+    # Only the static tasks are loaded: the examples imported by the root
+    # castor.php download remote packages, and the curl bundled in the static
+    # PHP of the Intel macOS runner crashes on HTTP/3 (see the install action).
     - name: Build Castor static binary for ${{ inputs.os }}
-      run: bin/castor "castor:static:${INPUTS_OS}"
+      run: bin/castor --castor-file=tools/static/castor.php "castor:static:${INPUTS_OS}"
       shell: bash
       env:
         INPUTS_OS: ${{ inputs.os }}
