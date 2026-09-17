@@ -62,9 +62,12 @@ function build(string $target): void
     $windows = 'windows' === TARGETS[$target]['os'];
 
     run([
-        // On Windows, cmd.exe cannot run the bin/castor shebang script, and the
-        // examples imported by the root castor.php do not boot: load this file only
-        ...($windows ? ['php', 'bin/castor', '--castor-file=' . __FILE__] : ['bin/castor']),
+        // On Windows, cmd.exe cannot run the bin/castor shebang script. Only
+        // this file is loaded: the examples imported by the root castor.php
+        // download remote packages, and do not boot on Windows
+        ...($windows ? ['php'] : []),
+        'bin/castor',
+        '--castor-file=' . __FILE__,
         'compile',
         "tools/phar/build/castor.{$target}.phar",
         "--binary-path=castor.{$target}" . ($windows ? '.exe' : ''),
