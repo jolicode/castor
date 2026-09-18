@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Fixes
+
+* Revert passing the script run by `run_php()` as an argument (1.8.0), and give it back to the Castor process through the `CASTOR_PHP_REPLACE` environment variable: the argument was removed from `argv` before the script ran, so the tools restarting themselves by re-executing the PHP binary with their own command line (PHPStan, Rector, `composer/xdebug-handler`, ...) ran Castor instead of themselves. The environment variable survives such a restart, whatever the command line the tool builds
+
 ## 1.8.0 (2026-09-18)
 
 ### Features
