@@ -37,6 +37,12 @@ class ApplicationFactory
 
             if ($castorFile) {
                 $rootDir = \dirname($castorFile);
+                // A castor file living in a ".castor" directory belongs to the project holding
+                // it, just like the auto-detection considers "<project>/.castor/castor.php".
+                // Without this, the remote packages would be installed in ".castor/.castor".
+                if ('.castor' === basename($rootDir)) {
+                    $rootDir = \dirname($rootDir);
+                }
                 $castorFilePath = Path::makeRelative($castorFile, $rootDir);
             } else {
                 try {
@@ -54,6 +60,13 @@ class ApplicationFactory
         // it against, so leave it alone rather than throw before anything else runs.
         if (!$repacked && false !== ($cwd = getcwd())) {
             $rootDir = Path::makeAbsolute((string) $rootDir, $cwd);
+        }
+
+        // Everything resolved against the root, like the remote packages or the default
+        // working directory, must follow the "--castor-file" option instead of looking for
+        // a castor file from the directory castor was started in.
+        if (!$repacked) {
+            PathHelper::setRoot((string) $rootDir);
         }
 
         $kernel = new Kernel('dev', true, $rootDir, $hasCastorFile, $castorFilePath, $repacked);

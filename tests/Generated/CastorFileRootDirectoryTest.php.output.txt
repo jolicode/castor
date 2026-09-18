@@ -1,0 +1,2 @@
+Working directory: .../tests/fixtures/valid/castor-file
+Vendor directory: .../tests/fixtures/valid/castor-file/.castor/vendor

@@ -9,6 +9,17 @@ use Symfony\Component\Filesystem\Path;
 #[Exclude]
 final class PathHelper
 {
+    private static ?string $root = null;
+
+    /**
+     * The root directory resolved when the application boots, which the
+     * "--castor-file" option can move away from the current directory.
+     */
+    public static function setRoot(string $root): void
+    {
+        self::$root = $root;
+    }
+
     public static function getCastorVendorDir(): string
     {
         return class_exists(\RepackedApplication::class) ? \RepackedApplication::ROOT_DIR . '/' . Composer::VENDOR_DIR : self::getRoot() . '/' . Composer::VENDOR_DIR;
@@ -16,16 +27,14 @@ final class PathHelper
 
     public static function getRoot(bool $throw = true): string
     {
-        static $root;
-
-        if (null === $root) {
+        if (null === self::$root) {
             if (class_exists(\RepackedApplication::class)) {
                 $cwd = getcwd();
                 if (false === $cwd) {
                     throw new \RuntimeException('Could not determine current working directory.');
                 }
 
-                return $root = $cwd;
+                return self::$root = $cwd;
             }
 
             $path = getcwd() ?: '/';
@@ -43,10 +52,10 @@ final class PathHelper
                 $path = $parent;
             }
 
-            $root = $path;
+            self::$root = $path;
         }
 
-        return $root;
+        return self::$root;
     }
 
     public static function realpath(string $path): string

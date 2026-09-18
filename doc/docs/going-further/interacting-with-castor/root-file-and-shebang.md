@@ -20,6 +20,14 @@ However, you can use another root file by using the `--castor-file` option:
 castor --castor-file=path/to/your-file.php your-task
 ```
 
+Everything Castor resolves from the root directory then follows that file
+instead of the directory you started Castor from: the
+[remote imports](../extending-castor/remote-imports.md) of its
+`castor.composer.json`, the default working directory of the
+[context](../../getting-started/context.md), and the `.env` files. When the file
+lives in a `.castor` directory, the root is the directory holding it, just like
+for a regular `.castor/castor.php`.
+
 ## Using a shebang line
 
 Unix systems support shebang lines to execute scripts directly from the command

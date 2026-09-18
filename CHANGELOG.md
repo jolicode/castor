@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Fixes
+
+* Use directory name of a castor file when using the `--castor-file` option instead of the current working directory
+
 ## 1.8.0 (2026-09-18)
 
 ### Features
