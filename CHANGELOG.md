@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+## 1.8.0 (2026-09-18)
+
 ### Features
 
 * Add `self-update` command to update Castor to the latest version
