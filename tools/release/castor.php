@@ -125,7 +125,10 @@ function release(): int
     check(
         'Check the artifacts checksums',
         'The artifacts do not match their SHA256SUMS file.',
-        static fn () => 0 === exit_code(['sha256sum', '--check', '--quiet', 'SHA256SUMS'], context: context()->withWorkingDirectory($artifactsDir)->withQuiet()),
+        // `gh run download` extracts each artifact in a directory of its own name
+        static fn () => 0 === exit_code(['sha256sum', '--check', '--quiet'], context: context()->withWorkingDirectory($artifactsDir)->withQuiet()->withInput(
+            preg_replace('/^(\S+)  (.+)$/m', '$1  $2/$2', file_get_contents($artifactsDir . '/SHA256SUMS/SHA256SUMS')),
+        )),
     );
 
     io()->write('Publishing the release');
