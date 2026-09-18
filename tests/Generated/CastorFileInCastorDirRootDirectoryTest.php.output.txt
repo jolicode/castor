@@ -1,2 +1,3 @@
-Working directory: .../tests/fixtures/valid/castor-file-in-castor-dir
+Root: .../tests/fixtures/valid/castor-file-in-castor-dir
 Vendor directory: .../tests/fixtures/valid/castor-file-in-castor-dir/.castor/vendor
+Working directory: ...

@@ -20,13 +20,15 @@ However, you can use another root file by using the `--castor-file` option:
 castor --castor-file=path/to/your-file.php your-task
 ```
 
-Everything Castor resolves from the root directory then follows that file
-instead of the directory you started Castor from: the
-[remote imports](../extending-castor/remote-imports.md) of its
-`castor.composer.json`, the default working directory of the
-[context](../../getting-started/context.md), and the `.env` files. When the file
-lives in a `.castor` directory, the root is the directory holding it, just like
-for a regular `.castor/castor.php`.
+The root directory then follows that file instead of the directory you started
+Castor from, so its own [remote imports](../extending-castor/remote-imports.md)
+are read from the `castor.composer.json` sitting next to it, and installed in its
+own `.castor/vendor`. When the file lives in a `.castor` directory, the root is
+the directory holding it, just like for a regular `.castor/castor.php`.
+
+The working directory of the [context](../../getting-started/context.md) is left
+alone: the tasks still run where you started Castor from. Pointing at another
+entrypoint tells Castor where to read the tasks from, not where to run them.
 
 ## Using a shebang line
 

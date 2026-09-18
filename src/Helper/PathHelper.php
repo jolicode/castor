@@ -10,6 +10,7 @@ use Symfony\Component\Filesystem\Path;
 final class PathHelper
 {
     private static ?string $root = null;
+    private static ?string $defaultWorkingDirectory = null;
 
     /**
      * The root directory resolved when the application boots, which the
@@ -27,35 +28,51 @@ final class PathHelper
 
     public static function getRoot(bool $throw = true): string
     {
-        if (null === self::$root) {
-            if (class_exists(\RepackedApplication::class)) {
-                $cwd = getcwd();
-                if (false === $cwd) {
-                    throw new \RuntimeException('Could not determine current working directory.');
-                }
-
-                return self::$root = $cwd;
-            }
-
-            $path = getcwd() ?: '/';
-
-            while (!(file_exists($path . '/castor.php') || file_exists($path . '/.castor/castor.php'))) {
-                $parent = Path::getDirectory($path);
-                if ($parent === $path) {
-                    if ($throw) {
-                        throw new \RuntimeException('Could not find root "castor.php" file.');
-                    }
-
-                    return getcwd() ?: '/';
-                }
-
-                $path = $parent;
-            }
-
-            self::$root = $path;
+        if (null !== self::$root) {
+            return self::$root;
         }
 
-        return self::$root;
+        if (class_exists(\RepackedApplication::class)) {
+            $cwd = getcwd();
+            if (false === $cwd) {
+                throw new \RuntimeException('Could not determine current working directory.');
+            }
+
+            return self::$root = $cwd;
+        }
+
+        $root = self::findRootFromCurrentDirectory();
+
+        if (null === $root) {
+            if ($throw) {
+                throw new \RuntimeException('Could not find root "castor.php" file.');
+            }
+
+            return getcwd() ?: '/';
+        }
+
+        return self::$root = $root;
+    }
+
+    /**
+     * The directory the tasks run in, unless the context says otherwise. It is
+     * deliberately resolved from the current directory, and never follows the
+     * "--castor-file" option: pointing at another entrypoint tells Castor where
+     * to read the tasks from, not where to run them.
+     */
+    public static function getDefaultWorkingDirectory(): string
+    {
+        // Memoized, as Castor moves to the working directory of the context while the
+        // tasks run: resolving it again from there would return a different directory.
+        if (null !== self::$defaultWorkingDirectory) {
+            return self::$defaultWorkingDirectory;
+        }
+
+        if (class_exists(\RepackedApplication::class)) {
+            return self::$defaultWorkingDirectory = getcwd() ?: '/';
+        }
+
+        return self::$defaultWorkingDirectory = self::findRootFromCurrentDirectory() ?? (getcwd() ?: '/');
     }
 
     public static function realpath(string $path): string
@@ -76,5 +93,21 @@ final class PathHelper
         }
 
         return Path::makeRelative($path, self::getRoot());
+    }
+
+    private static function findRootFromCurrentDirectory(): ?string
+    {
+        $path = getcwd() ?: '/';
+
+        while (!(file_exists($path . '/castor.php') || file_exists($path . '/.castor/castor.php'))) {
+            $parent = Path::getDirectory($path);
+            if ($parent === $path) {
+                return null;
+            }
+
+            $path = $parent;
+        }
+
+        return $path;
     }
 }
