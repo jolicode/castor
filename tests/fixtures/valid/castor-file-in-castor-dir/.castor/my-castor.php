@@ -7,12 +7,6 @@ use Castor\Helper\PathHelper;
 
 use function Castor\context;
 
-#[AsTask(description: 'hello')]
-function hello(): void
-{
-    echo "Hello world from other castor file!\n";
-}
-
 #[AsTask(description: 'Display the paths resolved from the root directory')]
 function root(): void
 {
