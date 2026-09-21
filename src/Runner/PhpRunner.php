@@ -31,7 +31,8 @@ class PhpRunner
         $castorPath = $_SERVER['argv'][0];
         $context ??= $this->contextRegistry->getCurrentContext();
 
-        // See bin/castor
-        return $this->processRunner->run([$castorPath, '--castor-php-replace=' . $phpPath, ...$arguments], context: $context, callback: $callback);
+        return $this->processRunner->run([$castorPath, ...$arguments], context: $context->withEnvironment([
+            'CASTOR_PHP_REPLACE' => $phpPath,
+        ]), callback: $callback);
     }
 }
