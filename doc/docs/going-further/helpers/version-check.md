@@ -50,6 +50,11 @@ Castor version, in the `User-Agent` header, and no usage data is ever
 collected. The request is skipped in CI, when running inside an AI agent, and
 when the output is JSON.
 
+The reminder only starts 3 days after the release is published, so a broken
+release can be fixed before everybody is told to install it. The delay is
+skipped when the castor file requires a newer version, and `castor self-update`
+always installs the latest release.
+
 This behavior can be disabled by setting the `CASTOR_DISABLE_VERSION_CHECK`
 environment variable to `1` or `true`.
 
