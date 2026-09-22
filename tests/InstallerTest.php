@@ -44,7 +44,9 @@ class InstallerTest extends TaskTestCase
         $this->assertStringContainsString('The binary matches the SHA256SUMS file of the release', $process->getOutput());
         $this->assertStringContainsString('Provenance not verified', $process->getOutput());
         $this->assertStringContainsString('castor v9.0.0 was installed successfully', $process->getOutput());
-        $this->assertTrue(is_executable($this->dir . '/bin/castor'));
+        // Readable and executable by everyone: the binary may be installed by
+        // root in a system directory like /usr/local/bin
+        $this->assertSame('0755', substr(\sprintf('%o', fileperms($this->dir . '/bin/castor')), -4));
         $this->assertNoTemporaryFileLeft();
     }
 
