@@ -5,6 +5,7 @@ namespace Castor;
 use Castor\CommandBuilder\CommandBuilderInterface;
 use Castor\Console\Application;
 use Castor\Exception\ExecutableNotFoundException;
+use Castor\Exception\LlmException;
 use Castor\Exception\MinimumVersionRequirementNotMetException;
 use Castor\Exception\ProblemException;
 use Castor\Exception\WaitFor\ExitedBeforeTimeoutException;
@@ -95,6 +96,25 @@ function exit_code(
             $command,
             $context,
         )
+    ;
+}
+
+/**
+ * Asks a question to a LLM, through an AI CLI installed on the machine (Claude
+ * Code, Codex, OpenCode, Gemini CLI, ...) run in its non-interactive mode, and
+ * returns its answer.
+ *
+ * @param string|list<string>|null $cli The name of a known CLI ("claude", "codex", ...), or a custom
+ *                                      command which receives the prompt on its standard input. By
+ *                                      default, the first installed CLI that answers is used
+ *
+ * @throws LlmException When no CLI is available, or when it could not answer
+ */
+function llm(string $prompt, string|array|null $cli = null, ?Context $context = null): string
+{
+    return Container::get()
+        ->llmRunner
+        ->ask($prompt, $cli, $context)
     ;
 }
 

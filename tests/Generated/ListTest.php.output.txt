@@ -82,6 +82,7 @@ http:download                                            Download a file through
 http:request                                             Make HTTP request
 io:io                                                    Plays with Symfony Style
 io:term                                                  Get terminal properties
+llm:summarize-commits                                    Summarize the last commits with an LLM
 log:all-level                                            Logs some messages with different levels
 log:error                                                Logs an "error" message
 log:info                                                 Logs an "info" message

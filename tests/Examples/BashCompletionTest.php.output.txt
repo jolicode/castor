@@ -57,6 +57,7 @@ help
 http:download
 http:request
 list
+llm:summarize-commits
 log:all-level
 log:error
 log:info
