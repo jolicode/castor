@@ -298,8 +298,11 @@ function main {
         exit 1
     fi
 
+    # The temporary file is private (mktemp creates it with mode 600) and mv
+    # keeps that mode: open the installed binary to everyone, it may be
+    # installed by root in a system directory like /usr/local/bin
     output "  Fixing the executable permissions."
-    chmod u+x "${binary_dest}/${CASTOR_EXECUTABLE}"
+    chmod 755 "${binary_dest}/${CASTOR_EXECUTABLE}"
 
     output "\n🦫  $("${binary_dest}/${CASTOR_EXECUTABLE}" --version) was installed successfully!" "success"
 
