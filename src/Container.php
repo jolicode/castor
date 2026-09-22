@@ -16,7 +16,7 @@ use Castor\Http\HttpDownloader;
 use Castor\Import\Importer;
 use Castor\Import\Mounter;
 use Castor\Import\Remote\Composer;
-use Castor\Runner\LlmRunner;
+use Castor\Llm\LlmRunner;
 use Castor\Runner\ParallelRunner;
 use Castor\Runner\PhpRunner;
 use Castor\Runner\ProcessRunner;

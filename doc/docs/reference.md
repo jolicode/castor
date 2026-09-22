@@ -108,7 +108,7 @@ Castor supports the following environment variables:
 - [`CASTOR_DISABLE_AGENT_DETECTION`](going-further/helpers/version-check.md#ai-agent-context)
 - [`CASTOR_DISABLE_VERSION_CHECK`](going-further/helpers/version-check.md#update-reminder)
 - [`CASTOR_GENERATE_STUBS`](../installation/index.md#stubs)
-- [`CASTOR_LLM_CLI`](going-further/helpers/llm.md#choosing-the-cli)
+- [`CASTOR_LLM`](going-further/helpers/llm.md#the-castor_llm-environment-variable)
 - [`CASTOR_MEMORY_LIMIT`](going-further/helpers/run-php.md#script-requiring-more-memory)
   in context of running PHP script, and
   [`CASTOR_MEMORY_LIMIT`](getting-started/remote.md#more-memory) in context of

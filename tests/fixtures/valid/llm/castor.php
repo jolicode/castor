@@ -12,3 +12,9 @@ function ask(): void
 {
     io()->writeln(llm('What is the answer?', cli: ['sh', __DIR__ . '/fake-llm.sh']));
 }
+
+#[AsTask(name: 'ask-default', description: 'Ask a question to the configured LLM CLI')]
+function ask_default(): void
+{
+    io()->writeln(llm('What is the answer?'));
+}

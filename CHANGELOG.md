@@ -4,7 +4,7 @@
 
 ### Features
 
-* Add the `llm()` function to ask a question to a LLM and get its answer: Castor runs, in its non-interactive mode, one of the AI CLIs already installed and logged in on the machine (Claude Code, Codex, OpenCode, Gemini CLI, GitHub Copilot CLI, ...), or the command set in the `CASTOR_LLM_CLI` environment variable
+* Add the `llm()` function to ask a question to a LLM and get its answer: Castor runs, in its non-interactive mode, one of the AI CLIs already installed and logged in on the machine (Claude Code, Codex, OpenCode, Gemini CLI, GitHub Copilot CLI, ...), after a confirmation by default. The `CASTOR_LLM` environment variable and the new `castor:llm:configure` command choose the CLI, its model and its agent, or let Castor use the first CLI found without asking, and the new `castor:llm:debug` command shows the resulting configuration
 
 ### Fixes
 

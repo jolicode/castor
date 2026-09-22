@@ -30,6 +30,8 @@ cache:complex                                            Cache with usage of Cac
 cache:simple                                             Cache a simple call
 castor:composer                                          Interact with built-in Composer for castor
 castor:execute                                           Execute a remote task from a packagist directory
+castor:llm:configure                                     Configures what Castor does when a task asks a LLM with llm()
+castor:llm:debug                                         Shows which LLM CLI llm() uses, and why
 castor:markdown:lint                                     Lint markdown files
 castor:mkdocs:build                                      Build documentation
 castor:mkdocs:build-assets                               Fetch external assets and build command help files
