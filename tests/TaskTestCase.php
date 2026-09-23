@@ -27,7 +27,10 @@ abstract class TaskTestCase extends TestCase
         self::$binary = 'application/x-executable' === mime_content_type(self::$castorBin);
     }
 
-    public function runTask(array $args, ?string $cwd = null, bool $needRemote = false, bool $needResetVendor = false, bool $needResetCache = true, ?string $input = null): Process
+    /**
+     * @param array<string, string> $env
+     */
+    public function runTask(array $args, ?string $cwd = null, bool $needRemote = false, bool $needResetVendor = false, bool $needResetCache = true, ?string $input = null, array $env = []): Process
     {
         $coverage = $this->result()?->getCodeCoverage();
 
@@ -68,6 +71,7 @@ abstract class TaskTestCase extends TestCase
             env: [
                 'COLUMNS' => 1000,
                 ...$extraEnv,
+                ...$env,
             ],
             input: $inputStream,
         );

@@ -8,6 +8,8 @@ use Castor\Console\Command\ComposerCommand;
 use Castor\Console\Command\DebugCommand;
 use Castor\Console\Command\ExecuteCommand;
 use Castor\Console\Command\InitCommand;
+use Castor\Console\Command\LlmConfigureCommand;
+use Castor\Console\Command\LlmDebugCommand;
 use Castor\Console\Command\RepackCommand;
 use Castor\Console\Command\SelfUpdateCommand;
 use Castor\Console\Output\VerbosityLevel;
@@ -235,7 +237,11 @@ final class Kernel extends AbstractKernel
                 ->call('setCatchErrors', [true])
         ;
         if (!$repacked) {
-            $app->call('addCommand', [service(SelfUpdateCommand::class)]);
+            $app
+                ->call('addCommand', [service(SelfUpdateCommand::class)])
+                ->call('addCommand', [service(LlmConfigureCommand::class)])
+                ->call('addCommand', [service(LlmDebugCommand::class)])
+            ;
         }
         if (!$repacked && $hasCastorFile) {
             $app

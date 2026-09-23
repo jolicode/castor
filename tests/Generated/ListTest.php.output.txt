@@ -30,6 +30,8 @@ cache:complex                                            Cache with usage of Cac
 cache:simple                                             Cache a simple call
 castor:composer                                          Interact with built-in Composer for castor
 castor:execute                                           Execute a remote task from a packagist directory
+castor:llm:configure                                     Configures what Castor does when a task asks a LLM with llm()
+castor:llm:debug                                         Shows which LLM CLI llm() uses, and why
 castor:markdown:lint                                     Lint markdown files
 castor:mkdocs:build                                      Build documentation
 castor:mkdocs:build-assets                               Fetch external assets and build command help files
@@ -82,6 +84,7 @@ http:download                                            Download a file through
 http:request                                             Make HTTP request
 io:io                                                    Plays with Symfony Style
 io:term                                                  Get terminal properties
+llm:summarize-commits                                    Summarize the last commits with an LLM
 log:all-level                                            Logs some messages with different levels
 log:error                                                Logs an "error" message
 log:info                                                 Logs an "info" message

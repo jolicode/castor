@@ -38,6 +38,7 @@ Castor provides the following built-in functions:
 - [`import`](getting-started/basic-usage.md#the-import-function)
 - [`input`](going-further/helpers/console-and-io.md#the-input-function)
 - [`io`](going-further/helpers/console-and-io.md#the-io-function)
+- [`llm`](going-further/helpers/llm.md#the-llm-function)
 - [`load_dot_env`](going-further/interacting-with-castor/dot-env.md#the-load_dot_env-function)
 - [`log`](going-further/interacting-with-castor/log.md#the-log-function)
 - [`logger`](going-further/interacting-with-castor/log.md#the-logger-function)
@@ -107,6 +108,7 @@ Castor supports the following environment variables:
 - [`CASTOR_DISABLE_AGENT_DETECTION`](going-further/helpers/version-check.md#ai-agent-context)
 - [`CASTOR_DISABLE_VERSION_CHECK`](going-further/helpers/version-check.md#update-reminder)
 - [`CASTOR_GENERATE_STUBS`](../installation/index.md#stubs)
+- [`CASTOR_LLM`](going-further/helpers/llm.md#the-castor_llm-environment-variable)
 - [`CASTOR_MEMORY_LIMIT`](going-further/helpers/run-php.md#script-requiring-more-memory)
   in context of running PHP script, and
   [`CASTOR_MEMORY_LIMIT`](getting-started/remote.md#more-memory) in context of
