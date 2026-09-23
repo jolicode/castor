@@ -30,6 +30,7 @@ runs them in their non-interactive mode. Castor knows the following CLIs:
 - [Qwen Code](https://github.com/QwenLM/qwen-code) (`qwen`)
 - [llm](https://llm.datasette.io) (`llm`)
 - [Mods](https://github.com/charmbracelet/mods) (`mods`)
+- [Mistral Vibe](https://mistral.ai/products/vibe) (`vibe`)
 
 By default, the first time a task asks a LLM, Castor shows the CLI it is about
 to use and the beginning of the prompt, and asks for a confirmation. It then
@@ -42,9 +43,10 @@ explains how to choose the CLI, and how to skip the confirmation.
 > may read the files of the project to answer. When the CLI has a read-only
 > mode, Castor uses it so that the model never modifies the project nor runs
 > commands: Claude Code runs without any tool, Codex in its read-only sandbox,
-> OpenCode with its `plan` agent, Gemini CLI and Qwen Code in their `plan`
-> approval mode. The other CLIs keep their own behavior for a non-interactive
-> run, where the actions requiring an approval are usually denied.
+> OpenCode and Mistral Vibe with their `plan` agent, Gemini CLI and Qwen Code
+> in their `plan` approval mode. The other CLIs keep their own behavior for a
+> non-interactive run, where the actions requiring an approval are usually
+> denied.
 
 ## Choosing the CLI
 

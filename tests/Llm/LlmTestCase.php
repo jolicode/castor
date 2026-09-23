@@ -19,16 +19,35 @@ abstract class LlmTestCase extends TestCase
 
     protected ConfigStorage $configStorage;
 
+    /** @var array<string, mixed> The environment variables changed by the tests, to restore them */
+    private array $previousEnv = [];
+
     protected function setUp(): void
     {
         $this->configStorage = new ConfigStorage(new ArrayAdapter(), '/project');
+
+        foreach (['CASTOR_LLM', 'HOME'] as $name) {
+            $this->previousEnv[$name] = $_SERVER[$name] ?? null;
+        }
+
+        unset($_SERVER['CASTOR_LLM']);
         // The agents of Claude Code are looked up in the home directory
         $_SERVER['HOME'] = '/nonexistent';
     }
 
+    /**
+     * The environment is restored as it was: the processes run by the next
+     * tests inherit it, and Composer needs HOME for instance.
+     */
     protected function tearDown(): void
     {
-        unset($_SERVER['CASTOR_LLM'], $_SERVER['HOME']);
+        foreach ($this->previousEnv as $name => $value) {
+            if (null === $value) {
+                unset($_SERVER[$name]);
+            } else {
+                $_SERVER[$name] = $value;
+            }
+        }
     }
 
     /**

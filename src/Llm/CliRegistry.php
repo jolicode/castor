@@ -45,6 +45,7 @@ class CliRegistry
             new Cli('qwen', ['qwen', '--approval-mode', 'plan', Cli::OPTIONS_PLACEHOLDER, '--prompt', Cli::PROMPT_PLACEHOLDER], modelOption: '--model'),
             new Cli('llm', ['llm', Cli::OPTIONS_PLACEHOLDER, Cli::PROMPT_PLACEHOLDER], modelOption: '--model'),
             new Cli('mods', ['mods', '--quiet', Cli::OPTIONS_PLACEHOLDER, Cli::PROMPT_PLACEHOLDER], modelOption: '--model'),
+            new Cli('vibe', ['vibe', '--trust', '--output', 'text', Cli::OPTIONS_PLACEHOLDER, '--prompt', Cli::PROMPT_PLACEHOLDER], agentOption: '--agent', defaultAgent: 'plan'),
         ];
     }
 

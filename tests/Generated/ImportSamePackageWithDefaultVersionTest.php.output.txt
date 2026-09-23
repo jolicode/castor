@@ -35,6 +35,8 @@ Available commands:
  castor
   castor:composer       [composer] Interact with built-in Composer for castor
   castor:execute        [execute] Execute a remote task from a packagist directory
+  castor:llm:configure  Configures what Castor does when a task asks a LLM with llm()
+  castor:llm:debug      Shows which LLM CLI llm() uses, and why
   castor:self-update    [self-update] Updates Castor to the latest version
  pyrech
   pyrech:hello-example  Hello from example!

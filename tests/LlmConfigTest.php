@@ -8,6 +8,9 @@ class LlmConfigTest extends TaskTestCase
 
     public function testTheConfigurationDrivesTheLlmFunction(): void
     {
+        // A fake "claude" CLI is the only known CLI installed
+        $env = ['PATH' => __DIR__ . '/fixtures/valid/llm/bin:' . getenv('PATH')];
+
         // The configuration of the project chooses a custom command
         $process = $this->runTask(['castor:llm:configure', 'sh ./fake-llm.sh project'], self::CWD);
         $this->assertSame(0, $process->getExitCode(), $process->getErrorOutput());
@@ -22,6 +25,11 @@ class LlmConfigTest extends TaskTestCase
         $this->assertSame(0, $process->getExitCode(), $process->getErrorOutput());
         $this->assertSame("You asked: What is the answer?\nThe answer is 42. (env)\n", $process->getOutput());
 
+        // "auto" uses the first known CLI installed, without asking
+        $process = $this->runTask(['ask-default'], self::CWD, needResetCache: false, env: [...$env, 'CASTOR_LLM' => 'auto']);
+        $this->assertSame(0, $process->getExitCode(), $process->getErrorOutput());
+        $this->assertSame("You asked: What is the answer?\nThe answer is 42. (claude)\n", $process->getOutput());
+
         // The debug command tells where the value comes from
         $process = $this->runTask(['castor:llm:debug'], self::CWD, needResetCache: false);
         $this->assertSame(0, $process->getExitCode(), $process->getErrorOutput());
@@ -32,8 +40,13 @@ class LlmConfigTest extends TaskTestCase
         $this->assertSame(0, $process->getExitCode(), $process->getErrorOutput());
         $this->assertStringContainsString('The LLM configuration of this project has been removed.', $process->getOutput());
 
-        $process = $this->runTask(['ask-default'], self::CWD, needResetCache: false);
+        $process = $this->runTask(['ask-default'], self::CWD, needResetCache: false, env: $env);
         $this->assertSame(1, $process->getExitCode());
         $this->assertStringContainsString('Castor needs a confirmation before sending a prompt to a LLM (from the default), but the run is not interactive.', $process->getErrorOutput());
+
+        // Without any known CLI installed, the error says so (PHP stays in the PATH, to run Castor)
+        $process = $this->runTask(['ask-default'], self::CWD, needResetCache: false, env: ['PATH' => \dirname(\PHP_BINARY)]);
+        $this->assertSame(1, $process->getExitCode());
+        $this->assertStringContainsString('No LLM CLI found. Install and log in to one of "claude", "codex", "opencode"', $process->getErrorOutput());
     }
 }
