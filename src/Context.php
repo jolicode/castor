@@ -47,7 +47,7 @@ class Context implements \ArrayAccess
         ?bool $supportsInteraction = null,
         public readonly array $trappedSignals = [],
     ) {
-        $this->workingDirectory = $workingDirectory ?? PathHelper::getRoot(false);
+        $this->workingDirectory = $workingDirectory ?? PathHelper::getDefaultWorkingDirectory();
         $this->supportsInteraction = $supportsInteraction ?? self::detectSupportsInteraction();
     }
 
