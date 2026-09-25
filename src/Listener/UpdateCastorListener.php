@@ -22,6 +22,12 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 /** @internal */
 class UpdateCastorListener
 {
+    /**
+     * Grace period after a release before reminding the users to update, so a
+     * broken release can be fixed before everybody is told to install it.
+     */
+    public const string RELEASE_COOLDOWN = '3 days';
+
     public function __construct(
         private readonly ReleaseHelper $releaseHelper,
         private readonly Installation $installation,
@@ -99,6 +105,13 @@ class UpdateCastorListener
         }
 
         if (version_compare($latestVersion['tag_name'], Application::VERSION, '<=')) {
+            return;
+        }
+
+        // A forced check (the castor file requires a newer version) skips the cooldown
+        if ($useCache && isset($latestVersion['published_at']) && new \DateTimeImmutable($latestVersion['published_at']) > new \DateTimeImmutable('-' . self::RELEASE_COOLDOWN)) {
+            $this->logger->info(\sprintf('The Castor release %s is less than %s old, not suggesting to update yet.', $latestVersion['tag_name'], self::RELEASE_COOLDOWN));
+
             return;
         }
 
