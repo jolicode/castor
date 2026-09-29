@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Features
+
+* Wait 3 days after a release is published before reminding the users to update
+
 ### Fixes
 
 * Install the binary with mode `755` in the installer, instead of `700` since 1.8.0: the binary is downloaded to a private temporary file, so an installation by root in a system directory like `/usr/local/bin` left it unreadable and not executable by the other users
