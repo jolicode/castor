@@ -2,6 +2,13 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
+// The application factory does this when castor boots, which the unit tests never do.
+Castor\Helper\PathHelper::initialize(
+    \dirname(__DIR__),
+    \dirname(__DIR__) . '/' . Castor\Import\Remote\Composer::VENDOR_DIR,
+    \dirname(__DIR__),
+);
+
 putenv('COMPOSER_VENDOR_DIR');
 unset($_SERVER['COMPOSER_VENDOR_DIR'], $_ENV['COMPOSER_VENDOR_DIR']);
 
