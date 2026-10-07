@@ -1,0 +1,13 @@
+[test]  Test 3: KO
+[test]  In jobs.php line XXXX:
+[test]   [ERROR] The following process did not finish successfully (exit code XX):
+[test]  echo "Test 3: KO" >&2; exit 1
+[test]   // Re-run the command with the -v option to see more details.
+
+In jobs.php line XXXX:
+
+  One or more exceptions were thrown in parallel.
+
+
+parallel:jobs [--fail]
+

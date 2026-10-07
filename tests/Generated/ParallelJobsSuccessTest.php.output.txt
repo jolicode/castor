@@ -1,0 +1,12 @@
+[test]  Running the test suite
+[lint]  Linting a.php
+[test]  Test 1: OK
+[lint]  Linting b.php
+[lint]  ✔ Done in X.Xs
+[test]  Test 2: OK
+[test]  ✔ Done in X.Xs
+[build] Assets compiled
+[build] ✔ Done in X.Xs
+
+ [OK] 2 tests passed.
+
