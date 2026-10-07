@@ -154,9 +154,16 @@ final readonly class ParallelRunner
 
                 $display?->tick();
 
+                if (!$isRunning) {
+                    break;
+                }
+
+                // A single pause per round, whatever the number of fibers: a
+                // parallel() nested in a fiber leaves it to the outermost one.
                 if (\Fiber::getCurrent()) {
                     \Fiber::suspend();
-                    usleep(1_000);
+                } else {
+                    usleep(20_000);
                 }
             }
         } finally {
