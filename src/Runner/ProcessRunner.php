@@ -123,8 +123,8 @@ class ProcessRunner
                 while ($process->isRunning()) {
                     $this->sectionOutput->tickProcess($process);
                     $process->checkTimeout();
+                    // parallel() pauses once all its fibers had their turn
                     \Fiber::suspend();
-                    usleep(20_000);
                 }
             }
 
