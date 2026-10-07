@@ -121,6 +121,11 @@ currently runs, like the width or height for example:
 
 ## Experimental section output
 
+> [!WARNING]
+> This feature is deprecated since Castor 1.9.0: name the functions given to
+> `parallel()` to get their output organized, see
+> [named jobs](parallel.md#organizing-the-output-with-named-jobs).
+
 When running commands in parallel, output can be mixed and hard to read. Castor
 provides an experimental feature to display the output of each command in a
 dedicated section of the console.
@@ -131,6 +136,3 @@ This feature is disabled by default and can be enabled by setting the
 ```bash
 CASTOR_USE_SECTION=true castor task-running-commands-in-parallel
 ```
-
-> [!WARNING]
-> This feature is experimental and may be removed or changed in the future.

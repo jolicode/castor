@@ -8,10 +8,12 @@ use Castor\Context;
 use Castor\ContextRegistry;
 use Castor\Helper\Architecture;
 use Castor\Helper\Installation;
+use Castor\Runner\Parallel\JobRegistry;
 use Castor\Runner\ParallelRunner;
 use Castor\Runner\ProcessRunner;
 use Castor\Runner\WatchRunner;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
@@ -43,7 +45,7 @@ class WatchRunnerTest extends TestCase
 
         $runner = new WatchRunner(
             $this->createStub(ContextRegistry::class),
-            new ParallelRunner($this->createStub(Application::class), new NullOutput(), $this->createStub(ContextRegistry::class)),
+            new ParallelRunner($this->createStub(Application::class), new NullOutput(), $this->createStub(ContextRegistry::class), new JobRegistry(new ArrayInput([]))),
             $this->createStub(ProcessRunner::class),
             $this->createStub(SectionOutput::class),
             $this->createStub(Installation::class),
@@ -95,7 +97,7 @@ class WatchRunnerTest extends TestCase
 
         new WatchRunner(
             $this->createStub(ContextRegistry::class),
-            new ParallelRunner($this->createStub(Application::class), new NullOutput(), $this->createStub(ContextRegistry::class)),
+            new ParallelRunner($this->createStub(Application::class), new NullOutput(), $this->createStub(ContextRegistry::class), new JobRegistry(new ArrayInput([]))),
             $processRunner,
             $this->createStub(SectionOutput::class),
             $installation,

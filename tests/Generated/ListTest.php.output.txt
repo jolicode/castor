@@ -93,6 +93,7 @@ open:documentation                                       Open Castor documentati
 open:multiple                                            Open an URL and a file in the default applications
 parallel:embed                                           Sleeps for 5, 7, and 10 seconds in parallel
 parallel:exception                                       Sleep and throw an exception
+parallel:jobs                                            Runs named jobs in parallel, and organizes their output
 parallel:sleep                                           Sleeps for 3 and 4 seconds in parallel
 phar:phar                                                Run a phar in a sub process
 pyrech:foobar                                            Hello from foobar!
