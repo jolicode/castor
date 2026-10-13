@@ -5,6 +5,11 @@
 ### Features
 
 * Wait 3 days after a release is published before reminding the users to update
+* Organize the output of the functions given to `parallel()` when they are named: each one becomes a job, shown as a block with a spinner and its last lines in an interactive terminal, or with its lines prefixed by its name elsewhere. The values returned by named functions are now keyed by their name, and mixing named and unnamed functions is rejected
+
+### Deprecations
+
+* Deprecate the `CASTOR_USE_SECTION` environment variable: name the functions given to `parallel()` to organize their output instead
 
 ### Fixes
 

@@ -38,7 +38,12 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 use function Symfony\Component\String\u;
 
 /**
- * @return array<mixed>
+ * Runs the functions in parallel, and returns their results.
+ *
+ * Named, like parallel(lint: …, test: …), each function becomes a job: its
+ * output is organized, and its result is keyed by its name.
+ *
+ * @return array<array-key, mixed>
  */
 function parallel(callable ...$callbacks): array
 {
@@ -250,12 +255,16 @@ function input(): InputInterface
 
 function output(): OutputInterface
 {
-    return Container::get()->output;
+    // Inside a job of parallel(), the output is captured to be organized
+    $job = Container::get()->jobRegistry->getCurrent();
+
+    return $job ? $job->output : Container::get()->output;
 }
 
 function io(): SymfonyStyle
 {
-    return Container::get()->symfonyStyle;
+    // Inside a job of parallel(), the output is captured to be organized
+    return Container::get()->jobRegistry->getCurrentIo() ?? Container::get()->symfonyStyle;
 }
 
 function context(?string $name = null): Context

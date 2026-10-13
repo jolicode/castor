@@ -112,4 +112,4 @@ Castor supports the following environment variables:
   [`CASTOR_MEMORY_LIMIT`](getting-started/remote.md#more-memory) in context of
   remote execution
 - [`CASTOR_NO_REMOTE`](going-further/extending-castor/remote-imports.md#preventing-remote-imports)
-- [`CASTOR_USE_SECTION`](going-further/helpers/console-and-io.md#experimental-section-output)
+- [`CASTOR_USE_SECTION`](going-further/helpers/console-and-io.md#experimental-section-output) (deprecated)

@@ -38,6 +38,9 @@ final class OutputCleaner
         // Process has not always the same exit number
         $string = preg_replace('{The following process did not finish successfully \(exit code \d+\):}m', 'The following process did not finish successfully (exit code XX): ', $string);
 
+        // Duration of the jobs run by parallel()
+        $string = preg_replace('{(Done in|Failed after) \d+\.\ds}m', '\1 X.Xs', $string);
+
         // Terminal Size
         $string = preg_replace('{Current terminal height: \d+}m', 'Current terminal height: XXXX', $string);
 

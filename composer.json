@@ -33,7 +33,7 @@
         }
     },
     "require": {
-        "php": ">=8.4",
+        "php": ">=8.4.1",
         "composer/composer": "^2.10.3",
         "jolicode/jolinotif": "^3.4.0",
         "jolicode/php-os-helper": "^0.3.0",
@@ -59,6 +59,7 @@
         "symfony/process": "^8.1.7",
         "symfony/string": "^8.1.7",
         "symfony/translation-contracts": "^3.7.1",
+        "symfony/tui": "^8.1.8",
         "symfony/var-dumper": "^8.1.7",
         "symfony/yaml": "^8.1.6"
     },

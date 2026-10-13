@@ -12,8 +12,10 @@ use Castor\Event\ProcessCreatedEvent;
 use Castor\Event\ProcessStartEvent;
 use Castor\Event\ProcessTerminateEvent;
 use Castor\Helper\Notifier;
+use Castor\Runner\Parallel\JobRegistry;
 use JoliCode\PhpOsHelper\OsHelper;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -33,6 +35,7 @@ class ProcessRunner
         private readonly LoggerInterface $logger,
         private readonly SymfonyStyle $io,
         private readonly SignalTrapper $signalTrapper,
+        private readonly JobRegistry $jobRegistry,
     ) {
     }
 
@@ -80,6 +83,25 @@ class ProcessRunner
             ;
         }
 
+        // Inside a job of parallel(), the output is captured to be organized.
+        // The tools must not draw for a terminal they do not own.
+        $job = $this->jobRegistry->getCurrent();
+        if ($job && !$context->quiet && !$callback) {
+            if ($context->tty) {
+                $this->logger->warning(\sprintf('The command "%s" runs without TTY: the output of a job of parallel() is captured.', u($process->getCommandLine())->truncate(40, '...')));
+            }
+
+            $context = $context
+                ->withTty(false)
+                ->withPty(false)
+            ;
+            $callback = static function (string $type, string $bytes) use ($job): void {
+                $output = Process::ERR === $type ? $job->errorOutput : $job->output;
+                // Shown even in quiet mode, like when it is not in a job
+                $output->write($bytes, false, OutputInterface::OUTPUT_RAW | OutputInterface::VERBOSITY_QUIET);
+            };
+        }
+
         // When input is provided, we need to disable TTY and PTY because they require interactive terminal
         if (null !== $context->input) {
             $process->setInput($context->input);
@@ -106,7 +128,9 @@ class ProcessRunner
             'process' => $process,
         ]);
 
-        $this->sectionOutput->initProcess($process);
+        if (!$job) {
+            $this->sectionOutput->initProcess($process);
+        }
 
         $process->start(static function ($type, $bytes) use ($callback, $process): void {
             if ($callback) {
@@ -121,7 +145,9 @@ class ProcessRunner
         try {
             if (\Fiber::getCurrent()) {
                 while ($process->isRunning()) {
-                    $this->sectionOutput->tickProcess($process);
+                    if (!$job) {
+                        $this->sectionOutput->tickProcess($process);
+                    }
                     $process->checkTimeout();
                     \Fiber::suspend();
                     usleep(20_000);
@@ -137,7 +163,9 @@ class ProcessRunner
             $exitCode = $process->getExitCode() ?? 128 + $e->getSignal();
         } finally {
             $this->signalTrapper->release($process, $context->trappedSignals);
-            $this->sectionOutput->finishProcess($process);
+            if (!$job) {
+                $this->sectionOutput->finishProcess($process);
+            }
             $this->eventDispatcher->dispatch(new ProcessTerminateEvent($process));
         }
 
@@ -148,7 +176,8 @@ class ProcessRunner
         if (0 !== $exitCode) {
             $this->logger->notice(\sprintf('Command finished with an error (exit code=%d).', $process->getExitCode()));
 
-            if ($context->verboseArguments && !$context->verbosityLevel->isVerbose()) {
+            // Nobody can answer the question while the output of a job is captured
+            if ($context->verboseArguments && !$context->verbosityLevel->isVerbose() && !$job) {
                 $retry = $this->io->confirm('Do you want to retry the command with verbose arguments?', false);
 
                 if ($retry) {

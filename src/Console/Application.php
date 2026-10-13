@@ -5,11 +5,13 @@ namespace Castor\Console;
 use Castor\Exception\ProblemException;
 use Castor\Helper\PlatformHelper;
 use Castor\Kernel;
+use Castor\Runner\Parallel\JobOutput;
 use Castor\Runner\ProcessRunner;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\CommandNotFoundException;
 use Symfony\Component\Console\Formatter\OutputFormatter;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -92,9 +94,12 @@ class Application extends SymfonyApplication
     {
         if (!$output->isVerbose()) {
             $this->enhanceException($e);
+            // The error of a job of parallel() stays in its output, to be
+            // organized with it
+            $io = $output instanceof JobOutput ? new SymfonyStyle(new ArrayInput([]), $output) : $this->io;
 
             if ($e instanceof ProblemException) {
-                $this->io->error($e->getMessage());
+                $io->error($e->getMessage());
 
                 return;
             }
@@ -103,15 +108,22 @@ class Application extends SymfonyApplication
                 $process = $e->getProcess();
                 $runnable = $this->processRunner->buildRunnableCommand($process);
 
-                $this->io->writeln(\sprintf('<comment>%s</comment>', OutputFormatter::escape(\sprintf('In %s line %s:', basename($e->getFile()) ?: 'n/a', $e->getLine() ?: 'n/a'))));
-                $this->io->error('The following process did not finish successfully (exit code ' . $process->getExitCode() . '):');
-                $this->io->writeln("<fg=yellow>{$runnable}</>");
-                $this->io->newLine();
+                $io->writeln(\sprintf('<comment>%s</comment>', OutputFormatter::escape(\sprintf('In %s line %s:', basename($e->getFile()) ?: 'n/a', $e->getLine() ?: 'n/a'))));
+                $io->error('The following process did not finish successfully (exit code ' . $process->getExitCode() . '):');
+                $io->writeln("<fg=yellow>{$runnable}</>");
+                $io->newLine();
 
-                $this->io->comment('Re-run the command with the <fg=yellow>-v</> option to see more details.');
+                $io->comment('Re-run the command with the <fg=yellow>-v</> option to see more details.');
 
                 return;
             }
+        }
+
+        // The usage of the command would be repeated for each job
+        if ($output instanceof JobOutput) {
+            $this->doRenderThrowable($e, $output);
+
+            return;
         }
 
         parent::renderThrowable($e, $output);
