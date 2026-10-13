@@ -209,6 +209,8 @@ add_test([], 'ContextRunWithoutContext', '{{ base }}/tests/fixtures/valid/contex
 add_test(['--castor-file', 'idonotexist', 'hello'], 'CastorFileDoesNotExist');
 add_test(['--castor-file', 'tests/fixtures/valid/castor-file/castor-file.php', 'hello'], 'CastorFileExist');
 add_test(['--castor-file=tests/fixtures/valid/castor-file/castor-file.php', 'hello'], 'CastorFileExistWithEqualsSign');
+add_test(['--castor-file', 'tests/fixtures/valid/castor-file/castor-file.php', 'root'], 'CastorFileRootDirectory');
+add_test(['--castor-file', 'tests/fixtures/valid/castor-file-in-castor-dir/.castor/my-castor.php', 'root'], 'CastorFileInCastorDirRootDirectory');
 
 echo "\nDone.\n";
 

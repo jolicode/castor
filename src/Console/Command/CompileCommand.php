@@ -60,7 +60,7 @@ class CompileCommand extends Command
             ->addArgument('phar-path', InputArgument::REQUIRED, 'Path to phar to compile along PHP')
             ->addOption('spc-version', null, InputOption::VALUE_REQUIRED, 'Version of the static-php-cli (spc) tool to use', self::DEFAULT_SPC_VERSION)
             ->addOption('spc-sha256', null, InputOption::VALUE_REQUIRED, 'SHA-256 checksum of the static-php-cli (spc) archive to download, required for a version other than the default one')
-            ->addOption('binary-path', null, InputOption::VALUE_REQUIRED, 'Path to compiled static binary. It can be the parent dirname too', PathHelper::getRoot(false))
+            ->addOption('binary-path', null, InputOption::VALUE_REQUIRED, 'Path to compiled static binary. It can be the parent dirname too, and defaults to the root directory')
             ->addOption('os', null, InputOption::VALUE_REQUIRED, 'Target OS for PHP compilation', 'linux', ['linux', 'macos', 'windows'])
             ->addOption('arch', null, InputOption::VALUE_REQUIRED, 'Target architecture for PHP compilation', 'x86_64', ['x86_64', 'aarch64'])
             ->addOption('php-version', null, InputOption::VALUE_REQUIRED, 'PHP version in major.minor format', '8.5')
@@ -334,7 +334,9 @@ class CompileCommand extends Command
 
     private function getBinaryPath(InputInterface $input): string
     {
-        $binaryPath = $input->getOption('binary-path');
+        // root is only known once the application booted
+        $binaryPath = $input->getOption('binary-path') ?? PathHelper::getRoot();
+
         if (!Path::isAbsolute($binaryPath)) {
             $binaryPath = Path::makeAbsolute($binaryPath, getcwd() ?: PathHelper::getRoot());
         }
