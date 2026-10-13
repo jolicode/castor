@@ -1,0 +1,4 @@
+#!/bin/sh
+# A fake "claude" CLI, for the tests putting this directory in the PATH: it
+# answers like fake-llm.sh, telling it was run through the "claude" definition.
+exec sh "$(dirname "$0")/../fake-llm.sh" claude

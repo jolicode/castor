@@ -16,6 +16,7 @@ use Castor\Http\HttpDownloader;
 use Castor\Import\Importer;
 use Castor\Import\Mounter;
 use Castor\Import\Remote\Composer;
+use Castor\Llm\LlmRunner;
 use Castor\Runner\Parallel\JobRegistry;
 use Castor\Runner\ParallelRunner;
 use Castor\Runner\PhpRunner;
@@ -55,6 +56,7 @@ final class Container
         public readonly InputInterface $input,
         public readonly JobRegistry $jobRegistry,
         public readonly Kernel $kernel,
+        public readonly LlmRunner $llmRunner,
         public readonly LoggerInterface $logger,
         public readonly Mounter $mounter,
         public readonly Notifier $notifier,
