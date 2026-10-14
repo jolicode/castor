@@ -339,9 +339,14 @@ class Context implements \ArrayAccess
             return false;
         }
 
-        if (!@is_writable('/dev/tty')) {
+        // Open it, as the TTY mode does: is_writable() only checks the
+        // permissions, and passes without a controlling terminal
+        $tty = @fopen('/dev/tty', 'r');
+        if (false === $tty) {
             return false;
         }
+
+        fclose($tty);
 
         return true;
     }

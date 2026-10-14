@@ -17,6 +17,7 @@
 * Pause once per round in `parallel()` instead of 20ms per running process, which slowed it down as the number of processes grew
 * Install the binary with mode `755` in the installer, instead of `700` since 1.8.0: the binary is downloaded to a private temporary file, so an installation by root in a system directory like `/usr/local/bin` left it unreadable and not executable by the other users
 * Use directory name of a castor file when using the `--castor-file` option instead of the current working directory
+* Detect a non-interactive environment when `/dev/tty` can't be opened, instead of only checking its permissions: without a controlling terminal (`setsid`, a nested process), `supportsInteraction()` returned `true` and the TTY mode then failed to start the process
 
 ## 1.8.1 (2026-09-21)
 

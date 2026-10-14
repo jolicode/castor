@@ -4,6 +4,8 @@ namespace Castor\Tests;
 
 use Castor\Context;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Process\ExecutableFinder;
+use Symfony\Component\Process\Process;
 
 class ContextTest extends TestCase
 {
@@ -116,5 +118,23 @@ class ContextTest extends TestCase
         $this->assertNull($context->timeout);
         $this->assertTrue($context->allowFailure);
         $this->assertFalse($context->supportsInteraction());
+    }
+
+    public function testSupportsInteractionIsFalseWithoutControllingTerminal(): void
+    {
+        if (!Process::isPtySupported() || null === new ExecutableFinder()->find('setsid')) {
+            $this->markTestSkipped('This test needs PTY support and the "setsid" command.');
+        }
+
+        // STDIN and STDOUT are a PTY, but setsid detaches the process from its
+        // controlling terminal, so /dev/tty can't be opened
+        $process = new Process(
+            ['setsid', '-w', \PHP_BINARY, '-r', 'require $argv[1]; var_export((new Castor\Context(workingDirectory: "/"))->supportsInteraction());', __DIR__ . '/../vendor/autoload.php'],
+            env: ['CI' => false],
+        );
+        $process->setPty(true);
+        $process->mustRun();
+
+        $this->assertSame('false', trim($process->getOutput()));
     }
 }
