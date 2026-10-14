@@ -39,20 +39,33 @@ class Selector
     }
 
     /**
+     * Same as selectOrRefuse(), among the CLIs that can modify the project, for llm_run().
+     */
+    public function selectWritableOrRefuse(SymfonyStyle $io): ?Selection
+    {
+        $name = $this->askCli($io, [self::CUSTOM_COMMAND, self::REFUSE], writable: true);
+
+        return self::REFUSE !== $name ? $this->complete($io, $name) : null;
+    }
+
+    /**
      * @param list<string> $otherChoices The choices proposed after the installed CLIs
+     * @param bool         $writable     Only the CLIs that can modify the project
      *
      * @return string The name of the CLI, or one of the other choices
      */
-    private function askCli(SymfonyStyle $io, array $otherChoices): string
+    private function askCli(SymfonyStyle $io, array $otherChoices, bool $writable = false): string
     {
-        $names = array_map(static fn (Cli $cli): string => $cli->name, $this->clis->getInstalled());
+        $installed = $writable ? $this->clis->getInstalledWritable() : $this->clis->getInstalled();
+        $names = $this->clis->getNames($installed);
 
         if (!$names) {
-            $io->warning(\sprintf('None of the LLM CLIs Castor knows is installed: %s.', implode(', ', $this->clis->getNames())));
+            $io->warning(\sprintf('None of the LLM CLIs Castor knows%s is installed: %s.', $writable ? ' that can modify the project' : '', implode(', ', $this->clis->getNames($writable ? $this->clis->allWritable() : null))));
         }
 
         // Pressing enter chooses a CLI that may not modify the project, when one is installed
-        $default = $this->clis->getDefault()->name ?? $names[0] ?? self::CUSTOM_COMMAND;
+        $preferred = $writable ? ($installed[0] ?? null) : $this->clis->getDefault();
+        $default = $preferred->name ?? $names[0] ?? self::CUSTOM_COMMAND;
 
         return $io->choice('Which LLM CLI do you want to use?', [...$names, ...$otherChoices], $default);
     }

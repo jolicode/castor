@@ -38,6 +38,11 @@ class LlmConfigTest extends TaskTestCase
         $this->assertSame(0, $process->getExitCode(), $process->getErrorOutput());
         $this->assertSame("You asked: What is the answer?\nThe answer is 42. (claude)\n", $process->getOutput());
 
+        // llm_run() uses the write mode of the CLI
+        $process = $this->runTask(['run-default'], self::CWD, needResetCache: false, env: [...$env, 'CASTOR_LLM' => 'claude']);
+        $this->assertSame(0, $process->getExitCode(), $process->getErrorOutput());
+        $this->assertSame("You asked: Fix the typos.\nThe answer is 42. (claude, write)\n", $process->getOutput());
+
         // The debug command tells where the value comes from
         $process = $this->runTask(['castor:llm:debug'], self::CWD, needResetCache: false);
         $this->assertSame(0, $process->getExitCode(), $process->getErrorOutput());

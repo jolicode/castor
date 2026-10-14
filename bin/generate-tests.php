@@ -64,6 +64,7 @@ $taskFilterList = [
     // Never complete or impossible to run
     'arguments:phpunit',
     'castor:debug',
+    'llm:fix-readme-typos',
     'llm:summarize-commits',
     'open:documentation',
     'open:multiple',
@@ -208,6 +209,7 @@ add_test(['parallel-timeout'], 'ParallelTimeout', '{{ base }}/tests/fixtures/val
 add_test([], 'DefaultTask', '{{ base }}/tests/fixtures/valid/default-task');
 add_test([], 'ContextRunWithoutContext', '{{ base }}/tests/fixtures/valid/context-run-without-context');
 add_test(['ask'], 'LlmAsk', '{{ base }}/tests/fixtures/valid/llm');
+add_test(['run'], 'LlmRun', '{{ base }}/tests/fixtures/valid/llm');
 add_test(['--castor-file', 'idonotexist', 'hello'], 'CastorFileDoesNotExist');
 add_test(['--castor-file', 'tests/fixtures/valid/castor-file/castor-file.php', 'hello'], 'CastorFileExist');
 add_test(['--castor-file=tests/fixtures/valid/castor-file/castor-file.php', 'hello'], 'CastorFileExistWithEqualsSign');

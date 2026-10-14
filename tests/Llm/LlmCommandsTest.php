@@ -7,6 +7,7 @@ use Castor\Console\Command\LlmDebugCommand;
 use Castor\Llm\LlmRunner;
 use Castor\Llm\Selector;
 use Castor\Runner\Parallel\JobRegistry;
+use Psr\Log\NullLogger;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -132,7 +133,8 @@ class LlmCommandsTest extends LlmTestCase
         $tester->assertCommandIsSuccessful();
         $display = $tester->getDisplay();
         $this->assertDisplayContains('Castor will always use the "claude" LLM CLI with the model "opus", from the CASTOR_LLM environment variable.', $display);
-        $this->assertDisplayContains("The command is 'claude' '--print' '--output-format' 'text' '--no-session-persistence' '--tools' \"\" '--model' 'opus', with the prompt on its standard input.", $display);
+        $this->assertDisplayContains("The command of llm_ask() is 'claude' '--print' '--output-format' 'text' '--no-session-persistence' '--tools' \"\" '--model' 'opus', with the prompt on its standard input.", $display);
+        $this->assertDisplayContains("The command of llm_run() is 'claude' '--print' '--output-format' 'text' '--no-session-persistence' '--permission-mode' 'acceptEdits' '--allowedTools' 'Bash' '--model' 'opus', with the prompt on its standard input.", $display);
     }
 
     public function testDebugShowsACustomCommandAsIs(): void
@@ -209,7 +211,7 @@ class LlmCommandsTest extends LlmTestCase
         $processRunner = $this->createProcessRunner($results);
         $clis = $this->createCliRegistry($installedClis, processRunner: $processRunner);
         $input = new ArrayInput([]);
-        $runner = new LlmRunner($clis, $this->configStorage, new Selector($clis), $this->createContextRegistry(), $processRunner, new Filesystem(), $input, new SymfonyStyle($input, new NullOutput()), new JobRegistry($input), false);
+        $runner = new LlmRunner($clis, $this->configStorage, new Selector($clis), $this->createContextRegistry(), $processRunner, new Filesystem(), $input, new SymfonyStyle($input, new NullOutput()), new JobRegistry($input), new NullLogger(), false);
 
         return new CommandTester(new Application()->addCommand(new LlmDebugCommand($clis, $this->configStorage, $runner)) ?? throw new \LogicException('The command could not be added.'));
     }

@@ -8,6 +8,7 @@ use Castor\Exception\LlmException;
 use Castor\Helper\PlatformHelper;
 use Castor\Runner\Parallel\JobRegistry;
 use Castor\Runner\ProcessRunner;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -30,10 +31,14 @@ class LlmRunner
     private const SOURCE_ENV_VAR = 'the ' . self::ENV_VAR . ' environment variable';
 
     /**
-     * The CLI chosen at the first question of the run, when none is set,
-     * reused for the next questions.
+     * The CLI chosen at the first call of the run, when none is set, reused for
+     * the next calls. A CLI and an agent chosen for the questions may not be
+     * able to work on the project, and the other way around: there is one
+     * choice by read-only mode.
+     *
+     * @var array<int, Selection>
      */
-    private ?Selection $runSelection = null;
+    private array $runSelections = [];
 
     private ?Selection $lastSelection = null;
 
@@ -47,6 +52,7 @@ class LlmRunner
         private readonly InputInterface $input,
         private readonly SymfonyStyle $io,
         private readonly JobRegistry $jobRegistry,
+        private readonly LoggerInterface $logger,
         #[Autowire('%repacked%')]
         private readonly bool $repacked,
     ) {
@@ -94,16 +100,19 @@ class LlmRunner
      */
     public function ask(string $prompt, string|array|null $cli = null, ?Context $context = null): string
     {
-        $context ??= $this->contextRegistry->getCurrentContext();
-        [$selection, $source] = $this->resolve($cli);
+        return $this->send($prompt, $cli, $context, readOnly: true);
+    }
 
-        if ($selection->isFixed()) {
-            return $this->askWith($selection, $prompt, $context);
-        }
-
-        $this->runSelection ??= $this->choose($prompt, $source, $context);
-
-        return $this->askWith($this->runSelection, $prompt, $context);
+    /**
+     * Same as ask(), but the CLI may modify the project and run commands.
+     *
+     * @param string|list<string>|null $cli
+     *
+     * @throws LlmException When the CLI cannot be chosen or cannot modify the project, when the call is refused, or when the CLI failed
+     */
+    public function run(string $prompt, string|array|null $cli = null, ?Context $context = null): string
+    {
+        return $this->send($prompt, $cli, $context, readOnly: false);
     }
 
     /**
@@ -114,12 +123,31 @@ class LlmRunner
         return $this->lastSelection;
     }
 
-    private function choose(string $prompt, string $source, Context $context): Selection
+    /**
+     * @param string|list<string>|null $cli
+     */
+    private function send(string $prompt, string|array|null $cli, ?Context $context, bool $readOnly): string
+    {
+        $context ??= $this->contextRegistry->getCurrentContext();
+        [$selection, $source] = $this->resolve($cli);
+
+        if ($selection->isFixed()) {
+            return $this->sendWith($selection, $prompt, $context, $readOnly);
+        }
+
+        $this->runSelections[(int) $readOnly] ??= $this->choose($prompt, $source, $context, $readOnly);
+
+        return $this->sendWith($this->runSelections[(int) $readOnly], $prompt, $context, $readOnly);
+    }
+
+    private function choose(string $prompt, string $source, Context $context, bool $readOnly): Selection
     {
         $howToSkip = $this->howToSkipTheChoice($source);
         $this->assertCanAsk($context, \sprintf('Castor needs you to choose the LLM CLI (from %s)', $source), $howToSkip);
 
-        $this->io->writeln('Castor is about to send this prompt to a LLM CLI:');
+        $this->io->writeln($readOnly
+            ? 'Castor is about to send this prompt to a LLM CLI:'
+            : 'Castor is about to send this prompt to a LLM CLI, which <options=bold>may modify the project and run commands</> to do what it asks:');
         $this->io->newLine();
 
         foreach ($this->preview($prompt) as $line) {
@@ -132,7 +160,9 @@ class LlmRunner
             $this->io->writeln(\sprintf('<fg=gray>%s, to skip these questions.</>', $howToSkip));
         }
 
-        return $this->selector->selectOrRefuse($this->io) ?? throw new LlmException('The LLM call has been refused.');
+        $selection = $readOnly ? $this->selector->selectOrRefuse($this->io) : $this->selector->selectWritableOrRefuse($this->io);
+
+        return $selection ?? throw new LlmException('The LLM call has been refused.');
     }
 
     /**
@@ -201,7 +231,7 @@ class LlmRunner
         }
     }
 
-    private function askWith(Selection $selection, string $prompt, Context $context): string
+    private function sendWith(Selection $selection, string $prompt, Context $context, bool $readOnly): string
     {
         if (null !== $selection->cli && !$this->clis->isInstalled($selection->cli)) {
             throw new LlmException(\sprintf('The "%s" LLM CLI is not installed.', $selection->cli->name));
@@ -210,9 +240,11 @@ class LlmRunner
         $this->lastSelection = $selection;
 
         $name = $selection->getName();
-        $command = null !== $selection->cli
-            ? $selection->cli->buildReadOnlyCommand($selection->model, $selection->agent, $selection->extraArguments)
-            : $selection->customCommand;
+        $command = match (true) {
+            null === $selection->cli => $selection->customCommand,
+            $readOnly => $selection->cli->buildReadOnlyCommand($selection->model, $selection->agent, $selection->extraArguments),
+            default => $selection->cli->buildWriteCommand($selection->model, $selection->agent, $selection->extraArguments),
+        };
 
         if (null === $command) {
             throw new \LogicException('A selection must have a CLI or a command.');
@@ -250,8 +282,13 @@ class LlmRunner
         try {
             $process = $this->processRunner->run($command, $context);
 
+            // What the CLI did, to check it afterwards
+            if ('' !== $errorOutput = trim($process->getErrorOutput())) {
+                $this->logger->debug(\sprintf("The \"%s\" LLM CLI printed on its error output:\n%s", $name, $errorOutput));
+            }
+
             if (!$process->isSuccessful()) {
-                throw new LlmException(\sprintf("The \"%s\" LLM CLI failed with exit code %d:\n%s", $name, $process->getExitCode() ?? 0, trim($process->getErrorOutput()) ?: trim($process->getOutput())));
+                throw new LlmException(\sprintf("The \"%s\" LLM CLI failed with exit code %d:\n%s", $name, $process->getExitCode() ?? 0, $errorOutput ?: trim($process->getOutput())));
             }
 
             $answer = null === $outputFile ? $process->getOutput() : (string) file_get_contents($outputFile);
@@ -270,7 +307,8 @@ class LlmRunner
 
         $answer = trim($answer);
 
-        if ('' === $answer) {
+        // When the LLM works on the project, the changes matter more than its last words
+        if ('' === $answer && $readOnly) {
             throw new LlmException(\sprintf('The "%s" LLM CLI returned an empty answer.', $name));
         }
 

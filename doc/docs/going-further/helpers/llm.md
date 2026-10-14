@@ -1,10 +1,11 @@
 ---
 description: >
-  Learn how to ask a question to a LLM from a Castor task with the `llm_ask()`
-  function, through the AI CLI already installed and logged in on your machine.
+  Learn how to ask a question to a LLM, or let it work on the project, from a
+  Castor task with the `llm_ask()` and `llm_run()` functions, through the AI
+  CLI already installed and logged in on your machine.
 ---
 
-# Asking a LLM
+# Using a LLM
 
 ## The `llm_ask()` function
 
@@ -59,13 +60,50 @@ for all, to skip these questions.
 > and Gemini CLI lets the model leave its `plan` approval mode for the `yolo`
 > one: Castor does not propose them by default.
 
+## The `llm_run()` function
+
+The `llm_run()` function lets the LLM work on the project instead of only
+answering: the CLI is run in its non-interactive mode, allowed to modify the
+files and to run commands, and its final answer is returned:
+
+```php
+{% include "/examples/basic/llm/run.php" start="<?php\n\nnamespace llm;\n\n" %}
+```
+
+The CLI does what the prompt asks with the autonomy it has when you tell it
+not to ask: Claude Code accepts the edits and the commands, Codex runs in its
+`workspace-write` sandbox with the network, Gemini CLI and Qwen Code in their
+`yolo` approval mode, GitHub Copilot CLI with all its tools allowed, Cursor
+CLI, Amp, Crush, OpenCode and Mistral Vibe with all the actions of their
+default agent approved. The `llm` CLI only answers questions: it is refused,
+and not proposed. A custom command is run the same way as for `llm_ask()`: it
+is up to you to make it able to work on the project. Check what the model did,
+with `git diff` for instance, before trusting it.
+
+The CLI is chosen the same way as for `llm_ask()`. By default, the first time
+a task lets a LLM work on the project, Castor shows the beginning of the prompt
+and asks which CLI to use, among the ones that can modify the project, or lets
+you refuse: the CLI and the agent chosen for the questions may not be able to
+work on the project, so `llm_run()` has its own choice, kept for the run. With
+a CLI set in the configuration or in the `CASTOR_LLM` environment variable,
+Castor asks nothing: the task decides.
+
+> [!NOTE]
+> The sandbox of Codex keeps the `.git` directory read-only: the model cannot
+> commit, nor finish a merge. Gemini CLI and OpenCode print the text of every
+> step of their work, not only their final answer, so the returned string may
+> be the whole narration. When the context sets a timeout, the CLI is stopped
+> after that time, which may leave the project half-modified: use a context
+> without timeout for a long run.
+
 ## Choosing the CLI
 
 How Castor chooses the CLI is described by a value, which is one of:
 
 - `choose`: the default. The first time a task asks a LLM, Castor lets you
   choose the CLI among the installed ones, then its model and its agent when
-  the CLI supports them. The choice is kept for the run.
+  the CLI supports them. The choice is kept for the run. `llm_run()` asks for
+  its own choice, among the CLIs that can modify the project.
 - the name of a known CLI, like `claude` or `codex`, to always use it. It can
   be followed by the `--model` and `--agent` options, that Castor translates
   for the CLI, and by any other arguments, passed to the CLI as is:
@@ -76,7 +114,7 @@ How Castor chooses the CLI is described by a value, which is one of:
 
 Castor takes the value from the first of these sources that defines one:
 
-1. the `cli` argument of the `llm_ask()` function;
+1. the `cli` argument of the `llm_ask()` and `llm_run()` functions;
 2. the `CASTOR_LLM` environment variable;
 3. the configuration of the project, made with the `castor:llm:configure`
    command;
@@ -84,8 +122,8 @@ Castor takes the value from the first of these sources that defines one:
    command;
 5. the default, `choose`.
 
-Castor uses the CLI it is given, and only it: when it fails, `llm_ask()` throws
-an exception, and the prompt is not sent to another CLI.
+Castor uses the CLI it is given, and only it: when it fails, `llm_ask()` and
+`llm_run()` throw an exception, and the prompt is not sent to another CLI.
 
 > [!NOTE]
 > The `choose` value needs someone to answer: in a non-interactive run, like in
@@ -94,13 +132,13 @@ an exception, and the prompt is not sent to another CLI.
 > to a CLI in such environments.
 >
 > The same goes for a job of [`parallel()`](parallel.md), since its output is
-> captured: call `llm_ask()` once before `parallel()` to answer the question,
-> the jobs then use the same CLI.
+> captured: call `llm_ask()`, or `llm_run()`, once before `parallel()` to
+> answer the question, the jobs then use the same CLI.
 
 ### The `cli` argument
 
-The `cli` argument of the `llm_ask()` function takes a value, as a string or as an
-array:
+The `cli` argument of the `llm_ask()` and `llm_run()` functions takes a value,
+as a string or as an array:
 
 ```php
 use function Castor\llm_ask;
@@ -170,9 +208,11 @@ castor castor:llm:debug --test
 
 ## Errors
 
-The `llm_ask()` function throws a `Castor\Exception\LlmException` when the CLI
-cannot be chosen, because the run is not interactive for instance, when you
-refuse to send the prompt, when the configuration of OpenCode cannot be merged,
-or when the CLI is not installed, fails, is stopped by a signal or exceeds the
-timeout of the context. The message of the exception contains the error output
-of the CLI, to help you fix its setup.
+The `llm_ask()` and `llm_run()` functions throw a `Castor\Exception\LlmException`
+when the CLI cannot be chosen, because the run is not interactive for instance,
+when you refuse to send the prompt, when the configuration of OpenCode cannot be
+merged, or when the CLI is not installed, fails, is stopped by a signal or
+exceeds the timeout of the context. `llm_run()` also throws when the chosen CLI
+cannot modify the project. The message of the exception contains the error
+output of the CLI, to help you fix its setup. With the `-vvv` option, Castor
+also logs the error output of the CLI, where most of them report what they did.

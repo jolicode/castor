@@ -8,6 +8,7 @@
 * Wait 3 days after a release is published before reminding the users to update
 * Organize the output of the functions given to `parallel()` when they are named: each one becomes a job, shown as a block with a spinner and its last lines in an interactive terminal, or with its lines prefixed by its name elsewhere. The values returned by named functions are now keyed by their name, and mixing named and unnamed functions is rejected
 * Add the `llm_ask()` function to ask a question to a LLM and get its answer: Castor runs, in its non-interactive and read-only mode, one of the AI CLIs already installed and logged in on the machine (Claude Code, Codex, OpenCode, Gemini CLI, GitHub Copilot CLI, Mistral Vibe, ...), chosen at the first call of the run by default. The `CASTOR_LLM` environment variable and the new `castor:llm:configure` command choose the CLI, its model and its agent once and for all, and the new `castor:llm:debug` command shows the resulting configuration
+* Add the `llm_run()` function to let a LLM work on the project: the AI CLI is run in its non-interactive mode, allowed to modify the files and to run commands, and its final answer is returned
 
 ### Deprecations
 

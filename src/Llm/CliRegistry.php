@@ -44,20 +44,23 @@ class CliRegistry
 
         // In the order they are proposed
         $this->clis = [
-            new Cli('claude', ['claude', '--print', '--output-format', 'text', '--no-session-persistence', Cli::OPTIONS_PLACEHOLDER], readOnlyArguments: ['--tools', ''], modelOption: '--model', agentOption: '--agent', models: ['fable', 'opus', 'sonnet', 'haiku']),
-            new Cli('codex', ['codex', 'exec', '--skip-git-repo-check', '--ephemeral', '--color', 'never', '--output-last-message', Cli::OUTPUT_FILE_PLACEHOLDER, Cli::OPTIONS_PLACEHOLDER, '-'], readOnlyArguments: ['--sandbox', 'read-only'], modelOption: '--model'),
-            new Cli('opencode', ['opencode', 'run', Cli::OPTIONS_PLACEHOLDER], modelOption: '--model', agentOption: '--agent', readOnlyAgent: self::OPENCODE_READ_ONLY_AGENT),
+            new Cli('claude', ['claude', '--print', '--output-format', 'text', '--no-session-persistence', Cli::OPTIONS_PLACEHOLDER], readOnlyArguments: ['--tools', ''], writeArguments: ['--permission-mode', 'acceptEdits', '--allowedTools', 'Bash'], modelOption: '--model', agentOption: '--agent', models: ['fable', 'opus', 'sonnet', 'haiku']),
+            // The workspace-write sandbox has no network by default, and keeps the .git directory read-only
+            new Cli('codex', ['codex', 'exec', '--skip-git-repo-check', '--ephemeral', '--color', 'never', '--output-last-message', Cli::OUTPUT_FILE_PLACEHOLDER, Cli::OPTIONS_PLACEHOLDER, '-'], readOnlyArguments: ['--sandbox', 'read-only'], writeArguments: ['--sandbox', 'workspace-write', '--config', 'sandbox_workspace_write.network_access=true'], modelOption: '--model'),
+            // Without --auto, a permission that is not allowed by the configuration is rejected, which stops the agent
+            new Cli('opencode', ['opencode', 'run', Cli::OPTIONS_PLACEHOLDER], writeArguments: ['--auto'], modelOption: '--model', agentOption: '--agent', readOnlyAgent: self::OPENCODE_READ_ONLY_AGENT),
             // In a non-interactive run, the model may leave the plan approval mode for the yolo one
-            new Cli('gemini', ['gemini', Cli::OPTIONS_PLACEHOLDER], readOnlyArguments: ['--approval-mode', 'plan'], modelOption: '--model', mayModifyProject: true),
-            new Cli('copilot', ['copilot', '--silent', Cli::OPTIONS_PLACEHOLDER], modelOption: '--model', agentOption: '--agent'),
-            new Cli('cursor-agent', ['cursor-agent', '--print', '--output-format', 'text', Cli::OPTIONS_PLACEHOLDER], readOnlyArguments: ['--mode', 'ask'], modelOption: '--model'),
+            new Cli('gemini', ['gemini', Cli::OPTIONS_PLACEHOLDER], readOnlyArguments: ['--approval-mode', 'plan'], writeArguments: ['--approval-mode', 'yolo'], modelOption: '--model', mayModifyProject: true),
+            new Cli('copilot', ['copilot', '--silent', Cli::OPTIONS_PLACEHOLDER], writeArguments: ['--allow-all-tools'], modelOption: '--model', agentOption: '--agent'),
+            new Cli('cursor-agent', ['cursor-agent', '--print', '--output-format', 'text', Cli::OPTIONS_PLACEHOLDER], readOnlyArguments: ['--mode', 'ask'], writeArguments: ['--force'], modelOption: '--model'),
             // Both approve all the actions of the model in a non-interactive run
-            new Cli('amp', ['amp', Cli::OPTIONS_PLACEHOLDER, '--execute'], mayModifyProject: true),
-            new Cli('crush', ['crush', 'run', '--quiet', Cli::OPTIONS_PLACEHOLDER], mayModifyProject: true),
-            new Cli('qwen', ['qwen', Cli::OPTIONS_PLACEHOLDER], readOnlyArguments: ['--approval-mode', 'plan'], modelOption: '--model'),
+            new Cli('amp', ['amp', Cli::OPTIONS_PLACEHOLDER, '--execute'], writeArguments: [], mayModifyProject: true),
+            new Cli('crush', ['crush', 'run', '--quiet', Cli::OPTIONS_PLACEHOLDER], writeArguments: [], mayModifyProject: true),
+            new Cli('qwen', ['qwen', Cli::OPTIONS_PLACEHOLDER], readOnlyArguments: ['--approval-mode', 'plan'], writeArguments: ['--approval-mode', 'yolo'], modelOption: '--model'),
             new Cli('llm', ['llm', Cli::OPTIONS_PLACEHOLDER], modelOption: '--model'),
-            // "--prompt" without value reads the prompt on the standard input
-            new Cli('vibe', ['vibe', '--trust', '--output', 'text', Cli::OPTIONS_PLACEHOLDER, '--prompt'], agentOption: '--agent', readOnlyAgent: 'plan'),
+            // "--prompt" without value reads the prompt on the standard input. Without --auto-approve, the
+            // actions needing an approval are denied in the programmatic mode
+            new Cli('vibe', ['vibe', '--trust', '--output', 'text', Cli::OPTIONS_PLACEHOLDER, '--prompt'], writeArguments: ['--auto-approve'], agentOption: '--agent', readOnlyAgent: 'plan'),
         ];
     }
 
@@ -70,11 +73,23 @@ class CliRegistry
     }
 
     /**
+     * The CLIs that can modify the project, for llm_run().
+     *
+     * @return list<Cli>
+     */
+    public function allWritable(): array
+    {
+        return array_values(array_filter($this->clis, static fn (Cli $cli): bool => $cli->supportsWrite()));
+    }
+
+    /**
+     * @param ?list<Cli> $clis Some CLIs, or all of them
+     *
      * @return list<string>
      */
-    public function getNames(): array
+    public function getNames(?array $clis = null): array
     {
-        return array_map(static fn (Cli $cli): string => $cli->name, $this->clis);
+        return array_map(static fn (Cli $cli): string => $cli->name, $clis ?? $this->clis);
     }
 
     public function get(string $name): ?Cli
@@ -108,6 +123,16 @@ class CliRegistry
     public function getInstalled(): array
     {
         return array_values(array_filter($this->clis, $this->isInstalled(...)));
+    }
+
+    /**
+     * The installed CLIs that can modify the project, for llm_run().
+     *
+     * @return list<Cli>
+     */
+    public function getInstalledWritable(): array
+    {
+        return array_values(array_filter($this->allWritable(), $this->isInstalled(...)));
     }
 
     /**

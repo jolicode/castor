@@ -126,6 +126,24 @@ function llm_ask(string $prompt, string|array|null $cli = null, ?Context $contex
 }
 
 /**
+ * Lets a LLM work on the project: the AI CLI is run in its non-interactive
+ * mode, allowed to modify the files and to run commands, and its final answer
+ * is returned. Check what it did before trusting it.
+ *
+ * @param string|list<string>|null $cli Same as llm_ask(). The "llm" CLI only answers questions: naming it
+ *                                      here throws, and Castor does not propose it when it asks
+ *
+ * @throws LlmException When the CLI cannot be chosen or cannot modify the project, when the call is refused, or when the CLI failed
+ */
+function llm_run(string $prompt, string|array|null $cli = null, ?Context $context = null): string
+{
+    return Container::get()
+        ->llmRunner
+        ->run($prompt, $cli, $context)
+    ;
+}
+
+/**
  * @param callable():bool $check
  */
 function check(string $title, string $failureMessage, callable $check): void
