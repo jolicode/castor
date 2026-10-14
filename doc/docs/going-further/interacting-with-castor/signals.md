@@ -52,15 +52,40 @@ function onSigUsr2(int $signal): int|false
 }
 ```
 
-## Trapping signals sent to Castor
+## Interrupting a task
 
 By default, a signal sent to Castor - like the `SIGINT` triggered by a `CTRL+C` -
-interrupts Castor itself, and the task is not executed any further.
+interrupts Castor itself, and the task is not executed any further. Castor then
+exits with the code 128 + the number of the signal, like a shell: `130` for a
+`SIGINT`, `143` for a `SIGTERM`. So a `CTRL+C` also stops
+`castor build && castor deploy`.
+
+A process that has the terminal - run with [`withTty()`](../../getting-started/context.md#pty-tty)
+or `toInteractive()` - may put it in raw mode, like `docker run -it` or `vim`
+do. The `CTRL+C` then reaches this process only, and not Castor: the process
+exits with the code `130`. Castor stops the task in this case too, even when the
+failures are allowed (with `withAllowFailure()`, `exit_code()`,
+`toInteractive()`, ...): it shows a short warning, and exits with the code
+`130`. The same goes for a process killed by a `SIGINT` that Castor did not
+receive.
+
+Without the terminal, Castor receives the `CTRL+C` itself: the exit code `130`
+of a process is then a failure like any other.
+
+> [!NOTE]
+> An interactive shell run with the terminal exits with the code of its last
+> command: `130` when this command has been interrupted, or when the prompt has
+> been cleared with a `CTRL+C`. To let the task go on after it, trap `SIGINT`
+> as explained below.
+
+## Trapping signals sent to Castor
 
 If you want to stop only the process currently running, and let the task
 continue, you can ask the context to trap the signals with the
 `withTrappedSignals()` method. When Castor receives one of these signals while
-running a process, it forwards it to that process instead of being interrupted:
+running a process, it forwards it to that process instead of being interrupted.
+And when `SIGINT` is trapped, a process interrupted on its own does not stop the
+task either:
 
 ```php
 {% include "/examples/advanced/signal/trap.php" start="<?php\n\nnamespace signal;\n\n" %}

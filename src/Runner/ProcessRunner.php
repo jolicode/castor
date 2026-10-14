@@ -11,6 +11,7 @@ use Castor\ContextRegistry;
 use Castor\Event\ProcessCreatedEvent;
 use Castor\Event\ProcessStartEvent;
 use Castor\Event\ProcessTerminateEvent;
+use Castor\Exception\ProcessInterruptedException;
 use Castor\Helper\Notifier;
 use Castor\Runner\Parallel\JobRegistry;
 use JoliCode\PhpOsHelper\OsHelper;
@@ -27,6 +28,9 @@ use function Symfony\Component\String\u;
 /** @internal */
 class ProcessRunner
 {
+    // \SIGINT needs the pcntl extension
+    private const SIGINT = 2;
+
     public function __construct(
         private readonly ContextRegistry $contextRegistry,
         private readonly SectionOutput $sectionOutput,
@@ -157,6 +161,12 @@ class ProcessRunner
             $exitCode = $process->wait();
         } catch (ProcessSignaledException $e) {
             if (!\in_array($e->getSignal(), $context->trappedSignals, true)) {
+                // Castor would already have stopped if it had received this
+                // SIGINT too: the task stops as if it had
+                if (self::SIGINT === $e->getSignal()) {
+                    throw new ProcessInterruptedException($process, $e);
+                }
+
                 throw $e;
             }
 
@@ -175,6 +185,10 @@ class ProcessRunner
 
         if (0 !== $exitCode) {
             $this->logger->notice(\sprintf('Command finished with an error (exit code=%d).', $process->getExitCode()));
+
+            if ($this->isInterruptedInTerminal($process, $exitCode, $context)) {
+                throw new ProcessInterruptedException($process);
+            }
 
             // Nobody can answer the question while the output of a job is captured
             if ($context->verboseArguments && !$context->verbosityLevel->isVerbose() && !$job) {
@@ -255,5 +269,22 @@ class ProcessRunner
         }
 
         return rtrim($runnable, ' ');
+    }
+
+    /**
+     * A CTRL+C usually stops Castor along with the process. But a process with
+     * the terminal (TTY) may put it in raw mode (docker run -it, vim, ...): the
+     * CTRL+C only reaches this process, and its exit code 130 (128 + SIGINT)
+     * is the only trace of it. Not when SIGINT is trapped: the task goes on.
+     *
+     * Castor receives no signal in this case, so Symfony Console can't see the
+     * CTRL+C, even in 8.2 which exits with 128 + the signal number: this check
+     * stays when InterruptionListener is removed.
+     */
+    private function isInterruptedInTerminal(Process $process, int $exitCode, Context $context): bool
+    {
+        return 128 + self::SIGINT === $exitCode
+            && $process->isTty()
+            && !\in_array(self::SIGINT, $context->trappedSignals, true);
     }
 }
