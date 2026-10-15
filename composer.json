@@ -42,26 +42,26 @@
         "nikic/php-parser": "^5.9.0",
         "phpstan/phpdoc-parser": "^2.3.6",
         "spatie/ssh": "^1.13.2",
-        "symfony/cache": "^8.1.9",
-        "symfony/config": "^8.1.5",
-        "symfony/console": "^8.1.9",
-        "symfony/dependency-injection": "^8.1.9",
+        "symfony/cache": "^8.2",
+        "symfony/config": "^8.2",
+        "symfony/console": "^8.2",
+        "symfony/dependency-injection": "^8.2",
         "symfony/deprecation-contracts": "^3.7.1",
-        "symfony/dotenv": "^8.1.6",
-        "symfony/error-handler": "^8.1.8",
-        "symfony/expression-language": "^8.1.9",
-        "symfony/filesystem": "^8.1.9",
-        "symfony/finder": "^8.1.8",
-        "symfony/http-client": "^8.1.9",
-        "symfony/mime": "^8.1.7",
-        "symfony/monolog-bridge": "^8.1.6",
+        "symfony/dotenv": "^8.2",
+        "symfony/error-handler": "^8.2",
+        "symfony/expression-language": "^8.2",
+        "symfony/filesystem": "^8.2",
+        "symfony/finder": "^8.2",
+        "symfony/http-client": "^8.2",
+        "symfony/mime": "^8.2",
+        "symfony/monolog-bridge": "^8.2",
         "symfony/polyfill-php85": "^1.43.0",
-        "symfony/process": "^8.1.9",
-        "symfony/string": "^8.1.9",
+        "symfony/process": "^8.2",
+        "symfony/string": "^8.2",
         "symfony/translation-contracts": "^3.7.1",
-        "symfony/tui": "^8.1.9",
-        "symfony/var-dumper": "^8.1.9",
-        "symfony/yaml": "^8.1.9"
+        "symfony/tui": "^8.2",
+        "symfony/var-dumper": "^8.2",
+        "symfony/yaml": "^8.2"
     },
     "require-dev": {
         "phpunit/phpunit": "^13.4.3"
@@ -69,6 +69,8 @@
     "bin": [
         "bin/castor"
     ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "config": {
         "bump-after-update": true,
         "platform": {

@@ -3,6 +3,7 @@
 namespace Castor\Attribute;
 
 use Symfony\Component\Console\Completion\CompletionInput;
+use Symfony\Component\Console\Input\InputOption;
 
 /**
  * Makes the parameter of a task an option ("--my-param"), even when it has no
@@ -14,7 +15,7 @@ class AsOption extends AsCommandArgument
     /**
      * @param ?string                                                     $name         Defaults to the parameter name, in kebab-case
      * @param string|array<string>|null                                   $shortcut
-     * @param ?int                                                        $mode         The InputOption::VALUE_* constants. Defaults to VALUE_NONE for a bool parameter, to VALUE_OPTIONAL otherwise
+     * @param int-mask-of<InputOption::*>|null                            $mode         The InputOption::VALUE_* constants. Defaults to VALUE_NONE for a bool parameter, to VALUE_OPTIONAL otherwise
      * @param array<string>|callable(CompletionInput): array<string>|null $autocomplete The values suggested by the shell completion
      */
     public function __construct(
