@@ -3,6 +3,8 @@
 namespace Castor\Runner\Parallel;
 
 use Symfony\Component\Console\Terminal;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Tui\Terminal\TerminalInterface;
 
 /**
@@ -25,6 +27,7 @@ final class OutputTerminal implements TerminalInterface
     // either: that would drop the one set by the shell (like in vi mode).
     private const CURSOR_SEQUENCES = ["\x1b[?25l", "\x1b[0 q"];
 
+    private readonly EventDispatcherInterface $eventDispatcher;
     private readonly Terminal $terminal;
 
     /**
@@ -33,7 +36,13 @@ final class OutputTerminal implements TerminalInterface
     public function __construct(
         private readonly mixed $stream,
     ) {
+        $this->eventDispatcher = new EventDispatcher();
         $this->terminal = new Terminal();
+    }
+
+    public function getEventDispatcher(): EventDispatcherInterface
+    {
+        return $this->eventDispatcher;
     }
 
     public function start(callable $onInput, callable $onResize, callable $onKittyProtocolActivated): void
