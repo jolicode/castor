@@ -3,12 +3,14 @@
 namespace Castor\Attribute;
 
 use Symfony\Component\Console\Completion\CompletionInput;
+use Symfony\Component\Console\Input\InputOption;
 
 #[\Attribute(\Attribute::TARGET_PARAMETER)]
 class AsOption extends AsCommandArgument
 {
     /**
      * @param string|array<string>|null                                   $shortcut
+     * @param int-mask-of<InputOption::*>|null                            $mode
      * @param array<string>|callable(CompletionInput): array<string>|null $autocomplete
      */
     public function __construct(
