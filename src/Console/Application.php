@@ -3,6 +3,7 @@
 namespace Castor\Console;
 
 use Castor\Exception\ProblemException;
+use Castor\Exception\ProcessInterruptedException;
 use Castor\Helper\PlatformHelper;
 use Castor\Kernel;
 use Castor\Runner\Parallel\JobOutput;
@@ -19,6 +20,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+
+use function Symfony\Component\String\u;
 
 /** @internal */
 class Application extends SymfonyApplication
@@ -100,6 +103,13 @@ class Application extends SymfonyApplication
 
             if ($e instanceof ProblemException) {
                 $io->error($e->getMessage());
+
+                return;
+            }
+
+            // A CTRL+C is not an error to explain at length
+            if ($e instanceof ProcessInterruptedException) {
+                $io->warning(\sprintf('The command "%s" has been interrupted.', u($e->process->getCommandLine())->truncate(40, '...')));
 
                 return;
             }

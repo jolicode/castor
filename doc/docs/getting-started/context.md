@@ -365,6 +365,9 @@ function foo(): void
 }
 ```
 
+A process interrupted by a `CTRL+C` still stops the task: see
+[the signals documentation](../going-further/interacting-with-castor/signals.md#interrupting-a-task).
+
 ### Working directory
 
 By default, Castor will execute the process in the same directory as

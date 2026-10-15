@@ -4,6 +4,7 @@
 
 ### Features
 
+* Stop the task when a process is interrupted by a `CTRL+C`, even when the failures are allowed (`withAllowFailure()`, `exit_code()`, `toInteractive()`, ...), with a short warning and the exit code `130`. A process with the terminal (TTY) - like `docker run -it` - may get the `CTRL+C` alone: the task used to carry on after its exit code `130`. Trap `SIGINT` with `withTrappedSignals()` to keep this behavior
 * Wait 3 days after a release is published before reminding the users to update
 * Organize the output of the functions given to `parallel()` when they are named: each one becomes a job, shown as a block with a spinner and its last lines in an interactive terminal, or with its lines prefixed by its name elsewhere. The values returned by named functions are now keyed by their name, and mixing named and unnamed functions is rejected
 * Add the `llm_ask()` function to ask a question to a LLM and get its answer: Castor runs, in its non-interactive and read-only mode, one of the AI CLIs already installed and logged in on the machine (Claude Code, Codex, OpenCode, Gemini CLI, GitHub Copilot CLI, Mistral Vibe, ...), after a confirmation by default. The `CASTOR_LLM` environment variable and the new `castor:llm:configure` command choose the CLI, its model and its agent, or let Castor use the first CLI found without asking, and the new `castor:llm:debug` command shows the resulting configuration
@@ -14,6 +15,7 @@
 
 ### Fixes
 
+* Exit with the code 128 + the number of the signal (`130` for a `CTRL+C`) instead of `0` when a signal stops Castor: a `CTRL+C` did not stop `castor build && castor deploy`
 * Pause once per round in `parallel()` instead of 20ms per running process, which slowed it down as the number of processes grew
 * Install the binary with mode `755` in the installer, instead of `700` since 1.8.0: the binary is downloaded to a private temporary file, so an installation by root in a system directory like `/usr/local/bin` left it unreadable and not executable by the other users
 * Use directory name of a castor file when using the `--castor-file` option instead of the current working directory
