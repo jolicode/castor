@@ -13,6 +13,12 @@ function ask(): void
     io()->writeln(llm_ask('What is the answer?', cli: ['sh', __DIR__ . '/fake-llm.sh']));
 }
 
+#[AsTask(name: 'ask-in-argument', description: 'Ask a question that is not valid UTF-8 to a LLM CLI reading it as an argument')]
+function ask_in_argument(): void
+{
+    io()->writeln(llm_ask("What is the answer?\xFF", cli: ['printf', 'You asked: %s\nThe answer is 42.\n', '{prompt}']));
+}
+
 #[AsTask(name: 'ask-default', description: 'Ask a question to the configured LLM CLI')]
 function ask_default(): void
 {

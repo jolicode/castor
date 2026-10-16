@@ -167,6 +167,17 @@ class LlmRunnerTest extends LlmTestCase
         $this->assertStringContainsString('(3 more lines)', $output);
     }
 
+    public function testThePreviewShowsTheControlCharactersAndTheInvalidBytes(): void
+    {
+        $runner = $this->createRunner(['claude'], interactive: true, inputs: "\n\n\n");
+
+        $runner->ask("Fix this\r\e[2Kline\x07\x7F\u{9B}2J and \xFF\tend");
+
+        $output = $this->output->fetch();
+        $this->assertStringContainsString("Fix this\u{240D}\u{241B}[2Kline\u{2407}\u{2421}\u{FFFD}2J and ?    end", $output);
+        $this->assertStringNotContainsString("\e", $output);
+    }
+
     public function testTheUserCanRefuseToSendThePrompt(): void
     {
         $runner = $this->createRunner(['claude'], interactive: true, inputs: "None, do not send the prompt\n");
@@ -232,6 +243,53 @@ class LlmRunnerTest extends LlmTestCase
         $this->assertStringContainsString('Which agent? Leave empty for the default of the CLI', $output);
         $commands = $this->getRunCommands();
         $this->assertSame(['opencode', 'run', '--model', 'opencode/big-pickle', '--agent', 'castor-read-only'], end($commands));
+    }
+
+    public function testTheCliArgumentCannotBeOverriddenToSkipTheChoice(): void
+    {
+        $runner = $this->createRunner(['claude']);
+        $_SERVER['CASTOR_LLM'] = 'claude';
+
+        try {
+            $runner->ask('What is the answer?', 'choose');
+            $this->fail('An exception should have been thrown.');
+        } catch (LlmException $e) {
+            $this->assertSame('Castor needs you to choose the LLM CLI (from the "cli" argument), but the run is not interactive.', $e->getMessage());
+        }
+    }
+
+    public function testTheEnvironmentVariableAsksToChooseTheCli(): void
+    {
+        $runner = $this->createRunner(['claude']);
+        $_SERVER['CASTOR_LLM'] = 'choose';
+
+        $this->expectException(LlmException::class);
+        $this->expectExceptionMessage('Castor needs you to choose the LLM CLI (from the CASTOR_LLM environment variable), but the run is not interactive. Set the CASTOR_LLM environment variable to the CLI to use.');
+
+        $runner->ask('What is the answer?');
+    }
+
+    public function testARepackedApplicationCannotConfigureTheCli(): void
+    {
+        $runner = $this->createRunner(['claude'], repacked: true);
+
+        $this->expectException(LlmException::class);
+        $this->expectExceptionMessage('Castor needs you to choose the LLM CLI (from the default), but the run is not interactive. Set the CASTOR_LLM environment variable to the CLI to use.');
+
+        $runner->ask('What is the answer?');
+    }
+
+    public function testTheHintToSkipTheQuestionsDependsOnWhereTheChoiceComesFrom(): void
+    {
+        $runner = $this->createRunner(['claude'], interactive: true, inputs: "\n\n\n");
+        $runner->ask('What is the answer?');
+
+        $this->assertStringContainsString('Set the CASTOR_LLM environment variable to the CLI to use, or run "castor castor:llm:configure", to skip these questions.', $this->output->fetch());
+
+        $runner = $this->createRunner(['claude'], interactive: true, inputs: "\n\n\n");
+        $runner->ask('What is the answer?', 'choose');
+
+        $this->assertStringNotContainsString('to skip these questions', $this->output->fetch());
     }
 
     public function testChooseCannotRunNonInteractively(): void
@@ -424,7 +482,7 @@ class LlmRunnerTest extends LlmTestCase
      * @param list<string>                                         $installedClis
      * @param array<string, array{int, string, string}|\Throwable> $results
      */
-    private function createRunner(array $installedClis = [], array $results = [], bool $interactive = false, string $inputs = ''): LlmRunner
+    private function createRunner(array $installedClis = [], array $results = [], bool $interactive = false, string $inputs = '', bool $repacked = false): LlmRunner
     {
         $processRunner = $this->createProcessRunner($results);
         $clis = $this->createCliRegistry($installedClis, processRunner: $processRunner);
@@ -450,6 +508,7 @@ class LlmRunnerTest extends LlmTestCase
             $input,
             new SymfonyStyle($input, $this->output),
             $this->jobRegistry,
+            $repacked,
         );
     }
 

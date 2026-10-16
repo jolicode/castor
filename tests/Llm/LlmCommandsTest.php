@@ -8,6 +8,7 @@ use Castor\Llm\LlmRunner;
 use Castor\Llm\Selector;
 use Castor\Runner\Parallel\JobRegistry;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -145,6 +146,18 @@ class LlmCommandsTest extends LlmTestCase
         $this->assertDisplayContains('Castor will always run the command "my-llm --system <comment>be terse</info>", from the CASTOR_LLM environment variable.', $tester->getDisplay());
     }
 
+    public function testDebugShowsAnInvalidConfigurationOfOpenCode(): void
+    {
+        $_SERVER['CASTOR_LLM'] = 'opencode';
+        $_SERVER['OPENCODE_CONFIG_CONTENT'] = '{"provider": {},}';
+        $tester = $this->createDebugTester(['opencode']);
+
+        $tester->execute([]);
+
+        $this->assertSame(Command::FAILURE, $tester->getStatusCode());
+        $this->assertDisplayContains('The OPENCODE_CONFIG_CONTENT environment variable must contain a JSON object, without comments nor trailing commas', $tester->getDisplay());
+    }
+
     public function testDebugWithATest(): void
     {
         $_SERVER['CASTOR_LLM'] = 'claude';
@@ -196,7 +209,7 @@ class LlmCommandsTest extends LlmTestCase
         $processRunner = $this->createProcessRunner($results);
         $clis = $this->createCliRegistry($installedClis, processRunner: $processRunner);
         $input = new ArrayInput([]);
-        $runner = new LlmRunner($clis, $this->configStorage, new Selector($clis), $this->createContextRegistry(), $processRunner, new Filesystem(), $input, new SymfonyStyle($input, new NullOutput()), new JobRegistry($input));
+        $runner = new LlmRunner($clis, $this->configStorage, new Selector($clis), $this->createContextRegistry(), $processRunner, new Filesystem(), $input, new SymfonyStyle($input, new NullOutput()), new JobRegistry($input), false);
 
         return new CommandTester(new Application()->addCommand(new LlmDebugCommand($clis, $this->configStorage, $runner)) ?? throw new \LogicException('The command could not be added.'));
     }

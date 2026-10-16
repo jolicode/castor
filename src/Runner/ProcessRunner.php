@@ -128,7 +128,8 @@ class ProcessRunner
 
         $this->eventDispatcher->dispatch(new ProcessCreatedEvent($process));
 
-        $this->logger->notice(\sprintf('Running command: "%s".', u($process->getCommandLine())->truncate(40, '...')), [
+        // The arguments may not be valid UTF-8, which symfony/string cannot truncate
+        $this->logger->notice(\sprintf('Running command: "%s".', u(mb_scrub($process->getCommandLine(), 'UTF-8'))->truncate(40, '...')), [
             'process' => $process,
         ]);
 

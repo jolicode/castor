@@ -2,24 +2,37 @@
 
 namespace Castor\Tests\Llm;
 
-use Symfony\Component\ErrorHandler\BufferingLogger;
+use Castor\Exception\LlmException;
 
 class CliRegistryTest extends LlmTestCase
 {
-    public function testAnInvalidConfigurationOfOpenCodeIsReportedOnlyWhenOpenCodeRuns(): void
+    public function testTheConfigurationOfOpenCodeIsReadOnlyWhenOpenCodeRuns(): void
     {
         $_SERVER['OPENCODE_CONFIG_CONTENT'] = '["not", "an", "object"]';
-        $logger = new BufferingLogger();
 
-        $clis = $this->createCliRegistry(['opencode'], logger: $logger);
+        // The commands that do not run OpenCode do not read its configuration
+        $clis = $this->createCliRegistry(['opencode']);
 
-        $this->assertSame([], $logger->cleanLogs(), 'The commands that do not run OpenCode do not read its configuration.');
+        $this->expectException(LlmException::class);
+        $this->expectExceptionMessage('The OPENCODE_CONFIG_CONTENT environment variable must contain a JSON object, without comments nor trailing commas, so that Castor can add its read-only agent to it.');
 
-        $config = $clis->getEnvironment($clis->get('opencode'))['OPENCODE_CONFIG_CONTENT'];
+        $clis->getEnvironment($clis->get('opencode'));
+    }
 
-        $this->assertStringStartsWith('{"agent":{"castor-read-only":', $config);
-        $this->assertSame([
-            ['warning', 'The OPENCODE_CONFIG_CONTENT environment variable does not contain a JSON object, Castor ignores it when it runs OpenCode.', []],
-        ], $logger->cleanLogs());
+    public function testAConfigurationOfOpenCodeWithCommentsIsNotDropped(): void
+    {
+        // Valid for OpenCode, which would lose its provider if Castor replaced the value
+        $_SERVER['OPENCODE_CONFIG_CONTENT'] = <<<'JSONC'
+            {
+                // The local models
+                "provider": {"ollama": {}},
+            }
+            JSONC;
+        $clis = $this->createCliRegistry(['opencode']);
+
+        $this->expectException(LlmException::class);
+        $this->expectExceptionMessage('without comments nor trailing commas');
+
+        $clis->getEnvironment($clis->get('opencode'));
     }
 }

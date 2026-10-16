@@ -89,7 +89,15 @@ final readonly class LlmDebugCommand
 
             $io->text(\sprintf('The command is <comment>%s</comment>%s.', OutputFormatter::escape($commandLine), \is_array($command) && \in_array(Cli::PROMPT_PLACEHOLDER, $command, true) ? '' : ', with the prompt on its standard input'));
 
-            if ($environment = null !== $selection->cli ? $this->clis->getEnvironment($selection->cli) : []) {
+            try {
+                $environment = null !== $selection->cli ? $this->clis->getEnvironment($selection->cli) : [];
+            } catch (LlmException $e) {
+                $io->error($e->getMessage());
+
+                return Command::FAILURE;
+            }
+
+            if ($environment) {
                 $io->text(\sprintf('It also gets the environment variables <comment>%s</comment>.', implode(', ', array_keys($environment))));
             }
         }

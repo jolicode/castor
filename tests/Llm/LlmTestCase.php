@@ -8,7 +8,6 @@ use Castor\Llm\CliRegistry;
 use Castor\Llm\ConfigStorage;
 use Castor\Runner\ProcessRunner;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Process\ExecutableFinder;
@@ -119,7 +118,7 @@ abstract class LlmTestCase extends TestCase
      * @param list<string>                                         $installedClis
      * @param array<string, array{int, string, string}|\Throwable> $results
      */
-    protected function createCliRegistry(array $installedClis = [], array $results = [], ?ProcessRunner $processRunner = null, ?LoggerInterface $logger = null): CliRegistry
+    protected function createCliRegistry(array $installedClis = [], array $results = [], ?ProcessRunner $processRunner = null): CliRegistry
     {
         $executableFinder = $this->createStub(ExecutableFinder::class);
         $executableFinder
@@ -127,7 +126,7 @@ abstract class LlmTestCase extends TestCase
             ->willReturnCallback(static fn (string $name): ?string => \in_array($name, $installedClis, true) ? "/usr/bin/{$name}" : null)
         ;
 
-        return new CliRegistry($processRunner ?? $this->createProcessRunner($results), $this->createContextRegistry(), '/project', $logger ?? new NullLogger(), $executableFinder);
+        return new CliRegistry($processRunner ?? $this->createProcessRunner($results), $this->createContextRegistry(), '/project', new NullLogger(), $executableFinder);
     }
 
     /**
