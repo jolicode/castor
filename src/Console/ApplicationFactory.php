@@ -29,6 +29,7 @@ class ApplicationFactory
         $castorFilePath = null;
 
         if ($repacked) {
+            // @phpstan-ignore class.notFound (bug phpstan 2.3: class_exists() stored in a variable no longer narrows)
             $rootDir = \RepackedApplication::ROOT_DIR;
             // The root of a repacked application lives inside its phar, so only the remote packages
             // are read from there: everything else is resolved from the directory it runs in.
