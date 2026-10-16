@@ -8,6 +8,8 @@ use Castor\Llm\CliRegistry;
 use Castor\Llm\ConfigStorage;
 use Castor\Runner\ProcessRunner;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -22,15 +24,24 @@ abstract class LlmTestCase extends TestCase
     /** @var array<string, mixed> The environment variables changed by the tests, to restore them */
     private array $previousEnv = [];
 
+    /** @var array<string, string|false> The same, as getenv() returns them */
+    private array $previousGetenv = [];
+
     protected function setUp(): void
     {
         $this->configStorage = new ConfigStorage(new ArrayAdapter(), '/project');
 
-        foreach (['CASTOR_LLM', 'HOME'] as $name) {
+        foreach (['CASTOR_LLM', 'HOME', 'OPENCODE_CONFIG_CONTENT'] as $name) {
             $this->previousEnv[$name] = $_SERVER[$name] ?? null;
         }
 
-        unset($_SERVER['CASTOR_LLM']);
+        foreach (['CASTOR_LLM', 'OPENCODE_CONFIG_CONTENT'] as $name) {
+            unset($_SERVER[$name]);
+            // Castor falls back to getenv(): a variable exported in the shell would change the behavior of the tests
+            $this->previousGetenv[$name] = getenv($name);
+            putenv($name);
+        }
+
         // The agents of Claude Code are looked up in the home directory
         $_SERVER['HOME'] = '/nonexistent';
     }
@@ -48,11 +59,18 @@ abstract class LlmTestCase extends TestCase
                 $_SERVER[$name] = $value;
             }
         }
+
+        foreach ($this->previousGetenv as $name => $value) {
+            if (false !== $value) {
+                putenv("{$name}={$value}");
+            }
+        }
     }
 
     /**
-     * @param array<string, array{int, string, string}> $results The exit code, output and error output of the processes, by
-     *                                                           binary name, or by binary name and first argument
+     * @param array<string, array{int, string, string}|\Throwable> $results The exit code, output and error output of the processes, or
+     *                                                                      the exception thrown when running them, by binary name, or by
+     *                                                                      binary name and first argument
      */
     protected function createProcessRunner(array $results = []): ProcessRunner
     {
@@ -63,7 +81,13 @@ abstract class LlmTestCase extends TestCase
                 $this->runs[] = [$command, $context];
 
                 $tokens = \is_array($command) ? $command : explode(' ', $command);
-                [$exitCode, $output, $errorOutput] = $results[implode(' ', \array_slice($tokens, 0, 2))] ?? $results[$tokens[0]] ?? [0, "42\n", ''];
+                $result = $results[implode(' ', \array_slice($tokens, 0, 2))] ?? $results[$tokens[0]] ?? [0, "42\n", ''];
+
+                if ($result instanceof \Throwable) {
+                    throw $result;
+                }
+
+                [$exitCode, $output, $errorOutput] = $result;
 
                 if (\is_array($command) && false !== ($index = array_search('--output-last-message', $command, true))) {
                     file_put_contents($command[$index + 1], $output);
@@ -92,10 +116,10 @@ abstract class LlmTestCase extends TestCase
     }
 
     /**
-     * @param list<string>                              $installedClis
-     * @param array<string, array{int, string, string}> $results
+     * @param list<string>                                         $installedClis
+     * @param array<string, array{int, string, string}|\Throwable> $results
      */
-    protected function createCliRegistry(array $installedClis = [], array $results = [], ?ProcessRunner $processRunner = null): CliRegistry
+    protected function createCliRegistry(array $installedClis = [], array $results = [], ?ProcessRunner $processRunner = null, ?LoggerInterface $logger = null): CliRegistry
     {
         $executableFinder = $this->createStub(ExecutableFinder::class);
         $executableFinder
@@ -103,7 +127,7 @@ abstract class LlmTestCase extends TestCase
             ->willReturnCallback(static fn (string $name): ?string => \in_array($name, $installedClis, true) ? "/usr/bin/{$name}" : null)
         ;
 
-        return new CliRegistry($processRunner ?? $this->createProcessRunner($results), $this->createContextRegistry(), '/project', $executableFinder);
+        return new CliRegistry($processRunner ?? $this->createProcessRunner($results), $this->createContextRegistry(), '/project', $logger ?? new NullLogger(), $executableFinder);
     }
 
     /**

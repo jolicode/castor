@@ -32,6 +32,9 @@ final readonly class Cli
      * @param ?string      $agentOption       The option choosing the agent, when the CLI supports it
      * @param ?string      $readOnlyAgent     The agent making the CLI read-only, used when none is chosen
      * @param list<string> $models            Some models the CLI supports, proposed by the interactive selection
+     * @param bool         $mayModifyProject  Whether the model may modify the project or run commands, whatever
+     *                                        the arguments Castor gives to the CLI: Castor does not propose it
+     *                                        by default
      */
     public function __construct(
         public string $name,
@@ -41,6 +44,7 @@ final readonly class Cli
         public ?string $agentOption = null,
         public ?string $readOnlyAgent = null,
         public array $models = [],
+        public bool $mayModifyProject = false,
     ) {
     }
 

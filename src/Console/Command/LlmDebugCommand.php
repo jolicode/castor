@@ -49,7 +49,11 @@ final readonly class LlmDebugCommand
 
             return [
                 $cli->name,
-                null !== $path ? \sprintf('<info>installed</info> (%s)', $path) : '<comment>not installed</comment>',
+                match (true) {
+                    null === $path => '<comment>not installed</comment>',
+                    $cli->mayModifyProject => \sprintf('<info>installed</info> (%s), may modify the project', $path),
+                    default => \sprintf('<info>installed</info> (%s)', $path),
+                },
                 $cli->modelOption ?? '',
                 $cli->agentOption ?? '',
             ];
@@ -64,7 +68,7 @@ final readonly class LlmDebugCommand
             [\sprintf('%s environment variable', LlmRunner::ENV_VAR), false !== $env && '' !== trim($env) ? OutputFormatter::escape($env) : $notSet],
             ['Configuration of the project', null !== ($value = $this->configStorage->get(global: false)) ? OutputFormatter::escape($value) : $notSet],
             ['Global configuration', null !== ($value = $this->configStorage->get(global: true)) ? OutputFormatter::escape($value) : $notSet],
-            ['Default', Selection::MODE_CONFIRM],
+            ['Default', Selection::MODE_CHOOSE],
         ]);
 
         try {
@@ -75,7 +79,7 @@ final readonly class LlmDebugCommand
             return Command::FAILURE;
         }
 
-        $io->text(\sprintf('Castor will <info>%s</info>, from %s.', $selection->describe(), $source));
+        $io->text(\sprintf('Castor will <info>%s</info>, from %s.', OutputFormatter::escape($selection->describe()), $source));
 
         if ($selection->isFixed()) {
             $command = null !== $selection->cli
@@ -84,12 +88,10 @@ final readonly class LlmDebugCommand
             $commandLine = \is_array($command) ? new Process($command)->getCommandLine() : (string) $command;
 
             $io->text(\sprintf('The command is <comment>%s</comment>%s.', OutputFormatter::escape($commandLine), \is_array($command) && \in_array(Cli::PROMPT_PLACEHOLDER, $command, true) ? '' : ', with the prompt on its standard input'));
-        } elseif (!$selection->isMode(Selection::MODE_CHOOSE)) {
-            $installed = array_map(static fn (Cli $cli): string => $cli->name, $this->clis->getInstalled());
 
-            $io->text($installed
-                ? \sprintf('The CLIs are tried in this order: <info>%s</info>.', implode(', ', $installed))
-                : '<error>None of the LLM CLIs Castor knows is installed.</error>');
+            if ($environment = null !== $selection->cli ? $this->clis->getEnvironment($selection->cli) : []) {
+                $io->text(\sprintf('It also gets the environment variables <comment>%s</comment>.', implode(', ', array_keys($environment))));
+            }
         }
 
         $io->newLine();

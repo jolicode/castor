@@ -3,6 +3,7 @@
 namespace llm;
 
 use Castor\Attribute\AsTask;
+use Symfony\Component\Console\Formatter\OutputFormatter;
 
 use function Castor\capture;
 use function Castor\io;
@@ -19,5 +20,6 @@ function summarize_commits(): void
         {$commits}
         PROMPT);
 
-    io()->writeln($summary);
+    // The answer may contain tags like "<info>", that the console would interpret
+    io()->writeln(OutputFormatter::escape($summary));
 }

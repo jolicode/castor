@@ -2,9 +2,12 @@
 
 namespace Castor\Llm;
 
+use Castor\Context;
 use Castor\ContextRegistry;
 use Castor\Helper\PlatformHelper;
 use Castor\Runner\ProcessRunner;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\ExecutableFinder;
 
 /**
@@ -14,6 +17,13 @@ use Symfony\Component\Process\ExecutableFinder;
  */
 class CliRegistry
 {
+    /**
+     * The plan agent of OpenCode may run commands, and the configuration of
+     * the user may allow it more: Castor defines its own agent, which may only
+     * read the files of the project.
+     */
+    private const OPENCODE_READ_ONLY_AGENT = 'castor-read-only';
+
     /** @var list<Cli> */
     private readonly array $clis;
 
@@ -26,24 +36,27 @@ class CliRegistry
         private readonly ProcessRunner $processRunner,
         private readonly ContextRegistry $contextRegistry,
         private readonly string $rootDir,
+        private readonly LoggerInterface $logger,
         ?ExecutableFinder $executableFinder = null,
     ) {
         $this->executableFinder = $executableFinder ?? new ExecutableFinder();
 
-        // In the order they are tried when none is chosen
+        // In the order they are proposed
         $this->clis = [
             new Cli('claude', ['claude', '--print', '--output-format', 'text', '--no-session-persistence', Cli::OPTIONS_PLACEHOLDER], readOnlyArguments: ['--tools', ''], modelOption: '--model', agentOption: '--agent', models: ['fable', 'opus', 'sonnet', 'haiku']),
             new Cli('codex', ['codex', 'exec', '--skip-git-repo-check', '--ephemeral', '--color', 'never', '--output-last-message', Cli::OUTPUT_FILE_PLACEHOLDER, Cli::OPTIONS_PLACEHOLDER, '-'], readOnlyArguments: ['--sandbox', 'read-only'], modelOption: '--model'),
-            new Cli('opencode', ['opencode', 'run', Cli::OPTIONS_PLACEHOLDER, Cli::PROMPT_PLACEHOLDER], modelOption: '--model', agentOption: '--agent', readOnlyAgent: 'plan'),
-            new Cli('gemini', ['gemini', Cli::OPTIONS_PLACEHOLDER, '--prompt', Cli::PROMPT_PLACEHOLDER], readOnlyArguments: ['--approval-mode', 'plan'], modelOption: '--model'),
-            new Cli('copilot', ['copilot', '--silent', Cli::OPTIONS_PLACEHOLDER, '--prompt', Cli::PROMPT_PLACEHOLDER], modelOption: '--model', agentOption: '--agent'),
-            new Cli('cursor-agent', ['cursor-agent', '--print', '--output-format', 'text', Cli::OPTIONS_PLACEHOLDER, Cli::PROMPT_PLACEHOLDER], modelOption: '--model'),
-            new Cli('amp', ['amp', Cli::OPTIONS_PLACEHOLDER, '--execute', Cli::PROMPT_PLACEHOLDER]),
-            new Cli('crush', ['crush', 'run', '--quiet', Cli::OPTIONS_PLACEHOLDER, Cli::PROMPT_PLACEHOLDER]),
-            new Cli('qwen', ['qwen', Cli::OPTIONS_PLACEHOLDER, '--prompt', Cli::PROMPT_PLACEHOLDER], readOnlyArguments: ['--approval-mode', 'plan'], modelOption: '--model'),
-            new Cli('llm', ['llm', Cli::OPTIONS_PLACEHOLDER, Cli::PROMPT_PLACEHOLDER], modelOption: '--model'),
-            new Cli('mods', ['mods', '--quiet', Cli::OPTIONS_PLACEHOLDER, Cli::PROMPT_PLACEHOLDER], modelOption: '--model'),
-            new Cli('vibe', ['vibe', '--trust', '--output', 'text', Cli::OPTIONS_PLACEHOLDER, '--prompt', Cli::PROMPT_PLACEHOLDER], agentOption: '--agent', readOnlyAgent: 'plan'),
+            new Cli('opencode', ['opencode', 'run', Cli::OPTIONS_PLACEHOLDER], modelOption: '--model', agentOption: '--agent', readOnlyAgent: self::OPENCODE_READ_ONLY_AGENT),
+            // In a non-interactive run, the model may leave the plan approval mode for the yolo one
+            new Cli('gemini', ['gemini', Cli::OPTIONS_PLACEHOLDER], readOnlyArguments: ['--approval-mode', 'plan'], modelOption: '--model', mayModifyProject: true),
+            new Cli('copilot', ['copilot', '--silent', Cli::OPTIONS_PLACEHOLDER], modelOption: '--model', agentOption: '--agent'),
+            new Cli('cursor-agent', ['cursor-agent', '--print', '--output-format', 'text', Cli::OPTIONS_PLACEHOLDER], readOnlyArguments: ['--mode', 'ask'], modelOption: '--model'),
+            // Both approve all the actions of the model in a non-interactive run
+            new Cli('amp', ['amp', Cli::OPTIONS_PLACEHOLDER, '--execute'], mayModifyProject: true),
+            new Cli('crush', ['crush', 'run', '--quiet', Cli::OPTIONS_PLACEHOLDER], mayModifyProject: true),
+            new Cli('qwen', ['qwen', Cli::OPTIONS_PLACEHOLDER], readOnlyArguments: ['--approval-mode', 'plan'], modelOption: '--model'),
+            new Cli('llm', ['llm', Cli::OPTIONS_PLACEHOLDER], modelOption: '--model'),
+            // "--prompt" without value reads the prompt on the standard input
+            new Cli('vibe', ['vibe', '--trust', '--output', 'text', Cli::OPTIONS_PLACEHOLDER, '--prompt'], agentOption: '--agent', readOnlyAgent: 'plan'),
         ];
     }
 
@@ -97,6 +110,21 @@ class CliRegistry
     }
 
     /**
+     * The CLI proposed when Castor lets the user choose: the first installed
+     * one that may not modify the project.
+     */
+    public function getDefault(): ?Cli
+    {
+        foreach ($this->getInstalled() as $cli) {
+            if (!$cli->mayModifyProject) {
+                return $cli;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * The models the CLI can use, when it is cheap to know them.
      *
      * @return list<string>
@@ -127,6 +155,56 @@ class CliRegistry
             'claude' => $this->listClaudeAgents(),
             default => [],
         };
+    }
+
+    /**
+     * The environment variables the CLI needs, added to the ones of the context.
+     *
+     * @return array<string, string>
+     */
+    public function getEnvironment(Cli $cli, ?Context $context = null): array
+    {
+        return match ($cli->name) {
+            'opencode' => ['OPENCODE_CONFIG_CONTENT' => $this->buildOpenCodeConfig($context ?? $this->contextRegistry->getCurrentContext())],
+            default => [],
+        };
+    }
+
+    /**
+     * The configuration given to OpenCode through the OPENCODE_CONFIG_CONTENT
+     * environment variable, with the one the user may already give this way.
+     */
+    private function buildOpenCodeConfig(Context $context): string
+    {
+        $config = new \stdClass();
+
+        // As for the process: the variable of the context wins over the one Castor runs with, and false unsets it
+        if ($userConfig = (string) ($context->environment['OPENCODE_CONFIG_CONTENT'] ?? PlatformHelper::getEnv('OPENCODE_CONFIG_CONTENT'))) {
+            // Decoded as objects, so that an empty object stays one
+            $decoded = json_decode($userConfig);
+
+            if ($decoded instanceof \stdClass) {
+                $config = $decoded;
+            } else {
+                $this->logger->warning('The OPENCODE_CONFIG_CONTENT environment variable does not contain a JSON object, Castor ignores it when it runs OpenCode.');
+            }
+        }
+
+        $config->agent ??= new \stdClass();
+        $config->agent->{self::OPENCODE_READ_ONLY_AGENT} = [
+            'mode' => 'primary',
+            'description' => 'Reads the files of the project to answer, without modifying them nor running commands.',
+            // The last matching rule wins
+            'permission' => [
+                '*' => 'deny',
+                'read' => ['*' => 'allow', '*.env' => 'deny', '*.env.*' => 'deny', '*.env.example' => 'allow'],
+                'glob' => 'allow',
+                'grep' => 'allow',
+                'list' => 'allow',
+            ],
+        ];
+
+        return json_encode($config, \JSON_THROW_ON_ERROR | \JSON_UNESCAPED_SLASHES);
     }
 
     /**
@@ -168,9 +246,17 @@ class CliRegistry
             ->withTimeout(30)
         ;
 
-        $process = $this->processRunner->run($command, $context);
+        try {
+            $process = $this->processRunner->run($command, $context);
+        } catch (ProcessTimedOutException $e) {
+            $this->logger->warning(\sprintf('The command "%s" did not finish within %s seconds, its output is ignored.', implode(' ', $command), $e->getExceededTimeout()), ['exception' => $e]);
+
+            return [];
+        }
 
         if (!$process->isSuccessful()) {
+            $this->logger->warning(\sprintf('The command "%s" failed with exit code %d, its output is ignored.', implode(' ', $command), $process->getExitCode() ?? 0));
+
             return [];
         }
 
