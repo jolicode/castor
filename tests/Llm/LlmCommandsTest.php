@@ -56,7 +56,7 @@ class LlmCommandsTest extends LlmTestCase
     public function testConfigureInteractively(): void
     {
         $tester = $this->createConfigureTester(['claude', 'opencode']);
-        $tester->setInputs(['claude', 'haiku', '', 'this project']);
+        $tester->setInputs(['claude', 'haiku', 'this project']);
 
         $tester->execute([]);
 
@@ -65,7 +65,8 @@ class LlmCommandsTest extends LlmTestCase
         $this->assertDisplayContains('Which LLM CLI do you want to use?', $display);
         $this->assertDisplayNotContains('do not send the prompt', $display);
         $this->assertDisplayContains('Which model?', $display);
-        $this->assertDisplayContains('Which agent? Leave empty for the default of the CLI', $display);
+        // The configuration is shared by llm_ask() and llm_run(), which need different agents
+        $this->assertDisplayNotContains('Which agent?', $display);
         $this->assertDisplayContains('Save this configuration for', $display);
         $this->assertDisplayContains('Castor will always use the "claude" LLM CLI with the model "haiku", for this project.', $display);
         $this->assertSame('claude --model haiku', $this->configStorage->get(global: false));
@@ -116,7 +117,7 @@ class LlmCommandsTest extends LlmTestCase
         $display = $tester->getDisplay();
         $this->assertDisplayContains('claude installed (/usr/bin/claude)', $display);
         $this->assertDisplayContains('codex not installed', $display);
-        $this->assertDisplayContains('crush installed (/usr/bin/crush), may modify the project', $display);
+        $this->assertDisplayContains('crush installed (/usr/bin/crush), may modify the project even with llm_ask()', $display);
         $this->assertDisplayContains('CASTOR_LLM environment variable not set', $display);
         $this->assertDisplayContains('Configuration of the project choose', $display);
         $this->assertDisplayContains('Global configuration codex', $display);
@@ -134,7 +135,20 @@ class LlmCommandsTest extends LlmTestCase
         $display = $tester->getDisplay();
         $this->assertDisplayContains('Castor will always use the "claude" LLM CLI with the model "opus", from the CASTOR_LLM environment variable.', $display);
         $this->assertDisplayContains("The command of llm_ask() is 'claude' '--print' '--output-format' 'text' '--no-session-persistence' '--tools' \"\" '--model' 'opus', with the prompt on its standard input.", $display);
-        $this->assertDisplayContains("The command of llm_run() is 'claude' '--print' '--output-format' 'text' '--no-session-persistence' '--permission-mode' 'acceptEdits' '--allowedTools' 'Bash' '--model' 'opus', with the prompt on its standard input.", $display);
+        $this->assertDisplayContains("The command of llm_run() is 'claude' '--print' '--output-format' 'text' '--no-session-persistence' '--permission-mode' 'acceptEdits' '--allowedTools' 'Bash' 'PowerShell' '--model' 'opus', with the prompt on its standard input.", $display);
+    }
+
+    public function testDebugShowsTheEnvironmentOfTheReadOnlyCommand(): void
+    {
+        $_SERVER['CASTOR_LLM'] = 'opencode';
+        $tester = $this->createDebugTester(['opencode']);
+
+        $tester->execute([]);
+
+        $tester->assertCommandIsSuccessful();
+        $display = $tester->getDisplay();
+        $this->assertDisplayContains("The command of llm_ask() is 'opencode' 'run' '--agent' 'castor-read-only', with the prompt on its standard input, with the environment variables OPENCODE_CONFIG_CONTENT.", $display);
+        $this->assertDisplayContains("The command of llm_run() is 'opencode' 'run' '--auto' '--agent' 'build', with the prompt on its standard input.", $display);
     }
 
     public function testDebugShowsACustomCommandAsIs(): void

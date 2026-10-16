@@ -17,6 +17,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Exception\ProcessSignaledException;
 use Symfony\Component\Process\Exception\ProcessStartFailedException;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
+use Symfony\Component\Process\Process;
 
 use function Symfony\Component\String\u;
 
@@ -27,6 +28,10 @@ class LlmRunner
 
     private const PREVIEW_LINES = 5;
 
+    /** The end of the output of the CLI kept in the messages: it may be long, and its end tells what failed */
+    private const OUTPUT_END_BYTES = 10_000;
+    private const OUTPUT_END_LINES = 50;
+
     private const SOURCE_ARGUMENT = 'the "cli" argument';
     private const SOURCE_ENV_VAR = 'the ' . self::ENV_VAR . ' environment variable';
 
@@ -34,7 +39,7 @@ class LlmRunner
      * The CLI chosen at the first call of the run, when none is set, reused for
      * the next calls. A CLI and an agent chosen for the questions may not be
      * able to work on the project, and the other way around: there is one
-     * choice by read-only mode.
+     * choice for llm_ask() and one for llm_run(), indexed by $write.
      *
      * @var array<int, Selection>
      */
@@ -100,7 +105,7 @@ class LlmRunner
      */
     public function ask(string $prompt, string|array|null $cli = null, ?Context $context = null): string
     {
-        return $this->send($prompt, $cli, $context, readOnly: true);
+        return $this->send($prompt, $cli, $context, write: false);
     }
 
     /**
@@ -112,11 +117,11 @@ class LlmRunner
      */
     public function run(string $prompt, string|array|null $cli = null, ?Context $context = null): string
     {
-        return $this->send($prompt, $cli, $context, readOnly: false);
+        return $this->send($prompt, $cli, $context, write: true);
     }
 
     /**
-     * The CLI or command used by the last question.
+     * The CLI or command used by the last call.
      */
     public function getLastSelection(): ?Selection
     {
@@ -126,28 +131,28 @@ class LlmRunner
     /**
      * @param string|list<string>|null $cli
      */
-    private function send(string $prompt, string|array|null $cli, ?Context $context, bool $readOnly): string
+    private function send(string $prompt, string|array|null $cli, ?Context $context, bool $write): string
     {
         $context ??= $this->contextRegistry->getCurrentContext();
         [$selection, $source] = $this->resolve($cli);
 
         if ($selection->isFixed()) {
-            return $this->sendWith($selection, $prompt, $context, $readOnly);
+            return $this->sendWith($selection, $prompt, $context, $write);
         }
 
-        $this->runSelections[(int) $readOnly] ??= $this->choose($prompt, $source, $context, $readOnly);
+        $this->runSelections[(int) $write] ??= $this->choose($prompt, $source, $context, $write);
 
-        return $this->sendWith($this->runSelections[(int) $readOnly], $prompt, $context, $readOnly);
+        return $this->sendWith($this->runSelections[(int) $write], $prompt, $context, $write);
     }
 
-    private function choose(string $prompt, string $source, Context $context, bool $readOnly): Selection
+    private function choose(string $prompt, string $source, Context $context, bool $write): Selection
     {
         $howToSkip = $this->howToSkipTheChoice($source);
         $this->assertCanAsk($context, \sprintf('Castor needs you to choose the LLM CLI (from %s)', $source), $howToSkip);
 
-        $this->io->writeln($readOnly
-            ? 'Castor is about to send this prompt to a LLM CLI:'
-            : 'Castor is about to send this prompt to a LLM CLI, which <options=bold>may modify the project and run commands</> to do what it asks:');
+        $this->io->writeln($write
+            ? 'Castor is about to send this prompt to a LLM CLI, which <options=bold>may modify the project and run commands</> to do what it asks:'
+            : 'Castor is about to send this prompt to a LLM CLI:');
         $this->io->newLine();
 
         foreach ($this->preview($prompt) as $line) {
@@ -160,7 +165,7 @@ class LlmRunner
             $this->io->writeln(\sprintf('<fg=gray>%s, to skip these questions.</>', $howToSkip));
         }
 
-        $selection = $readOnly ? $this->selector->selectOrRefuse($this->io) : $this->selector->selectWritableOrRefuse($this->io);
+        $selection = $write ? $this->selector->selectForWriteOrRefuse($this->io) : $this->selector->selectOrRefuse($this->io);
 
         return $selection ?? throw new LlmException('The LLM call has been refused.');
     }
@@ -231,7 +236,7 @@ class LlmRunner
         }
     }
 
-    private function sendWith(Selection $selection, string $prompt, Context $context, bool $readOnly): string
+    private function sendWith(Selection $selection, string $prompt, Context $context, bool $write): string
     {
         if (null !== $selection->cli && !$this->clis->isInstalled($selection->cli)) {
             throw new LlmException(\sprintf('The "%s" LLM CLI is not installed.', $selection->cli->name));
@@ -240,16 +245,7 @@ class LlmRunner
         $this->lastSelection = $selection;
 
         $name = $selection->getName();
-        $command = match (true) {
-            null === $selection->cli => $selection->customCommand,
-            $readOnly => $selection->cli->buildReadOnlyCommand($selection->model, $selection->agent, $selection->extraArguments),
-            default => $selection->cli->buildWriteCommand($selection->model, $selection->agent, $selection->extraArguments),
-        };
-
-        if (null === $command) {
-            throw new \LogicException('A selection must have a CLI or a command.');
-        }
-
+        $command = $write ? $selection->buildWriteCommand() : $selection->buildReadOnlyCommand();
         $input = $prompt;
         $outputFile = null;
 
@@ -270,7 +266,8 @@ class LlmRunner
         }
 
         $context = $context
-            ->withEnvironment(null !== $selection->cli ? $this->clis->getEnvironment($selection->cli, $context) : [])
+            // llm_run() gives the environment variables of the user to the CLI as they are
+            ->withEnvironment(null !== $selection->cli && !$write ? $this->clis->getReadOnlyEnvironment($selection->cli, $context) : [])
             ->withQuiet()
             ->withAllowFailure()
             ->withInput($input)
@@ -282,20 +279,20 @@ class LlmRunner
         try {
             $process = $this->processRunner->run($command, $context);
 
-            // What the CLI did, to check it afterwards
-            if ('' !== $errorOutput = trim($process->getErrorOutput())) {
+            // What the CLI did, to check it afterwards. It is read only when shown: it may be long
+            if ($this->io->isDebug() && '' !== $errorOutput = trim($process->getErrorOutput())) {
                 $this->logger->debug(\sprintf("The \"%s\" LLM CLI printed on its error output:\n%s", $name, $errorOutput));
             }
 
             if (!$process->isSuccessful()) {
-                throw new LlmException(\sprintf("The \"%s\" LLM CLI failed with exit code %d:\n%s", $name, $process->getExitCode() ?? 0, $errorOutput ?: trim($process->getOutput())));
+                throw new LlmException(\sprintf("The \"%s\" LLM CLI failed with exit code %d:\n%s", $name, $process->getExitCode() ?? 0, self::getEnd($process->getErrorOutput()) ?: self::getEnd($process->getOutput())));
             }
 
             $answer = null === $outputFile ? $process->getOutput() : (string) file_get_contents($outputFile);
         } catch (ProcessTimedOutException $e) {
-            throw new LlmException(\sprintf('The "%s" LLM CLI exceeded the timeout of %s seconds of the context.', $name, $e->getExceededTimeout()), previous: $e);
+            throw new LlmException(self::withErrorOutput(\sprintf('The "%s" LLM CLI exceeded the timeout of %s seconds of the context', $name, $e->getExceededTimeout()), $e->getProcess()), previous: $e);
         } catch (ProcessSignaledException $e) {
-            throw new LlmException(\sprintf('The "%s" LLM CLI has been stopped by the signal %d.', $name, $e->getSignal()), previous: $e);
+            throw new LlmException(self::withErrorOutput(\sprintf('The "%s" LLM CLI has been stopped by the signal %d', $name, $e->getSignal()), $e->getProcess()), previous: $e);
         } catch (ProcessStartFailedException $e) {
             // The message ends with the reason, after the whole command line, which contains the prompt when it is an argument
             throw new LlmException(\sprintf('The "%s" LLM CLI could not be started. %s', $name, u($e->getMessage())->afterLast("\n")->toString()), previous: $e);
@@ -307,11 +304,41 @@ class LlmRunner
 
         $answer = trim($answer);
 
-        // When the LLM works on the project, the changes matter more than its last words
-        if ('' === $answer && $readOnly) {
-            throw new LlmException(\sprintf('The "%s" LLM CLI returned an empty answer.', $name));
+        if ('' === $answer) {
+            if (!$write) {
+                throw new LlmException(\sprintf('The "%s" LLM CLI returned an empty answer.', $name));
+            }
+
+            // When the LLM works on the project, the changes matter more than its last words, but a CLI that stops
+            // before doing anything answers nothing too
+            $this->logger->warning(self::withErrorOutput(\sprintf('The "%s" LLM CLI returned an empty answer, check what it did', $name), $process));
         }
 
         return $answer;
+    }
+
+    /**
+     * Completes a message with the end of the error output of the CLI, where it tells what failed or what it did.
+     */
+    private static function withErrorOutput(string $message, Process $process): string
+    {
+        $end = self::getEnd($process->getErrorOutput());
+
+        return '' !== $end ? "{$message}:\n{$end}" : "{$message}.";
+    }
+
+    /**
+     * The end of an output of the CLI: the whole output may be long.
+     */
+    private static function getEnd(string $output): string
+    {
+        $lines = explode("\n", trim(substr($output, -self::OUTPUT_END_BYTES)));
+
+        if (\strlen($output) > self::OUTPUT_END_BYTES || \count($lines) > self::OUTPUT_END_LINES) {
+            // The first line may be cut
+            $lines = ['…', ...\array_slice($lines, 1 - self::OUTPUT_END_LINES)];
+        }
+
+        return implode("\n", $lines);
     }
 }

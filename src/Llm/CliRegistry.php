@@ -44,14 +44,17 @@ class CliRegistry
 
         // In the order they are proposed
         $this->clis = [
-            new Cli('claude', ['claude', '--print', '--output-format', 'text', '--no-session-persistence', Cli::OPTIONS_PLACEHOLDER], readOnlyArguments: ['--tools', ''], writeArguments: ['--permission-mode', 'acceptEdits', '--allowedTools', 'Bash'], modelOption: '--model', agentOption: '--agent', models: ['fable', 'opus', 'sonnet', 'haiku']),
+            // On Windows, the commands may be run by the PowerShell tool instead of the Bash one
+            new Cli('claude', ['claude', '--print', '--output-format', 'text', '--no-session-persistence', Cli::OPTIONS_PLACEHOLDER], readOnlyArguments: ['--tools', ''], writeArguments: ['--permission-mode', 'acceptEdits', '--allowedTools', 'Bash', 'PowerShell'], modelOption: '--model', agentOption: '--agent', models: ['fable', 'opus', 'sonnet', 'haiku']),
             // The workspace-write sandbox has no network by default, and keeps the .git directory read-only
             new Cli('codex', ['codex', 'exec', '--skip-git-repo-check', '--ephemeral', '--color', 'never', '--output-last-message', Cli::OUTPUT_FILE_PLACEHOLDER, Cli::OPTIONS_PLACEHOLDER, '-'], readOnlyArguments: ['--sandbox', 'read-only'], writeArguments: ['--sandbox', 'workspace-write', '--config', 'sandbox_workspace_write.network_access=true'], modelOption: '--model'),
-            // Without --auto, a permission that is not allowed by the configuration is rejected, which stops the agent
-            new Cli('opencode', ['opencode', 'run', Cli::OPTIONS_PLACEHOLDER], writeArguments: ['--auto'], modelOption: '--model', agentOption: '--agent', readOnlyAgent: self::OPENCODE_READ_ONLY_AGENT),
+            // Without --auto, a permission that is not allowed by the configuration is rejected, which stops the agent.
+            // --auto does not lift a denied permission: the default agent of the user may be "plan", which denies the edits
+            new Cli('opencode', ['opencode', 'run', Cli::OPTIONS_PLACEHOLDER], writeArguments: ['--auto'], modelOption: '--model', agentOption: '--agent', readOnlyAgent: self::OPENCODE_READ_ONLY_AGENT, writeAgent: 'build'),
             // In a non-interactive run, the model may leave the plan approval mode for the yolo one
             new Cli('gemini', ['gemini', Cli::OPTIONS_PLACEHOLDER], readOnlyArguments: ['--approval-mode', 'plan'], writeArguments: ['--approval-mode', 'yolo'], modelOption: '--model', mayModifyProject: true),
-            new Cli('copilot', ['copilot', '--silent', Cli::OPTIONS_PLACEHOLDER], writeArguments: ['--allow-all-tools'], modelOption: '--model', agentOption: '--agent'),
+            // The URLs need --allow-all-urls in the prompt mode: they are allowed, as the network is for codex
+            new Cli('copilot', ['copilot', '--silent', Cli::OPTIONS_PLACEHOLDER], writeArguments: ['--allow-all-tools', '--allow-all-urls'], modelOption: '--model', agentOption: '--agent'),
             new Cli('cursor-agent', ['cursor-agent', '--print', '--output-format', 'text', Cli::OPTIONS_PLACEHOLDER], readOnlyArguments: ['--mode', 'ask'], writeArguments: ['--force'], modelOption: '--model'),
             // Both approve all the actions of the model in a non-interactive run
             new Cli('amp', ['amp', Cli::OPTIONS_PLACEHOLDER, '--execute'], writeArguments: [], mayModifyProject: true),
@@ -77,7 +80,7 @@ class CliRegistry
      *
      * @return list<Cli>
      */
-    public function allWritable(): array
+    public function allSupportingWrite(): array
     {
         return array_values(array_filter($this->clis, static fn (Cli $cli): bool => $cli->supportsWrite()));
     }
@@ -130,14 +133,14 @@ class CliRegistry
      *
      * @return list<Cli>
      */
-    public function getInstalledWritable(): array
+    public function getInstalledSupportingWrite(): array
     {
-        return array_values(array_filter($this->allWritable(), $this->isInstalled(...)));
+        return array_values(array_filter($this->allSupportingWrite(), $this->isInstalled(...)));
     }
 
     /**
-     * The CLI proposed when Castor lets the user choose: the first installed
-     * one that may not modify the project.
+     * The CLI proposed for llm_ask() when Castor lets the user choose: the
+     * first installed one that may not modify the project.
      */
     public function getDefault(): ?Cli
     {
@@ -184,13 +187,15 @@ class CliRegistry
     }
 
     /**
-     * The environment variables the CLI needs, added to the ones of the context.
+     * The environment variables the CLI needs to be read-only, for llm_ask(),
+     * added to the ones of the context. llm_run() needs none: the ones of the
+     * user are given as they are.
      *
      * @return array<string, string>
      *
      * @throws LlmException When the configuration the user gives to the CLI through these variables is invalid
      */
-    public function getEnvironment(Cli $cli, ?Context $context = null): array
+    public function getReadOnlyEnvironment(Cli $cli, ?Context $context = null): array
     {
         return match ($cli->name) {
             'opencode' => ['OPENCODE_CONFIG_CONTENT' => $this->buildOpenCodeConfig($context ?? $this->contextRegistry->getCurrentContext())],

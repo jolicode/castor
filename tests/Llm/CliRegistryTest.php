@@ -16,7 +16,7 @@ class CliRegistryTest extends LlmTestCase
         $this->expectException(LlmException::class);
         $this->expectExceptionMessage('The OPENCODE_CONFIG_CONTENT environment variable must contain a JSON object, without comments nor trailing commas, so that Castor can add its read-only agent to it.');
 
-        $clis->getEnvironment($clis->get('opencode'));
+        $clis->getReadOnlyEnvironment($clis->get('opencode'));
     }
 
     public function testAConfigurationOfOpenCodeWithCommentsIsNotDropped(): void
@@ -33,6 +33,6 @@ class CliRegistryTest extends LlmTestCase
         $this->expectException(LlmException::class);
         $this->expectExceptionMessage('without comments nor trailing commas');
 
-        $clis->getEnvironment($clis->get('opencode'));
+        $clis->getReadOnlyEnvironment($clis->get('opencode'));
     }
 }

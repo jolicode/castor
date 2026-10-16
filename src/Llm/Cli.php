@@ -18,9 +18,9 @@ final readonly class Cli
     public const OPTIONS_PLACEHOLDER = '{options}';
 
     /**
-     * The read-only and write arguments, and the read-only agent, are kept
-     * apart from the command: they are what makes llm_ask() read-only and
-     * llm_run() able to work on the project, whatever the CLI.
+     * The read-only and write arguments and agents are kept apart from the
+     * command: they are what makes llm_ask() read-only and llm_run() able to
+     * work on the project, whatever the CLI.
      *
      * @param list<string>  $command           The command, where "{options}" is replaced by the read-only or
      *                                         write arguments, the model, the agent and the extra arguments. The
@@ -34,6 +34,8 @@ final readonly class Cli
      * @param ?string       $modelOption       The option choosing the model, when the CLI supports it
      * @param ?string       $agentOption       The option choosing the agent, when the CLI supports it
      * @param ?string       $readOnlyAgent     The agent making the CLI read-only, used when none is chosen
+     * @param ?string       $writeAgent        The agent letting the model modify the project and run commands, used
+     *                                         when none is chosen
      * @param list<string>  $models            Some models the CLI supports, proposed by the interactive selection
      * @param bool          $mayModifyProject  Whether the model may modify the project or run commands, whatever
      *                                         the arguments Castor gives to the CLI: Castor does not propose it
@@ -47,6 +49,7 @@ final readonly class Cli
         public ?string $modelOption = null,
         public ?string $agentOption = null,
         public ?string $readOnlyAgent = null,
+        public ?string $writeAgent = null,
         public array $models = [],
         public bool $mayModifyProject = false,
     ) {
@@ -101,7 +104,7 @@ final readonly class Cli
     {
         $options = $this->writeArguments ?? throw new LlmException(\sprintf('The "%s" LLM CLI cannot modify the project nor run commands.', $this->name));
 
-        return $this->build($options, $model, $agent, $extraArguments);
+        return $this->build($options, $model, $agent ?? $this->writeAgent, $extraArguments);
     }
 
     /**

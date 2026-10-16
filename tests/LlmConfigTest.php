@@ -16,7 +16,9 @@ class LlmConfigTest extends TaskTestCase
 
     public function testTheConfigurationDrivesTheLlmFunction(): void
     {
-        // A fake "claude" CLI is the only known CLI installed
+        // A fake "claude" CLI is the only known CLI installed. If it were not
+        // executable, the real one of the PATH would run, in write mode
+        $this->assertTrue(is_executable(__DIR__ . '/fixtures/valid/llm/bin/claude'), 'The fake "claude" CLI must be executable.');
         $env = ['PATH' => __DIR__ . '/fixtures/valid/llm/bin:' . getenv('PATH')];
 
         // The configuration of the project chooses a custom command

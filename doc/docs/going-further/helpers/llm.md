@@ -54,7 +54,7 @@ for all, to skip these questions.
 > Castor defines the agent of OpenCode in the `OPENCODE_CONFIG_CONTENT`
 > environment variable, merged with the configuration you may already give in
 > this variable: Castor can only merge a JSON object, without comments nor
-> trailing commas.
+> trailing commas. `llm_run()` gives this variable to OpenCode as it is.
 >
 > Amp and Crush approve all the actions of the model in a non-interactive run,
 > and Gemini CLI lets the model leave its `plan` approval mode for the `yolo`
@@ -73,12 +73,17 @@ files and to run commands, and its final answer is returned:
 The CLI does what the prompt asks with the autonomy it has when you tell it
 not to ask: Claude Code accepts the edits and the commands, Codex runs in its
 `workspace-write` sandbox with the network, Gemini CLI and Qwen Code in their
-`yolo` approval mode, GitHub Copilot CLI with all its tools allowed, Cursor
-CLI, Amp, Crush, OpenCode and Mistral Vibe with all the actions of their
-default agent approved. The `llm` CLI only answers questions: it is refused,
-and not proposed. A custom command is run the same way as for `llm_ask()`: it
-is up to you to make it able to work on the project. Check what the model did,
-with `git diff` for instance, before trusting it.
+`yolo` approval mode, GitHub Copilot CLI with all its tools and URLs allowed,
+OpenCode with its `build` agent, Cursor CLI, Amp, Crush and Mistral Vibe with
+all the actions of their default agent approved. The `llm` CLI only answers
+questions: it is refused, and not proposed. A custom command is run the same
+way as for `llm_ask()`: it is up to you to make it able to work on the project.
+
+An action the CLI refuses does not make it fail: Claude Code still refuses to
+write in its protected paths, like `.git`, `.claude`, `.husky` or
+`.pre-commit-config.yaml`, and to edit the files outside the working directory,
+for instance. Check what the model did, with `git diff` for instance, before
+trusting it.
 
 The CLI is chosen the same way as for `llm_ask()`. By default, the first time
 a task lets a LLM work on the project, Castor shows the beginning of the prompt
@@ -88,13 +93,20 @@ work on the project, so `llm_run()` has its own choice, kept for the run. With
 a CLI set in the configuration or in the `CASTOR_LLM` environment variable,
 Castor asks nothing: the task decides.
 
+A value set in the `cli` argument, in the `CASTOR_LLM` environment variable or
+in the configuration is used by both functions, with its agent and its
+arguments. An agent that suits one function may not suit the other: with the
+`plan` agent of OpenCode, `llm_run()` cannot modify the project, and with its
+`build` agent, `llm_ask()` can.
+
 > [!NOTE]
 > The sandbox of Codex keeps the `.git` directory read-only: the model cannot
 > commit, nor finish a merge. Gemini CLI and OpenCode print the text of every
 > step of their work, not only their final answer, so the returned string may
-> be the whole narration. When the context sets a timeout, the CLI is stopped
-> after that time, which may leave the project half-modified: use a context
-> without timeout for a long run.
+> be the whole narration. When the context sets a timeout, only the CLI is
+> stopped after that time: the project may be left half-modified, and the
+> commands the CLI started may keep running. Use a context without timeout for
+> a long run.
 
 ## Choosing the CLI
 
@@ -132,8 +144,9 @@ Castor uses the CLI it is given, and only it: when it fails, `llm_ask()` and
 > to a CLI in such environments.
 >
 > The same goes for a job of [`parallel()`](parallel.md), since its output is
-> captured: call `llm_ask()`, or `llm_run()`, once before `parallel()` to
-> answer the question, the jobs then use the same CLI.
+> captured: call `llm_ask()` once before `parallel()` to answer the question,
+> the jobs then use the same CLI. The choice is kept for each function: for
+> jobs that call `llm_run()`, call `llm_run()` before `parallel()`.
 
 ### The `cli` argument
 
@@ -174,7 +187,8 @@ CASTOR_LLM="ollama run --nowordwrap llama3.2" castor llm:summarize-commits
 
 The `castor:llm:configure` command saves a value, for the current project or,
 with the `--global` option, for all your projects. Without argument, it lets
-you choose the CLI, its model and its agent:
+you choose the CLI and its model, but not the agent, since the configuration is
+used by both `llm_ask()` and `llm_run()`:
 
 ```bash
 castor castor:llm:configure
@@ -213,6 +227,11 @@ when the CLI cannot be chosen, because the run is not interactive for instance,
 when you refuse to send the prompt, when the configuration of OpenCode cannot be
 merged, or when the CLI is not installed, fails, is stopped by a signal or
 exceeds the timeout of the context. `llm_run()` also throws when the chosen CLI
-cannot modify the project. The message of the exception contains the error
-output of the CLI, to help you fix its setup. With the `-vvv` option, Castor
-also logs the error output of the CLI, where most of them report what they did.
+cannot modify the project. The message of the exception ends with the error
+output of the CLI, to help you fix its setup, or to know what it did before
+being stopped.
+
+An empty answer of `llm_run()` is not an error, since the changes matter more
+than the last words of the model, but Castor logs a warning: the CLI may have
+stopped before doing anything. With the `-vvv` option, Castor also logs the
+error output of the CLI, where Codex and OpenCode report what they did.

@@ -3,6 +3,7 @@
 namespace llm;
 
 use Castor\Attribute\AsTask;
+use Symfony\Component\Console\Formatter\OutputFormatter;
 
 use function Castor\io;
 use function Castor\llm_run;
@@ -15,5 +16,6 @@ function fix_readme_typos(): void
         Then answer with the list of the typos you fixed, or "No typo found".
         PROMPT);
 
-    io()->writeln($report);
+    // The report may contain tags like "<info>", that the console would interpret
+    io()->writeln(OutputFormatter::escape($report));
 }

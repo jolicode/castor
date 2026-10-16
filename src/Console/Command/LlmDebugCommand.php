@@ -51,7 +51,7 @@ final readonly class LlmDebugCommand
                 $cli->name,
                 match (true) {
                     null === $path => '<comment>not installed</comment>',
-                    $cli->mayModifyProject => \sprintf('<info>installed</info> (%s), may modify the project', $path),
+                    $cli->mayModifyProject => \sprintf('<info>installed</info> (%s), may modify the project even with llm_ask()', $path),
                     default => \sprintf('<info>installed</info> (%s)', $path),
                 },
                 $cli->modelOption ?? '',
@@ -82,28 +82,23 @@ final readonly class LlmDebugCommand
         $io->text(\sprintf('Castor will <info>%s</info>, from %s.', OutputFormatter::escape($selection->describe()), $source));
 
         if ($selection->isFixed()) {
-            /** @param string|list<string> $command */
             $describe = static fn (string|array $command): string => \sprintf('<comment>%s</comment>%s', OutputFormatter::escape(\is_array($command) ? new Process($command)->getCommandLine() : $command), \is_array($command) && \in_array(Cli::PROMPT_PLACEHOLDER, $command, true) ? '' : ', with the prompt on its standard input');
 
             if (null === $selection->cli) {
-                $io->text(\sprintf('The command is %s.', $describe($selection->customCommand ?? '')));
+                $io->text(\sprintf('The command is %s.', $describe($selection->buildReadOnlyCommand())));
             } else {
-                $io->text(\sprintf('The command of llm_ask() is %s.', $describe($selection->cli->buildReadOnlyCommand($selection->model, $selection->agent, $selection->extraArguments))));
-                $io->text($selection->cli->supportsWrite()
-                    ? \sprintf('The command of llm_run() is %s.', $describe($selection->cli->buildWriteCommand($selection->model, $selection->agent, $selection->extraArguments)))
-                    : \sprintf('<error>The "%s" LLM CLI cannot modify the project: llm_run() will fail.</error>', $selection->cli->name));
-
                 try {
-                    $environment = $this->clis->getEnvironment($selection->cli);
+                    $environment = $this->clis->getReadOnlyEnvironment($selection->cli);
                 } catch (LlmException $e) {
                     $io->error($e->getMessage());
 
                     return Command::FAILURE;
                 }
 
-                if ($environment) {
-                    $io->text(\sprintf('It also gets the environment variables <comment>%s</comment>.', implode(', ', array_keys($environment))));
-                }
+                $io->text(\sprintf('The command of llm_ask() is %s%s.', $describe($selection->buildReadOnlyCommand()), $environment ? \sprintf(', with the environment variables <comment>%s</comment>', implode(', ', array_keys($environment))) : ''));
+                $io->text($selection->cli->supportsWrite()
+                    ? \sprintf('The command of llm_run() is %s.', $describe($selection->buildWriteCommand()))
+                    : \sprintf('<error>The "%s" LLM CLI cannot modify the project: llm_run() will fail.</error>', $selection->cli->name));
             }
         }
 
