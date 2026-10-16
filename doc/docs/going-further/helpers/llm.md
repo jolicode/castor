@@ -50,6 +50,11 @@ for all, to skip these questions.
 > usually denied. Choosing another agent for OpenCode or Mistral Vibe replaces
 > this agent: what the model may do then depends on the agent you choose.
 >
+> Castor defines the agent of OpenCode in the `OPENCODE_CONFIG_CONTENT`
+> environment variable, merged with the configuration you may already give in
+> this variable: Castor can only merge a JSON object, without comments nor
+> trailing commas.
+>
 > Amp and Crush approve all the actions of the model in a non-interactive run,
 > and Gemini CLI lets the model leave its `plan` approval mode for the `yolo`
 > one: Castor does not propose them by default.
@@ -167,6 +172,7 @@ castor castor:llm:debug --test
 
 The `llm_ask()` function throws a `Castor\Exception\LlmException` when the CLI
 cannot be chosen, because the run is not interactive for instance, when you
-refuse to send the prompt, or when the CLI is not installed, fails, is stopped
-by a signal or exceeds the timeout of the context. The message of the exception
-contains the error output of the CLI, to help you fix its setup.
+refuse to send the prompt, when the configuration of OpenCode cannot be merged,
+or when the CLI is not installed, fails, is stopped by a signal or exceeds the
+timeout of the context. The message of the exception contains the error output
+of the CLI, to help you fix its setup.

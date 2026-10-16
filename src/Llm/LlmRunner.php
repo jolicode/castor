@@ -11,6 +11,7 @@ use Castor\Runner\ProcessRunner;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Exception\ProcessSignaledException;
 use Symfony\Component\Process\Exception\ProcessStartFailedException;
@@ -24,6 +25,9 @@ class LlmRunner
     public const ENV_VAR = 'CASTOR_LLM';
 
     private const PREVIEW_LINES = 5;
+
+    private const SOURCE_ARGUMENT = 'the "cli" argument';
+    private const SOURCE_ENV_VAR = 'the ' . self::ENV_VAR . ' environment variable';
 
     /**
      * The CLI chosen at the first question of the run, when none is set,
@@ -43,6 +47,8 @@ class LlmRunner
         private readonly InputInterface $input,
         private readonly SymfonyStyle $io,
         private readonly JobRegistry $jobRegistry,
+        #[Autowire('%repacked%')]
+        private readonly bool $repacked,
     ) {
     }
 
@@ -61,13 +67,13 @@ class LlmRunner
     public function resolve(string|array|null $cli = null): array
     {
         if (null !== $cli) {
-            return [Selection::fromValue($cli, $this->clis), 'the "cli" argument'];
+            return [Selection::fromValue($cli, $this->clis), self::SOURCE_ARGUMENT];
         }
 
         $value = PlatformHelper::getEnv(self::ENV_VAR);
 
         if (false !== $value && '' !== trim($value)) {
-            return [Selection::fromValue($value, $this->clis), \sprintf('the %s environment variable', self::ENV_VAR)];
+            return [Selection::fromValue($value, $this->clis), self::SOURCE_ENV_VAR];
         }
 
         if (null !== $value = $this->configStorage->get(global: false)) {
@@ -110,7 +116,8 @@ class LlmRunner
 
     private function choose(string $prompt, string $source, Context $context): Selection
     {
-        $this->assertCanAsk($context, \sprintf('Castor needs you to choose the LLM CLI (from %s)', $source), \sprintf('Set the %s environment variable to the CLI to use, or run "castor castor:llm:configure".', self::ENV_VAR));
+        $howToSkip = $this->howToSkipTheChoice($source);
+        $this->assertCanAsk($context, \sprintf('Castor needs you to choose the LLM CLI (from %s)', $source), $howToSkip);
 
         $this->io->writeln('Castor is about to send this prompt to a LLM CLI:');
         $this->io->newLine();
@@ -120,7 +127,10 @@ class LlmRunner
         }
 
         $this->io->newLine();
-        $this->io->writeln(\sprintf('<fg=gray>Run "castor castor:llm:configure", or set the %s environment variable, to skip these questions.</>', self::ENV_VAR));
+
+        if (null !== $howToSkip) {
+            $this->io->writeln(\sprintf('<fg=gray>%s, to skip these questions.</>', $howToSkip));
+        }
 
         return $this->selector->selectOrRefuse($this->io) ?? throw new LlmException('The LLM call has been refused.');
     }
@@ -131,7 +141,7 @@ class LlmRunner
     private function preview(string $prompt): array
     {
         $lines = preg_split("/\r?\n/", trim($prompt)) ?: [];
-        $preview = array_map(static fn (string $line): string => u($line)->truncate(120, '…')->toString(), \array_slice($lines, 0, self::PREVIEW_LINES));
+        $preview = array_map(static fn (string $line): string => u(self::makeVisible($line))->truncate(120, '…')->toString(), \array_slice($lines, 0, self::PREVIEW_LINES));
 
         if (\count($lines) > self::PREVIEW_LINES) {
             $preview[] = \sprintf('… (%d more lines)', \count($lines) - self::PREVIEW_LINES);
@@ -141,18 +151,53 @@ class LlmRunner
     }
 
     /**
-     * @param string $need   Why Castor needs an answer, as the beginning of a sentence
-     * @param string $remedy How to configure Castor so that it does not need one
+     * The control characters of the prompt would be interpreted by the
+     * terminal, to erase the lines around the preview for instance: they are
+     * shown as their control picture, and the invalid bytes as "?". A tab
+     * only moves the cursor forward: it is shown as spaces, to keep the
+     * indented code readable.
      */
-    private function assertCanAsk(Context $context, string $need, string $remedy): void
+    private static function makeVisible(string $line): string
     {
+        // @phpstan-ignore return.type (preg_replace_callback() fails on invalid UTF-8 only, which mb_scrub() removes)
+        return preg_replace_callback('/\p{Cc}/u', static fn (array $matches): string => match ($code = mb_ord($matches[0])) {
+            0x09 => '    ',
+            0x7F => "\u{2421}",
+            default => $code < 0x20 ? mb_chr(0x2400 + $code) : "\u{FFFD}",
+        }, mb_scrub($line, 'UTF-8'));
+    }
+
+    /**
+     * How to set the CLI, so that Castor does not ask for it: the "cli"
+     * argument wins over the environment variable, which wins over the
+     * configuration.
+     */
+    private function howToSkipTheChoice(string $source): ?string
+    {
+        return match (true) {
+            // The task asks for the choice itself
+            self::SOURCE_ARGUMENT === $source => null,
+            // A repacked application has no castor:llm:configure command
+            self::SOURCE_ENV_VAR === $source, $this->repacked => \sprintf('Set the %s environment variable to the CLI to use', self::ENV_VAR),
+            default => \sprintf('Set the %s environment variable to the CLI to use, or run "castor castor:llm:configure"', self::ENV_VAR),
+        };
+    }
+
+    /**
+     * @param string  $need      Why Castor needs an answer, as the beginning of a sentence
+     * @param ?string $howToSkip How to configure Castor so that it does not need one, when it can be
+     */
+    private function assertCanAsk(Context $context, string $need, ?string $howToSkip): void
+    {
+        $end = null !== $howToSkip ? " {$howToSkip}." : '';
+
         // The output of a job is captured: nobody would see the question
         if ($this->jobRegistry->getCurrent()) {
-            throw new LlmException(\sprintf('%s, but a job of parallel() cannot ask a question. %s', $need, $remedy));
+            throw new LlmException(\sprintf('%s, but a job of parallel() cannot ask a question.%s', $need, $end));
         }
 
         if (!$this->input->isInteractive() || !$context->supportsInteraction()) {
-            throw new LlmException(\sprintf('%s, but the run is not interactive. %s', $need, $remedy));
+            throw new LlmException(\sprintf('%s, but the run is not interactive.%s', $need, $end));
         }
     }
 

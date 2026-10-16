@@ -4,6 +4,7 @@ namespace Castor\Llm;
 
 use Castor\Context;
 use Castor\ContextRegistry;
+use Castor\Exception\LlmException;
 use Castor\Helper\PlatformHelper;
 use Castor\Runner\ProcessRunner;
 use Psr\Log\LoggerInterface;
@@ -161,6 +162,8 @@ class CliRegistry
      * The environment variables the CLI needs, added to the ones of the context.
      *
      * @return array<string, string>
+     *
+     * @throws LlmException When the configuration the user gives to the CLI through these variables is invalid
      */
     public function getEnvironment(Cli $cli, ?Context $context = null): array
     {
@@ -181,12 +184,12 @@ class CliRegistry
         // As for the process: the variable of the context wins over the one Castor runs with, and false unsets it
         if ($userConfig = (string) ($context->environment['OPENCODE_CONFIG_CONTENT'] ?? PlatformHelper::getEnv('OPENCODE_CONFIG_CONTENT'))) {
             // Decoded as objects, so that an empty object stays one
-            $decoded = json_decode($userConfig);
+            $config = json_decode($userConfig);
 
-            if ($decoded instanceof \stdClass) {
-                $config = $decoded;
-            } else {
-                $this->logger->warning('The OPENCODE_CONFIG_CONTENT environment variable does not contain a JSON object, Castor ignores it when it runs OpenCode.');
+            // OpenCode also accepts comments and trailing commas: rather than
+            // run it without the configuration of the user, Castor fails
+            if (!$config instanceof \stdClass) {
+                throw new LlmException('The OPENCODE_CONFIG_CONTENT environment variable must contain a JSON object, without comments nor trailing commas, so that Castor can add its read-only agent to it.');
             }
         }
 

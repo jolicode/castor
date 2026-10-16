@@ -6,6 +6,14 @@ class LlmConfigTest extends TaskTestCase
 {
     private const CWD = '{{ base }}/tests/fixtures/valid/llm';
 
+    public function testAPromptThatIsNotValidUtf8CanBeAnArgument(): void
+    {
+        $process = $this->runTask(['ask-in-argument'], self::CWD);
+
+        $this->assertSame(0, $process->getExitCode(), $process->getErrorOutput());
+        $this->assertStringContainsString('The answer is 42.', $process->getOutput());
+    }
+
     public function testTheConfigurationDrivesTheLlmFunction(): void
     {
         // A fake "claude" CLI is the only known CLI installed
