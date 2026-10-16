@@ -6,8 +6,8 @@ use Castor\Exception\LlmException;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 /**
- * How Castor chooses the LLM CLI: a mode, a known CLI with its options, or a
- * custom command.
+ * How Castor chooses the LLM CLI: by asking at each run, or a known CLI with
+ * its options, or a custom command.
  *
  * It is parsed from the value of the "cli" argument, of the CASTOR_LLM
  * environment variable, or of the configuration.
@@ -17,11 +17,9 @@ use Symfony\Component\DependencyInjection\Attribute\Exclude;
 #[Exclude]
 final readonly class Selection
 {
-    public const MODE_CONFIRM = 'confirm';
-    public const MODE_AUTO = 'auto';
     public const MODE_CHOOSE = 'choose';
 
-    public const MODES = [self::MODE_CONFIRM, self::MODE_AUTO, self::MODE_CHOOSE];
+    public const MODES = [self::MODE_CHOOSE];
 
     /**
      * @param list<string>             $extraArguments
@@ -75,8 +73,8 @@ final readonly class Selection
     }
 
     /**
-     * Parses a value: a mode ("confirm", "auto", "choose"), the name of a known CLI
-     * followed by its options ("claude --model opus"), or a custom command.
+     * Parses a value: "choose", the name of a known CLI followed by its options
+     * ("claude --model opus"), or a custom command.
      *
      * @param string|list<string> $value
      */
@@ -183,8 +181,6 @@ final readonly class Selection
     public function describe(): string
     {
         return match ($this->mode) {
-            self::MODE_CONFIRM => 'ask for a confirmation before using the first LLM CLI installed',
-            self::MODE_AUTO => 'use the first LLM CLI installed, without asking',
             self::MODE_CHOOSE => 'let you choose the LLM CLI at each run',
             default => null !== $this->cli
                 ? \sprintf('always use the "%s" LLM CLI%s%s%s', $this->cli->name, null !== $this->model ? \sprintf(' with the model "%s"', $this->model) : '', null !== $this->agent ? \sprintf(' with the agent "%s"', $this->agent) : '', $this->extraArguments ? \sprintf(' with the arguments "%s"', implode(' ', $this->extraArguments)) : '')

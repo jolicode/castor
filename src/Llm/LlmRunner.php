@@ -8,11 +8,13 @@ use Castor\Exception\LlmException;
 use Castor\Helper\PlatformHelper;
 use Castor\Runner\Parallel\JobRegistry;
 use Castor\Runner\ProcessRunner;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Process\Exception\ProcessSignaledException;
+use Symfony\Component\Process\Exception\ProcessStartFailedException;
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
 
 use function Symfony\Component\String\u;
 
@@ -24,12 +26,10 @@ class LlmRunner
     private const PREVIEW_LINES = 5;
 
     /**
-     * In the "confirm", "auto" and "choose" modes, the CLI that answered or
-     * that was chosen, reused for the next questions of the run.
+     * The CLI chosen at the first question of the run, when none is set,
+     * reused for the next questions.
      */
     private ?Selection $runSelection = null;
-
-    private bool $confirmed = false;
 
     private ?Selection $lastSelection = null;
 
@@ -40,7 +40,6 @@ class LlmRunner
         private readonly ContextRegistry $contextRegistry,
         private readonly ProcessRunner $processRunner,
         private readonly Filesystem $fs,
-        private readonly LoggerInterface $logger,
         private readonly InputInterface $input,
         private readonly SymfonyStyle $io,
         private readonly JobRegistry $jobRegistry,
@@ -50,8 +49,8 @@ class LlmRunner
     /**
      * How Castor chooses the LLM CLI, from the "cli" argument, then the
      * CASTOR_LLM environment variable, the configuration of the project, the
-     * global configuration, or the default: a confirmation before using the
-     * first CLI found.
+     * global configuration, or the default: a question at the first call of
+     * the run.
      *
      * @param string|list<string>|null $cli
      *
@@ -79,13 +78,13 @@ class LlmRunner
             return [Selection::fromValue($value, $this->clis), 'the global configuration'];
         }
 
-        return [Selection::mode(Selection::MODE_CONFIRM), 'the default'];
+        return [Selection::mode(Selection::MODE_CHOOSE), 'the default'];
     }
 
     /**
      * @param string|list<string>|null $cli
      *
-     * @throws LlmException When no CLI is available, when the call is refused, or when the CLI could not answer
+     * @throws LlmException When the CLI cannot be chosen, when the call is refused, or when the CLI could not answer
      */
     public function ask(string $prompt, string|array|null $cli = null, ?Context $context = null): string
     {
@@ -96,50 +95,9 @@ class LlmRunner
             return $this->askWith($selection, $prompt, $context);
         }
 
-        if (null !== $this->runSelection) {
-            return $this->askWith($this->runSelection, $prompt, $context);
-        }
+        $this->runSelection ??= $this->choose($prompt, $source, $context);
 
-        if ($selection->isMode(Selection::MODE_CHOOSE)) {
-            $this->assertCanAsk('Castor needs you to choose the LLM CLI', \sprintf('Set the %s environment variable, or run "castor castor:llm:configure".', self::ENV_VAR));
-
-            $this->runSelection = $this->selector->select($this->io);
-
-            return $this->askWith($this->runSelection, $prompt, $context);
-        }
-
-        $installed = $this->clis->getInstalled();
-
-        if (!$installed) {
-            throw new LlmException(\sprintf('No LLM CLI found. Install and log in to one of "%s", or set the %s environment variable to the command to run.', implode('", "', $this->clis->getNames()), self::ENV_VAR));
-        }
-
-        if ($selection->isMode(Selection::MODE_CONFIRM) && !$this->confirmed) {
-            $this->confirm($installed[0], $prompt, $source);
-            $this->confirmed = true;
-        }
-
-        $failures = [];
-
-        foreach ($installed as $candidate) {
-            $candidateSelection = Selection::forCli($candidate);
-
-            try {
-                $answer = $this->askWith($candidateSelection, $prompt, $context);
-            } catch (LlmException $e) {
-                $this->logger->warning(\sprintf('The "%s" LLM CLI could not answer, trying the next one. %s', $candidate->name, $e->getMessage()));
-                $failures[] = $e->getMessage();
-
-                continue;
-            }
-
-            $this->logger->notice(\sprintf('Using the "%s" LLM CLI.', $candidate->name));
-            $this->runSelection = $candidateSelection;
-
-            return $answer;
-        }
-
-        throw new LlmException("None of the installed LLM CLIs could answer:\n\n" . implode("\n\n", $failures));
+        return $this->askWith($this->runSelection, $prompt, $context);
     }
 
     /**
@@ -150,11 +108,11 @@ class LlmRunner
         return $this->lastSelection;
     }
 
-    private function confirm(Cli $cli, string $prompt, string $source): void
+    private function choose(string $prompt, string $source, Context $context): Selection
     {
-        $this->assertCanAsk(\sprintf('Castor needs a confirmation before sending a prompt to a LLM (from %s)', $source), \sprintf('Set the %s environment variable to "auto", or run "castor castor:llm:configure".', self::ENV_VAR));
+        $this->assertCanAsk($context, \sprintf('Castor needs you to choose the LLM CLI (from %s)', $source), \sprintf('Set the %s environment variable to the CLI to use, or run "castor castor:llm:configure".', self::ENV_VAR));
 
-        $this->io->writeln(\sprintf('Castor is about to send this prompt to the "%s" LLM CLI:', $cli->name));
+        $this->io->writeln('Castor is about to send this prompt to a LLM CLI:');
         $this->io->newLine();
 
         foreach ($this->preview($prompt) as $line) {
@@ -162,11 +120,9 @@ class LlmRunner
         }
 
         $this->io->newLine();
-        $this->io->writeln(\sprintf('<fg=gray>Run "castor castor:llm:configure", or set the %s environment variable to "auto", to skip this question.</>', self::ENV_VAR));
+        $this->io->writeln(\sprintf('<fg=gray>Run "castor castor:llm:configure", or set the %s environment variable, to skip these questions.</>', self::ENV_VAR));
 
-        if (!$this->io->confirm('Do you want to continue?', true)) {
-            throw new LlmException('The LLM call has been refused.');
-        }
+        return $this->selector->selectOrRefuse($this->io) ?? throw new LlmException('The LLM call has been refused.');
     }
 
     /**
@@ -188,14 +144,14 @@ class LlmRunner
      * @param string $need   Why Castor needs an answer, as the beginning of a sentence
      * @param string $remedy How to configure Castor so that it does not need one
      */
-    private function assertCanAsk(string $need, string $remedy): void
+    private function assertCanAsk(Context $context, string $need, string $remedy): void
     {
         // The output of a job is captured: nobody would see the question
         if ($this->jobRegistry->getCurrent()) {
             throw new LlmException(\sprintf('%s, but a job of parallel() cannot ask a question. %s', $need, $remedy));
         }
 
-        if (!$this->input->isInteractive() || !$this->contextRegistry->getCurrentContext()->supportsInteraction()) {
+        if (!$this->input->isInteractive() || !$context->supportsInteraction()) {
             throw new LlmException(\sprintf('%s, but the run is not interactive. %s', $need, $remedy));
         }
     }
@@ -237,6 +193,7 @@ class LlmRunner
         }
 
         $context = $context
+            ->withEnvironment(null !== $selection->cli ? $this->clis->getEnvironment($selection->cli, $context) : [])
             ->withQuiet()
             ->withAllowFailure()
             ->withInput($input)
@@ -253,6 +210,13 @@ class LlmRunner
             }
 
             $answer = null === $outputFile ? $process->getOutput() : (string) file_get_contents($outputFile);
+        } catch (ProcessTimedOutException $e) {
+            throw new LlmException(\sprintf('The "%s" LLM CLI exceeded the timeout of %s seconds of the context.', $name, $e->getExceededTimeout()), previous: $e);
+        } catch (ProcessSignaledException $e) {
+            throw new LlmException(\sprintf('The "%s" LLM CLI has been stopped by the signal %d.', $name, $e->getSignal()), previous: $e);
+        } catch (ProcessStartFailedException $e) {
+            // The message ends with the reason, after the whole command line, which contains the prompt when it is an argument
+            throw new LlmException(\sprintf('The "%s" LLM CLI could not be started. %s', $name, u($e->getMessage())->afterLast("\n")->toString()), previous: $e);
         } finally {
             if (null !== $outputFile) {
                 $this->fs->remove($outputFile);

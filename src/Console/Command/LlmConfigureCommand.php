@@ -40,7 +40,7 @@ final readonly class LlmConfigureCommand
     public function __invoke(
         SymfonyStyle $io,
         InputInterface $input,
-        #[Argument(description: 'How Castor chooses the LLM CLI: "confirm", "auto", "choose", the name of a LLM CLI with its options (like "claude --model opus"), or a custom command')]
+        #[Argument(description: 'The LLM CLI to use: the name of a LLM CLI with its options (like "claude --model opus"), a custom command, or "choose" to choose it at each run')]
         ?string $value = null,
         #[Option(description: 'Configure all your projects instead of this one', shortcut: 'g')]
         bool $global = false,
@@ -61,7 +61,7 @@ final readonly class LlmConfigureCommand
                 return Command::FAILURE;
             }
 
-            $selection = $this->ask($io);
+            $selection = $this->selector->select($io);
 
             if (!$global && !$input->hasParameterOption(['--global', '-g'], true)) {
                 $global = 'all your projects' === $io->choice('Save this configuration for', ['this project', 'all your projects'], 'this project');
@@ -86,18 +86,6 @@ final readonly class LlmConfigureCommand
         $io->note(\sprintf('Run "castor castor:llm:debug" to check the configuration. For a single run, set the %s environment variable to "%s" instead.', LlmRunner::ENV_VAR, $selection->toValue()));
 
         return Command::SUCCESS;
-    }
-
-    private function ask(SymfonyStyle $io): Selection
-    {
-        $choice = $io->choice('When a task asks a LLM, Castor should', [
-            Selection::MODE_CONFIRM => 'ask for a confirmation, then use the first LLM CLI installed',
-            Selection::MODE_AUTO => 'use the first LLM CLI installed, without asking',
-            Selection::MODE_CHOOSE => 'let you choose the CLI, the model and the agent at each run',
-            'fixed' => 'always use the CLI or the command you are about to choose',
-        ], Selection::MODE_CONFIRM);
-
-        return 'fixed' === $choice ? $this->selector->select($io) : Selection::mode($choice);
     }
 
     /**

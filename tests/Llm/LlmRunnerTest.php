@@ -8,12 +8,15 @@ use Castor\Llm\LlmRunner;
 use Castor\Llm\Selector;
 use Castor\Runner\Parallel\Job;
 use Castor\Runner\Parallel\JobRegistry;
-use Psr\Log\NullLogger;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Process\Exception\ProcessSignaledException;
+use Symfony\Component\Process\Exception\ProcessStartFailedException;
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
+use Symfony\Component\Process\Process;
 
 class LlmRunnerTest extends LlmTestCase
 {
@@ -21,15 +24,38 @@ class LlmRunnerTest extends LlmTestCase
 
     private JobRegistry $jobRegistry;
 
-    public function testAnExplicitCliIsUsedWithoutConfirmation(): void
+    public function testAnExplicitCliIsUsedWithoutAnyQuestion(): void
     {
         $runner = $this->createRunner(['claude', 'gemini']);
 
         $this->assertSame('42', $runner->ask('What is the answer?', 'gemini'));
 
-        $this->assertSame([['gemini', '--approval-mode', 'plan', '--prompt', 'What is the answer?']], $this->getRunCommands());
-        $this->assertNull($this->runs[0][1]->input);
+        $this->assertSame([['gemini', '--approval-mode', 'plan']], $this->getRunCommands());
+        $this->assertSame('What is the answer?', $this->runs[0][1]->input);
         $this->assertSame('', $this->output->fetch());
+    }
+
+    /**
+     * As an argument, a prompt starting with "-" would be parsed as an option,
+     * and a long one could not be passed at all.
+     */
+    public function testEveryKnownCliGetsThePromptOnItsStandardInput(): void
+    {
+        $prompt = "- What is the answer?\n- Are you sure?";
+        $names = ['claude', 'codex', 'opencode', 'gemini', 'copilot', 'cursor-agent', 'amp', 'crush', 'qwen', 'llm', 'vibe'];
+        $runner = $this->createRunner($names);
+
+        foreach ($names as $name) {
+            $runner->ask($prompt, $name);
+        }
+
+        $this->assertSame($names, array_map(static fn (array $command): string => $command[0], $this->getRunCommands()));
+
+        foreach ($this->runs as [$command, $context]) {
+            $this->assertIsArray($command);
+            $this->assertNotContains($prompt, $command);
+            $this->assertSame($prompt, $context->input, \sprintf('The prompt is written on the standard input of "%s".', $command[0]));
+        }
     }
 
     public function testTheOptionsOfTheCliAreTranslated(): void
@@ -41,9 +67,38 @@ class LlmRunnerTest extends LlmTestCase
 
         $this->assertSame([
             ['claude', '--print', '--output-format', 'text', '--no-session-persistence', '--tools', '', '--model', 'opus', '--agent', 'reviewer'],
-            ['opencode', 'run', '--model', 'opencode/big-pickle', '--agent', 'build', 'What is the answer?'],
+            ['opencode', 'run', '--model', 'opencode/big-pickle', '--agent', 'build'],
         ], $this->getRunCommands());
         $this->assertSame('What is the answer?', $this->runs[0][1]->input);
+        $this->assertSame('What is the answer?', $this->runs[1][1]->input);
+    }
+
+    public function testOpenCodeUsesAnAgentOfCastorThatCanOnlyRead(): void
+    {
+        $_SERVER['OPENCODE_CONFIG_CONTENT'] = '{"provider":{"ollama":{}},"agent":{"reviewer":{"mode":"primary"}}}';
+        $runner = $this->createRunner(['opencode']);
+
+        $runner->ask('What is the answer?', 'opencode');
+
+        [$command, $context] = $this->runs[0];
+        $this->assertSame(['opencode', 'run', '--agent', 'castor-read-only'], $command);
+        $config = $context->environment['OPENCODE_CONFIG_CONTENT'];
+        $this->assertStringContainsString('"provider":{"ollama":{}}', $config, 'The configuration of the user is kept.');
+        $this->assertStringContainsString('"reviewer":{"mode":"primary"}', $config);
+        $this->assertStringContainsString('"castor-read-only":{"mode":"primary",', $config);
+        $this->assertStringContainsString('"permission":{"*":"deny","read":{"*":"allow","*.env":"deny","*.env.*":"deny","*.env.example":"allow"},"glob":"allow","grep":"allow","list":"allow"}', $config);
+    }
+
+    public function testOpenCodeKeepsTheConfigurationOfTheContext(): void
+    {
+        $_SERVER['OPENCODE_CONFIG_CONTENT'] = '{"provider":{"lmstudio":{}}}';
+        $runner = $this->createRunner(['opencode']);
+
+        $runner->ask('What is the answer?', 'opencode', new Context(environment: ['OPENCODE_CONFIG_CONTENT' => '{"provider":{"ollama":{}}}']));
+
+        $config = $this->runs[0][1]->environment['OPENCODE_CONFIG_CONTENT'];
+        $this->assertStringContainsString('"provider":{"ollama":{}}', $config, 'The variable of the context wins over the one of Castor.');
+        $this->assertStringContainsString('"castor-read-only":{"mode":"primary",', $config);
     }
 
     public function testTheEnvironmentVariableWinsOverTheConfiguration(): void
@@ -76,36 +131,33 @@ class LlmRunnerTest extends LlmTestCase
         $this->assertSame('codex', $this->getRunCommands()[0][0]);
     }
 
-    public function testByDefaultAConfirmationIsAskedThenTheFirstCliThatAnswersIsUsed(): void
+    public function testByDefaultTheCliIsChosenOncePerRun(): void
     {
-        $runner = $this->createRunner(['claude', 'codex', 'opencode'], [
-            'claude' => [0, "\n", ''],
-            'codex' => [1, '', 'ERROR: 401 Unauthorized'],
-            'opencode' => [0, "The answer is 42.\n", ''],
-        ], interactive: true, inputs: "yes\n");
+        $runner = $this->createRunner(['claude', 'codex'], [
+            'codex' => [0, "The answer is 42.\n", ''],
+        ], interactive: true, inputs: "codex\n\n");
 
         $this->assertSame('The answer is 42.', $runner->ask("What is the answer?\nTo life, the universe and everything."));
         $this->assertSame('The answer is 42.', $runner->ask('Are you sure?'));
 
         $output = $this->output->fetch();
-        $this->assertStringContainsString('Castor is about to send this prompt to the "claude" LLM CLI:', $output);
+        $this->assertStringContainsString('Castor is about to send this prompt to a LLM CLI:', $output);
         $this->assertStringContainsString('What is the answer?', $output);
         $this->assertStringContainsString('To life, the universe and everything.', $output);
-        $this->assertStringContainsString('Do you want to continue? (yes/no) [yes]:', $output);
-        $this->assertSame(1, substr_count($output, 'Do you want to continue?'), 'The confirmation is asked once per run.');
+        $this->assertStringContainsString('Which LLM CLI do you want to use? [claude]', $output);
+        $this->assertSame(1, substr_count($output, 'Which LLM CLI do you want to use?'), 'The CLI is chosen once per run.');
 
-        // The CLI that answered is reused for the next question
-        $this->assertSame(['claude', 'codex', 'opencode', 'opencode'], array_map(static fn (array $command): string => $command[0], $this->getRunCommands()));
+        $this->assertSame(['codex', 'codex'], array_map(static fn (array $command): string => $command[0], $this->getRunCommands()));
 
         // codex writes its answer in a temporary file
-        $codexCommand = $this->getRunCommands()[1];
+        $codexCommand = $this->getRunCommands()[0];
         $this->assertSame('-', end($codexCommand));
         $this->assertStringContainsString('castor-llm-', $codexCommand[array_search('--output-last-message', $codexCommand, true) + 1]);
     }
 
     public function testALongPromptIsPreviewed(): void
     {
-        $runner = $this->createRunner(['claude'], interactive: true, inputs: "yes\n");
+        $runner = $this->createRunner(['claude'], interactive: true, inputs: "\n\n\n");
 
         $runner->ask(implode("\n", array_map(static fn (int $i): string => "Line {$i}", range(1, 8))));
 
@@ -115,33 +167,28 @@ class LlmRunnerTest extends LlmTestCase
         $this->assertStringContainsString('(3 more lines)', $output);
     }
 
-    public function testARefusedConfirmationThrows(): void
+    public function testTheUserCanRefuseToSendThePrompt(): void
     {
-        $runner = $this->createRunner(['claude'], interactive: true, inputs: "no\n");
+        $runner = $this->createRunner(['claude'], interactive: true, inputs: "None, do not send the prompt\n");
 
-        $this->expectException(LlmException::class);
-        $this->expectExceptionMessage('The LLM call has been refused.');
+        try {
+            $runner->ask('What is the answer?');
+            $this->fail('An exception should have been thrown.');
+        } catch (LlmException $e) {
+            $this->assertSame('The LLM call has been refused.', $e->getMessage());
+        }
 
-        $runner->ask('What is the answer?');
+        $this->assertSame([], $this->runs);
     }
 
-    public function testTheConfirmationCannotBeAskedInANonInteractiveRun(): void
+    public function testTheCliCannotBeChosenInANonInteractiveRun(): void
     {
         $runner = $this->createRunner(['claude']);
 
         $this->expectException(LlmException::class);
-        $this->expectExceptionMessage('Castor needs a confirmation before sending a prompt to a LLM (from the default), but the run is not interactive. Set the CASTOR_LLM environment variable to "auto", or run "castor castor:llm:configure".');
+        $this->expectExceptionMessage('Castor needs you to choose the LLM CLI (from the default), but the run is not interactive. Set the CASTOR_LLM environment variable to the CLI to use, or run "castor castor:llm:configure".');
 
         $runner->ask('What is the answer?');
-    }
-
-    public function testAutoDoesNotAsk(): void
-    {
-        $runner = $this->createRunner(['claude']);
-        $this->configStorage->set('auto', global: true);
-
-        $this->assertSame('42', $runner->ask('What is the answer?'));
-        $this->assertSame('', $this->output->fetch());
     }
 
     public function testChooseLetsTheUserPickTheCliTheModelAndTheAgent(): void
@@ -163,9 +210,28 @@ class LlmRunnerTest extends LlmTestCase
         $this->assertSame(1, substr_count($output, 'Which LLM CLI do you want to use?'), 'The choice is asked once per run.');
 
         $this->assertSame([
-            ['opencode', 'run', '--model', 'opencode/big-pickle', '--agent', 'build', 'What is the answer?'],
-            ['opencode', 'run', '--model', 'opencode/big-pickle', '--agent', 'build', 'Are you sure?'],
+            ['opencode', 'run', '--model', 'opencode/big-pickle', '--agent', 'build'],
+            ['opencode', 'run', '--model', 'opencode/big-pickle', '--agent', 'build'],
         ], array_values(array_filter($this->getRunCommands(), static fn (array $command): bool => 'run' === ($command[1] ?? null))));
+    }
+
+    public function testChooseStillWorksWhenTheCliCannotListItsModelsAndAgents(): void
+    {
+        $listModels = new Process(['opencode', 'models']);
+        $listModels->setTimeout(30);
+        $runner = $this->createRunner(['opencode'], [
+            'opencode models' => new ProcessTimedOutException($listModels, ProcessTimedOutException::TYPE_GENERAL),
+            'opencode agent' => [1, '', 'Error: unknown command'],
+        ], interactive: true, inputs: "opencode\nopencode/big-pickle\n\n");
+        $_SERVER['CASTOR_LLM'] = 'choose';
+
+        $this->assertSame('42', $runner->ask('What is the answer?'));
+
+        $output = $this->output->fetch();
+        $this->assertStringContainsString('Which model? Leave empty for the default of the CLI', $output);
+        $this->assertStringContainsString('Which agent? Leave empty for the default of the CLI', $output);
+        $commands = $this->getRunCommands();
+        $this->assertSame(['opencode', 'run', '--model', 'opencode/big-pickle', '--agent', 'castor-read-only'], end($commands));
     }
 
     public function testChooseCannotRunNonInteractively(): void
@@ -174,45 +240,44 @@ class LlmRunnerTest extends LlmTestCase
         $this->configStorage->set('choose', global: false);
 
         $this->expectException(LlmException::class);
-        $this->expectExceptionMessage('Castor needs you to choose the LLM CLI, but the run is not interactive. Set the CASTOR_LLM environment variable, or run "castor castor:llm:configure".');
+        $this->expectExceptionMessage('Castor needs you to choose the LLM CLI (from the configuration of the project), but the run is not interactive.');
 
         $runner->ask('What is the answer?');
     }
 
-    public function testAJobOfParallelCannotAskForAConfirmation(): void
+    public function testTheContextGivenToTheFunctionDecidesWhetherAQuestionCanBeAsked(): void
     {
-        $runner = $this->createRunner(['claude'], interactive: true, inputs: "yes\n");
+        $runner = $this->createRunner(['claude'], interactive: true, inputs: "\n\n\n");
+
+        $this->expectException(LlmException::class);
+        $this->expectExceptionMessage('Castor needs you to choose the LLM CLI (from the default), but the run is not interactive.');
+
+        $runner->ask('What is the answer?', context: new Context(supportsInteraction: false));
+    }
+
+    public function testAJobOfParallelCannotChooseTheCli(): void
+    {
+        $runner = $this->createRunner(['claude'], interactive: true, inputs: "\n\n\n");
 
         try {
             $this->runInJob(static fn (): string => $runner->ask('What is the answer?'));
             $this->fail('An exception should have been thrown.');
         } catch (LlmException $e) {
-            $this->assertSame('Castor needs a confirmation before sending a prompt to a LLM (from the default), but a job of parallel() cannot ask a question. Set the CASTOR_LLM environment variable to "auto", or run "castor castor:llm:configure".', $e->getMessage());
+            $this->assertSame('Castor needs you to choose the LLM CLI (from the default), but a job of parallel() cannot ask a question. Set the CASTOR_LLM environment variable to the CLI to use, or run "castor castor:llm:configure".', $e->getMessage());
         }
 
         $this->assertSame('', $this->output->fetch());
         $this->assertSame([], $this->runs);
     }
 
-    public function testAJobOfParallelCannotChooseTheCli(): void
+    public function testAJobOfParallelReusesTheCliChosenBefore(): void
     {
-        $runner = $this->createRunner(['claude'], interactive: true, inputs: "claude\n");
-        $_SERVER['CASTOR_LLM'] = 'choose';
-
-        $this->expectException(LlmException::class);
-        $this->expectExceptionMessage('Castor needs you to choose the LLM CLI, but a job of parallel() cannot ask a question.');
-
-        $this->runInJob(static fn (): string => $runner->ask('What is the answer?'));
-    }
-
-    public function testAJobOfParallelReusesTheCliConfirmedBefore(): void
-    {
-        $runner = $this->createRunner(['claude'], interactive: true, inputs: "yes\n");
+        $runner = $this->createRunner(['claude'], interactive: true, inputs: "\n\n\n");
 
         $runner->ask('What is the answer?');
         $this->assertSame('42', $this->runInJob(static fn (): string => $runner->ask('Are you sure?')));
 
-        $this->assertSame(1, substr_count($this->output->fetch(), 'Do you want to continue?'));
+        $this->assertSame(1, substr_count($this->output->fetch(), 'Which LLM CLI do you want to use?'));
         $this->assertSame(['claude', 'claude'], array_map(static fn (array $command): string => $command[0], $this->getRunCommands()));
     }
 
@@ -251,6 +316,48 @@ class LlmRunnerTest extends LlmTestCase
         $runner->ask('What is the answer?', 'claude');
     }
 
+    public function testATimeoutIsReported(): void
+    {
+        $process = new Process(['claude']);
+        $process->setTimeout(120);
+        $runner = $this->createRunner(['claude'], [
+            'claude' => new ProcessTimedOutException($process, ProcessTimedOutException::TYPE_GENERAL),
+        ]);
+
+        $this->expectException(LlmException::class);
+        $this->expectExceptionMessage('The "claude" LLM CLI exceeded the timeout of 120 seconds of the context.');
+
+        $runner->ask('What is the answer?', 'claude');
+    }
+
+    public function testACliStoppedByASignalIsReported(): void
+    {
+        $process = $this->createStub(Process::class);
+        $process->method('getTermSignal')->willReturn(9);
+        $runner = $this->createRunner(['claude'], [
+            'claude' => new ProcessSignaledException($process),
+        ]);
+
+        $this->expectException(LlmException::class);
+        $this->expectExceptionMessage('The "claude" LLM CLI has been stopped by the signal 9.');
+
+        $runner->ask('What is the answer?', 'claude');
+    }
+
+    public function testACommandThatCannotBeStartedIsReportedWithoutThePrompt(): void
+    {
+        $runner = $this->createRunner([], [
+            'my-llm' => new ProcessStartFailedException(new Process(['my-llm', 'What is the answer?']), 'proc_open(): posix_spawn() failed: Argument list too long'),
+        ]);
+
+        try {
+            $runner->ask('What is the answer?', ['my-llm', '{prompt}']);
+            $this->fail('An exception should have been thrown.');
+        } catch (LlmException $e) {
+            $this->assertSame('The "my-llm {prompt}" LLM CLI could not be started. Error: proc_open(): posix_spawn() failed: Argument list too long', $e->getMessage());
+        }
+    }
+
     public function testACustomCommandGetsThePromptOnItsStandardInput(): void
     {
         $runner = $this->createRunner();
@@ -275,36 +382,47 @@ class LlmRunnerTest extends LlmTestCase
 
     public function testNoCliInstalled(): void
     {
-        $runner = $this->createRunner();
-        $_SERVER['CASTOR_LLM'] = 'auto';
+        $runner = $this->createRunner(interactive: true, inputs: "\nmy-llm --quiet\n");
 
-        $this->expectException(LlmException::class);
-        $this->expectExceptionMessage('No LLM CLI found. Install and log in to one of "claude", "codex", "opencode"');
+        $this->assertSame('42', $runner->ask('What is the answer?'));
 
-        $runner->ask('What is the answer?');
+        $this->assertStringContainsString('None of the LLM CLIs Castor knows is installed: claude, codex,', $this->output->fetch());
+        $this->assertSame(['my-llm --quiet'], $this->getRunCommands());
+        $this->assertSame('What is the answer?', $this->runs[0][1]->input);
     }
 
-    public function testNoCliCouldAnswer(): void
+    public function testACliThatMayModifyTheProjectIsNotProposedByDefault(): void
+    {
+        $runner = $this->createRunner(['gemini', 'amp', 'crush', 'qwen'], interactive: true, inputs: "\n\n");
+
+        $runner->ask('What is the answer?');
+
+        $this->assertStringContainsString('Which LLM CLI do you want to use? [qwen]', $this->output->fetch());
+        $this->assertSame('qwen', $this->getRunCommands()[0][0]);
+
+        $this->assertSame('42', $runner->ask('What is the answer?', 'crush'));
+        $this->assertSame('crush', $this->getRunCommands()[1][0]);
+    }
+
+    public function testTheChosenCliIsNotReplacedByAnotherOneWhenItFails(): void
     {
         $runner = $this->createRunner(['claude', 'codex'], [
             'claude' => [1, '', 'Not logged in · Please run /login'],
-            'codex' => [1, '', 'ERROR: 401 Unauthorized'],
-        ]);
-        $_SERVER['CASTOR_LLM'] = 'auto';
+        ], interactive: true, inputs: "\n\n\n");
 
         try {
             $runner->ask('What is the answer?');
             $this->fail('An exception should have been thrown.');
         } catch (LlmException $e) {
-            $this->assertStringStartsWith('None of the installed LLM CLIs could answer:', $e->getMessage());
-            $this->assertStringContainsString("The \"claude\" LLM CLI failed with exit code 1:\nNot logged in · Please run /login", $e->getMessage());
-            $this->assertStringContainsString("The \"codex\" LLM CLI failed with exit code 1:\nERROR: 401 Unauthorized", $e->getMessage());
+            $this->assertSame("The \"claude\" LLM CLI failed with exit code 1:\nNot logged in · Please run /login", $e->getMessage());
         }
+
+        $this->assertSame(['claude'], array_map(static fn (array $command): string => $command[0], $this->getRunCommands()));
     }
 
     /**
-     * @param list<string>                              $installedClis
-     * @param array<string, array{int, string, string}> $results
+     * @param list<string>                                         $installedClis
+     * @param array<string, array{int, string, string}|\Throwable> $results
      */
     private function createRunner(array $installedClis = [], array $results = [], bool $interactive = false, string $inputs = ''): LlmRunner
     {
@@ -329,7 +447,6 @@ class LlmRunnerTest extends LlmTestCase
             $this->createContextRegistry($interactive),
             $processRunner,
             new Filesystem(),
-            new NullLogger(),
             $input,
             new SymfonyStyle($input, $this->output),
             $this->jobRegistry,

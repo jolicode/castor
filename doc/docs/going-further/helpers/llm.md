@@ -29,13 +29,13 @@ runs them in their non-interactive mode. Castor knows the following CLIs:
 - [Crush](https://github.com/charmbracelet/crush) (`crush`)
 - [Qwen Code](https://github.com/QwenLM/qwen-code) (`qwen`)
 - [llm](https://llm.datasette.io) (`llm`)
-- [Mods](https://github.com/charmbracelet/mods) (`mods`)
 - [Mistral Vibe](https://mistral.ai/products/vibe) (`vibe`)
 
-By default, the first time a task asks a LLM, Castor shows the CLI it is about
-to use and the beginning of the prompt, and asks for a confirmation. It then
-uses the first installed CLI that answers, for the whole run. The next section
-explains how to choose the CLI, and how to skip the confirmation.
+By default, the first time a task asks a LLM, Castor shows the beginning of the
+prompt and asks which installed CLI to use, then its model and its agent when
+the CLI supports them, or lets you refuse to send the prompt. It then uses this
+CLI for the whole run. The next section explains how to choose the CLI once and
+for all, to skip these questions.
 
 > [!NOTE]
 > The CLI runs in the working directory of the current context, with its own
@@ -43,25 +43,24 @@ explains how to choose the CLI, and how to skip the confirmation.
 > may read the files of the project to answer. When the CLI has a read-only
 > mode, Castor uses it so that the model never modifies the project nor runs
 > commands: Claude Code runs without any tool, Codex in its read-only sandbox,
-> OpenCode and Mistral Vibe with their `plan` agent, Gemini CLI and Qwen Code
-> in their `plan` approval mode. The other CLIs keep their own behavior for a
-> non-interactive run, where the actions requiring an approval are usually
-> denied. Choosing another agent for OpenCode or Mistral Vibe replaces their
-> `plan` agent: what the model may do then depends on the agent you choose.
+> OpenCode with an agent defined by Castor that may only read the files of the
+> project, Mistral Vibe with its `plan` agent, Cursor CLI in its `ask` mode and
+> Qwen Code in its `plan` approval mode. The other CLIs keep their own behavior
+> for a non-interactive run, where the actions requiring an approval are
+> usually denied. Choosing another agent for OpenCode or Mistral Vibe replaces
+> this agent: what the model may do then depends on the agent you choose.
+>
+> Amp and Crush approve all the actions of the model in a non-interactive run,
+> and Gemini CLI lets the model leave its `plan` approval mode for the `yolo`
+> one: Castor does not propose them by default.
 
 ## Choosing the CLI
 
 How Castor chooses the CLI is described by a value, which is one of:
 
-- `confirm`: the default. Castor asks for a confirmation the first time a task
-  asks a LLM, then uses the first installed CLI that answers.
-- `auto`: Castor uses the first installed CLI that answers, without asking. A
-  CLI that fails, because it is not logged in for instance, is skipped with a
-  warning and the next one is tried. Once a CLI has answered, Castor keeps using
-  it for the next questions of the run.
-- `choose`: the first time a task asks a LLM, Castor lets you choose the CLI
-  among the installed ones, then its model and its agent when the CLI supports
-  them. The choice is kept for the run.
+- `choose`: the default. The first time a task asks a LLM, Castor lets you
+  choose the CLI among the installed ones, then its model and its agent when
+  the CLI supports them. The choice is kept for the run.
 - the name of a known CLI, like `claude` or `codex`, to always use it. It can
   be followed by the `--model` and `--agent` options, that Castor translates
   for the CLI, and by any other arguments, passed to the CLI as is:
@@ -78,13 +77,16 @@ Castor takes the value from the first of these sources that defines one:
    command;
 4. the global configuration, made with the `castor:llm:configure --global`
    command;
-5. the default, `confirm`.
+5. the default, `choose`.
+
+Castor uses the CLI it is given, and only it: when it fails, `llm_ask()` throws
+an exception, and the prompt is not sent to another CLI.
 
 > [!NOTE]
-> The `confirm` and `choose` values need someone to answer: in a
-> non-interactive run, like in CI or with the `--no-interaction` option, the
-> task fails with an error explaining how to configure Castor. Set the
-> `CASTOR_LLM` environment variable to `auto` or to a CLI in such environments.
+> The `choose` value needs someone to answer: in a non-interactive run, like in
+> CI or with the `--no-interaction` option, the task fails with an error
+> explaining how to configure Castor. Set the `CASTOR_LLM` environment variable
+> to a CLI in such environments.
 >
 > The same goes for a job of [`parallel()`](parallel.md), since its output is
 > captured: call `llm_ask()` once before `parallel()` to answer the question,
@@ -112,7 +114,7 @@ use function Castor\llm_ask;
 $summary = llm_ask('Summarize this text: ...', cli: ['my-llm', '--prompt', '{prompt}']);
 ```
 
-Since the task chooses the CLI, Castor does not ask for a confirmation.
+Since the task chooses the CLI, Castor does not ask which one to use.
 
 ### The `CASTOR_LLM` environment variable
 
@@ -120,7 +122,7 @@ The `CASTOR_LLM` environment variable takes a value, for a single run or for
 the environments where nobody can answer a question:
 
 ```bash
-CASTOR_LLM=auto castor llm:summarize-commits
+CASTOR_LLM=codex castor llm:summarize-commits
 CASTOR_LLM="claude --model opus" castor llm:summarize-commits
 CASTOR_LLM="ollama run --nowordwrap llama3.2" castor llm:summarize-commits
 ```
@@ -128,8 +130,8 @@ CASTOR_LLM="ollama run --nowordwrap llama3.2" castor llm:summarize-commits
 ### The `castor:llm:configure` command
 
 The `castor:llm:configure` command saves a value, for the current project or,
-with the `--global` option, for all your projects. Without argument, it asks
-what to do, then lets you choose the CLI, its model and its agent:
+with the `--global` option, for all your projects. Without argument, it lets
+you choose the CLI, its model and its agent:
 
 ```bash
 castor castor:llm:configure
@@ -140,7 +142,7 @@ The value can also be passed as an argument, and removed with the `--reset`
 option:
 
 ```bash
-castor castor:llm:configure auto
+castor castor:llm:configure codex
 castor castor:llm:configure "claude --model opus" --global
 castor castor:llm:configure --reset
 ```
@@ -163,8 +165,8 @@ castor castor:llm:debug --test
 
 ## Errors
 
-The `llm_ask()` function throws a `Castor\Exception\LlmException` when no known
-CLI is installed, when the chosen CLI is not installed or fails, when none of
-the installed CLIs could answer, or when the confirmation is refused or cannot
-be asked. The message of the exception contains the error output of the CLIs,
-to help you fix their setup.
+The `llm_ask()` function throws a `Castor\Exception\LlmException` when the CLI
+cannot be chosen, because the run is not interactive for instance, when you
+refuse to send the prompt, or when the CLI is not installed, fails, is stopped
+by a signal or exceeds the timeout of the context. The message of the exception
+contains the error output of the CLI, to help you fix its setup.

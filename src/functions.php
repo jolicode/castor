@@ -109,13 +109,13 @@ function exit_code(
  * Code, Codex, OpenCode, Gemini CLI, ...) run in its non-interactive and
  * read-only mode, and returns its answer.
  *
- * @param string|list<string>|null $cli A mode ("confirm", "auto", "choose"), the name of a known CLI
- *                                      with its options ("claude", "codex --model gpt-5.5", ...), or a
- *                                      custom command which receives the prompt on its standard input. By
- *                                      default, the CASTOR_LLM environment variable, then the
- *                                      configuration made with "castor:llm:configure", decide
+ * @param string|list<string>|null $cli The name of a known CLI with its options ("claude", "codex --model
+ *                                      gpt-5.5", ...), a custom command which receives the prompt on its
+ *                                      standard input, or "choose" to ask which one to use. By default, the
+ *                                      CASTOR_LLM environment variable, then the configuration made with
+ *                                      "castor:llm:configure", decide, or Castor asks
  *
- * @throws LlmException When no CLI is available, when the call is refused, or when the CLI could not answer
+ * @throws LlmException When the CLI cannot be chosen, when the call is refused, or when the CLI could not answer
  */
 function llm_ask(string $prompt, string|array|null $cli = null, ?Context $context = null): string
 {

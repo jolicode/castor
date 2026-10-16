@@ -8,24 +8,13 @@ use PHPUnit\Framework\Attributes\DataProvider;
 
 class SelectionTest extends LlmTestCase
 {
-    #[DataProvider('provideModes')]
-    public function testAMode(string $value): void
+    public function testChoose(): void
     {
-        $selection = Selection::fromValue($value, $this->createCliRegistry());
+        $selection = Selection::fromValue(' choose ', $this->createCliRegistry());
 
-        $this->assertTrue($selection->isMode(trim($value)));
+        $this->assertTrue($selection->isMode(Selection::MODE_CHOOSE));
         $this->assertFalse($selection->isFixed());
-        $this->assertSame(trim($value), $selection->toValue());
-    }
-
-    /**
-     * @return iterable<array{string}>
-     */
-    public static function provideModes(): iterable
-    {
-        yield ['confirm'];
-        yield ['auto'];
-        yield [' choose '];
+        $this->assertSame('choose', $selection->toValue());
     }
 
     public function testAKnownCliWithItsOptions(): void
