@@ -7,6 +7,7 @@ use Castor\Console\Command\LlmDebugCommand;
 use Castor\Llm\LlmRunner;
 use Castor\Llm\Selector;
 use Castor\Runner\Parallel\JobRegistry;
+use Psr\Log\NullLogger;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -55,7 +56,7 @@ class LlmCommandsTest extends LlmTestCase
     public function testConfigureInteractively(): void
     {
         $tester = $this->createConfigureTester(['claude', 'opencode']);
-        $tester->setInputs(['claude', 'haiku', '', 'this project']);
+        $tester->setInputs(['claude', 'haiku', 'this project']);
 
         $tester->execute([]);
 
@@ -64,7 +65,8 @@ class LlmCommandsTest extends LlmTestCase
         $this->assertDisplayContains('Which LLM CLI do you want to use?', $display);
         $this->assertDisplayNotContains('do not send the prompt', $display);
         $this->assertDisplayContains('Which model?', $display);
-        $this->assertDisplayContains('Which agent? Leave empty for the default of the CLI', $display);
+        // The configuration is shared by llm_ask() and llm_run(), which need different agents
+        $this->assertDisplayNotContains('Which agent?', $display);
         $this->assertDisplayContains('Save this configuration for', $display);
         $this->assertDisplayContains('Castor will always use the "claude" LLM CLI with the model "haiku", for this project.', $display);
         $this->assertSame('claude --model haiku', $this->configStorage->get(global: false));
@@ -115,7 +117,7 @@ class LlmCommandsTest extends LlmTestCase
         $display = $tester->getDisplay();
         $this->assertDisplayContains('claude installed (/usr/bin/claude)', $display);
         $this->assertDisplayContains('codex not installed', $display);
-        $this->assertDisplayContains('crush installed (/usr/bin/crush), may modify the project', $display);
+        $this->assertDisplayContains('crush installed (/usr/bin/crush), may modify the project even with llm_ask()', $display);
         $this->assertDisplayContains('CASTOR_LLM environment variable not set', $display);
         $this->assertDisplayContains('Configuration of the project choose', $display);
         $this->assertDisplayContains('Global configuration codex', $display);
@@ -132,7 +134,21 @@ class LlmCommandsTest extends LlmTestCase
         $tester->assertCommandIsSuccessful();
         $display = $tester->getDisplay();
         $this->assertDisplayContains('Castor will always use the "claude" LLM CLI with the model "opus", from the CASTOR_LLM environment variable.', $display);
-        $this->assertDisplayContains("The command is 'claude' '--print' '--output-format' 'text' '--no-session-persistence' '--tools' \"\" '--model' 'opus', with the prompt on its standard input.", $display);
+        $this->assertDisplayContains("The command of llm_ask() is 'claude' '--print' '--output-format' 'text' '--no-session-persistence' '--tools' \"\" '--model' 'opus', with the prompt on its standard input.", $display);
+        $this->assertDisplayContains("The command of llm_run() is 'claude' '--print' '--output-format' 'text' '--no-session-persistence' '--permission-mode' 'acceptEdits' '--allowedTools' 'Bash' 'PowerShell' '--model' 'opus', with the prompt on its standard input.", $display);
+    }
+
+    public function testDebugShowsTheEnvironmentOfTheReadOnlyCommand(): void
+    {
+        $_SERVER['CASTOR_LLM'] = 'opencode';
+        $tester = $this->createDebugTester(['opencode']);
+
+        $tester->execute([]);
+
+        $tester->assertCommandIsSuccessful();
+        $display = $tester->getDisplay();
+        $this->assertDisplayContains("The command of llm_ask() is 'opencode' 'run' '--agent' 'castor-read-only', with the prompt on its standard input, with the environment variables OPENCODE_CONFIG_CONTENT.", $display);
+        $this->assertDisplayContains("The command of llm_run() is 'opencode' 'run' '--auto' '--agent' 'build', with the prompt on its standard input.", $display);
     }
 
     public function testDebugShowsACustomCommandAsIs(): void
@@ -209,7 +225,7 @@ class LlmCommandsTest extends LlmTestCase
         $processRunner = $this->createProcessRunner($results);
         $clis = $this->createCliRegistry($installedClis, processRunner: $processRunner);
         $input = new ArrayInput([]);
-        $runner = new LlmRunner($clis, $this->configStorage, new Selector($clis), $this->createContextRegistry(), $processRunner, new Filesystem(), $input, new SymfonyStyle($input, new NullOutput()), new JobRegistry($input), false);
+        $runner = new LlmRunner($clis, $this->configStorage, new Selector($clis), $this->createContextRegistry(), $processRunner, new Filesystem(), $input, new SymfonyStyle($input, new NullOutput()), new JobRegistry($input), new NullLogger(), false);
 
         return new CommandTester(new Application()->addCommand(new LlmDebugCommand($clis, $this->configStorage, $runner)) ?? throw new \LogicException('The command could not be added.'));
     }

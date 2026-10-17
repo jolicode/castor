@@ -39,6 +39,7 @@ Castor provides the following built-in functions:
 - [`input`](going-further/helpers/console-and-io.md#the-input-function)
 - [`io`](going-further/helpers/console-and-io.md#the-io-function)
 - [`llm_ask`](going-further/helpers/llm.md#the-llm_ask-function)
+- [`llm_run`](going-further/helpers/llm.md#the-llm_run-function)
 - [`load_dot_env`](going-further/interacting-with-castor/dot-env.md#the-load_dot_env-function)
 - [`log`](going-further/interacting-with-castor/log.md#the-log-function)
 - [`logger`](going-further/interacting-with-castor/log.md#the-logger-function)

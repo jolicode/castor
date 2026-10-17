@@ -2,6 +2,7 @@
 
 namespace Castor\Tests\Llm;
 
+use Castor\Exception\LlmException;
 use Castor\Llm\Cli;
 use PHPUnit\Framework\TestCase;
 
@@ -29,5 +30,33 @@ class CliTest extends TestCase
 
         $this->assertSame(['foo', '--agent', 'plan'], $cli->buildReadOnlyCommand());
         $this->assertSame(['foo', '--agent', 'build'], $cli->buildReadOnlyCommand(agent: 'build'));
+    }
+
+    public function testTheWriteArgumentsReplaceTheReadOnlyOnes(): void
+    {
+        $cli = new Cli('foo', ['foo', Cli::OPTIONS_PLACEHOLDER], readOnlyArguments: ['--approval-mode', 'plan'], writeArguments: ['--approval-mode', 'yolo'], modelOption: '-m');
+
+        $this->assertTrue($cli->supportsWrite());
+        $this->assertSame(['foo', '--approval-mode', 'yolo', '-m', 'bar'], $cli->buildWriteCommand('bar'));
+    }
+
+    public function testTheReadOnlyAgentIsNotUsedInWriteMode(): void
+    {
+        $cli = new Cli('foo', ['foo', Cli::OPTIONS_PLACEHOLDER], writeArguments: [], agentOption: '--agent', readOnlyAgent: 'plan');
+
+        $this->assertSame(['foo'], $cli->buildWriteCommand());
+        $this->assertSame(['foo', '--agent', 'build'], $cli->buildWriteCommand(agent: 'build'));
+    }
+
+    public function testACliWithoutWriteArgumentsCannotModifyTheProject(): void
+    {
+        $cli = new Cli('foo', ['foo', Cli::OPTIONS_PLACEHOLDER]);
+
+        $this->assertFalse($cli->supportsWrite());
+
+        $this->expectException(LlmException::class);
+        $this->expectExceptionMessage('The "foo" LLM CLI cannot modify the project nor run commands.');
+
+        $cli->buildWriteCommand();
     }
 }

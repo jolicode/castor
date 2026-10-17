@@ -11,7 +11,9 @@ use Castor\Runner\Parallel\JobRegistry;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\ErrorHandler\BufferingLogger;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Exception\ProcessSignaledException;
 use Symfony\Component\Process\Exception\ProcessStartFailedException;
@@ -21,6 +23,8 @@ use Symfony\Component\Process\Process;
 class LlmRunnerTest extends LlmTestCase
 {
     private BufferedOutput $output;
+
+    private BufferingLogger $logger;
 
     private JobRegistry $jobRegistry;
 
@@ -374,18 +378,53 @@ class LlmRunnerTest extends LlmTestCase
         $runner->ask('What is the answer?', 'claude');
     }
 
-    public function testATimeoutIsReported(): void
+    public function testOnlyTheEndOfALongErrorOutputIsReported(): void
     {
-        $process = new Process(['claude']);
-        $process->setTimeout(120);
+        $errorOutput = implode("\n", array_map(static fn (int $i): string => "Line {$i}", range(1, 1000)));
+        $runner = $this->createRunner(['claude'], [
+            'claude' => [1, '', $errorOutput],
+        ]);
+
+        try {
+            $runner->ask('What is the answer?', 'claude');
+            $this->fail('An exception should have been thrown.');
+        } catch (LlmException $e) {
+            $this->assertStringStartsWith("The \"claude\" LLM CLI failed with exit code 1:\n…\nLine 952\n", $e->getMessage());
+            $this->assertStringEndsWith("\nLine 1000", $e->getMessage());
+        }
+    }
+
+    public function testTheErrorOutputIsLoggedOnlyInDebugMode(): void
+    {
+        $runner = $this->createRunner(['claude'], [
+            'claude' => [0, "42\n", "Read README.md\n"],
+        ]);
+
+        $runner->ask('What is the answer?', 'claude');
+
+        $this->assertSame([], $this->logger->cleanLogs(), 'The error output is not read when it is not shown.');
+
+        $this->output->setVerbosity(OutputInterface::VERBOSITY_DEBUG);
+        $runner->ask('What is the answer?', 'claude');
+
+        $this->assertSame([
+            ['debug', "The \"claude\" LLM CLI printed on its error output:\nRead README.md", []],
+        ], $this->logger->cleanLogs());
+    }
+
+    public function testATimeoutIsReportedWithWhatTheCliDid(): void
+    {
+        $process = $this->createStub(Process::class);
+        $process->method('getTimeout')->willReturn(120.0);
+        $process->method('getErrorOutput')->willReturn("Reading README.md\nEditing README.md\n");
         $runner = $this->createRunner(['claude'], [
             'claude' => new ProcessTimedOutException($process, ProcessTimedOutException::TYPE_GENERAL),
         ]);
 
         $this->expectException(LlmException::class);
-        $this->expectExceptionMessage('The "claude" LLM CLI exceeded the timeout of 120 seconds of the context.');
+        $this->expectExceptionMessage("The \"claude\" LLM CLI exceeded the timeout of 120 seconds of the context:\nReading README.md\nEditing README.md");
 
-        $runner->ask('What is the answer?', 'claude');
+        $runner->run('Fix the typos.', 'claude');
     }
 
     public function testACliStoppedByASignalIsReported(): void
@@ -478,6 +517,128 @@ class LlmRunnerTest extends LlmTestCase
         $this->assertSame(['claude'], array_map(static fn (array $command): string => $command[0], $this->getRunCommands()));
     }
 
+    public function testRunUsesTheWriteModeOfTheCli(): void
+    {
+        $runner = $this->createRunner(['claude', 'opencode', 'copilot']);
+
+        $this->assertSame('42', $runner->run('Fix the typos.', 'claude --model opus'));
+        $runner->run('Fix the typos.', 'opencode');
+        $runner->run('Fix the typos.', 'copilot');
+
+        $this->assertSame([
+            ['claude', '--print', '--output-format', 'text', '--no-session-persistence', '--permission-mode', 'acceptEdits', '--allowedTools', 'Bash', 'PowerShell', '--model', 'opus'],
+            ['opencode', 'run', '--auto', '--agent', 'build'],
+            ['copilot', '--silent', '--allow-all-tools', '--allow-all-urls'],
+        ], $this->getRunCommands());
+        $this->assertSame('Fix the typos.', $this->runs[0][1]->input);
+    }
+
+    public function testRunGivesTheConfigurationOfOpenCodeAsItIs(): void
+    {
+        // OpenCode accepts comments, that llm_ask() cannot merge with its read-only agent
+        $_SERVER['OPENCODE_CONFIG_CONTENT'] = '{"permission": {"bash": {"git push*": "deny"}}, // CI
+        }';
+        $runner = $this->createRunner(['opencode']);
+
+        $runner->run('Fix the typos.', 'opencode');
+
+        $this->assertArrayNotHasKey('OPENCODE_CONFIG_CONTENT', $this->runs[0][1]->environment, 'The variable of the user reaches OpenCode untouched.');
+    }
+
+    public function testAnAgentChosenForRunReplacesTheWriteAgent(): void
+    {
+        $runner = $this->createRunner(['opencode']);
+
+        $runner->run('Fix the typos.', 'opencode --agent reviewer');
+
+        $this->assertSame([['opencode', 'run', '--auto', '--agent', 'reviewer']], $this->getRunCommands());
+    }
+
+    public function testRunRefusesACliThatCannotModifyTheProject(): void
+    {
+        $runner = $this->createRunner(['llm']);
+
+        $this->expectException(LlmException::class);
+        $this->expectExceptionMessage('The "llm" LLM CLI cannot modify the project nor run commands.');
+
+        $runner->run('Fix the typos.', 'llm');
+    }
+
+    public function testRunLetsTheUserChooseAmongTheClisThatCanModifyTheProject(): void
+    {
+        $runner = $this->createRunner(['llm', 'claude'], interactive: true, inputs: "claude\n\n\n");
+
+        $this->assertSame('42', $runner->run('Fix the typos.'));
+        $this->assertSame('42', $runner->run('Fix the typos again.'));
+
+        $output = $this->output->fetch();
+        $this->assertStringContainsString('Castor is about to send this prompt to a LLM CLI, which may modify the project and run commands to do what it asks:', $output);
+        $this->assertStringContainsString('Fix the typos.', $output);
+        $this->assertStringContainsString('[0] claude', $output);
+        $this->assertStringNotContainsString('] llm', $output, 'A CLI that cannot modify the project is not proposed.');
+        $this->assertSame(1, substr_count($output, 'Which LLM CLI do you want to use?'), 'The choice is asked once per run.');
+        $this->assertSame([
+            ['claude', '--print', '--output-format', 'text', '--no-session-persistence', '--permission-mode', 'acceptEdits', '--allowedTools', 'Bash', 'PowerShell'],
+            ['claude', '--print', '--output-format', 'text', '--no-session-persistence', '--permission-mode', 'acceptEdits', '--allowedTools', 'Bash', 'PowerShell'],
+        ], $this->getRunCommands());
+    }
+
+    public function testRunProposesACustomCommandWhenNoCliCanModifyTheProject(): void
+    {
+        $runner = $this->createRunner(['llm'], interactive: true, inputs: "A custom command\nmy-llm\n");
+
+        $this->assertSame('42', $runner->run('Fix the typos.'));
+
+        $output = preg_replace('/\s+/', ' ', $this->output->fetch()) ?? '';
+        $this->assertStringContainsString('None of the LLM CLIs Castor knows that can modify the project is installed: claude, codex, opencode, gemini, copilot, cursor-agent, amp, crush, qwen, vibe.', $output);
+        $this->assertStringNotContainsString('llm,', $output);
+        $this->assertSame(['my-llm'], $this->getRunCommands());
+    }
+
+    public function testTheUserCanRefuseToLetTheLlmModifyTheProject(): void
+    {
+        $runner = $this->createRunner(['claude'], interactive: true, inputs: "None, do not send the prompt\n");
+
+        $this->expectException(LlmException::class);
+        $this->expectExceptionMessage('The LLM call has been refused.');
+
+        $runner->run('Fix the typos.');
+    }
+
+    public function testEachModeKeepsItsOwnChoice(): void
+    {
+        $runner = $this->createRunner(['opencode'], [
+            'opencode agent list' => [0, "build (primary)\nplan (primary)\n", ''],
+        ], interactive: true, inputs: "opencode\n\n\nopencode\n\nbuild\n");
+
+        $runner->ask('What is the answer?');
+        $runner->run('Fix the typos.');
+        $runner->ask('Are you sure?');
+
+        $this->assertSame(2, substr_count($this->output->fetch(), 'Which LLM CLI do you want to use?'), 'The choice is asked once per mode.');
+        // The agent chosen for the writes is not used for the questions
+        $this->assertSame([
+            ['opencode', 'run', '--agent', 'castor-read-only'],
+            ['opencode', 'run', '--auto', '--agent', 'build'],
+            ['opencode', 'run', '--agent', 'castor-read-only'],
+        ], array_values(array_filter($this->getRunCommands(), static fn (array $command): bool => 'run' === ($command[1] ?? null))));
+    }
+
+    public function testRunAcceptsAnEmptyAnswerWithAWarning(): void
+    {
+        $runner = $this->createRunner(['claude'], ['claude' => [0, "\n", 'Agent execution stopped']]);
+
+        $this->assertSame('', $runner->run('Fix the typos.', 'claude'));
+        $this->assertSame([
+            ['warning', "The \"claude\" LLM CLI returned an empty answer, check what it did:\nAgent execution stopped", []],
+        ], $this->logger->cleanLogs());
+
+        $this->expectException(LlmException::class);
+        $this->expectExceptionMessage('The "claude" LLM CLI returned an empty answer.');
+
+        $runner->ask('What is the answer?', 'claude');
+    }
+
     /**
      * @param list<string>                                         $installedClis
      * @param array<string, array{int, string, string}|\Throwable> $results
@@ -495,6 +656,7 @@ class LlmRunnerTest extends LlmTestCase
         $input->setStream($stream);
 
         $this->output = new BufferedOutput();
+        $this->logger = new BufferingLogger();
         $this->jobRegistry = new JobRegistry($input);
         $this->runs = [];
 
@@ -508,6 +670,7 @@ class LlmRunnerTest extends LlmTestCase
             $input,
             new SymfonyStyle($input, $this->output),
             $this->jobRegistry,
+            $this->logger,
             $repacked,
         );
     }

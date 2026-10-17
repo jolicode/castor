@@ -16,7 +16,9 @@ class LlmConfigTest extends TaskTestCase
 
     public function testTheConfigurationDrivesTheLlmFunction(): void
     {
-        // A fake "claude" CLI is the only known CLI installed
+        // A fake "claude" CLI is the only known CLI installed. If it were not
+        // executable, the real one of the PATH would run, in write mode
+        $this->assertTrue(is_executable(__DIR__ . '/fixtures/valid/llm/bin/claude'), 'The fake "claude" CLI must be executable.');
         $env = ['PATH' => __DIR__ . '/fixtures/valid/llm/bin:' . getenv('PATH')];
 
         // The configuration of the project chooses a custom command
@@ -37,6 +39,11 @@ class LlmConfigTest extends TaskTestCase
         $process = $this->runTask(['ask-default'], self::CWD, needResetCache: false, env: [...$env, 'CASTOR_LLM' => 'claude']);
         $this->assertSame(0, $process->getExitCode(), $process->getErrorOutput());
         $this->assertSame("You asked: What is the answer?\nThe answer is 42. (claude)\n", $process->getOutput());
+
+        // llm_run() uses the write mode of the CLI
+        $process = $this->runTask(['run-default'], self::CWD, needResetCache: false, env: [...$env, 'CASTOR_LLM' => 'claude']);
+        $this->assertSame(0, $process->getExitCode(), $process->getErrorOutput());
+        $this->assertSame("You asked: Fix the typos.\nThe answer is 42. (claude, write)\n", $process->getOutput());
 
         // The debug command tells where the value comes from
         $process = $this->runTask(['castor:llm:debug'], self::CWD, needResetCache: false);

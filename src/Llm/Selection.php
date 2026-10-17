@@ -140,6 +140,32 @@ final readonly class Selection
     }
 
     /**
+     * The command run by llm_ask(): the CLI in its read-only mode, or the custom command.
+     *
+     * @return string|list<string> The command, still with the "{prompt}" and "{output_file}" placeholders
+     */
+    public function buildReadOnlyCommand(): string|array
+    {
+        return null !== $this->cli
+            ? $this->cli->buildReadOnlyCommand($this->model, $this->agent, $this->extraArguments)
+            : $this->getCustomCommand();
+    }
+
+    /**
+     * The command run by llm_run(): the CLI allowed to modify the project, or the custom command.
+     *
+     * @return string|list<string> The command, still with the "{prompt}" and "{output_file}" placeholders
+     *
+     * @throws LlmException When the CLI cannot modify the project
+     */
+    public function buildWriteCommand(): string|array
+    {
+        return null !== $this->cli
+            ? $this->cli->buildWriteCommand($this->model, $this->agent, $this->extraArguments)
+            : $this->getCustomCommand();
+    }
+
+    /**
      * The canonical value, as accepted by fromValue().
      */
     public function toValue(): string
@@ -186,5 +212,13 @@ final readonly class Selection
                 ? \sprintf('always use the "%s" LLM CLI%s%s%s', $this->cli->name, null !== $this->model ? \sprintf(' with the model "%s"', $this->model) : '', null !== $this->agent ? \sprintf(' with the agent "%s"', $this->agent) : '', $this->extraArguments ? \sprintf(' with the arguments "%s"', implode(' ', $this->extraArguments)) : '')
                 : \sprintf('always run the command "%s"', $this->toValue()),
         };
+    }
+
+    /**
+     * @return string|list<string>
+     */
+    private function getCustomCommand(): string|array
+    {
+        return $this->customCommand ?? throw new \LogicException(\sprintf('The "%s" mode has no command: the CLI must be chosen first.', $this->mode));
     }
 }

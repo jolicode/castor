@@ -6,6 +6,7 @@ use Castor\Attribute\AsTask;
 
 use function Castor\io;
 use function Castor\llm_ask;
+use function Castor\llm_run;
 
 #[AsTask(description: 'Ask a question to a fake LLM CLI')]
 function ask(): void
@@ -23,4 +24,16 @@ function ask_in_argument(): void
 function ask_default(): void
 {
     io()->writeln(llm_ask('What is the answer?'));
+}
+
+#[AsTask(description: 'Let a fake LLM CLI work on the project')]
+function run(): void
+{
+    io()->writeln(llm_run('Fix the typos.', cli: ['sh', __DIR__ . '/fake-llm.sh', 'write']));
+}
+
+#[AsTask(name: 'run-default', description: 'Let the configured LLM CLI work on the project')]
+function run_default(): void
+{
+    io()->writeln(llm_run('Fix the typos.'));
 }
