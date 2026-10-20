@@ -8,7 +8,7 @@ use function Castor\capture;
 use function Castor\context;
 use function Castor\run;
 
-const PHP_EXTENSIONS = 'mbstring,phar,posix,tokenizer,pcntl,curl,filter,openssl,sodium,ctype,zip,bz2,iconv';
+const PHP_EXTENSIONS = 'mbstring,phar,posix,tokenizer,pcntl,curl,filter,openssl,sodium,ctype,zip,bz2,iconv,dom';
 
 /** The compile options of each system a static binary is built for */
 const TARGETS = [
