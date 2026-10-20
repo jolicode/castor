@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   build:
-    name: Build documentation website with MkDocs
+    name: Build documentation website with Zensical
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -31,13 +31,13 @@ jobs:
           php-version: 8.5
           need_phar: 'false'
 
-      - name: Build site with mkdocs
-        run: bin/castor castor:mkdocs:build
+      - name: Build site with Zensical
+        run: bin/castor castor:doc:build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:
-          path: ./tools/mkdocs/site
+          path: ./tools/doc/site
         if: github.event_name != 'pull_request'
 
   deploy:

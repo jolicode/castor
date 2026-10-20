@@ -29,14 +29,14 @@ assertion:throw-an-exception                             Throws a Problem except
 cache:complex                                            Cache with usage of CacheItemInterface
 cache:simple                                             Cache a simple call
 castor:composer                                          Interact with built-in Composer for castor
+castor:doc:build                                         Build documentation
+castor:doc:build-assets                                  Fetch external assets and build command help files
+castor:doc:docker-build                                  Build docs docker image
+castor:doc:serve                                         Serve documentation and watches for changes
 castor:execute                                           Execute a remote task from a packagist directory
 castor:llm:configure                                     Configures which LLM CLI Castor uses
 castor:llm:debug                                         Shows which LLM CLI Castor uses, and why
 castor:markdown:lint                                     Lint markdown files
-castor:mkdocs:build                                      Build documentation
-castor:mkdocs:build-assets                               Fetch external assets and build command help files
-castor:mkdocs:docker-build                               Build mkdocs docker image
-castor:mkdocs:serve                                      Serve documentation and watches for changes
 castor:phar:build                                        Build phar for all systems
 castor:phar:darwin                                       Build phar for MacOS system
 castor:phar:install                                      install dependencies

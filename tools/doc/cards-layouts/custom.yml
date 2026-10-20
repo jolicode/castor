@@ -6,7 +6,7 @@ layers:
   - size: { width: 385, height: 100 }
     offset: { x: 50, y: 50 }
     background:
-      image: /mkdocs/doc/assets/logo_CASTOR_line@2x.png
+      image: doc/assets/logo_CASTOR_line@2x.png
 
   - size: { width: 1200, height: 10 }
     offset: { x: 0, y: 620 }

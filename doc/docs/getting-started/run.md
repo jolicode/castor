@@ -15,7 +15,7 @@ output, and handle interactivity.
 Castor provides a `run()` function to execute external processes.
 
 ```php
-{% include "/examples/basic/run/run.php" start="<?php\n\nnamespace run;\n\n" %}
+{{ php("examples/basic/run/run.php") }}
 ```
 
 You can pass a string or an array of string for this function. When passing a
@@ -29,7 +29,7 @@ object to execute the process. The `run()` function will return this object. So
 you can use the API of this class to interact with the underlying process:
 
 ```php
-{% include "/examples/basic/run/ls.php" start="<?php\n\nnamespace run;\n\n" %}
+{{ php("examples/basic/run/ls.php") }}
 ```
 
 > [!NOTE]
@@ -44,7 +44,7 @@ If you do not want to print the process output you can use a context with the
 `quiet` option to true:
 
 ```php
-{% include "/examples/basic/run/quiet.php" start="<?php\n\nnamespace run;\n\n" %}
+{{ php("examples/basic/run/quiet.php") }}
 ```
 
 ### The `capture()` function
@@ -53,7 +53,7 @@ Castor provides a `capture()` function that will run the process quietly,
 trims the output, then returns it:
 
 ```php
-{% include "/examples/basic/run/capture.php" start="<?php\n\nnamespace run;\n\n" %}
+{{ php("examples/basic/run/capture.php") }}
 ```
 
 ### The `exit_code()` function
@@ -63,7 +63,7 @@ the process to fail and return its exit code. This is particularly useful when
 running tasks on CI as this allows the CI to know if the task failed or not:
 
 ```php
-{% include "/examples/basic/run/exit_code.php" start="<?php\n\nnamespace run;\n\n" %}
+{{ php("examples/basic/run/exit_code.php") }}
 ```
 
 ## Interactive Process
@@ -71,7 +71,7 @@ running tasks on CI as this allows the CI to know if the task failed or not:
 If you want to run an interactive process, you can transform any context into an interactive one:
 
 ```php
-{% include "/examples/basic/run/interactive.php" start="<?php\n\nnamespace run;\n\n" %}
+{{ php("examples/basic/run/interactive.php") }}
 ```
 
 ## PTY & TTY
@@ -82,7 +82,7 @@ For some commands you may want to disable the PTY and use a TTY instead. You can
 do that by setting the `tty` option to `true`:
 
 ```php
-{% include "/examples/basic/run/tty.php" start="<?php\n\nnamespace run;\n\n" %}
+{{ php("examples/basic/run/tty.php") }}
 ```
 
 > [!WARNING]
@@ -94,7 +94,7 @@ and `tty` are both set to `false`, the standard input will not be forwarded to
 the process:
 
 ```php
-{% include "/examples/basic/run/pty.php" start="<?php\n\nnamespace run;\n\n" %}
+{{ php("examples/basic/run/pty.php") }}
 ```
 
 ## Providing input to a process
@@ -104,7 +104,7 @@ context. This is useful for commands that require input but you don't want to
 expose sensitive data (like passwords) in command line arguments:
 
 ```php
-{% include "/examples/basic/run/input.php" start="<?php\n\nnamespace run;\n\n" %}
+{{ php("examples/basic/run/input.php") }}
 ```
 
 The `input` option accepts a string, a `\Stringable`, a resource, or an

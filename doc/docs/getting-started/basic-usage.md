@@ -21,7 +21,7 @@ will be transformed as tasks. The name of the function will be the task's name.
 For example, if you have the following castor.php file:
 
 ```php
-{% include "/examples/basic/usage/simple.php" %}
+{{ php("examples/basic/usage/simple.php", strip_header=false) }}
 ```
 
 You can then execute your task by calling `castor` with the task's name:
@@ -66,7 +66,7 @@ they will be joined with `:` to form the task's namespace.
 Let's take this example:
 
 ```php
-{% include "/examples/basic/usage/namespace.php" start="<?php\n\n" %}
+{{ php("examples/basic/usage/namespace.php", strip_namespace=false) }}
 ```
 
 Then you can run the task like this:
@@ -80,7 +80,7 @@ If you need to, you can also define multiple tasks in different namespaces in
 the same file:
 
 ```php
-{% include "/examples/basic/usage/namespace_multiple.php" start="<?php\n\n" %}
+{{ php("examples/basic/usage/namespace_multiple.php", strip_namespace=false) }}
 ```
 
 You will then have two tasks: `foo1:hello1` and `foo2:hello2`.
@@ -98,7 +98,7 @@ directory. This function takes a file path, or a directory as an argument.
 When using a directory as an argument, Castor will load all the PHP files in it:
 
 ```php
-{% include "/examples/basic/usage/import.php" start="<?php\n\nnamespace usage;\n\n" %}
+{{ php("examples/basic/usage/import.php") }}
 ```
 
 > [!WARNING]
@@ -115,7 +115,7 @@ You can also move the `castor.php` file inside the `.castor/` directory. It will
 still be detected by Castor and just need to import the other files:
 
 ```php
-{% include "/examples/basic/usage/dot_castor.php" start="<?php\n\n" %}
+{{ php("examples/basic/usage/dot_castor.php") }}
 ```
 
 > [!NOTE]
@@ -134,7 +134,7 @@ argument.
 For example:
 
 ```php
-{% include "/examples/basic/usage/task_attribute.php" start="<?php\n\nnamespace usage;\n\n" %}
+{{ php("examples/basic/usage/task_attribute.php") }}
 ```
 
 will appear like this in the task list:
@@ -156,7 +156,7 @@ The `Castor\Attribute\AsTask` attribute also allows you to set a default task.
 A default task will be executed when you run `castor` without any arguments.
 
 ```php
-{% include "/examples/basic/usage/default.php" start="<?php\n\nnamespace usage;\n\n" %}
+{{ php("examples/basic/usage/default.php") }}
 ```
 
 > [!NOTE]

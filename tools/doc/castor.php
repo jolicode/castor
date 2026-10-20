@@ -1,6 +1,6 @@
 <?php
 
-namespace castor\mkdocs;
+namespace castor\doc;
 
 use Castor\Attribute\AsTask;
 use Castor\Console\Application;
@@ -17,9 +17,9 @@ use function Castor\io;
 use function Castor\run;
 use function Castor\slug;
 
-const DOCKER_IMAGE_NAME = 'castor-mkdocs';
+const DOCKER_IMAGE_NAME = 'castor-doc';
 
-#[AsTask(description: 'Build mkdocs docker image')]
+#[AsTask(description: 'Build docs docker image')]
 function docker_build(): int
 {
     return exit_code(\sprintf(
@@ -32,9 +32,9 @@ function docker_build(): int
 #[AsTask(description: 'Fetch external assets and build command help files')]
 function build_assets(): void
 {
-    io()->title('Fetching external assets for MkDocs documentation');
+    io()->title('Fetching external assets for documentation');
 
-    http_download('https://raw.githubusercontent.com/jolicode/oss-theme/refs/heads/main/MkDocs/extra.css', __DIR__ . '/../../doc/assets/stylesheets/jolicode.css');
+    http_download('https://raw.githubusercontent.com/jolicode/oss-theme/refs/heads/main/Zensical/extra.css', __DIR__ . '/../../doc/assets/stylesheets/jolicode.css');
     http_download('https://raw.githubusercontent.com/jolicode/oss-theme/refs/heads/main/snippet-joli-footer.html', __DIR__ . '/overrides/partials/jolicode-footer.html');
 
     $html = <<<'HTML'
@@ -50,7 +50,7 @@ function build_assets(): void
 
     file_put_contents(__DIR__ . '/overrides/partials/jolicode-footer.html', $footer);
 
-    io()->title('Building command help files for MkDocs documentation');
+    io()->title('Building command help files for documentation');
 
     $commands = [
         'castor:repack',
@@ -69,9 +69,9 @@ function build(): void
 {
     build_assets();
 
-    io()->title('Building MkDocs documentation');
+    io()->title('Building documentation');
 
-    do_run(['mkdocs', 'build']);
+    do_run(['zensical', 'build']);
 
     $installerPath = __DIR__ . '/../../installer/bash-installer';
 
@@ -87,9 +87,9 @@ function serve(): void
 {
     build_assets();
 
-    io()->title('Building and watching MkDocs documentation');
+    io()->title('Building and watching documentation');
 
-    do_run(['mkdocs', 'serve', '--livereload']);
+    do_run(['zensical', 'serve', '--dev-addr', '0.0.0.0:8000']);
 }
 
 function do_run(array $runCommand, ?Context $c = null): Process
@@ -111,12 +111,11 @@ function do_run(array $runCommand, ?Context $c = null): Process
         DOCKER_IMAGE_NAME,
         $runCommand,
         volumes: [
-            \sprintf('%s:/mkdocs:cached', realpath(__DIR__)),
-            \sprintf('%s:/mkdocs/CHANGELOG.md:cached', realpath(__DIR__) . '/../../CHANGELOG.md'),
-            \sprintf('%s:/mkdocs/README.md:cached', realpath(__DIR__) . '/../../README.md'),
-            \sprintf('%s:/mkdocs/doc:cached', realpath(__DIR__ . '/../../doc')),
-            \sprintf('%s:/examples:cached', realpath(__DIR__ . '/../../examples')),
-            \sprintf('%s:/build:cached', realpath(__DIR__ . '/build')),
+            \sprintf('%s:/doc:cached', realpath(__DIR__)),
+            \sprintf('%s:/doc/CHANGELOG.md:cached', realpath(__DIR__) . '/../../CHANGELOG.md'),
+            \sprintf('%s:/doc/README.md:cached', realpath(__DIR__) . '/../../README.md'),
+            \sprintf('%s:/doc/doc:cached', realpath(__DIR__ . '/../../doc')),
+            \sprintf('%s:/doc/examples:cached', realpath(__DIR__ . '/../../examples')),
         ],
         environment: [
             'CASTOR_VERSION' => Application::VERSION,

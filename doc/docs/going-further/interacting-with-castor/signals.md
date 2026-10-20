@@ -88,7 +88,7 @@ And when `SIGINT` is trapped, a process interrupted on its own does not stop the
 task either:
 
 ```php
-{% include "/examples/advanced/signal/trap.php" start="<?php\n\nnamespace signal;\n\n" %}
+{{ php("examples/advanced/signal/trap.php") }}
 ```
 
 Without any argument, `withTrappedSignals()` traps `SIGINT` and `SIGTERM`. You
@@ -131,7 +131,7 @@ meant for the process. Once the process is finished, the trap is released and
 the handler of the task gets the signals again:
 
 ```php
-{% include "/examples/advanced/signal/trap_with_on_signals.php" start="<?php\n\nnamespace signal;\n\n" %}
+{{ php("examples/advanced/signal/trap_with_on_signals.php") }}
 ```
 
 This example sends the signals to itself, but hitting `CTRL+C` once while the

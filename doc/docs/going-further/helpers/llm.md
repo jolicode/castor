@@ -13,7 +13,7 @@ Castor provides an `llm_ask()` function to ask a question to a Large Language
 Model and get its answer as a string:
 
 ```php
-{% include "/examples/basic/llm/llm.php" start="<?php\n\nnamespace llm;\n\n" %}
+{{ php("examples/basic/llm/llm.php") }}
 ```
 
 Castor does not talk to any AI provider itself: it relies on the AI command
@@ -67,7 +67,7 @@ answering: the CLI is run in its non-interactive mode, allowed to modify the
 files and to run commands, and its final answer is returned:
 
 ```php
-{% include "/examples/basic/llm/run.php" start="<?php\n\nnamespace llm;\n\n" %}
+{{ php("examples/basic/llm/run.php") }}
 ```
 
 The CLI does what the prompt asks with the autonomy it has when you tell it

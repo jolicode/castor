@@ -5,3 +5,4 @@ build/
 doc/
 site/
 overrides/partials/jolicode-footer.html
+__pycache__/

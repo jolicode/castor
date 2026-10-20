@@ -6,7 +6,11 @@ repo_url: https://github.com/jolicode/castor
 edit_uri: edit/main/doc/
 docs_dir: doc
 exclude_docs: |
-  doc/_nav.md
+  _nav.md
+watch:
+  - README.md
+  - CHANGELOG.md
+  - examples
 
 theme:
   name: material
@@ -93,7 +97,7 @@ plugins:
   - search
   - literate-nav:
       nav_file: _nav.md
-  - include-markdown
+  - macros
   - social:
       cards_layout_dir: cards-layouts
       cards_layout: custom

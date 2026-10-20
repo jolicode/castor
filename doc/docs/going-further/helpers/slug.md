@@ -11,7 +11,7 @@ It uses the [AsciiSlugger from Symfony's String component](https://symfony.com/d
 and provides the same signature:
 
 ```php
-{% include "/examples/basic/slug/slug.php" start="<?php\n\nnamespace slug;\n\n" %}
+{{ php("examples/basic/slug/slug.php") }}
 ```
 
 > [!NOTE]

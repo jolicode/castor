@@ -10,7 +10,7 @@ When creating a function that will be used as a task, all the parameters of
 the function will be used as arguments or options:
 
 ```php
-{% include "/examples/basic/arguments/simple.php" start="<?php\n\nnamespace arguments;\n\n" %}
+{{ php("examples/basic/arguments/simple.php") }}
 ```
 
 This task can be called like that:
@@ -25,7 +25,7 @@ foo bar
 You can make an argument optional by giving it a default value:
 
 ```php
-{% include "/examples/basic/arguments/optional.php" start="<?php\n\nnamespace arguments;\n\n" %}
+{{ php("examples/basic/arguments/optional.php") }}
 ```
 
 ```console
@@ -52,7 +52,7 @@ If you want to disable this validation for a specific task, you can use the
 `ignoreValidationErrors` flag:
 
 ```php
-{% include "/examples/basic/arguments/no-validation.php" start="<?php\n\nnamespace arguments;\n\n" %}
+{{ php("examples/basic/arguments/no-validation.php") }}
 ```
 
 Castor will not emit validation errors for unknown arguments or options when
@@ -67,7 +67,7 @@ arguments provided to the task and pass them to a sub process.
 You can do so by using the `#[AsRawTokens]()` attribute instead:
 
 ```php
-{% include "/examples/basic/arguments/raw-tokens.php" start="<?php\n\nnamespace arguments;\n\n" %}
+{{ php("examples/basic/arguments/raw-tokens.php") }}
 ```
 
 Then, you can use it like that:
@@ -87,7 +87,7 @@ conflict with the options of the main command.
 You can achieve this by using the `#[AsArgsAfterOptionEnd]` attribute:
 
 ```php
-{% include "/examples/basic/arguments/args-after-end-option.php" start="<?php\n\nnamespace arguments;\n\n" %}
+{{ php("examples/basic/arguments/args-after-end-option.php") }}
 ```
 
 ## Overriding the argument name and description
@@ -96,7 +96,7 @@ You can override the name and description of an argument by using
 the `#[Castor\Attribute\AsArgument()]` attribute:
 
 ```php
-{% include "/examples/basic/arguments/overriding-argument.php" start="<?php\n\nnamespace arguments;\n\n" %}
+{{ php("examples/basic/arguments/overriding-argument.php") }}
 ```
 
 ```console
@@ -115,7 +115,7 @@ If you prefer, you can force an argument to be an option by using the
 `#[Castor\Attribute\AsOption()]` attribute:
 
 ```php
-{% include "/examples/basic/arguments/overriding-option.php" start="<?php\n\nnamespace arguments;\n\n" %}
+{{ php("examples/basic/arguments/overriding-option.php") }}
 ```
 
 ```php
@@ -137,7 +137,7 @@ You can also configure the `mode` of the option. The `mode` determines how the
 option will be registered (no value expected, required, optional, negatable, etc):
 
 ```php
-{% include "/examples/basic/arguments/option-mode.php" start="<?php\n\nnamespace arguments;\n\n" %}
+{{ php("examples/basic/arguments/option-mode.php") }}
 ```
 
 ```console
@@ -159,7 +159,7 @@ When using `#[AsPathArgument()]` or `#[AsPathOption()]`, the argument or option
 will be autocompleted with suggestions of paths.
 
 ```php
-{% include "/examples/basic/arguments/path-argument.php" start="<?php\n\nnamespace arguments;\n\n" %}
+{{ php("examples/basic/arguments/path-argument.php") }}
 ```
 
 ```console
@@ -175,7 +175,7 @@ pattern (e.g. `'*.yaml'`) or an array of patterns (e.g. `['*.yaml', '*.yml']`).
 Subdirectories are always shown to allow navigation.
 
 ```php
-{% include "/examples/basic/arguments/path-option-with-filter.php" start="<?php\n\nnamespace arguments;\n\n" %}
+{{ php("examples/basic/arguments/path-option-with-filter.php") }}
 ```
 
 ```console
