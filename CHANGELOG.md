@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+## 1.9.0 (2026-10-20)
+
 ### Features
 
 * Stop the task when a process is interrupted by a `CTRL+C`, even when the failures are allowed (`withAllowFailure()`, `exit_code()`, `toInteractive()`, ...), with a short warning and the exit code `130`. A process with the terminal (TTY) - like `docker run -it` - may get the `CTRL+C` alone: the task used to carry on after its exit code `130`. Trap `SIGINT` with `withTrappedSignals()` to keep this behavior
