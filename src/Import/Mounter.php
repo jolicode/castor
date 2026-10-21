@@ -33,6 +33,7 @@ class Mounter
             throw new \InvalidArgumentException(\sprintf('The directory "%s" does not exist.', $path));
         }
 
-        $this->kernel->addMount(new Mount($path, namespacePrefix: $namespacePrefix, file: $file, workingDirectory: $path));
+        // Like the root, unless remote packages are disabled ("--no-remote")
+        $this->kernel->addMount(new Mount($path, namespacePrefix: $namespacePrefix, allowRemotePackage: $this->composer->isRemoteAllowed(), file: $file, workingDirectory: $path));
     }
 }

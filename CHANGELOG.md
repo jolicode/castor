@@ -11,6 +11,8 @@
 * Keep the formatting of the PHPDoc in `.castor.stub.php`: the lines of a long description lost their leading `*`
 * Add the parents of the classes to `.castor.stub.php`, or the methods they inherit were unknown, like `io()->writeln()`
 * Run `castor self-update` without loading the castor file, so a `guard_min_version()` requiring a newer version does not prevent the update anymore, and do not suggest to run it while it is running
+* Load the packages of the `castor.composer.json` of a mounted directory: they were installed in its `.castor/vendor/` directory, but its tasks could not use them, unless it was run on its own
+* Do not install the packages of the `castor.composer.json` of a mounted directory when the remote packages are disabled (`--no-remote`), as for the root one
 
 ## 1.9.0 (2026-10-20)
 
