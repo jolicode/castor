@@ -97,6 +97,11 @@ the process:
 {{ php("examples/basic/run/pty.php") }}
 ```
 
+> [!NOTE]
+> The PTY gets the size of the terminal of Castor when the command starts, but
+> does not follow its resizing: prefer a TTY for a full screen command (`vim`,
+> `top`, ...).
+
 ## Providing input to a process
 
 You can provide input to a process via stdin using the `input` option on the

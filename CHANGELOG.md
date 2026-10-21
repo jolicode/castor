@@ -16,6 +16,7 @@
 * Keep parsable outputs (`--format=xml`, completion script, ...) free of the update reminder, deprecations and remote packages progress
 * Ignore `--no-remote`, `--update-remotes` and `--format` when given to a task after `--`
 * Accept `--context` with `castor list`
+* Give the terminal size to the PTY of the processes, so they no longer fall back on 80 columns (only the size at the start of the command)
 
 ## 1.9.0 (2026-10-20)
 
