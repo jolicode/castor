@@ -107,6 +107,7 @@ toc.permalink = true
 nav_file = "_nav.md"
 
 [project.plugins.macros]
+on_error_fail = true
 
 [project.plugins.social]
 cards_layout_dir = "cards-layouts"
