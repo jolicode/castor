@@ -399,6 +399,9 @@ final class Kernel extends AbstractKernel
 
         if ($mount->path === $this->rootDir) {
             $c->composer->requireAutoload();
+        } else {
+            // A mounted directory has its own castor.composer.json, installed in its own vendor directory
+            $c->composer->requireAutoload($mount->path);
         }
 
         try {

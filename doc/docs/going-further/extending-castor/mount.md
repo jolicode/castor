@@ -46,6 +46,10 @@ mount('projects/A', 'project:a');
 mount('projects/B', 'project:b');
 ```
 
+A mounted application can have its own `castor.composer.json` file (see
+[remote imports](./remote-imports.md)): its packages are installed in its own
+`.castor/vendor/` directory, and loaded with it, as when it runs on its own.
+
 ## Mounting a remote package
 
 Like [`import()`](./remote-imports.md), `mount()` can also mount a Composer

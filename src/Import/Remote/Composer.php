@@ -116,12 +116,20 @@ class Composer
         $this->writeInstalled($vendorDirectory, $composerLockFile);
     }
 
-    public function requireAutoload(): void
+    /**
+     * @param string|null $entrypointDirectory The directory of a mounted castor.php, as given to install(), or null for
+     *                                         the root one
+     */
+    public function requireAutoload(?string $entrypointDirectory = null): void
     {
-        try {
-            $autoloadPath = PathHelper::getCastorVendorDir() . '/autoload.php';
-        } catch (\RuntimeException $e) {
-            return;
+        if (null !== $entrypointDirectory) {
+            $autoloadPath = $entrypointDirectory . '/' . self::VENDOR_DIR . '/autoload.php';
+        } else {
+            try {
+                $autoloadPath = PathHelper::getCastorVendorDir() . '/autoload.php';
+            } catch (\RuntimeException $e) {
+                return;
+            }
         }
 
         if (!file_exists($autoloadPath)) {
