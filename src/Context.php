@@ -6,6 +6,13 @@ use Castor\Console\Output\VerbosityLevel;
 use Castor\Helper\PathHelper;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
+/**
+ * The settings of the commands run by the tasks (working directory,
+ * environment variables, TTY, timeout...), and the data of the tasks, which
+ * can be read like an array: $context['foo'].
+ *
+ * It is immutable: the with*() methods return a modified copy.
+ */
 #[Exclude]
 class Context implements \ArrayAccess
 {

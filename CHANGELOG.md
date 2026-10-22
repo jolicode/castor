@@ -2,6 +2,15 @@
 
 ## Not released yet
 
+### Features
+
+* Document what the functions and the attributes do in their PHPDoc, also in `.castor.stub.php`, and link the documentation from this file
+
+### Fixes
+
+* Keep the formatting of the PHPDoc in `.castor.stub.php`: the lines of a long description lost their leading `*`
+* Add the parents of the classes to `.castor.stub.php`, or the methods they inherit were unknown, like `io()->writeln()`
+
 ## 1.9.0 (2026-10-20)
 
 ### Features

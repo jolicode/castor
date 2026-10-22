@@ -7,6 +7,7 @@ use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\PhpVersion;
 use PHPStan\PhpDoc\TypeNodeResolver;
 use PHPStan\PhpDocParser\Ast\AbstractNodeVisitor;
+use PHPStan\PhpDocParser\Ast\ConstExpr\ConstFetchNode;
 use PHPStan\PhpDocParser\Ast\Node as PhpDocNode;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
@@ -100,29 +101,39 @@ class PhpDocNodeVisitor extends AbstractNodeVisitor
 
     public function enterNode(PhpDocNode $node): ?PhpDocNode
     {
-        // If the type is not fully qualified nor a builtin type, we want to resolve its FQCN
-        if ($node instanceof IdentifierTypeNode
-            && !str_starts_with($node->name, '\\')
-            && !\in_array($node->name, self::SPECIAL_TYPES, true)
-            && !$this->phpVersion->supportsBuiltinType($node->name)
-        ) {
-            $resolvedClassName = $this->nameResolver->getNameContext()->getResolvedClassName(new Name($node->name));
+        if ($node instanceof IdentifierTypeNode && null !== $className = $this->resolveClassName($node->name)) {
+            return new IdentifierTypeNode($className);
+        }
 
-            // If the structure does not exist, keep the type as is
-            // This is useful for special types like the ones used in @template phpdoc
-            if (!$this->structureExists($resolvedClassName)) {
-                return null;
-            }
-
-            return new IdentifierTypeNode(
-                '\\' . ltrim(
-                    $resolvedClassName,
-                    '\\',
-                )
-            );
+        // Like "Yaml::PARSE_*" in "int-mask-of<Yaml::PARSE_*>"
+        if ($node instanceof ConstFetchNode && '' !== $node->className && null !== $className = $this->resolveClassName($node->className)) {
+            return new ConstFetchNode($className, $node->name);
         }
 
         return null;
+    }
+
+    /**
+     * Returns the FQCN of a name that is not fully qualified nor a builtin type.
+     */
+    private function resolveClassName(string $name): ?string
+    {
+        if (str_starts_with($name, '\\')
+            || \in_array($name, self::SPECIAL_TYPES, true)
+            || $this->phpVersion->supportsBuiltinType($name)
+        ) {
+            return null;
+        }
+
+        $resolvedClassName = $this->nameResolver->getNameContext()->getResolvedClassName(new Name($name));
+
+        // If the structure does not exist, keep the type as is
+        // This is useful for special types like the ones used in @template phpdoc
+        if (!$this->structureExists($resolvedClassName)) {
+            return null;
+        }
+
+        return '\\' . ltrim($resolvedClassName, '\\');
     }
 
     private function structureExists(string $name, bool $autoload = true): bool

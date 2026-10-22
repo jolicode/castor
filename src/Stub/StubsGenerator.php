@@ -10,6 +10,7 @@ use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter\Standard;
 use PHPStan\PhpDocParser\Ast\NodeTraverser as PhpDocNodeTraverser;
+use PHPStan\PhpDocParser\Ast\NodeVisitor\CloningVisitor;
 use PHPStan\PhpDocParser\Lexer\Lexer;
 use PHPStan\PhpDocParser\Parser\ConstExprParser;
 use PHPStan\PhpDocParser\Parser\PhpDocParser;
@@ -63,6 +64,8 @@ final readonly class StubsGenerator
             \Psr\Cache\InvalidArgumentException::class,
             \Psr\Cache\CacheException::class,
             LoggerInterface::class,
+            \Psr\Log\LogLevel::class,
+            \Monolog\Level::class,
             \Symfony\Component\Console\Application::class,
             \Symfony\Component\Console\Command\Command::class,
             \Symfony\Component\Console\Completion\CompletionInput::class,
@@ -103,6 +106,7 @@ final readonly class StubsGenerator
             \Symfony\Component\String\CodePointString::class,
             \Symfony\Component\String\Exception\ExceptionInterface::class,
             \Symfony\Component\String\UnicodeString::class,
+            \Symfony\Component\Yaml\Yaml::class,
             \Symfony\Contracts\Cache\CacheInterface::class,
             \Symfony\Contracts\Cache\CallbackInterface::class,
             \Symfony\Contracts\Cache\ItemInterface::class,
@@ -117,12 +121,13 @@ final readonly class StubsGenerator
         ];
 
         foreach ($frequentlyUsedClasses as $class) {
-            $file = new \ReflectionClass($class)->getFileName();
-            if (!$file) {
-                continue;
+            // Their parents are needed too, or the methods they inherit would
+            // be unknown, like SymfonyStyle::writeln() from OutputStyle
+            foreach ($this->getHierarchy(new \ReflectionClass($class)) as $reflectionClass) {
+                if ($file = $reflectionClass->getFileName()) {
+                    $files[$file] = $file;
+                }
             }
-
-            $files[] = $file;
         }
 
         // Expose some functions provided by vendors
@@ -139,6 +144,9 @@ final readonly class StubsGenerator
                 new \PhpParser\Comment\Doc('// You can safely ignore this file in your VCS.'),
                 new \PhpParser\Comment\Doc('// ".castor.stub.php" by default is in the same location of "castor.php".'),
                 new \PhpParser\Comment\Doc('// You can also move this file at the root of your project or to ".castor/.castor.stub.php".'),
+                new \PhpParser\Comment\Doc('//'),
+                new \PhpParser\Comment\Doc('// Documentation: https://castor.jolicode.com/'),
+                new \PhpParser\Comment\Doc('// Functions, attributes and environment variables: https://castor.jolicode.com/docs/reference/'),
                 new \PhpParser\Comment\Doc(''),
             ],
         ]));
@@ -169,7 +177,9 @@ final readonly class StubsGenerator
         $typeParser = new TypeParser($parserConfig, $constExprParser);
         $phpDocParser = new PhpDocParser($parserConfig, $typeParser, $constExprParser);
 
-        $phpDocNodeTraverser = new PhpDocNodeTraverser([new PhpDocNodeVisitor($nameResolver)]);
+        // The phpdoc printer keeps the original formatting only for the nodes
+        // cloned by the CloningVisitor
+        $phpDocNodeTraverser = new PhpDocNodeTraverser([new CloningVisitor(), new PhpDocNodeVisitor($nameResolver)]);
 
         $nodeVisitor = new NodeVisitor($phpDocNodeTraverser, $lexer, $phpDocParser);
 
@@ -180,6 +190,8 @@ final readonly class StubsGenerator
         // Parse all files one by one, traverse the related AST then merge all statements
         foreach ($files as $file) {
             $fileStmts = $parser->parse((string) file_get_contents((string) $file));
+            // A declare() is only allowed at the very top of the stub
+            $fileStmts = array_values(array_filter($fileStmts ?? [], static fn (Node $stmt): bool => !$stmt instanceof Stmt\Declare_));
             if (!$fileStmts) {
                 continue;
             }
@@ -197,6 +209,25 @@ final readonly class StubsGenerator
         $traverser->addVisitor(new CleanVisitor());
 
         return $traverser->traverse($stmts);
+    }
+
+    /**
+     * @param \ReflectionClass<covariant object> $class
+     *
+     * @return iterable<\ReflectionClass<covariant object>>
+     */
+    private function getHierarchy(\ReflectionClass $class): iterable
+    {
+        yield $class;
+        yield from $class->getInterfaces();
+
+        foreach ($class->getTraits() as $trait) {
+            yield from $this->getHierarchy($trait);
+        }
+
+        if ($parent = $class->getParentClass()) {
+            yield from $this->getHierarchy($parent);
+        }
     }
 
     private function shouldGenerate(): ?string
