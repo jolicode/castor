@@ -65,9 +65,10 @@ class UpdateCastorListener
             return;
         }
         if (\in_array($command->getName(), [
-            'completion',
             '_complete',
-        ])) {
+            'castor:self-update',
+            'completion',
+        ], true)) {
             return;
         }
 

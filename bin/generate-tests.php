@@ -194,6 +194,10 @@ foreach ($dirs as $dir) {
     add_test([], $class, '{{ base }}/tests/fixtures/broken/' . $dir->getRelativePath(), true);
 }
 
+// Updating Castor is how to fix this castor file, so it must not prevent it
+add_test(['self-update', '--rollback'], 'SelfUpdateMinVersionNotMet', '{{ base }}/tests/fixtures/broken/min-version-not-met');
+add_test(['--castor-file', 'tests/fixtures/broken/min-version-not-met/castor.php', 'self-update', '--rollback'], 'SelfUpdateMinVersionNotMetWithCastorFile');
+
 echo "\nDone.\n";
 
 displayTitle('Generating tests for valid fixtures');
