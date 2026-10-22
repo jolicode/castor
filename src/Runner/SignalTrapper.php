@@ -13,6 +13,9 @@ use Symfony\Component\Process\Process;
  */
 class SignalTrapper
 {
+    // SIGINT (CTRL+C) and SIGQUIT (CTRL+\): \SIGINT and \SIGQUIT need pcntl
+    private const TERMINAL_SIGNALS = [2, 3];
+
     /** @var array<int, array<int, Process>> */
     private array $processes = [];
 
@@ -44,33 +47,30 @@ class SignalTrapper
             return;
         }
 
-        pcntl_async_signals(true);
-
-        foreach ($signals as $signal) {
-            if (!isset($this->processes[$signal])) {
-                $this->processes[$signal] = [];
-
-                $this->previousHandlers[$signal] = pcntl_signal_get_handler($signal);
-
-                pcntl_signal($signal, $this->handle(...));
-            }
-
-            $this->processes[$signal][spl_object_id($process)] = $process;
-        }
+        $this->register($process, $signals);
 
         $this->logger->debug(\sprintf('Trapping signals "%s" for the running process.', implode('", "', $signals)));
     }
 
     /**
-     * @param int[] $signals
+     * A process which inherits the standard streams of Castor shares its
+     * terminal, which sends a CTRL+C or a CTRL+\ to both of them. Like a shell,
+     * Castor survives these signals while the process runs: the process decides
+     * what to do with them, and the runner then looks at how it ended.
      */
-    public function release(Process $process, array $signals): void
+    public function shield(Process $process): void
     {
-        foreach ($signals as $signal) {
-            if (!isset($this->processes[$signal])) {
-                continue;
-            }
+        // Without pcntl, these signals stop Castor and the process: the task stops anyway
+        if (!$this->isSupported()) {
+            return;
+        }
 
+        $this->register($process, self::TERMINAL_SIGNALS);
+    }
+
+    public function release(Process $process): void
+    {
+        foreach (array_keys($this->processes) as $signal) {
             unset($this->processes[$signal][spl_object_id($process)]);
 
             if ($this->processes[$signal]) {
@@ -87,6 +87,26 @@ class SignalTrapper
         }
     }
 
+    /**
+     * @param int[] $signals
+     */
+    private function register(Process $process, array $signals): void
+    {
+        pcntl_async_signals(true);
+
+        foreach ($signals as $signal) {
+            if (!isset($this->processes[$signal])) {
+                $this->processes[$signal] = [];
+
+                $this->previousHandlers[$signal] = pcntl_signal_get_handler($signal);
+
+                pcntl_signal($signal, $this->handle(...));
+            }
+
+            $this->processes[$signal][spl_object_id($process)] = $process;
+        }
+    }
+
     private function isSupported(): bool
     {
         return \function_exists('pcntl_signal')
@@ -97,6 +117,11 @@ class SignalTrapper
     private function handle(int $signal): void
     {
         foreach ($this->processes[$signal] ?? [] as $process) {
+            // The terminal already sent it to the process
+            if ($process->isStdioInherited() && \in_array($signal, self::TERMINAL_SIGNALS, true)) {
+                continue;
+            }
+
             try {
                 if (!$process->isRunning()) {
                     continue;

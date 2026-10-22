@@ -69,6 +69,16 @@ failures are allowed (with `withAllowFailure()`, `exit_code()`,
 `130`. The same goes for a process killed by a `SIGINT` that Castor did not
 receive.
 
+A process run with [`withStdioInherited()`](../../getting-started/context.md#inheriting-the-standard-streams)
+shares the terminal of Castor, which sends the `CTRL+C` to both of them. Like a
+shell, Castor survives it while the process runs, and lets the process decide:
+when the process exits with the code `130`, Castor stops the task the same way.
+When the process survives the `CTRL+C`, like a REPL, the task goes on. While
+the process runs, a `SIGINT` or a `SIGQUIT` sent to Castor alone, with `kill`,
+is ignored, like in a shell: send a `SIGTERM` instead, which stops Castor and
+the process. Without the `pcntl` extension, the `CTRL+C` stops Castor along
+with the process.
+
 Without the terminal, Castor receives the `CTRL+C` itself: the exit code `130`
 of a process is then a failure like any other.
 

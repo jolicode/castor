@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Features
+
+* Add `withStdioInherited()` to the context, to run a process on the standard input, output and error of Castor, like from a shell script: it sees the real terminal and its size, or the redirections
+
 ### Fixes
 
 * Write the messages of Castor (logs, deprecations, errors, update reminder, remote packages progress, `check()` and `wait_for*()` statuses, its questions) to the error output, so they no longer end up in the output of a task piped to another command or redirected to a file
