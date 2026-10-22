@@ -51,8 +51,7 @@ class InterruptionTest extends TaskTestCase
         $this->assertStringNotContainsString('Next step', $process->getOutput());
     }
 
-    // Done by InterruptionListener before Symfony 8.2, and by Symfony Console
-    // itself since: keep this test when the listener is removed
+    // Done by Symfony Console itself since 8.2
     #[DataProvider('provideSignals')]
     public function testCastorStoppedByASignalExitsWith128PlusTheSignalNumber(string $signal, int $expectedExitCode): void
     {

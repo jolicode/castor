@@ -281,9 +281,8 @@ class ProcessRunner
      * CTRL+C only reaches this process, and its exit code 130 (128 + SIGINT)
      * is the only trace of it. Not when SIGINT is trapped: the task goes on.
      *
-     * Castor receives no signal in this case, so Symfony Console can't see the
-     * CTRL+C, even in 8.2 which exits with 128 + the signal number: this check
-     * stays when InterruptionListener is removed.
+     * Castor receives no signal in this case, so Symfony Console, which exits
+     * with 128 + the number of the signal it receives, can't see the CTRL+C.
      */
     private function isInterruptedInTerminal(Process $process, int $exitCode, Context $context): bool
     {
