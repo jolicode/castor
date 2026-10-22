@@ -28,6 +28,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleErrorEvent;
+use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -144,6 +145,12 @@ final class Kernel extends AbstractKernel
         }
 
         Container::set($castorContainer);
+
+        // Castor must be updatable even when this version cannot load the
+        // castor file, like when it calls guard_min_version()
+        if ($this->isSelfUpdate($input, $castorContainer->application)) {
+            return;
+        }
 
         $this->mount($input, $output);
     }
@@ -327,6 +334,24 @@ final class Kernel extends AbstractKernel
             }
         } catch (IOExceptionInterface) {
         }
+    }
+
+    private function isSelfUpdate(InputInterface $input, Application $application): bool
+    {
+        // Bound like in the doRun() of Symfony, so the value of an option, like in
+        // "--castor-file my-file.php self-update", is not taken for the command
+        // name. On a copy, to leave the input untouched for the castor file
+        $input = clone $input;
+
+        try {
+            $input->bind($application->getDefinition());
+        } catch (ExceptionInterface) {
+            // The options of the command are not known yet
+        }
+
+        $name = $input->getFirstArgument();
+
+        return null !== $name && $application->has($name) && 'castor:self-update' === $application->get($name)->getName();
     }
 
     private function mount(InputInterface $input, OutputInterface $output): void
