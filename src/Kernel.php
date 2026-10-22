@@ -12,6 +12,7 @@ use Castor\Console\Command\LlmConfigureCommand;
 use Castor\Console\Command\LlmDebugCommand;
 use Castor\Console\Command\RepackCommand;
 use Castor\Console\Command\SelfUpdateCommand;
+use Castor\Console\Input\CommandLine;
 use Castor\Console\Output\VerbosityLevel;
 use Castor\Event\AfterBootEvent;
 use Castor\Event\BeforeBootEvent;
@@ -28,7 +29,6 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleErrorEvent;
-use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -148,7 +148,11 @@ final class Kernel extends AbstractKernel
 
         // Castor must be updatable even when this version cannot load the
         // castor file, like when it calls guard_min_version()
-        if ($this->isSelfUpdate($input, $castorContainer->application)) {
+        if ($castorContainer->commandLine->isSelfUpdate()) {
+            // Accepted like by any command, for a script or an alias which
+            // always gives it, but the contexts are not loaded
+            $this->addContextOption('The context to use');
+
             return;
         }
 
@@ -336,24 +340,6 @@ final class Kernel extends AbstractKernel
         }
     }
 
-    private function isSelfUpdate(InputInterface $input, Application $application): bool
-    {
-        // Bound like in the doRun() of Symfony, so the value of an option, like in
-        // "--castor-file my-file.php self-update", is not taken for the command
-        // name. On a copy, to leave the input untouched for the castor file
-        $input = clone $input;
-
-        try {
-            $input->bind($application->getDefinition());
-        } catch (ExceptionInterface) {
-            // The options of the command are not known yet
-        }
-
-        $name = $input->getFirstArgument();
-
-        return null !== $name && $application->has($name) && 'castor:self-update' === $application->get($name)->getName();
-    }
-
     private function mount(InputInterface $input, OutputInterface $output): void
     {
         $c = Container::get();
@@ -369,7 +355,7 @@ final class Kernel extends AbstractKernel
                 $currentFunctions = get_defined_functions()['user'];
                 $currentClasses = get_declared_classes();
 
-                $this->load($mount, $currentFunctions, $currentClasses, $input, $output);
+                $this->load($mount, $currentFunctions, $currentClasses, $output);
             }
 
             $c->eventDispatcher->dispatch(new AfterBootEvent($c->application));
@@ -388,7 +374,6 @@ final class Kernel extends AbstractKernel
         Mount $mount,
         array $currentFunctions,
         array $currentClasses,
-        InputInterface $input,
         OutputInterface $output,
     ): void {
         $c = Container::get();
@@ -435,8 +420,8 @@ final class Kernel extends AbstractKernel
         // depending on the context. And it must be before executing
         // listeners too, to get the context there.
         $c->functionLoader->loadContexts($descriptorsCollection->contextDescriptors, $descriptorsCollection->contextGeneratorDescriptors);
-        $this->guardCastorUseChdir($input);
-        $this->configureContext($input, $output, $c->contextRegistry);
+        $this->guardCastorUseChdir($c->commandLine);
+        $this->configureContext($c->commandLine, $output, $c->contextRegistry);
 
         $event = new FunctionsResolvedEvent(
             $descriptorsCollection->taskDescriptors,
@@ -497,7 +482,7 @@ final class Kernel extends AbstractKernel
         return $content;
     }
 
-    private function guardCastorUseChdir(InputInterface $input): void
+    private function guardCastorUseChdir(CommandLine $commandLine): void
     {
         // Only worth telling when there is a castor.php to put the define in, so never for a
         // repacked application, whose castor.php is baked in and not the user's to edit, and
@@ -520,9 +505,7 @@ final class Kernel extends AbstractKernel
             return;
         }
 
-        $machineReadable = \in_array($input->getFirstArgument(), ['_complete', 'completion'], true)
-            || 'txt' !== $input->getParameterOption('--format', 'txt');
-        if ($machineReadable) {
+        if ($commandLine->isOutputMachineReadable()) {
             return;
         }
 
@@ -531,13 +514,13 @@ final class Kernel extends AbstractKernel
         trigger_deprecation('jolicode/castor', '1.8.0', 'Not defining the "CASTOR_USE_CHDIR" constant is deprecated. Add "defined(\'CASTOR_USE_CHDIR\') || define(\'CASTOR_USE_CHDIR\', true);" at the top of your castor.php so Castor changes its current directory to the working directory of the context (the default in Castor 2.0), or define it to false to keep the current behavior.');
     }
 
-    private function configureContext(InputInterface $input, OutputInterface $output, ContextRegistry $contextRegistry): void
+    private function configureContext(CommandLine $commandLine, OutputInterface $output, ContextRegistry $contextRegistry): void
     {
         $contextRegistry->setDefaultIfEmpty();
 
         $contextNames = $contextRegistry->getNames();
 
-        if (!$contextNames || 'list' === $input->getFirstArgument()) {
+        if (!$contextNames) {
             $contextRegistry->setCurrentContext(new Context(
                 verbosityLevel: VerbosityLevel::fromSymfonyOutput($output)
             ));
@@ -545,29 +528,22 @@ final class Kernel extends AbstractKernel
             return;
         }
 
-        // autocomplete command already defined a -c option
-        $isAutocomplete = '_complete' === $input->getFirstArgument();
-
-        $contextOptions = ['--context'];
-        if (!$isAutocomplete) {
-            $contextOptions[] = '-c';
-        }
-
-        $currentContextName = $input->getParameterOption($contextOptions, onlyParams: true)
+        $currentContextName = $commandLine->getContextName()
             ?: PlatformHelper::getEnv('CASTOR_CONTEXT')
             ?: $this->readDotContextFile($contextNames)
             ?: $contextRegistry->getDefaultName();
 
-        $application = Container::get()->application;
-        $applicationDefinition = $application->getDefinition();
-        $applicationDefinition->addOption(new InputOption(
-            'context',
-            $isAutocomplete ? null : 'c',
-            InputOption::VALUE_REQUIRED,
-            \sprintf('The context to use (%s)', implode('|', $contextNames)),
-            $currentContextName,
-            $contextNames,
-        ));
+        $this->addContextOption(\sprintf('The context to use (%s)', implode('|', $contextNames)), $currentContextName, $contextNames);
+
+        // Listing the tasks does not need the context, which may be slow to
+        // create, or fail
+        if ($commandLine->isList()) {
+            $contextRegistry->setCurrentContext(new Context(
+                verbosityLevel: VerbosityLevel::fromSymfonyOutput($output)
+            ));
+
+            return;
+        }
 
         $context = $contextRegistry->get($currentContextName);
 
@@ -576,5 +552,23 @@ final class Kernel extends AbstractKernel
         }
 
         $contextRegistry->setCurrentContext($context->withName($currentContextName));
+    }
+
+    /**
+     * @param list<string> $contextNames
+     */
+    private function addContextOption(string $description, ?string $currentContextName = null, array $contextNames = []): void
+    {
+        $c = Container::get();
+
+        $c->application->getDefinition()->addOption(new InputOption(
+            'context',
+            // The shell completion already has a -c option
+            $c->commandLine->isShellCompletion() ? null : 'c',
+            InputOption::VALUE_REQUIRED,
+            $description,
+            $currentContextName,
+            $contextNames,
+        ));
     }
 }

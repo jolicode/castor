@@ -174,7 +174,7 @@ class ContextRegistry
     }
 
     /**
-     * @return array<string>
+     * @return list<string>
      */
     public function getNames(): array
     {

@@ -3,6 +3,7 @@
 namespace Castor\Listener;
 
 use Castor\Console\Application;
+use Castor\Console\Input\CommandLine;
 use Castor\Exception\MinimumVersionRequirementNotMetException;
 use Castor\Helper\Installation;
 use Castor\Helper\InstallationMethod;
@@ -29,6 +30,7 @@ class UpdateCastorListener
     public const string RELEASE_COOLDOWN = '3 days';
 
     public function __construct(
+        private readonly CommandLine $commandLine,
         private readonly ReleaseHelper $releaseHelper,
         private readonly Installation $installation,
         #[Autowire('%repacked%')]
@@ -60,24 +62,15 @@ class UpdateCastorListener
             return;
         }
 
-        $command = $event->getCommand();
-        if (!$command) {
-            return;
-        }
-        if (\in_array($command->getName(), [
-            '_complete',
-            'castor:self-update',
-            'completion',
-        ], true)) {
+        if ($this->commandLine->isSelfUpdate()) {
             return;
         }
 
-        $input = $event->getInput();
-        if ($input->hasOption('format') && 'json' === $input->getOption('format')) {
+        if ($this->commandLine->isOutputMachineReadable()) {
             return;
         }
 
-        $this->displayUpdateWarningIfNeeded($input, $event->getOutput());
+        $this->displayUpdateWarningIfNeeded($event->getInput(), $event->getOutput());
     }
 
     // Run this on exception to force the check

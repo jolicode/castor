@@ -22,12 +22,14 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /** @internal */
 #[AsCommand(
-    name: 'castor:self-update',
+    name: self::NAME,
     description: 'Updates Castor to the latest version',
     aliases: ['self-update'],
 )]
 final readonly class SelfUpdateCommand
 {
+    public const string NAME = 'castor:self-update';
+
     public function __construct(
         private ReleaseHelper $releaseHelper,
         private AttestationHelper $attestationHelper,
