@@ -4,17 +4,18 @@
 
 ### Features
 
-* Document what the functions and the attributes do in their PHPDoc, also in `.castor.stub.php`, and link the documentation from this file
+* Document the functions and attributes in their PHPDoc, and in `.castor.stub.php` with a link to the documentation
 
 ### Fixes
 
-* Keep the formatting of the PHPDoc in `.castor.stub.php`: the lines of a long description lost their leading `*`
-* Add the parents of the classes to `.castor.stub.php`, or the methods they inherit were unknown, like `io()->writeln()`
-* Run `castor self-update` without loading the castor file, so a `guard_min_version()` requiring a newer version does not prevent the update anymore, and do not suggest to run it while it is running
-* Load the packages of the `castor.composer.json` of a mounted directory: they were installed in its `.castor/vendor/` directory, but its tasks could not use them, unless it was run on its own
-* Do not install the packages of the `castor.composer.json` of a mounted directory when the remote packages are disabled (`--no-remote`), as for the root one
-* Do not write the update reminder, the `CASTOR_USE_CHDIR` deprecation or the progress of the remote packages in an output meant to be parsed (a `--format` other than `txt`, like `xml`, or the completion script), also when a global option like `--castor-file` comes before the command, and ignore `--no-remote`, `--update-remotes` and `--format` when they are given to the task, after `--`
-* Accept the `--context` option with `castor list`, which failed with `The "--context" option does not exist`
+* Keep the leading `*` of long PHPDoc descriptions in `.castor.stub.php`
+* Add the parent classes to `.castor.stub.php`, so inherited methods like `io()->writeln()` are known
+* Do not load the castor file in `castor self-update`, so `guard_min_version()` cannot block the update, and do not suggest updating during the update
+* Make the packages of a mounted directory's `castor.composer.json` usable by its tasks
+* Honor `--no-remote` for the `castor.composer.json` of a mounted directory
+* Keep parsable outputs (`--format=xml`, completion script, ...) free of the update reminder, deprecations and remote packages progress
+* Ignore `--no-remote`, `--update-remotes` and `--format` when given to a task after `--`
+* Accept `--context` with `castor list`
 
 ## 1.9.0 (2026-10-20)
 
