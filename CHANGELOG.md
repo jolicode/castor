@@ -9,6 +9,7 @@
 ### Fixes
 
 * Write the messages of Castor (logs, deprecations, errors, update reminder, remote packages progress, `check()` and `wait_for*()` statuses, its questions) to the error output, so they no longer end up in the output of a task piped to another command or redirected to a file
+* Stop Castor as if it had received the `CTRL+C` when a process is interrupted by one, like a shell: a `catch` in the task can no longer carry on after it, the warning is no longer shown, and the `onSignals` handlers of the task are called
 
 ## 1.9.1 (2026-10-29)
 
