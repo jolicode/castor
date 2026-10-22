@@ -8,6 +8,7 @@ use Castor\Exception\ExecutableNotFoundException;
 use Castor\Exception\LlmException;
 use Castor\Exception\MinimumVersionRequirementNotMetException;
 use Castor\Exception\ProblemException;
+use Castor\Exception\WaitFor\DockerContainerStateException;
 use Castor\Exception\WaitFor\ExitedBeforeTimeoutException;
 use Castor\Exception\WaitFor\TimeoutReachedException;
 use Castor\Helper\CompressionMethod;
@@ -27,6 +28,7 @@ use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
@@ -52,8 +54,16 @@ function parallel(callable ...$callbacks): array
 }
 
 /**
+ * Runs the command, in the current context unless one is given, and returns
+ * its process once it is finished. Its output is displayed, unless the context
+ * is quiet or a callback receives it.
+ *
+ * A string is run by a shell, an array is not: its arguments need no escaping.
+ *
  * @param string|array<string|\Stringable|int>|CommandBuilderInterface $command
  * @param (callable(string, string, Process) :void)|null               $callback
+ *
+ * @throws ProcessFailedException When the command fails, unless the context allows failures
  */
 function run(
     string|array|CommandBuilderInterface $command,
@@ -71,7 +81,13 @@ function run(
 }
 
 /**
+ * Runs the command without displaying its output, and returns its standard
+ * output, trimmed.
+ *
  * @param string|array<string|\Stringable|int> $command
+ * @param ?string                              $onFailure Returned when the command fails, instead of throwing
+ *
+ * @throws ProcessFailedException When the command fails, unless $onFailure is given or the context allows failures
  */
 function capture(
     string|array $command,
@@ -89,6 +105,9 @@ function capture(
 }
 
 /**
+ * Runs the command, and returns its exit code: it does not throw when the
+ * command fails.
+ *
  * @param string|array<string|\Stringable|int> $command
  */
 function exit_code(
@@ -144,7 +163,12 @@ function llm_run(string $prompt, string|array|null $cli = null, ?Context $contex
 }
 
 /**
+ * Displays the title, then runs the check: when it returns false, the task
+ * stops with the failure message.
+ *
  * @param callable():bool $check
+ *
+ * @throws ProblemException When the check returns false
  */
 function check(string $title, string $failureMessage, callable $check): void
 {
@@ -160,6 +184,8 @@ function check(string $title, string $failureMessage, callable $check): void
 }
 
 /**
+ * Runs the command on the host, through SSH.
+ *
  * @param array{
  *     'port'?: int,
  *     'path_private_key'?: string,
@@ -169,6 +195,7 @@ function check(string $title, string $failureMessage, callable $check): void
  *     'enable_strict_check'?: bool,
  *     'password_authentication'?: bool,
  * } $sshOptions
+ * @param ?string $path The directory to run the command in, on the host
  */
 function ssh_run(
     string $command,
@@ -186,6 +213,8 @@ function ssh_run(
 }
 
 /**
+ * Copies a local file to the host, through SCP.
+ *
  * @param array{
  *     'port'?: int,
  *     'path_private_key'?: string,
@@ -211,6 +240,8 @@ function ssh_upload(
 }
 
 /**
+ * Copies a file of the host to the local machine, through SCP.
+ *
  * @param array{
  *     'port'?: int,
  *     'path_private_key'?: string,
@@ -235,13 +266,19 @@ function ssh_download(
     return Container::get()->sshRunner->download($sourcePath, $destinationPath, $host, $user, $sshOptions, $quiet, $allowFailure, $notify, $timeout);
 }
 
+/**
+ * Sends a desktop notification, unless the context disables them.
+ */
 function notify(string $message, ?string $title = null): void
 {
     Container::get()->notifier->send($message, $title);
 }
 
 /**
- * @param string|non-empty-array<string>                 $path
+ * Calls the function with the absolute path and the action ("create", "write",
+ * "rename" or "remove") of each change in the path, until it returns false.
+ *
+ * @param string|non-empty-array<string>                 $path     Suffix it with "/..." to watch the subdirectories too
  * @param (callable(string, string) : (false|void|null)) $function
  */
 function watch(string|array $path, callable $function, ?Context $context = null): void
@@ -250,6 +287,9 @@ function watch(string|array $path, callable $function, ?Context $context = null)
 }
 
 /**
+ * Logs the message. By default, only the warnings and above are displayed: "-v"
+ * displays the notices too, "-vv" the infos, and "-vvv" everything.
+ *
  * @param array<string, mixed> $context
  *
  * @phpstan-param Level|\Psr\Log\LogLevel::* $level
@@ -307,12 +347,18 @@ function io(): SymfonyStyle
     return Container::get()->jobRegistry->getCurrentIo() ?? Container::get()->symfonyStyle;
 }
 
+/**
+ * Returns the current context, or the context with this name.
+ */
 function context(?string $name = null): Context
 {
     return Container::get()->getContext($name);
 }
 
 /**
+ * Returns the value of the key in the data of the current context, or the
+ * default value when it is not set.
+ *
  * @template TKey of key-of<ContextData>
  * @template TDefault
  *
@@ -327,6 +373,8 @@ function variable(string $key, mixed $default = null): mixed
 }
 
 /**
+ * Returns the command of the task being run.
+ *
  * @return ($allowNull is true ? ?Command : Command)
  */
 function task(bool $allowNull = false): ?Command
@@ -345,6 +393,9 @@ function finder(): Finder
 }
 
 /**
+ * Returns the value of the key from the cache of the project, which is kept
+ * between the runs, or computes it with $or when it is missing.
+ *
  * @param string                                                                                      $key   The key of the item to retrieve from the cache
  * @param (callable(CacheItemInterface,bool):T)|(callable(ItemInterface,bool):T)|CallbackInterface<T> $or    Use this callback to compute the value
  * @param bool                                                                                        $force Force the value to be recomputed
@@ -384,7 +435,10 @@ function http_request(string $method, string $url, array $options = []): Respons
 }
 
 /**
- * @param array<string, mixed> $options default values at {@see HttpClientInterface::OPTIONS_DEFAULTS}
+ * Downloads the URL to the file, and logs the progress.
+ *
+ * @param ?string              $filePath Defaults to a file of the project root, named after the response or the URL
+ * @param array<string, mixed> $options  default values at {@see HttpClientInterface::OPTIONS_DEFAULTS}
  */
 function http_download(string $url, ?string $filePath = null, string $method = 'GET', array $options = [], bool $stream = true): ResponseInterface
 {
@@ -396,17 +450,39 @@ function http_client(): HttpClientInterface
     return Container::get()->httpClient;
 }
 
+/**
+ * Loads the tasks, contexts and listeners of a PHP file, of the PHP files of a
+ * directory, or of a Composer package like "composer://vendor/package", required
+ * in castor.composer.json. Unlike mount(), it does not change the working
+ * directory of the tasks.
+ *
+ * @param ?string $file The file to load from the package. Defaults to its castor.php
+ */
 function import(string $path, ?string $file = null): void
 {
     Container::get()->importer->import($path, $file);
 }
 
+/**
+ * Loads the tasks of another Castor application, a directory with its own
+ * castor.php or a Composer package like "composer://vendor/package": they run
+ * in its directory.
+ *
+ * @param ?string $namespacePrefix Prepended to the namespace of its tasks, like "app" for "app:build"
+ * @param ?string $file            The file to load instead of its castor.php
+ */
 function mount(string $path, ?string $namespacePrefix = null, ?string $file = null): void
 {
     Container::get()->mounter->mount($path, $namespacePrefix, $file);
 }
 
 /**
+ * Loads the .env file, and the .env.local, .env.<APP_ENV>... files next to
+ * it, like Symfony does, and returns $_ENV. The commands run afterwards get
+ * these variables.
+ *
+ * @param ?string $path Defaults to the .env file of the project root
+ *
  * @return array<string, mixed>
  */
 function load_dot_env(?string $path = null): array
@@ -421,6 +497,11 @@ function load_dot_env(?string $path = null): array
 }
 
 /**
+ * Runs the callback with a context, and returns its result: the commands it
+ * runs use this context, unless they get another one. The context is $context,
+ * or a new Context by default (not the current one), modified by the other
+ * arguments.
+ *
  * @template T
  *
  * @param (callable(Context) :T)                       $callback
@@ -500,6 +581,8 @@ function with(
 }
 
 /**
+ * Returns a hasher, to compute a fingerprint for fingerprint() for instance.
+ *
  * @see https://www.php.net/manual/en/function.hash-algos.php
  */
 function hasher(string $algo = 'xxh128'): HasherHelper
@@ -512,16 +595,33 @@ function hasher(string $algo = 'xxh128'): HasherHelper
     );
 }
 
+/**
+ * Whether the fingerprint is the one saved for the id by fingerprint_save().
+ *
+ * @param bool $global Shares the fingerprint between all the projects
+ */
 function fingerprint_exists(string $id, string $fingerprint, bool $global = false): bool
 {
     return Container::get()->fingerprintHelper->verifyFingerprintFromHash($id, $fingerprint, $global);
 }
 
+/**
+ * Saves the fingerprint for the id.
+ *
+ * @param bool $global Shares the fingerprint between all the projects
+ */
 function fingerprint_save(string $id, string $fingerprint, bool $global = false): void
 {
     Container::get()->fingerprintHelper->postProcessFingerprintForHash($id, $fingerprint, $global);
 }
 
+/**
+ * Runs the callback, then saves the fingerprint for the id, unless it is the
+ * saved one already. Returns whether the callback was run.
+ *
+ * @param bool $force  Runs the callback even when the fingerprint is the saved one
+ * @param bool $global Shares the fingerprint between all the projects
+ */
 function fingerprint(callable $callback, string $id, string $fingerprint, bool $force = false, bool $global = false): bool
 {
     if ($force || !fingerprint_exists($id, $fingerprint, $global)) {
@@ -535,6 +635,9 @@ function fingerprint(callable $callback, string $id, string $fingerprint, bool $
 }
 
 /**
+ * Calls the callback every $intervalMs milliseconds, until it returns true, for
+ * $timeout seconds at most. Returning null stops waiting at once.
+ *
  * @throws TimeoutReachedException
  * @throws ExitedBeforeTimeoutException
  */
@@ -556,6 +659,8 @@ function wait_for(
 }
 
 /**
+ * Waits until the port of the host accepts connections, for $timeout seconds at most.
+ *
  * @throws TimeoutReachedException
  * @throws ExitedBeforeTimeoutException
  */
@@ -579,6 +684,8 @@ function wait_for_port(
 }
 
 /**
+ * Waits until the URL can be opened, for $timeout seconds at most.
+ *
  * @throws TimeoutReachedException
  * @throws ExitedBeforeTimeoutException
  */
@@ -600,6 +707,8 @@ function wait_for_url(
 }
 
 /**
+ * Waits until the URL answers with the HTTP status, for $timeout seconds at most.
+ *
  * @throws TimeoutReachedException
  * @throws ExitedBeforeTimeoutException
  */
@@ -623,6 +732,11 @@ function wait_for_http_status(
 }
 
 /**
+ * Waits until the URL answers, and the response checker accepts the response,
+ * for $timeout seconds at most.
+ *
+ * @param ?callable $responseChecker Receives the response, and returns true when it is the expected one, false to retry, or null to stop waiting
+ *
  * @throws TimeoutReachedException
  * @throws ExitedBeforeTimeoutException
  */
@@ -646,7 +760,11 @@ function wait_for_http_response(
 }
 
 /**
+ * Waits until the container checker, which receives the ID of the container,
+ * returns true, for $timeout seconds at most.
+ *
  * @throws TimeoutReachedException
+ * @throws DockerContainerStateException When the container does not exist or is not running
  */
 function wait_for_docker_container(
     string $containerName,
@@ -670,7 +788,7 @@ function wait_for_docker_container(
 /**
  * @see Yaml::parse()
  *
- * @param int-mask-of<Yaml::PARSE_*> $flags A bit field of DUMP_* constants to customize the dumped YAML string
+ * @param int-mask-of<Yaml::PARSE_*> $flags A bit field of PARSE_* constants to customize the YAML parser behavior
  */
 function yaml_parse(string $content, int $flags = 0): mixed
 {
@@ -687,16 +805,26 @@ function yaml_dump(mixed $input, int $inline = 2, int $indent = 4, int $flags = 
     return Yaml::dump($input, $inline, $indent, $flags);
 }
 
+/**
+ * Encrypts the content with the password: decrypt_with_password() decrypts it.
+ */
 function encrypt_with_password(string $content, string $password): string
 {
     return Container::get()->symmetricCrypto->encrypt($content, $password);
 }
 
+/**
+ * Decrypts a content encrypted by encrypt_with_password().
+ */
 function decrypt_with_password(string $content, string $password): string
 {
     return Container::get()->symmetricCrypto->decrypt($content, $password);
 }
 
+/**
+ * Encrypts the file to the destination, which defaults to the source path with a
+ * ".enc" suffix.
+ */
 function encrypt_file_with_password(string $sourcePath, string $password, ?string $destinationPath = null): void
 {
     if (!file_exists($sourcePath)) {
@@ -721,6 +849,11 @@ function encrypt_file_with_password(string $sourcePath, string $password, ?strin
     fs()->chmod($destinationPath, $sourcePermissions);
 }
 
+/**
+ * Decrypts a file encrypted by encrypt_file_with_password() to the destination,
+ * which defaults to the source path without its ".enc" suffix, or with a ".dec"
+ * suffix when this file exists or when there is no ".enc" suffix.
+ */
 function decrypt_file_with_password(string $sourcePath, string $password, ?string $destinationPath = null): void
 {
     if (!file_exists($sourcePath)) {
@@ -758,6 +891,11 @@ function decrypt_file_with_password(string $sourcePath, string $password, ?strin
     fs()->chmod($destinationPath, $sourcePermissions);
 }
 
+/**
+ * Stops when Castor is older than this version, like "v1.2.0" or "1.2.0".
+ *
+ * @throws MinimumVersionRequirementNotMetException
+ */
 function guard_min_version(string $minVersion): void
 {
     $currentVersion = Container::get()->application->getVersion();
@@ -768,6 +906,9 @@ function guard_min_version(string $minVersion): void
     }
 }
 
+/**
+ * Opens the URLs or files with the default application of the system.
+ */
 function open(string ...$urls): void
 {
     $command = match (true) {
@@ -789,6 +930,11 @@ function open(string ...$urls): void
     parallel(...$parallelCallbacks);
 }
 
+/**
+ * Compresses the file or directory into a zip archive, with the zip binary or
+ * the zip PHP extension, which is preferred when there is a password as it keeps
+ * it private.
+ */
 function zip(
     string $source,
     string $destination,
@@ -800,6 +946,10 @@ function zip(
     Container::get()->zipArchiver->zip($source, $destination, $password, $compressionMethod, $compressionLevel, $overwrite);
 }
 
+/**
+ * Like zip(), with the zip binary only: the password is visible to all the
+ * users of the machine while it runs.
+ */
 function zip_binary(
     string $source,
     string $destination,
@@ -811,6 +961,9 @@ function zip_binary(
     Container::get()->zipArchiver->zipWithBinary($source, $destination, $password, $compressionMethod, $compressionLevel, $overwrite);
 }
 
+/**
+ * Like zip(), with the zip PHP extension only.
+ */
 function zip_php(
     string $source,
     string $destination,
@@ -823,6 +976,9 @@ function zip_php(
 }
 
 /**
+ * Runs a PHP script or a phar with the PHP of Castor: it works with the static
+ * binary too, when PHP is not installed.
+ *
  * @param array<string|\Stringable>                      $arguments
  * @param (callable(string, string, Process) :void)|null $callback
  */
@@ -834,6 +990,9 @@ function run_php(string $pharPath, array $arguments = [], ?Context $context = nu
     ;
 }
 
+/**
+ * Returns the value in ASCII kebab-case, like "hello-world" for "Hello World".
+ */
 function slug(string $value, string $separator = '-', ?string $locale = null): string
 {
     return Container::get()

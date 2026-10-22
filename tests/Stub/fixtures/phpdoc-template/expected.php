@@ -7,7 +7,7 @@ namespace Test\Foobar;
  * @template TDefault
  *
  * @param TKey|string $key
- * @param TDefault $default
+ * @param TDefault    $default
  *
  * @phpstan-return ($key is TKey ? ContextData[TKey] : TDefault)
  */
