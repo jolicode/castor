@@ -477,6 +477,11 @@ function foo(): void
 }
 ```
 
+> [!NOTE]
+> The PTY gets the size of the terminal of Castor when the command starts, but
+> does not follow its resizing: prefer a TTY for a full screen command (`vim`,
+> `top`, ...).
+
 ### Trapping signals
 
 By default, a signal sent to Castor - like the `SIGINT` triggered by a `CTRL+C` -

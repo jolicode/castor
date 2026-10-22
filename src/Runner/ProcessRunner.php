@@ -115,6 +115,9 @@ class ProcessRunner
                 $process->setTty(true);
                 $process->setInput(\STDIN);
             } elseif ($context->pty) {
+                if (SizedPtyProcess::hasTerminal()) {
+                    $process = SizedPtyProcess::create($command, $context);
+                }
                 $process->setPty(true);
                 $process->setInput(\STDIN);
             }
