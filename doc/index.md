@@ -17,7 +17,7 @@ description: Castor lets you write automation, CI/CD, deployments, and DevOps wo
 
 ## 🚀 TL;DR
 
-{% include-markdown "../README.md" start="<!-- start index -->" end="<!-- end index -->" %}
+{{ markdown("README.md", start="<!-- start index -->", end="<!-- end index -->") }}
 
 ## Want more?
 

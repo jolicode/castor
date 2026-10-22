@@ -52,7 +52,7 @@ named arguments, and each one becomes a job whose output is grouped under its
 name:
 
 ```php
-{% include "/examples/advanced/parallel/jobs.php" start="<?php\n\nnamespace parallel;\n\n" %}
+{{ php("examples/advanced/parallel/jobs.php") }}
 ```
 
 The values returned by the jobs are keyed by their name. The functions must be

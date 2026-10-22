@@ -61,7 +61,7 @@ castor repack
 > version, make sure the remote packages are compatible with the packages it
 > ships too.
 
-{% include-markdown "/build/command_castor-repack.md" start="`castor:repack`\n---------------" %}
+{{ command("castor:repack") }}
 
 ## Repack with your logo
 

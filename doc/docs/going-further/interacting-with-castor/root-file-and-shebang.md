@@ -40,7 +40,7 @@ executed directly. For example, you can create a file named `my-script` with the
 following content:
 
 ```php
-{% include "/examples/advanced/castor-file/shebang.php" %}
+{{ php("examples/advanced/castor-file/shebang.php", strip_header=false) }}
 ```
 
 Make sure to give execute permissions to your script:

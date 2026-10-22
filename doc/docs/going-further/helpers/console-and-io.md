@@ -116,7 +116,7 @@ This service is useful to get some properties of the terminal in which Castor
 currently runs, like the width or height for example:
 
 ```php
-{% include "/examples/basic/io/terminal.php" start="<?php\n\nnamespace io;\n\n" %}
+{{ php("examples/basic/io/terminal.php") }}
 ```
 
 ## Experimental section output
