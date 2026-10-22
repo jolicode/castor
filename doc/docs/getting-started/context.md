@@ -502,9 +502,10 @@ function foo(): void
 
 The process then sees what Castor sees, on its standard output and error: the
 terminal with its real size, even when it is resized, or the file and the pipe
-of a redirection (`castor foo > foo.log`, `castor foo | less`). It takes
-precedence over `withTty()` and `withPty()`. An input given with `withInput()`
-replaces the standard input only.
+of a redirection (`castor foo > foo.log`, `castor foo | less`). Unlike a TTY,
+it does not need to open `/dev/tty`, so it also works without a controlling
+terminal. It takes precedence over `withTty()` and `withPty()`. An input given
+with `withInput()` replaces the standard input only.
 
 > [!WARNING]
 > Castor does not read the output: it is empty in the process object
