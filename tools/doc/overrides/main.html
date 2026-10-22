@@ -31,7 +31,7 @@
                 "price": "0",
                 "priceCurrency": "USD"
             },
-            "softwareVersion": "{{ config.extra.version }}",
+            "softwareVersion": "{% include "partials/version.html" %}",
             "downloadUrl": "https://github.com/jolicode/castor",
             "sameAs": [ "{{ config.repo_url }}", "https://packagist.org/packages/jolicode/castor" ]
         }

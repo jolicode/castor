@@ -49,6 +49,7 @@ function build_assets(): void
     $footer = str_replace('<!-- #SUBTITLE -->', $html, $footer);
 
     file_put_contents(__DIR__ . '/overrides/partials/jolicode-footer.html', $footer);
+    file_put_contents(__DIR__ . '/overrides/partials/version.html', Application::VERSION);
 
     io()->title('Building command help files for documentation');
 
@@ -116,9 +117,6 @@ function do_run(array $runCommand, ?Context $c = null): Process
             \sprintf('%s:/doc/README.md:cached', realpath(__DIR__) . '/../../README.md'),
             \sprintf('%s:/doc/doc:cached', realpath(__DIR__ . '/../../doc')),
             \sprintf('%s:/doc/examples:cached', realpath(__DIR__ . '/../../examples')),
-        ],
-        environment: [
-            'CASTOR_VERSION' => Application::VERSION,
         ],
         context: $c
     );
