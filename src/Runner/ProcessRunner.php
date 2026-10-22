@@ -106,8 +106,20 @@ class ProcessRunner
             };
         }
 
-        // When input is provided, we need to disable TTY and PTY because they require interactive terminal
-        if (null !== $context->input) {
+        // The process inherits the standard input, output and error of Castor,
+        // when nothing reads its output: it then behaves as if it was run from
+        // a shell (terminal detection, redirections, CTRL+C, ...)
+        $stdioInherited = $context->stdioInherited && !$context->quiet && !$callback && !$this->sectionOutput->usesOutputSection();
+
+        if ($stdioInherited) {
+            $process->inheritStdio();
+
+            // Only the standard input is replaced, the output stays inherited
+            if (null !== $context->input) {
+                $process->setInput($context->input);
+            }
+        } elseif (null !== $context->input) {
+            // When input is provided, we need to disable TTY and PTY because they require interactive terminal
             $process->setInput($context->input);
         } elseif (!OsHelper::isWindows()) {
             // TTY does not work on windows, and PTY is a mess, so let's skip everything!
@@ -123,7 +135,7 @@ class ProcessRunner
             }
         }
 
-        if (!$context->quiet && !$callback) {
+        if (!$stdioInherited && !$context->quiet && !$callback) {
             $callback = function ($type, $bytes, $process): void {
                 $this->sectionOutput->writeProcessOutput($type, $bytes, $process);
             };
@@ -147,6 +159,9 @@ class ProcessRunner
         });
 
         $this->signalTrapper->trap($process, $context->trappedSignals);
+        if ($stdioInherited) {
+            $this->signalTrapper->shield($process);
+        }
 
         $this->eventDispatcher->dispatch(new ProcessStartEvent($process));
 
@@ -176,7 +191,7 @@ class ProcessRunner
 
             $exitCode = $process->getExitCode() ?? 128 + $e->getSignal();
         } finally {
-            $this->signalTrapper->release($process, $context->trappedSignals);
+            $this->signalTrapper->release($process);
             if (!$job) {
                 $this->sectionOutput->finishProcess($process);
             }
@@ -279,15 +294,18 @@ class ProcessRunner
      * A CTRL+C usually stops Castor along with the process. But a process with
      * the terminal (TTY) may put it in raw mode (docker run -it, vim, ...): the
      * CTRL+C only reaches this process, and its exit code 130 (128 + SIGINT)
-     * is the only trace of it. Not when SIGINT is trapped: the task goes on.
+     * is the only trace of it. A process which inherits the standard streams
+     * of Castor gets the CTRL+C too, but Castor survives it and lets the
+     * process decide: same trace. Not when SIGINT is trapped: the task goes on.
      *
-     * Castor receives no signal in this case, so Symfony Console, which exits
-     * with 128 + the number of the signal it receives, can't see the CTRL+C.
+     * Symfony Console, which exits with 128 + the number of the signal it
+     * receives, can't see these CTRL+C: Castor receives no signal with the TTY,
+     * and survives it when it inherits the standard streams.
      */
     private function isInterruptedInTerminal(Process $process, int $exitCode, Context $context): bool
     {
         return 128 + self::SIGINT === $exitCode
-            && $process->isTty()
+            && ($process->isTty() || $process->isStdioInherited())
             && !\in_array(self::SIGINT, $context->trappedSignals, true);
     }
 }

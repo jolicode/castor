@@ -29,6 +29,8 @@ class Context implements \ArrayAccess
      *                                                                                well-known signals (CI env var, STDIN being a TTY).
      * @param int[]                                              $trappedSignals      A list of signals Castor must trap and forward to the
      *                                                                                process it runs, instead of being interrupted by them
+     * @param bool                                               $stdioInherited      Whether the process inherits the standard input, output
+     *                                                                                and error of Castor, when nothing reads its output
      *
      * @phpstan-param ContextData $data The input parameter accepts an array or an Object
      */
@@ -53,6 +55,7 @@ class Context implements \ArrayAccess
         public readonly mixed $input = null,
         ?bool $supportsInteraction = null,
         public readonly array $trappedSignals = [],
+        public readonly bool $stdioInherited = false,
     ) {
         $this->workingDirectory = $workingDirectory ?? PathHelper::getDefaultWorkingDirectory();
         $this->supportsInteraction = $supportsInteraction ?? self::detectSupportsInteraction();
@@ -76,6 +79,7 @@ class Context implements \ArrayAccess
             'notificationTitle' => $this->notificationTitle,
             'supportsInteraction' => $this->supportsInteraction,
             'trappedSignals' => $this->trappedSignals,
+            'stdioInherited' => $this->stdioInherited,
         ];
     }
 
@@ -129,6 +133,13 @@ class Context implements \ArrayAccess
     {
         return $this->clone([
             'pty' => $pty,
+        ]);
+    }
+
+    public function withStdioInherited(bool $stdioInherited = true): self
+    {
+        return $this->clone([
+            'stdioInherited' => $stdioInherited,
         ]);
     }
 
