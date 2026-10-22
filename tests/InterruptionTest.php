@@ -15,7 +15,8 @@ class InterruptionTest extends TaskTestCase
     {
         $output = $this->runInTerminal(['terminal']);
 
-        $this->assertStringContainsString('[WARNING] The command "exit 130" has been interrupted.', $output);
+        // Like a shell, Castor stops without a word: the CTRL+C has been typed
+        $this->assertStringNotContainsString('interrupted', $output);
         $this->assertStringNotContainsString('Next step', $output);
     }
 
@@ -23,7 +24,6 @@ class InterruptionTest extends TaskTestCase
     {
         $output = $this->runInTerminal(['terminal-exit-code']);
 
-        $this->assertStringContainsString('has been interrupted.', $output);
         $this->assertStringNotContainsString('Next step', $output);
     }
 
@@ -44,9 +44,35 @@ class InterruptionTest extends TaskTestCase
 
     public function testAProcessKilledBySigintStopsTheTask(): void
     {
+        $this->skipWithoutPcntl();
+
         $process = $this->runTask(['signaled'], '{{ base }}/tests/fixtures/valid/interruption');
 
         $this->assertSame(130, $process->getExitCode(), $process->getErrorOutput());
+        $this->assertStringNotContainsString('interrupted', $process->getOutput() . $process->getErrorOutput());
+        $this->assertStringNotContainsString('Next step', $process->getOutput());
+    }
+
+    public function testACatchCannotCarryOnAfterAnInterruption(): void
+    {
+        $this->skipWithoutPcntl();
+
+        $process = $this->runTask(['caught'], '{{ base }}/tests/fixtures/valid/interruption');
+
+        $this->assertSame(130, $process->getExitCode(), $process->getErrorOutput());
+        $this->assertStringNotContainsString('Caught', $process->getOutput());
+        $this->assertStringNotContainsString('Next step', $process->getOutput());
+    }
+
+    public function testTheOnSignalsHandlerOfTheTaskIsCalled(): void
+    {
+        $this->skipWithoutPcntl();
+
+        $process = $this->runTask(['signaled-with-handler'], '{{ base }}/tests/fixtures/valid/interruption');
+
+        $this->assertSame(130, $process->getExitCode(), $process->getErrorOutput());
+        $this->assertStringContainsString('SIGINT received by the task', $process->getOutput());
+        // The handler asked to go on, but the process is gone: the task stops
         $this->assertStringContainsString('[WARNING] The command "kill -INT $$" has been interrupted.', $process->getOutput());
         $this->assertStringNotContainsString('Next step', $process->getOutput());
     }
@@ -75,6 +101,14 @@ class InterruptionTest extends TaskTestCase
     /**
      * @param list<string> $args
      */
+    private function skipWithoutPcntl(): void
+    {
+        // Without it, Castor is killed by the SIGINT it sends to itself
+        if (!\function_exists('pcntl_signal')) {
+            $this->markTestSkipped('The pcntl extension is needed to handle the signals.');
+        }
+    }
+
     private function runInTerminal(array $args, int $expectedExitCode = 130): string
     {
         if ('Linux' !== \PHP_OS_FAMILY || null === $script = new ExecutableFinder()->find('script')) {

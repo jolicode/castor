@@ -18,6 +18,7 @@
 * Ignore `--no-remote`, `--update-remotes` and `--format` when given to a task after `--`
 * Accept `--context` with `castor list`
 * Give the terminal size to the PTY of the processes, so they no longer fall back on 80 columns (only the size at the start of the command)
+* Stop Castor as if it had received the `CTRL+C` when a process is interrupted by one, like a shell: a `catch` in the task can no longer carry on after it, the warning is no longer shown, and the `onSignals` handlers of the task are called
 
 ## 1.9.0 (2026-10-20)
 

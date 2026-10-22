@@ -165,6 +165,8 @@ class ProcessRunner
 
         $this->eventDispatcher->dispatch(new ProcessStartEvent($process));
 
+        $interruption = null;
+
         try {
             if (\Fiber::getCurrent()) {
                 while ($process->isRunning()) {
@@ -181,12 +183,13 @@ class ProcessRunner
         } catch (ProcessSignaledException $e) {
             if (!\in_array($e->getSignal(), $context->trappedSignals, true)) {
                 // Castor would already have stopped if it had received this
-                // SIGINT too: the task stops as if it had
-                if (self::SIGINT === $e->getSignal()) {
-                    throw new ProcessInterruptedException($process, $e);
+                // SIGINT too: the task stops as if it had, once the signals
+                // trapped for the process are released
+                if (self::SIGINT !== $e->getSignal()) {
+                    throw $e;
                 }
 
-                throw $e;
+                $interruption = $e;
             }
 
             $exitCode = $process->getExitCode() ?? 128 + $e->getSignal();
@@ -198,6 +201,10 @@ class ProcessRunner
             $this->eventDispatcher->dispatch(new ProcessTerminateEvent($process));
         }
 
+        if ($interruption) {
+            $this->interrupt($process, $interruption);
+        }
+
         if ($context->notify) {
             $this->notifier->send(\sprintf('The command "%s" has been finished %s.', $process->getCommandLine(), 0 === $exitCode ? 'successfully' : 'with an error'));
         }
@@ -206,7 +213,7 @@ class ProcessRunner
             $this->logger->notice(\sprintf('Command finished with an error (exit code=%d).', $process->getExitCode()));
 
             if ($this->isInterruptedInTerminal($process, $exitCode, $context)) {
-                throw new ProcessInterruptedException($process);
+                $this->interrupt($process);
             }
 
             // Nobody can answer the question while the output of a job is captured
@@ -288,6 +295,25 @@ class ProcessRunner
         }
 
         return rtrim($runnable, ' ');
+    }
+
+    /**
+     * Stops Castor as if it had received the CTRL+C, like a shell does when a
+     * command dies from it: Symfony Console calls the onSignals handlers of the
+     * task, and exits with the code 130 (128 + SIGINT). A catch in the task
+     * cannot carry on after it.
+     *
+     * The exception stops the task when the signal does not stop Castor: an
+     * onSignals handler asked to go on, SIGINT is ignored (Castor run in the
+     * background by a script), or posix is missing (Windows).
+     */
+    private function interrupt(Process $process, ?ProcessSignaledException $previous = null): never
+    {
+        if (\function_exists('posix_kill')) {
+            posix_kill(posix_getpid(), self::SIGINT);
+        }
+
+        throw new ProcessInterruptedException($process, $previous);
     }
 
     /**

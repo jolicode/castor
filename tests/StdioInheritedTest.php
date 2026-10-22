@@ -80,7 +80,8 @@ class StdioInheritedTest extends TaskTestCase
     {
         $output = $this->runInTerminal(['interrupted'], expectedExitCode: 130, ctrlC: true);
 
-        $this->assertStringContainsString('has been interrupted.', $output);
+        // Like a shell, Castor stops without a word: the CTRL+C has been typed
+        $this->assertStringNotContainsString('interrupted', $output);
         $this->assertStringNotContainsString('Next step', $output);
     }
 
