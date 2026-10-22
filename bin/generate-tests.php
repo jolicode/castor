@@ -197,6 +197,7 @@ foreach ($dirs as $dir) {
 // Updating Castor is how to fix this castor file, so it must not prevent it
 add_test(['self-update', '--rollback'], 'SelfUpdateMinVersionNotMet', '{{ base }}/tests/fixtures/broken/min-version-not-met');
 add_test(['--castor-file', 'tests/fixtures/broken/min-version-not-met/castor.php', 'self-update', '--rollback'], 'SelfUpdateMinVersionNotMetWithCastorFile');
+add_test(['-c', 'bar', 'self-update', '--rollback'], 'SelfUpdateMinVersionNotMetWithContext', '{{ base }}/tests/fixtures/broken/min-version-not-met');
 
 echo "\nDone.\n";
 
@@ -204,6 +205,9 @@ displayTitle('Generating tests for valid fixtures');
 
 add_test(['hello'], 'ContextFile', '{{ base }}/tests/fixtures/valid/context-file');
 add_test(['hello', '--context', 'foo'], 'ContextFileOverriddenByCli', '{{ base }}/tests/fixtures/valid/context-file');
+// The commands which do not use the context accept it too
+add_test(['list', '--raw', '--context', 'bar'], 'ContextFileListWithContext', '{{ base }}/tests/fixtures/valid/context-file');
+add_test(['self-update', '--rollback', '-c', 'bar'], 'ContextFileSelfUpdateWithContext', '{{ base }}/tests/fixtures/valid/context-file');
 add_test(['hello'], 'ContextFileInvalid', '{{ base }}/tests/fixtures/valid/context-file-invalid');
 add_test(['hello'], 'FunctionsResolvedMount', '{{ base }}/tests/fixtures/valid/functions-resolved-mount');
 add_test(['list'], 'LayoutWithFolder', '{{ base }}/tests/fixtures/valid/layout-with-folder');

@@ -3,6 +3,7 @@
 namespace Castor;
 
 use Castor\Console\Application;
+use Castor\Console\Input\CommandLine;
 use Castor\Console\Output\SectionOutput;
 use Castor\Fingerprint\FingerprintHelper;
 use Castor\Function\FunctionLoader;
@@ -43,6 +44,7 @@ final class Container
     public function __construct(
         public readonly Application $application,
         public readonly CacheItemPoolInterface&CacheInterface $cache,
+        public readonly CommandLine $commandLine,
         public readonly Composer $composer,
         public readonly ContextRegistry $contextRegistry,
         public readonly EventDispatcherInterface $eventDispatcher,

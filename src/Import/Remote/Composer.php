@@ -2,6 +2,7 @@
 
 namespace Castor\Import\Remote;
 
+use Castor\Console\Input\CommandLine;
 use Castor\Helper\PathHelper;
 use Castor\Import\Exception\ComposerError;
 use Castor\Import\Exception\ImportError;
@@ -11,7 +12,6 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Console\Helper\ProgressIndicator;
 use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -26,7 +26,7 @@ class Composer
     private bool $skippedForCompletion = false;
 
     public function __construct(
-        private readonly InputInterface $input,
+        private readonly CommandLine $commandLine,
         private readonly OutputInterface $output,
         private readonly Filesystem $filesystem,
         private readonly BundledPackages $bundledPackages,
@@ -42,18 +42,13 @@ class Composer
             return false;
         }
 
-        // Need to look for the raw options as the input is not yet parsed
-        if (true !== $this->input->getParameterOption('--no-remote', true)) {
-            return false;
-        }
-
-        return true;
+        return !$this->commandLine->hasNoRemote();
     }
 
     public function install(string $entrypointDirectory): void
     {
-        $update = true !== $this->input->getParameterOption('--update-remotes', true);
-        $displayProgress = 'list' !== $this->input->getFirstArgument() || 'txt' === $this->input->getParameterOption('--format', 'txt');
+        $update = $this->commandLine->hasUpdateRemotes();
+        $displayProgress = !$this->commandLine->isOutputMachineReadable();
 
         if (!file_exists($composerJsonFile = $entrypointDirectory . '/castor.composer.json') && !file_exists($composerJsonFile = $entrypointDirectory . '/.castor/castor.composer.json')) {
             $this->logger->debug(\sprintf('The castor.composer.json file does not exists in %s or %s/.castor, skipping composer install.', $entrypointDirectory, $entrypointDirectory));
@@ -75,7 +70,7 @@ class Composer
         // A shell completion must not download and run anything: the packages
         // already installed, even outdated, are used, and the completion goes
         // on without the remote imports when there is none
-        if ('_complete' === $this->input->getFirstArgument()) {
+        if ($this->commandLine->isShellCompletion()) {
             $this->skippedForCompletion = !file_exists($vendorDirectory . '/autoload.php');
             $this->logger->debug('The remote packages are not installed during a shell completion.');
 

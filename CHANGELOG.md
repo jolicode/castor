@@ -13,6 +13,8 @@
 * Run `castor self-update` without loading the castor file, so a `guard_min_version()` requiring a newer version does not prevent the update anymore, and do not suggest to run it while it is running
 * Load the packages of the `castor.composer.json` of a mounted directory: they were installed in its `.castor/vendor/` directory, but its tasks could not use them, unless it was run on its own
 * Do not install the packages of the `castor.composer.json` of a mounted directory when the remote packages are disabled (`--no-remote`), as for the root one
+* Do not write the update reminder, the `CASTOR_USE_CHDIR` deprecation or the progress of the remote packages in an output meant to be parsed (a `--format` other than `txt`, like `xml`, or the completion script), also when a global option like `--castor-file` comes before the command, and ignore `--no-remote`, `--update-remotes` and `--format` when they are given to the task, after `--`
+* Accept the `--context` option with `castor list`, which failed with `The "--context" option does not exist`
 
 ## 1.9.0 (2026-10-20)
 

@@ -2,6 +2,7 @@
 
 namespace Castor\Listener;
 
+use Castor\Console\Input\CommandLine;
 use Castor\Stub\StubsGenerator;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -11,6 +12,7 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 class GenerateStubsListener
 {
     public function __construct(
+        private readonly CommandLine $commandLine,
         private readonly StubsGenerator $stubsGenerator,
         #[Autowire('%repacked%')]
         private readonly bool $repacked,
@@ -37,11 +39,7 @@ class GenerateStubsListener
             return;
         }
 
-        $command = $event->getCommand();
-        if (!$command) {
-            return;
-        }
-        if ('_complete' === $command->getName() || 'completion' === $command->getName()) {
+        if ($this->commandLine->isShellCompletion() || $this->commandLine->isCompletionScript()) {
             return;
         }
 
