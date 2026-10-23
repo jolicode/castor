@@ -109,7 +109,10 @@ class ProcessRunner
         // The process inherits the standard input, output and error of Castor,
         // when nothing reads its output: it then behaves as if it was run from
         // a shell (terminal detection, redirections, CTRL+C, ...)
-        $stdioInherited = $context->stdioInherited && !$context->quiet && !$callback && !$this->sectionOutput->usesOutputSection();
+        // To try it out: with CASTOR_LOCAL_STDIO_INSTEAD_OF_PTY=1, the standard
+        // streams are inherited instead of using the PTY
+        $stdioInsteadOfPty = '1' === getenv('CASTOR_LOCAL_STDIO_INSTEAD_OF_PTY') && $context->pty && !$context->tty && null === $context->input;
+        $stdioInherited = ($context->stdioInherited || $stdioInsteadOfPty) && !$context->quiet && !$callback && !$this->sectionOutput->usesOutputSection();
 
         if ($stdioInherited) {
             $process->inheritStdio();
