@@ -87,6 +87,28 @@ class CommandLineTest extends TestCase
     /**
      * @param list<string> $argv
      */
+    #[DataProvider('provideHiddenCommandsDescribed')]
+    public function testTheHiddenCommandsAreDescribed(array $argv, bool $expected): void
+    {
+        $this->assertSame($expected, $this->createCommandLine($argv)->describesHiddenCommands());
+    }
+
+    /**
+     * @return iterable<string, array{list<string>, bool}>
+     */
+    public static function provideHiddenCommandsDescribed(): iterable
+    {
+        yield 'list in JSON' => [['list', '--format=json'], true];
+        yield 'list in XML' => [['list', '--format', 'xml'], true];
+        yield 'list in Markdown' => [['list', '--format=md'], false];
+        yield 'list in text' => [['list'], false];
+        // Only the command given is described
+        yield 'help in JSON' => [['help', 'list', '--format=json'], false];
+    }
+
+    /**
+     * @param list<string> $argv
+     */
     #[DataProvider('provideContextName')]
     public function testTheContextIsRead(array $argv, ?string $expected): void
     {
