@@ -563,8 +563,9 @@ final class Kernel extends AbstractKernel
 
         $c->application->getDefinition()->addOption(new InputOption(
             'context',
-            // The shell completion already has a -c option
-            $c->commandLine->isShellCompletion() ? null : 'c',
+            // The shell completion already has a -c option, which conflicts
+            // with this one even when the shell completion is only described
+            $c->commandLine->isShellCompletion() || $c->commandLine->describesHiddenCommands() ? null : 'c',
             InputOption::VALUE_REQUIRED,
             $description,
             $currentContextName,

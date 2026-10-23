@@ -81,6 +81,15 @@ final readonly class CommandLine
     }
 
     /**
+     * Whether the hidden commands, like "_complete", are described too, as
+     * "list" does with the JSON and XML formats.
+     */
+    public function describesHiddenCommands(): bool
+    {
+        return $this->isList() && \in_array($this->format, ['json', 'xml'], true);
+    }
+
+    /**
      * Whether the output is meant to be parsed, by the shell or because of a
      * format like in "list --format=json": nothing else must be written in it.
      */
