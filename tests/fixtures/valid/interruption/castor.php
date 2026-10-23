@@ -51,6 +51,34 @@ function signaled(): void
     io()->writeln('Next step');
 }
 
+// Like a check catching any failure to go on with the next one
+#[AsTask]
+function caught(): void
+{
+    try {
+        run('kill -INT $$', context: context()->withPty(false));
+    } catch (\Throwable) {
+        io()->writeln('Caught');
+    }
+
+    io()->writeln('Next step');
+}
+
+#[AsTask(onSignals: [2 => 'onSigInt'])]
+function signaled_with_handler(): void
+{
+    run('kill -INT $$', context: context()->withPty(false)->withAllowFailure());
+
+    io()->writeln('Next step');
+}
+
+function onSigInt(int $signal): false
+{
+    io()->writeln('SIGINT received by the task');
+
+    return false;
+}
+
 #[AsTask]
 function castor_signaled(string $signal): void
 {

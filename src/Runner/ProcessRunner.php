@@ -106,8 +106,23 @@ class ProcessRunner
             };
         }
 
-        // When input is provided, we need to disable TTY and PTY because they require interactive terminal
-        if (null !== $context->input) {
+        // The process inherits the standard input, output and error of Castor,
+        // when nothing reads its output: it then behaves as if it was run from
+        // a shell (terminal detection, redirections, CTRL+C, ...)
+        // To try it out: with CASTOR_LOCAL_STDIO_INSTEAD_OF_PTY=1, the standard
+        // streams are inherited instead of using the PTY
+        $stdioInsteadOfPty = '1' === getenv('CASTOR_LOCAL_STDIO_INSTEAD_OF_PTY') && $context->pty && !$context->tty && null === $context->input;
+        $stdioInherited = ($context->stdioInherited || $stdioInsteadOfPty) && !$context->quiet && !$callback && !$this->sectionOutput->usesOutputSection();
+
+        if ($stdioInherited) {
+            $process->inheritStdio();
+
+            // Only the standard input is replaced, the output stays inherited
+            if (null !== $context->input) {
+                $process->setInput($context->input);
+            }
+        } elseif (null !== $context->input) {
+            // When input is provided, we need to disable TTY and PTY because they require interactive terminal
             $process->setInput($context->input);
         } elseif (!OsHelper::isWindows()) {
             // TTY does not work on windows, and PTY is a mess, so let's skip everything!
@@ -123,7 +138,7 @@ class ProcessRunner
             }
         }
 
-        if (!$context->quiet && !$callback) {
+        if (!$stdioInherited && !$context->quiet && !$callback) {
             $callback = function ($type, $bytes, $process): void {
                 $this->sectionOutput->writeProcessOutput($type, $bytes, $process);
             };
@@ -147,8 +162,13 @@ class ProcessRunner
         });
 
         $this->signalTrapper->trap($process, $context->trappedSignals);
+        if ($stdioInherited) {
+            $this->signalTrapper->shield($process);
+        }
 
         $this->eventDispatcher->dispatch(new ProcessStartEvent($process));
+
+        $interruption = null;
 
         try {
             if (\Fiber::getCurrent()) {
@@ -166,21 +186,26 @@ class ProcessRunner
         } catch (ProcessSignaledException $e) {
             if (!\in_array($e->getSignal(), $context->trappedSignals, true)) {
                 // Castor would already have stopped if it had received this
-                // SIGINT too: the task stops as if it had
-                if (self::SIGINT === $e->getSignal()) {
-                    throw new ProcessInterruptedException($process, $e);
+                // SIGINT too: the task stops as if it had, once the signals
+                // trapped for the process are released
+                if (self::SIGINT !== $e->getSignal()) {
+                    throw $e;
                 }
 
-                throw $e;
+                $interruption = $e;
             }
 
             $exitCode = $process->getExitCode() ?? 128 + $e->getSignal();
         } finally {
-            $this->signalTrapper->release($process, $context->trappedSignals);
+            $this->signalTrapper->release($process);
             if (!$job) {
                 $this->sectionOutput->finishProcess($process);
             }
             $this->eventDispatcher->dispatch(new ProcessTerminateEvent($process));
+        }
+
+        if ($interruption) {
+            $this->interrupt($process, $interruption);
         }
 
         if ($context->notify) {
@@ -191,7 +216,7 @@ class ProcessRunner
             $this->logger->notice(\sprintf('Command finished with an error (exit code=%d).', $process->getExitCode()));
 
             if ($this->isInterruptedInTerminal($process, $exitCode, $context)) {
-                throw new ProcessInterruptedException($process);
+                $this->interrupt($process);
             }
 
             // Nobody can answer the question while the output of a job is captured
@@ -276,19 +301,40 @@ class ProcessRunner
     }
 
     /**
+     * Stops Castor as if it had received the CTRL+C, like a shell does when a
+     * command dies from it: Symfony Console calls the onSignals handlers of the
+     * task, and exits with the code 130 (128 + SIGINT). A catch in the task
+     * cannot carry on after it.
+     *
+     * The exception stops the task when the signal does not stop Castor: an
+     * onSignals handler asked to go on, SIGINT is ignored (Castor run in the
+     * background by a script), or posix is missing (Windows).
+     */
+    private function interrupt(Process $process, ?ProcessSignaledException $previous = null): never
+    {
+        if (\function_exists('posix_kill')) {
+            posix_kill(posix_getpid(), self::SIGINT);
+        }
+
+        throw new ProcessInterruptedException($process, $previous);
+    }
+
+    /**
      * A CTRL+C usually stops Castor along with the process. But a process with
      * the terminal (TTY) may put it in raw mode (docker run -it, vim, ...): the
      * CTRL+C only reaches this process, and its exit code 130 (128 + SIGINT)
-     * is the only trace of it. Not when SIGINT is trapped: the task goes on.
+     * is the only trace of it. A process which inherits the standard streams
+     * of Castor gets the CTRL+C too, but Castor survives it and lets the
+     * process decide: same trace. Not when SIGINT is trapped: the task goes on.
      *
-     * Castor receives no signal in this case, so Symfony Console can't see the
-     * CTRL+C, even in 8.2 which exits with 128 + the signal number: this check
-     * stays when InterruptionListener is removed.
+     * Symfony Console, which exits with 128 + the number of the signal it
+     * receives, can't see these CTRL+C: Castor receives no signal with the TTY,
+     * and survives it when it inherits the standard streams.
      */
     private function isInterruptedInTerminal(Process $process, int $exitCode, Context $context): bool
     {
         return 128 + self::SIGINT === $exitCode
-            && $process->isTty()
+            && ($process->isTty() || $process->isStdioInherited())
             && !\in_array(self::SIGINT, $context->trappedSignals, true);
     }
 }

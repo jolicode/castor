@@ -5,6 +5,7 @@
 ### Features
 
 * Document the functions and attributes in their PHPDoc, and in `.castor.stub.php` with a link to the documentation
+* Add `withStdioInherited()` to the context, to run a process on the standard input, output and error of Castor, like from a shell script: it sees the real terminal and its size, or the redirections
 
 ### Fixes
 
@@ -17,6 +18,7 @@
 * Ignore `--no-remote`, `--update-remotes` and `--format` when given to a task after `--`
 * Accept `--context` with `castor list`
 * Give the terminal size to the PTY of the processes, so they no longer fall back on 80 columns (only the size at the start of the command)
+* Stop Castor as if it had received the `CTRL+C` when a process is interrupted by one, like a shell: a `catch` in the task can no longer carry on after it, the warning is no longer shown, and the `onSignals` handlers of the task are called
 
 ## 1.9.0 (2026-10-20)
 
