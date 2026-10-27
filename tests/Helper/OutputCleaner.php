@@ -22,6 +22,8 @@ final class OutputCleaner
         // SSH tests behave differently between local and CI
         $string = str_replace("scp: Connection closed\n", '', $string);
         $string = str_replace("lost connection\n", '', $string);
+        // The DNS resolver of the CI does not always return the same error
+        $string = str_replace('Name or service not known', 'No address associated with hostname', $string);
 
         // Phar, trace
         $string = str_replace(\dirname(__DIR__, 2), '...', $string);
