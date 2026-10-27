@@ -140,6 +140,11 @@ class UpdateCastorListener
             $symfonyStyle->block('Run the following command to update Castor:');
             $symfonyStyle->block('<comment>castor self-update</comment>', escape: false);
         }
+
+        if (InstallationMethod::Mise === $installationMethod) {
+            $symfonyStyle->block('Run the following command to update Castor:');
+            $symfonyStyle->block('<comment>mise upgrade github:jolicode/castor</comment>', escape: false);
+        }
     }
 
     private function displaySnapshotUpdateWarningIfNeeded(InputInterface $input, OutputInterface $output, bool $useCache): void

@@ -6,6 +6,7 @@ enum InstallationMethod: string
 {
     case Phar = 'phar';
     case Static = 'static';
+    case Mise = 'mise';
     case ComposerGlobal = 'composer global';
     case Composer = 'composer';
     case Source = 'source';
@@ -14,7 +15,7 @@ enum InstallationMethod: string
     {
         return match ($this) {
             self::Phar, self::Static, self::ComposerGlobal => true,
-            self::Composer, self::Source => false,
+            self::Mise, self::Composer, self::Source => false,
         };
     }
 }

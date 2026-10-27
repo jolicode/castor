@@ -141,9 +141,9 @@ The `matching_regex` option picks the static binary instead of the phar, and
 the `bin` option exposes it as `castor`. Drop `--global` to pin Castor in the
 `mise.toml` of your project instead.
 
-> [!NOTE]
-> Run `mise upgrade` to update Castor, not `castor self-update`: mise would
-> not know about the new version.
+To update Castor, run `mise upgrade github:jolicode/castor`. `castor
+self-update` refuses to replace a binary installed by mise, since mise would
+not know about the new version.
 
 ## Globally with Composer
 
