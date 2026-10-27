@@ -24,7 +24,11 @@ class Installation
     ) {
         $pharPath = \Phar::running(false);
 
-        if (get_cfg_var('castor.static')) {
+        // mise installs the phar or the static binary in <data dir>/installs/github-jolicode-castor/<version>/
+        if ($pharPath && str_contains(str_replace('\\', '/', $pharPath), '/installs/github-jolicode-castor/')) {
+            $this->method = InstallationMethod::Mise;
+            $this->path = $pharPath;
+        } elseif (get_cfg_var('castor.static')) {
             $this->method = InstallationMethod::Static;
             $this->path = $pharPath;
         } elseif ($pharPath) {

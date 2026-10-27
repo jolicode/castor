@@ -4,10 +4,12 @@
 
 ### Features
 
+* Document how to install Castor with mise
 * Document the functions and attributes in their PHPDoc, and in `.castor.stub.php` with a link to the documentation
 
 ### Fixes
 
+* Refuse to self-update a Castor installed with mise, and suggest `mise upgrade github:jolicode/castor` instead
 * Keep the leading `*` of long PHPDoc descriptions in `.castor.stub.php`
 * Add the parent classes to `.castor.stub.php`, so inherited methods like `io()->writeln()` are known
 * Do not load the castor file in `castor self-update`, so `guard_min_version()` cannot block the update, and do not suggest updating during the update

@@ -272,12 +272,20 @@ final readonly class SelfUpdateCommand
                 'fg=yellow',
                 ' ',
             ),
+            InstallationMethod::Mise => $io->block(
+                'Castor is installed with mise. ' .
+                'Replacing the binary would hide the new version from mise.',
+                'WHY?',
+                'fg=yellow',
+                ' ',
+            ),
             default => null,
         };
 
         $updateCommand = match ($installationMethod) {
             InstallationMethod::Composer => 'composer update jolicode/castor',
             InstallationMethod::Source => 'git pull',
+            InstallationMethod::Mise => 'mise upgrade github:jolicode/castor',
             default => null,
         };
 

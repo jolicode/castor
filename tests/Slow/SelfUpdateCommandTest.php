@@ -66,10 +66,46 @@ class SelfUpdateCommandTest extends TaskTestCase
         $fs->remove($dir);
     }
 
+    public function testMise(): void
+    {
+        if (!self::$binary && !str_ends_with(self::$castorBin, '.phar')) {
+            $this->markTestSkipped('mise installs the phar or the static binary.');
+        }
+
+        $fs = new Filesystem();
+        $dir = sys_get_temp_dir() . '/castor-test-mise';
+        $fs->remove($dir);
+        $fs->copy(self::$castorBin, $castor = $dir . '/installs/github-jolicode-castor/1.9.0/castor');
+        $fs->chmod($castor, 0o755);
+
+        $process = $this->runSelfUpdate($castor);
+        $this->assertSame(1, $process->getExitCode(), $process->getOutput() . $process->getErrorOutput());
+        $this->assertStringContainsString('Self-update is not supported for "mise" installation method.', $process->getOutput());
+        $this->assertStringContainsString('mise upgrade github:jolicode/castor', $process->getOutput());
+        $this->assertFileEquals(self::$castorBin, $castor);
+
+        // The fake release v99.0.0 is newer than the current version
+        $process = $this->runCastor($castor, ['list'], ['CASTOR_DISABLE_VERSION_CHECK' => false]);
+        $this->assertSame(0, $process->getExitCode(), $process->getOutput() . $process->getErrorOutput());
+        $this->assertStringContainsString('A new Castor version is available', $process->getOutput());
+        $this->assertStringContainsString('mise upgrade github:jolicode/castor', $process->getOutput());
+
+        $fs->remove($dir);
+    }
+
     private function runSelfUpdate(string $castor, string ...$args): Process
     {
+        return $this->runCastor($castor, ['castor:self-update', ...$args]);
+    }
+
+    /**
+     * @param list<string>                $args
+     * @param array<string, string|false> $env
+     */
+    private function runCastor(string $castor, array $args, array $env = []): Process
+    {
         $process = new Process(
-            [$castor, 'castor:self-update', '--no-ansi', ...$args],
+            [$castor, ...$args, '--no-ansi'],
             cwd: \dirname($castor),
             env: [
                 // Make sure gh is not authenticated: the fake release has no
@@ -84,6 +120,7 @@ class SelfUpdateCommandTest extends TaskTestCase
                 'CASTOR_DISABLE_VERSION_CHECK' => 'true',
                 'CASTOR_NO_REMOTE' => 1,
                 'CASTOR_TEST' => 'true',
+                ...$env,
             ],
             timeout: 60,
         );

@@ -128,6 +128,23 @@ and make it available in your shell:
 > page](https://castor.jolicode.com/install/latest) and
 > selecting the last build.
 
+## With mise
+
+If you use [mise](https://mise.jdx.dev/), it can install the static binary
+from the [releases page](https://github.com/jolicode/castor/releases):
+
+```bash
+mise use --global 'github:jolicode/castor[matching_regex=^castor\.[a-z]+-[a-z0-9]+(\.exe)?$,bin=castor]'
+```
+
+The `matching_regex` option picks the static binary instead of the phar, and
+the `bin` option exposes it as `castor`. Drop `--global` to pin Castor in the
+`mise.toml` of your project instead.
+
+To update Castor, run `mise upgrade github:jolicode/castor`. `castor
+self-update` refuses to replace a binary installed by mise, since mise would
+not know about the new version.
+
 ## Globally with Composer
 
 > [!WARNING]

@@ -27,7 +27,7 @@ You can install Castor using different methods:
 </a>
 
 <p style="font-style: italic;">
-    Phar, static, Composer, git, etc.
+    Phar, static, mise, Composer, git, etc.
 </p>
 </div>
 </div>
