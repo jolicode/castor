@@ -1,24 +1,30 @@
 size: { width: 1200, height: 630 }
 layers:
   - background:
-      color: white
+      color: "#FFF8E7"
 
-  - size: { width: 385, height: 100 }
-    offset: { x: 50, y: 50 }
+  # Mascot, bleeding out of the bottom right corner
+  - size: { width: 440, height: 438 }
+    offset: { x: 840, y: 180 }
     background:
-      image: doc/assets/logo_CASTOR_line@2x.png
+      image: doc/assets/logo_CASTOR_mascot.svg
 
-  - size: { width: 1200, height: 10 }
-    offset: { x: 0, y: 620 }
+  # Logo
+  - size: { width: 346, height: 90 }
+    offset: { x: 64, y: 56 }
     background:
-      color: "#FF7300"
+      image: doc/assets/logo_CASTOR_line.svg
 
-  - size: { width: 500, height: 50 }
-    offset: { x: 500, y: 80 }
+  # Section, derived from the URL since page.ancestors is empty when cards are rendered
+  - size: { width: 740, height: 32 }
+    offset: { x: 64, y: 176 }
     typography:
-      content: "— The PHP Task Runner"
-      align: start center
-      color: "#1C153F"
+      content: >-
+        {%- set crumbs = (page.url | trim('/') | split('/') | list)[:-1] | join('  /  ') | replace('-', ' ') -%}
+        {{ (crumbs or 'The PHP Task Runner') | upper }}
+      overflow: truncate
+      align: start
+      color: "#FF7300"
       line:
         amount: 1
         height: 1
@@ -26,37 +32,45 @@ layers:
         family: Roboto
         style: Bold
 
-  - size: { width: 1100, height: 300 }
-    offset: { x: 50, y: 180 }
+  # Page title
+  - size: { width: 740, height: 230 }
+    offset: { x: 64, y: 226 }
     typography:
       content: "{{ page.meta.get('title', page.title) }}"
       overflow: shrink
-      align: start center
+      align: start bottom
       color: "#1C153F"
       line:
-        amount: 4
-        height: 1.25
+        amount: 3
+        height: 1.2
       font:
         family: Roboto
         style: Bold
 
-  - size: { width: 1100, height: 90 }
-    offset: { x: 50, y: 500 }
+  # Page description
+  - size: { width: 740, height: 110 }
+    offset: { x: 64, y: 476 }
     typography:
       content: "{{ page.meta.get('description', config.site_description) or '' }}"
       overflow: truncate
       align: start
-      color: "#1C153F"
+      color: "#5E577A"
       line:
-        amount: 2
-        height: 1.25
+        amount: 3
+        height: 1.35
       font:
         family: Roboto
-        style: Light
+        style: Regular
+
+  # Accent bar
+  - size: { width: 1200, height: 8 }
+    offset: { x: 0, y: 622 }
+    background:
+      color: "#FF7300"
 
 definitions:
   - &page_title_with_site_name >-
-    {%- if not page.is_homepage -%}
+    {%- if page.url -%}
       {{ page.meta.get("title", page.title) }} - {{ config.site_name }}
     {%- else -%}
       {{ page.meta.get("title", page.title) }}
