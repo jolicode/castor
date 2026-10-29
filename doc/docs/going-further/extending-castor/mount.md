@@ -61,8 +61,8 @@ use function Castor\mount;
 mount('composer://vendor/package', 'project:package');
 ```
 
-The mounted package keeps its own working directory, exactly as a local
-mount would.
+The tasks of the package, the ones of the files it autoloads included, run in
+its own directory, exactly as with a local mount, and get the prefix.
 
 ## `mount()` vs `import()`
 
