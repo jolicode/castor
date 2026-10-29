@@ -22,6 +22,12 @@ class Composer
 {
     public const VENDOR_DIR = '.castor/vendor';
 
+    /**
+     * The type of a package giving functions, tasks, contexts or listeners:
+     * in its own repository, its composer.json lists its remote packages.
+     */
+    public const CASTOR_PLUGIN_TYPE = 'castor-plugin';
+
     /** Whether the remote packages were needed, but not installed, by a shell completion */
     private bool $skippedForCompletion = false;
 
@@ -30,6 +36,7 @@ class Composer
         private readonly OutputInterface $output,
         private readonly Filesystem $filesystem,
         private readonly BundledPackages $bundledPackages,
+        private readonly InstalledPackages $installedPackages,
         #[Autowire('%composer_no_remote%')]
         private readonly bool $disableRemote,
         private readonly LoggerInterface $logger = new NullLogger(),
@@ -50,8 +57,8 @@ class Composer
         $update = $this->commandLine->hasUpdateRemotes();
         $displayProgress = !$this->commandLine->isOutputMachineReadable();
 
-        if (!file_exists($composerJsonFile = $entrypointDirectory . '/castor.composer.json') && !file_exists($composerJsonFile = $entrypointDirectory . '/.castor/castor.composer.json')) {
-            $this->logger->debug(\sprintf('The castor.composer.json file does not exists in %s or %s/.castor, skipping composer install.', $entrypointDirectory, $entrypointDirectory));
+        if (!$composerJsonFile = $this->findComposerJsonFile($entrypointDirectory)) {
+            $this->logger->debug(\sprintf('The castor.composer.json file does not exists in %s or %s/.castor, and %s is not a Castor plugin, skipping composer install.', $entrypointDirectory, $entrypointDirectory, $entrypointDirectory));
 
             return;
         }
@@ -132,6 +139,26 @@ class Composer
         }
 
         require $autoloadPath;
+
+        $this->installedPackages->addVendorDirectory(\dirname($autoloadPath));
+    }
+
+    /**
+     * The Composer file listing the remote packages of a directory: its
+     * castor.composer.json, or the composer.json of the Castor plugin the
+     * directory is the repository of.
+     */
+    public function findComposerJsonFile(string $directory): ?string
+    {
+        if (file_exists($file = $directory . '/castor.composer.json') || file_exists($file = $directory . '/.castor/castor.composer.json')) {
+            return $file;
+        }
+
+        if ($this->isCastorPlugin($file = $directory . '/composer.json')) {
+            return $file;
+        }
+
+        return null;
     }
 
     /**
@@ -166,14 +193,9 @@ class Composer
             return null;
         }
 
-        if (!preg_match('#^composer://(?<package>[^/]+/[^/]+)$#', $path, $matches)) {
-            throw new InvalidImportFormat(\sprintf('The path "%s" must be formatted like this: "composer://<organization>/<repository>".', $path));
-        }
+        $package = $this->getPackageName($path);
 
-        $package = $matches['package'];
-        $packageDirectory = PathHelper::getCastorVendorDir() . '/' . $package;
-
-        if (!file_exists($packageDirectory)) {
+        if (!$packageDirectory = $this->findPackageDirectory($package)) {
             throw new ImportError(\sprintf('The package "%s" is not installed, make sure you required it in your castor.composer.json file.', $package));
         }
 
@@ -182,6 +204,19 @@ class Composer
         }
 
         return $packageDirectory;
+    }
+
+    /**
+     * The name of the package the path refers to, like "org/repo" for
+     * "composer://org/repo".
+     */
+    public function getPackageName(string $path): string
+    {
+        if (!preg_match('#^composer://(?<package>[^/]+/[^/]+)$#', $path, $matches)) {
+            throw new InvalidImportFormat(\sprintf('The path "%s" must be formatted like this: "composer://<organization>/<repository>".', $path));
+        }
+
+        return $matches['package'];
     }
 
     public function clean(): void
@@ -220,8 +255,9 @@ class Composer
         }
 
         $useBundledPackages = $useBundledPackages && $this->areBundledPackagesEnabled($composerJsonFilePath);
+        $castorPluginLockFile = $this->isCastorPlugin($composerJsonFilePath) ? \dirname($composerJsonFilePath) . '/castor.composer.lock' : null;
 
-        $composerApplication = new ComposerApplication($this->bundledPackages, $useBundledPackages);
+        $composerApplication = new ComposerApplication($this->bundledPackages, $useBundledPackages, $castorPluginLockFile);
         $composerApplication->setAutoExit(false);
 
         $this->logger->debug('Running Composer command.', [
@@ -349,7 +385,43 @@ class Composer
         $lock = json_decode((string) file_get_contents($composerLockFile), true, 512, \JSON_THROW_ON_ERROR);
         $composerJson = json_decode((string) file_get_contents($composerJsonFile), true, 512, \JSON_THROW_ON_ERROR);
 
+        if (\is_array($composerJson) && $this->isCastorPlugin($composerJsonFile)) {
+            // Left out of the remote packages, see ComposerApplication
+            unset($composerJson['require-dev']);
+        }
+
         return $this->bundledPackages->findOutdatedInLock(\is_array($lock) ? $lock : [], \is_array($composerJson) ? $composerJson : []);
+    }
+
+    /**
+     * Whether the file is the composer.json of a Castor plugin, which also
+     * lists its remote packages in its own repository.
+     */
+    private function isCastorPlugin(string $composerJsonFile): bool
+    {
+        if ('composer.json' !== basename($composerJsonFile) || !file_exists($composerJsonFile)) {
+            return false;
+        }
+
+        $json = json_decode((string) file_get_contents($composerJsonFile), true);
+
+        return \is_array($json) && self::CASTOR_PLUGIN_TYPE === ($json['type'] ?? null);
+    }
+
+    /**
+     * The package is looked for in the vendor directory of the root, then in
+     * the ones of the mounted directories having their own
+     * castor.composer.json.
+     */
+    private function findPackageDirectory(string $package): ?string
+    {
+        foreach (array_unique([PathHelper::getCastorVendorDir(), ...$this->installedPackages->getVendorDirectories()]) as $vendorDirectory) {
+            if (file_exists($packageDirectory = $vendorDirectory . '/' . $package)) {
+                return $packageDirectory;
+            }
+        }
+
+        return null;
     }
 
     /**

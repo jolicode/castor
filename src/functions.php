@@ -453,8 +453,9 @@ function http_client(): HttpClientInterface
 /**
  * Loads the tasks, contexts and listeners of a PHP file, of the PHP files of a
  * directory, or of a Composer package like "composer://vendor/package", required
- * in castor.composer.json. Unlike mount(), it does not change the working
- * directory of the tasks.
+ * in castor.composer.json: the ones of its castor.php and of the files it
+ * autoloads. Unlike mount(), it does not change the working directory of the
+ * tasks.
  *
  * Classes are not imported: they are autoloaded, from the "autoload" section of
  * castor.composer.json.
@@ -468,8 +469,8 @@ function import(string $path, ?string $file = null): void
 
 /**
  * Loads the tasks of another Castor application, a directory with its own
- * castor.php or a Composer package like "composer://vendor/package": they run
- * in its directory.
+ * castor.php or a Composer package like "composer://vendor/package", the tasks
+ * of the files it autoloads included: they run in its directory.
  *
  * @param ?string $namespacePrefix Prepended to the namespace of its tasks, like "app" for "app:build"
  * @param ?string $file            The file to load instead of its castor.php

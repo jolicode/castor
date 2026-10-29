@@ -2,7 +2,7 @@
 description: >
   Learn how to import remote functions in Castor using Composer, manage
   dependencies with the `castor composer` command, autoload your own classes,
-  and control remote imports for security.
+  write a package, and control remote imports for security.
 ---
 
 # Import remote functions
@@ -109,17 +109,65 @@ out in `castor.composer.json`:
 Your packages are then resolved against Packagist only, and Castor may break at
 runtime, when a class is loaded from the wrong copy.
 
-## Importing file from a remote package
+## Importing a remote package
 
-Third party functions may not be autoloaded by Composer, as they may be
-optional. To import them, you can use the `import()` function.
+Requiring a package gives its functions and classes: they are autoloaded, like
+in any Composer project. Its tasks, contexts and listeners are loaded once you
+import it:
 
 ```php
-import('composer://vendor/package/', file: 'functions.php');
+use function Castor\import;
+
+import('composer://vendor/package');
 ```
 
-The `file` argument is optional. When not provided, Castor will look for a
-`castor.php` file in the package.
+Castor then loads the `castor.php` file of the package, when it has one, and
+the tasks, contexts and listeners of the files it autoloads. The `file` argument
+loads another file of the package instead of its `castor.php`:
+
+```php
+import('composer://vendor/package', file: 'functions.php');
+```
+
+To run the tasks of the package in its own directory, or to prefix their
+namespace, [mount it](mount.md#mounting-a-remote-package) instead.
+
+> [!WARNING]
+> The tasks, contexts and listeners of the files a package autoloads are still
+> loaded when the package is not imported, with a deprecation: Castor 2.0 will
+> only load them when the package is imported or mounted.
+
+## Writing a package
+
+A package for Castor is a Composer package like any other: declare its
+functions, its classes, and the files of its tasks, contexts and listeners in
+the `autoload` section of its `composer.json` file. It does not need a
+`castor.php` file.
+
+```json
+{
+    "name": "vendor/package",
+    "type": "castor-plugin",
+    "autoload": {
+        "psr-4": {
+            "Vendor\\Package\\": "src/"
+        },
+        "files": [
+            "src/functions.php"
+        ]
+    }
+}
+```
+
+The `castor-plugin` type is for its own repository, where you run its tasks
+while working on it: when there is no `castor.composer.json` file, Castor uses
+the `composer.json` file of a package of this type instead. It installs the
+packages of its `require` section in `.castor/vendor/`, locks them in a
+`castor.composer.lock` file, and autoloads the files of the package from there,
+as in a project requiring it. `castor composer` works on this file too.
+
+Its `require-dev` section is left out: the tools you use to work on the package
+run from the usual `vendor/` directory, locked by its `composer.lock` file.
 
 ## Manipulating castor composer file
 

@@ -1,0 +1,19 @@
+{
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../package"
+        },
+        {
+            "type": "path",
+            "url": "../functions"
+        },
+        {
+            "packagist.org": false
+        }
+    ],
+    "require": {
+        "castor-test/functions": "*@dev",
+        "castor-test/package": "*@dev"
+    }
+}
