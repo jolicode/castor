@@ -147,6 +147,13 @@ final readonly class StubsGenerator
                 new \PhpParser\Comment\Doc('//'),
                 new \PhpParser\Comment\Doc('// Documentation: https://castor.jolicode.com/'),
                 new \PhpParser\Comment\Doc('// Functions, attributes and environment variables: https://castor.jolicode.com/docs/reference/'),
+                new \PhpParser\Comment\Doc('//'),
+                new \PhpParser\Comment\Doc('// The classes and the packages the tasks need are declared in a "castor.composer.json" file'),
+                new \PhpParser\Comment\Doc('// next to "castor.php": its "autoload" section for the classes, "castor composer require'),
+                new \PhpParser\Comment\Doc('// vendor/package" for the packages. Castor installs them in ".castor/vendor/" and loads their'),
+                new \PhpParser\Comment\Doc('// autoloader itself: no Composer run by hand, no "vendor/autoload.php" to require, no import()'),
+                new \PhpParser\Comment\Doc('// of a directory of classes.'),
+                new \PhpParser\Comment\Doc('// https://castor.jolicode.com/docs/going-further/extending-castor/remote-imports/'),
                 new \PhpParser\Comment\Doc(''),
             ],
         ]));

@@ -6,6 +6,7 @@
 
 * Document how to install Castor with mise
 * Document the functions and attributes in their PHPDoc, and in `.castor.stub.php` with a link to the documentation
+* Document how to autoload the classes of the tasks with `castor.composer.json`, in the documentation and in `.castor.stub.php`
 
 ### Fixes
 

@@ -1,8 +1,8 @@
 ---
 description: >
   Learn how to import remote functions in Castor using Composer, manage
-  dependencies with the `castor composer` command, and control remote imports
-  for security.
+  dependencies with the `castor composer` command, autoload your own classes,
+  and control remote imports for security.
 ---
 
 # Import remote functions
@@ -27,6 +27,32 @@ This also can be done by running the `castor composer init` command.
 
 See the [Composer documentation](https://getcomposer.org/doc/04-schema.md) for
 more information about the `composer.json` file.
+
+Castor loads the autoloader of `.castor/vendor/` itself: there is no need to run
+Composer or to require a `vendor/autoload.php` file from your `castor.php` file.
+
+## Autoloading your own classes
+
+The classes used by your tasks are autoloaded the same way: declare them in the
+`autoload` section of `castor.composer.json`, with paths relative to this file.
+
+```json
+{
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    }
+}
+```
+
+Keep `import()` for the files declaring tasks, contexts or listeners: a class is
+loaded when a task uses it.
+
+> [!NOTE]
+> The `autoload` section is not part of the hash of `castor.composer.lock`, so
+> Castor does not install the packages again when you change it: run
+> `castor composer dump-autoload` to take it into account.
 
 ## Packages bundled with Castor
 

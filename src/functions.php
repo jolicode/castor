@@ -456,6 +456,9 @@ function http_client(): HttpClientInterface
  * in castor.composer.json. Unlike mount(), it does not change the working
  * directory of the tasks.
  *
+ * Classes are not imported: they are autoloaded, from the "autoload" section of
+ * castor.composer.json.
+ *
  * @param ?string $file The file to load from the package. Defaults to its castor.php
  */
 function import(string $path, ?string $file = null): void
