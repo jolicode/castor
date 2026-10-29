@@ -35,10 +35,9 @@ final readonly class FunctionResolver
     }
 
     /**
-     * @param list<string>       $previousFunctions
-     * @param list<class-string> $previousClasses
+     * @param list<\ReflectionFunction|\ReflectionClass<object>> $definitions
      */
-    public function resolveFunctions(array $previousFunctions, array $previousClasses): DescriptorsCollection
+    public function resolveFunctions(array $definitions): DescriptorsCollection
     {
         $contextDescriptors = [];
         $contextGeneratorDescriptors = [];
@@ -46,7 +45,7 @@ final readonly class FunctionResolver
         $symfonyTaskDescriptors = [];
         $listenerDescriptors = [];
 
-        foreach ($this->doResolveFunctions($previousFunctions, $previousClasses) as $descriptor) {
+        foreach ($this->doResolveFunctions($definitions) as $descriptor) {
             if ($descriptor instanceof TaskDescriptor) {
                 $taskDescriptors[] = $descriptor;
             } elseif ($descriptor instanceof SymfonyTaskDescriptor) {
@@ -70,33 +69,22 @@ final readonly class FunctionResolver
     }
 
     /**
-     * @param list<string>       $previousFunctions
-     * @param list<class-string> $previousClasses
+     * @param list<\ReflectionFunction|\ReflectionClass<object>> $definitions
      *
      * @return iterable<TaskDescriptor|ContextDescriptor|ContextGeneratorDescriptor|ListenerDescriptor|SymfonyTaskDescriptor>
      */
-    private function doResolveFunctions(array $previousFunctions, array $previousClasses): iterable
+    private function doResolveFunctions(array $definitions): iterable
     {
-        $newFunctions = array_diff(get_defined_functions()['user'], $previousFunctions);
-        foreach ($newFunctions as $functionName) {
-            $reflectionFunction = new \ReflectionFunction($functionName);
-
-            yield from $this->resolveTasks($reflectionFunction);
-            yield from $this->resolveContexts($reflectionFunction);
-            yield from $this->resolveContextGenerators($reflectionFunction);
-            yield from $this->resolveListeners($reflectionFunction);
-        }
-
-        // Symfony task in repacked application are not supported
-        if ($this->repacked) {
-            return;
-        }
-
-        $newClasses = array_diff(get_declared_classes(), $previousClasses);
-        foreach ($newClasses as $className) {
-            $reflectionClass = new \ReflectionClass($className);
-
-            yield from $this->resolveSymfonyTask($reflectionClass);
+        foreach ($definitions as $definition) {
+            if ($definition instanceof \ReflectionFunction) {
+                yield from $this->resolveTasks($definition);
+                yield from $this->resolveContexts($definition);
+                yield from $this->resolveContextGenerators($definition);
+                yield from $this->resolveListeners($definition);
+            } elseif (!$this->repacked) {
+                // Symfony task in repacked application are not supported
+                yield from $this->resolveSymfonyTask($definition);
+            }
         }
     }
 

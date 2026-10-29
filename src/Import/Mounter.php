@@ -18,7 +18,7 @@ class Mounter
     {
         if ($this->composer->isPackage($path)) {
             if ($packageDirectory = $this->composer->resolvePackage($path, $file)) {
-                $this->kernel->addMount(new Mount($packageDirectory, namespacePrefix: $namespacePrefix, allowRemotePackage: false, file: $file, workingDirectory: $packageDirectory));
+                $this->kernel->addMount(new Mount($packageDirectory, allowEmptyEntrypoint: true, namespacePrefix: $namespacePrefix, allowRemotePackage: false, file: $file, workingDirectory: $packageDirectory, package: $this->composer->getPackageName($path)));
             }
 
             return;

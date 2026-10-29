@@ -6,11 +6,19 @@
 
 * Add a `serve_php()` function to start the built-in web server of PHP from a task
 * Add a `--php-cli` option to `castor compile` to embed a PHP CLI in the binary, so `serve_php()` works without PHP installed
+* Load the tasks, contexts and listeners of the files a package autoloads when it is imported or mounted, so a package no longer needs a `castor.php` file, even to be mounted
+* Read the `composer.json` file of a package of type `castor-plugin` in its own repository, when there is no `castor.composer.json` file: the packages of its `require` section are installed in `.castor/vendor/` and locked in `castor.composer.lock`, and its files are autoloaded from there
+* Look for the package given to `import()` or `mount()` in the vendor directories of the mounted directories too, so a mounted directory can import the packages of its own `castor.composer.json`
+
+### Deprecations
+
+* Deprecate loading the tasks, contexts and listeners of the files a package autoloads when it is not imported: import it with `import('composer://vendor/package')`, Castor 2.0 will only load them then
 
 ### Fixes
 
 * Write the messages of Castor (logs, deprecations, errors, update reminder, remote packages progress, `check()` and `wait_for*()` statuses, its questions) to the error output, so they no longer end up in the output of a task piped to another command or redirected to a file
 * Support OpenCode v2 in `llm_ask()` and `llm_run()`, which now require OpenCode 2 or later: OpenCode v1 is no longer supported. Castor runs OpenCode with `--standalone`, so that it knows the read-only agent of Castor instead of failing with `Agent not found: "castor-read-only"`, and reads the environment of the context instead of the one of its background service. The agents of OpenCode are proposed again when choosing the CLI
+* Give the prefix and the working directory of `mount('composer://vendor/package', 'prefix')` to the tasks of the files the package autoloads, which were added to the root application
 
 ## 1.9.1 (2026-10-29)
 

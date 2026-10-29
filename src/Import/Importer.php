@@ -26,7 +26,7 @@ class Importer
     {
         if ($this->composer->isPackage($path)) {
             if ($packageDirectory = $this->composer->resolvePackage($path, $file)) {
-                $this->kernel->addMount(new Mount($packageDirectory, allowEmptyEntrypoint: true, allowRemotePackage: false, file: $file));
+                $this->kernel->addMount(new Mount($packageDirectory, allowEmptyEntrypoint: true, allowRemotePackage: false, file: $file, package: $this->composer->getPackageName($path)));
             }
 
             return;

@@ -21,6 +21,7 @@ use Castor\Exception\CouldNotFindEntrypointException;
 use Castor\Helper\PlatformHelper;
 use Castor\Import\Importer;
 use Castor\Import\Mount;
+use Castor\Import\Remote\Composer;
 use Castor\Monolog\Processor\ProcessProcessor;
 use Joli\JoliNotif\DefaultNotifier;
 use Monolog\Logger;
@@ -63,6 +64,34 @@ final class Kernel extends AbstractKernel
      */
     private array $mounts = [];
 
+    /**
+     * The functions and the classes of the packages imported, waiting for the
+     * mount of their package, by package: the files a package autoloads are
+     * loaded with the vendor directory, before the castor.php importing it.
+     *
+     * @var array<string, list<\ReflectionFunction|\ReflectionClass<object>>>
+     */
+    private array $pendingPackageDefinitions = [];
+
+    /** @var array<string, true> The packages loaded by import() or mount(), by name */
+    private array $importedPackages = [];
+
+    /**
+     * The functions and the classes loaded although no import() nor mount()
+     * asked for their package, with the name of the package.
+     *
+     * @var \WeakMap<\ReflectionFunction|\ReflectionClass<object>, string>
+     */
+    private \WeakMap $notImportedPackageDefinitions;
+
+    /**
+     * The packages whose tasks, contexts or listeners are loaded although no
+     * import() nor mount() asked for them, by name.
+     *
+     * @var array<string, true>
+     */
+    private array $notImportedPackages = [];
+
     private bool $chdirDeprecationTriggered = false;
 
     public function __construct(
@@ -74,6 +103,8 @@ final class Kernel extends AbstractKernel
         private readonly bool $repacked,
     ) {
         parent::__construct($environment, $debug);
+
+        $this->notImportedPackageDefinitions = new \WeakMap();
     }
 
     public function getProjectDir(): string
@@ -352,11 +383,10 @@ final class Kernel extends AbstractKernel
             $this->addMount(new Mount($this->rootDir, allowRemotePackage: $allowRemotePackage, allowEmptyEntrypoint: !$this->hasCastorFile, file: $this->castorFilePath));
 
             while ($mount = array_shift($this->mounts)) {
-                $currentFunctions = get_defined_functions()['user'];
-                $currentClasses = get_declared_classes();
-
-                $this->load($mount, $currentFunctions, $currentClasses, $output);
+                $this->load($mount, $output);
             }
+
+            $this->deprecateNotImportedPackages($c->commandLine, $c->composer);
 
             $c->eventDispatcher->dispatch(new AfterBootEvent($c->application));
         } catch (\Throwable $e) {
@@ -366,17 +396,12 @@ final class Kernel extends AbstractKernel
         }
     }
 
-    /**
-     * @param list<string>       $currentFunctions
-     * @param list<class-string> $currentClasses
-     */
-    private function load(
-        Mount $mount,
-        array $currentFunctions,
-        array $currentClasses,
-        OutputInterface $output,
-    ): void {
+    private function load(Mount $mount, OutputInterface $output): void
+    {
         $c = Container::get();
+
+        $previousFunctions = get_defined_functions()['user'];
+        $previousClasses = get_declared_classes();
 
         if ($mount->allowRemotePackage) {
             $c->composer->install($mount->path);
@@ -389,6 +414,11 @@ final class Kernel extends AbstractKernel
             $c->composer->requireAutoload($mount->path);
         }
 
+        // Apart from the ones of castor.php, as they may belong to a package
+        $autoloadedDefinitions = $this->getDefinitionsSince($previousFunctions, $previousClasses);
+        $previousFunctions = get_defined_functions()['user'];
+        $previousClasses = get_declared_classes();
+
         try {
             $this->requireEntrypoint($mount, $c->importer);
         } catch (CouldNotFindEntrypointException $e) {
@@ -397,7 +427,22 @@ final class Kernel extends AbstractKernel
             }
         }
 
-        $descriptorsCollection = $c->functionResolver->resolveFunctions($currentFunctions, $currentClasses);
+        $entrypointDefinitions = $this->getDefinitionsSince($previousFunctions, $previousClasses);
+        $definitions = [...$this->filterAutoloadedDefinitions($mount, $autoloadedDefinitions), ...$entrypointDefinitions];
+
+        if (null !== $mount->package) {
+            $this->importedPackages[$mount->package] = true;
+            $definitions = [...($this->pendingPackageDefinitions[$mount->package] ?? []), ...$definitions];
+            unset($this->pendingPackageDefinitions[$mount->package]);
+        }
+
+        $descriptorsCollection = $c->functionResolver->resolveFunctions($definitions);
+
+        foreach ($descriptorsCollection->getDefinitions() as $definition) {
+            if (isset($this->notImportedPackageDefinitions[$definition])) {
+                $this->notImportedPackages[$this->notImportedPackageDefinitions[$definition]] = true;
+            }
+        }
 
         // Apply mounts
         foreach ($descriptorsCollection->taskDescriptors as $taskDescriptor) {
@@ -435,6 +480,75 @@ final class Kernel extends AbstractKernel
             $event->taskDescriptors,
             $event->symfonyTaskDescriptors
         );
+    }
+
+    /**
+     * @param list<string>       $previousFunctions
+     * @param list<class-string> $previousClasses
+     *
+     * @return list<\ReflectionFunction|\ReflectionClass<object>>
+     */
+    private function getDefinitionsSince(array $previousFunctions, array $previousClasses): array
+    {
+        $definitions = [];
+
+        foreach (array_diff(get_defined_functions()['user'], $previousFunctions) as $function) {
+            $definitions[] = new \ReflectionFunction($function);
+        }
+
+        foreach (array_diff(get_declared_classes(), $previousClasses) as $class) {
+            $definitions[] = new \ReflectionClass($class);
+        }
+
+        return $definitions;
+    }
+
+    /**
+     * The functions and the classes of the files autoloaded by the vendor
+     * directory of the mount that it exposes: the code of a package is
+     * exposed by the mount importing the package instead.
+     *
+     * @param list<\ReflectionFunction|\ReflectionClass<object>> $definitions
+     *
+     * @return list<\ReflectionFunction|\ReflectionClass<object>>
+     */
+    private function filterAutoloadedDefinitions(Mount $mount, array $definitions): array
+    {
+        $installedPackages = Container::get()->installedPackages;
+        // By the castor.php of this mount, or of a previous one
+        $queuedPackages = array_filter(array_map(static fn (Mount $queuedMount): ?string => $queuedMount->package, $this->mounts));
+        $mountDefinitions = [];
+
+        foreach ($definitions as $definition) {
+            $file = $definition->getFileName();
+            $package = false === $file ? null : $installedPackages->findPackage($file, $mount->path);
+
+            if (null === $package || $package === $mount->package) {
+                $mountDefinitions[] = $definition;
+            } elseif (\in_array($package, $queuedPackages, true)) {
+                $this->pendingPackageDefinitions[$package][] = $definition;
+            } else {
+                // Castor 2.0 will only load them when the package is imported
+                $mountDefinitions[] = $definition;
+                $this->notImportedPackageDefinitions[$definition] = $package;
+            }
+        }
+
+        return $mountDefinitions;
+    }
+
+    private function deprecateNotImportedPackages(CommandLine $commandLine, Composer $composer): void
+    {
+        // Nothing to change in the castor.php of a repacked application, and
+        // the deprecation would land in an output meant to be parsed. The
+        // imports are skipped when the remote packages are disabled.
+        if ($this->repacked || $commandLine->isOutputMachineReadable() || !$composer->isRemoteAllowed()) {
+            return;
+        }
+
+        foreach (array_keys(array_diff_key($this->notImportedPackages, $this->importedPackages)) as $package) {
+            trigger_deprecation('jolicode/castor', '1.10.0', \sprintf('Loading the tasks, contexts and listeners the package "%s" autoloads without importing it is deprecated. Add "import(\'composer://%s\');" to your castor.php to keep them: from Castor 2.0, requiring a package only gives its functions and classes.', $package, $package));
+        }
     }
 
     private function requireEntrypoint(Mount $mount, Importer $importer): void
