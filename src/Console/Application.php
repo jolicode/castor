@@ -27,7 +27,7 @@ use function Symfony\Component\String\u;
 class Application extends SymfonyApplication
 {
     public const NAME = 'castor';
-    public const VERSION = 'v1.9.0';
+    public const VERSION = 'v1.9.1';
     public const HIDE_LOGO = false;
     public const EXTERNAL_LOGO = '';
 
