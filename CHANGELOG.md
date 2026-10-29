@@ -19,6 +19,7 @@
 * Ignore `--no-remote`, `--update-remotes` and `--format` when given to a task after `--`
 * Accept `--context` with `castor list`
 * Give the terminal size to the PTY of the processes, so they no longer fall back on 80 columns (only the size at the start of the command)
+* Resolve the relative paths of `castor.composer.json`, like the autoload ones, from its directory instead of the directory Castor runs from. They were broken when Castor first ran from a subdirectory, for a mounted directory, and for a `.castor/castor.composer.json`, whose paths are now relative to `.castor/`
 
 ## 1.9.0 (2026-10-20)
 

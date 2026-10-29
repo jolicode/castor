@@ -228,7 +228,10 @@ class Composer
             'args' => implode(' ', $args),
         ]);
 
-        $argvInput = new ArgvInput(['composer', ...$args]);
+        // Composer resolves the relative paths of the file, like the autoload
+        // ones, from its working directory: it must be the file's directory,
+        // not the one Castor runs from
+        $argvInput = new ArgvInput(['composer', '--working-dir=' . \dirname($composerJsonFilePath), ...$args]);
         $bufferedOutput = '';
 
         $output = $callback instanceof OutputInterface ? $callback : new class($callback, $bufferedOutput) extends Output {
