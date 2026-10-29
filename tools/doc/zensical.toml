@@ -112,5 +112,3 @@ on_error_fail = true
 [project.plugins.social]
 cards_layout_dir = "cards-layouts"
 cards_layout = "custom"
-cards_layout_options.font_family = "Noto Sans SC"
-cards_layout_options.background_color = "white"
