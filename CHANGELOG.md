@@ -2,6 +2,8 @@
 
 ## Not released yet
 
+## 1.9.1 (2026-10-29)
+
 ### Features
 
 * Document how to install Castor with mise
