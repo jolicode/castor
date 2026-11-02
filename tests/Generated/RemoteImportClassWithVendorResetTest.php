@@ -17,6 +17,6 @@ class RemoteImportClassWithVendorResetTest extends TaskTestCase
         }
 
         $this->assertStringEqualsFileWithCleaning(__FILE__ . '.output.txt', $process->getOutput());
-        $this->assertSame('', $process->getErrorOutput());
+        $this->assertStringEqualsFileWithCleaning(__FILE__ . '.err.txt', $process->getErrorOutput());
     }
 }

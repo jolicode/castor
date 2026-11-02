@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Fixes
+
+* Write the messages of Castor (logs, deprecations, errors, update reminder, remote packages progress, `check()` and `wait_for*()` statuses, its questions) to the error output, so they no longer end up in the output of a task piped to another command or redirected to a file
+
 ## 1.9.1 (2026-10-29)
 
 ### Features

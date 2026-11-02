@@ -11,7 +11,7 @@ class LogErrorTest extends TaskTestCase
     {
         $process = $this->runTask(['log:error']);
         $this->assertSame(0, $process->getExitCode());
-        $this->assertStringContainsString('ERROR     [castor] Error!, this is an "error" log message.', $process->getOutput());
-        $this->assertSame('', $process->getErrorOutput());
+        $this->assertStringContainsString('ERROR     [castor] Error!, this is an "error" log message.', $process->getErrorOutput());
+        $this->assertSame('', $process->getOutput());
     }
 }

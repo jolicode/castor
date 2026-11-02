@@ -21,7 +21,7 @@ class ListFormatWithContextTest extends TaskTestCase
         }
 
         $this->assertStringContainsString('--context', $process->getOutput());
-        $this->assertSame('', $process->getErrorOutput());
+        $this->assertSameWithCleaning('', $process->getErrorOutput());
     }
 
     /**

@@ -23,8 +23,9 @@ class WorkingDirectoryTest extends TaskTestCase
         $process = $this->runTask(['cwd'], '{{ base }}/tests/fixtures/valid/working-directory-legacy/sub');
 
         $this->assertSame(0, $process->getExitCode(), $process->getErrorOutput());
-        $this->assertStringContainsString('Not defining the "CASTOR_USE_CHDIR" constant is deprecated', $process->getOutput());
-        $this->assertStringEndsWith(<<<'TXT'
+        // Not in the output, which may be piped to another command or redirected to a file
+        $this->assertStringContainsString('Not defining the "CASTOR_USE_CHDIR" constant is deprecated', $process->getErrorOutput());
+        $this->assertSame(<<<'TXT'
             cwd: sub
             context: working-directory-legacy
             run: working-directory-legacy

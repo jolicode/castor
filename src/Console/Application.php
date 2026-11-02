@@ -76,7 +76,7 @@ class Application extends SymfonyApplication
             return parent::doRun($input, $output);
         } catch (CommandNotFoundException $e) {
             if (!$this->hasCastorFile) {
-                $this->io->warning('Could not find root "castor.php" file. Did you run castor in the right directory?');
+                $this->io->getErrorStyle()->warning('Could not find root "castor.php" file. Did you run castor in the right directory?');
             }
 
             throw $e;
@@ -97,9 +97,9 @@ class Application extends SymfonyApplication
     {
         if (!$output->isVerbose()) {
             $this->enhanceException($e);
-            // The error of a job of parallel() stays in its output, to be
-            // organized with it
-            $io = $output instanceof JobOutput ? new SymfonyStyle(new ArrayInput([]), $output) : $this->io;
+            // The given output is the error output, or the one of a job of
+            // parallel() so the error is organized with the output of the job
+            $io = new SymfonyStyle(new ArrayInput([]), $output);
 
             if ($e instanceof ProblemException) {
                 $io->error($e->getMessage());

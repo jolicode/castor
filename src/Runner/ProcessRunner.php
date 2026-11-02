@@ -196,7 +196,7 @@ class ProcessRunner
 
             // Nobody can answer the question while the output of a job is captured
             if ($context->verboseArguments && !$context->verbosityLevel->isVerbose() && !$job) {
-                $retry = $this->io->confirm('Do you want to retry the command with verbose arguments?', false);
+                $retry = $this->io->getErrorStyle()->confirm('Do you want to retry the command with verbose arguments?', false);
 
                 if ($retry) {
                     return $this->run(

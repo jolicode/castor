@@ -308,9 +308,8 @@ function add_test(array $args, string $class, ?string $cwd = null, bool $needRem
         // would consume the input from STDIN before the question is asked.
         $outputBuffer = '';
         if ($process->waitUntil(static function (string $type, string $data) use (&$outputBuffer): bool {
-            if (Process::OUT === $type) {
-                $outputBuffer .= $data;
-            }
+            // Castor asks its own questions on the error output
+            $outputBuffer .= $data;
 
             return str_contains($outputBuffer, ' > ');
         })) {
@@ -349,7 +348,7 @@ function add_test(array $args, string $class, ?string $cwd = null, bool $needRem
                 $this->assertStringEqualsFileWithCleaning(__FILE__ . '.err.txt', $process->getErrorOutput());
                 PHP,
             default => <<<'PHP'
-                $this->assertSame('', $process->getErrorOutput());
+                $this->assertSameWithCleaning('', $process->getErrorOutput());
                 PHP,
         },
     ]);

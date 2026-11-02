@@ -1,3 +1,6 @@
+ [WARNING] Could not find root "castor.php" file. Did you run castor in the right directory?
+
+
 
   There are no commands defined in the "unknown" namespace.
 

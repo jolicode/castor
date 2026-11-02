@@ -1,8 +1,0 @@
-In download.php line XXXX:
-
- [ERROR] The following process did not finish successfully (exit code XX):
-
-scp -r debian@server-1.example.com:/tmp/test.html /var/www/index.html
-
- // Re-run the command with the -v option to see more details.
-

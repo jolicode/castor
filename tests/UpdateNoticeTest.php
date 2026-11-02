@@ -14,7 +14,8 @@ class UpdateNoticeTest extends TaskTestCase
     {
         $process = $this->runWithNewRelease(['list']);
 
-        $this->assertStringContainsString(self::NOTICE, $process->getOutput());
+        $this->assertStringContainsString(self::NOTICE, $process->getErrorOutput());
+        $this->assertStringNotContainsString(self::NOTICE, $process->getOutput());
     }
 
     /**
@@ -26,7 +27,7 @@ class UpdateNoticeTest extends TaskTestCase
         $process = $this->runWithNewRelease($args);
 
         $this->assertStringContainsString($expectedOutput, $process->getOutput());
-        $this->assertStringNotContainsString(self::NOTICE, $process->getOutput());
+        $this->assertStringNotContainsString(self::NOTICE, $process->getErrorOutput());
     }
 
     /**

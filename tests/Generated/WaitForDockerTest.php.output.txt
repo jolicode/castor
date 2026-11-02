@@ -1,2 +1,0 @@
-Waiting for docker container "helloworld" to be available... OK
-

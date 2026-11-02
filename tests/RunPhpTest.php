@@ -12,7 +12,7 @@ class RunPhpTest extends TaskTestCase
     {
         $process = $this->runTask(['restart'], cwd: '{{ base }}/tests/fixtures/valid/run-php');
 
-        $this->assertSame('', $process->getErrorOutput());
+        $this->assertSameWithCleaning('', $process->getErrorOutput());
         $this->assertSame(0, $process->getExitCode());
 
         // The static binary is the PHP binary, and does not tell the script

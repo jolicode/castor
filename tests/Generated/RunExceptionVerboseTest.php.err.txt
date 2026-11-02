@@ -1,4 +1,6 @@
+hh:mm:ss NOTICE    [castor] Running command: "echo foo; echo bar>&2;exit 1". ["process" => ["cwd" => "...","env" => [],"runnable" => "echo foo; echo bar>&2;exit 1"]]
 bar
+hh:mm:ss NOTICE    [castor] Command finished with an error (exit code=1).
 
 In ProcessRunner.php line XXXX:
 

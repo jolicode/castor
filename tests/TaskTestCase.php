@@ -84,9 +84,8 @@ abstract class TaskTestCase extends TestCase
             // would consume the input from STDIN before the question is asked.
             $outputBuffer = '';
             if ($process->waitUntil(static function (string $type, string $data) use (&$outputBuffer): bool {
-                if (Process::OUT === $type) {
-                    $outputBuffer .= $data;
-                }
+                // Castor asks its own questions on the error output
+                $outputBuffer .= $data;
 
                 return str_contains($outputBuffer, ' > ');
             })) {
@@ -109,6 +108,11 @@ abstract class TaskTestCase extends TestCase
     {
         $actualString = OutputCleaner::cleanOutput($actualString);
         self::assertStringEqualsFile($expectedFile, $actualString, $message);
+    }
+
+    public function assertSameWithCleaning(string $expected, string $actualString, string $message = ''): void
+    {
+        self::assertSame($expected, OutputCleaner::cleanOutput($actualString), $message);
     }
 
     protected function getCommand(array $args): array

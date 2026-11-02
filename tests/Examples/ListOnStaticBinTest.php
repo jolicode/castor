@@ -20,6 +20,6 @@ class ListOnStaticBinTest extends TaskTestCase
         $expected = file_get_contents(__DIR__ . '/../Generated/ListTest.php.output.txt');
         $expected = preg_replace('{^(pyrech\:.*\n)}m', '', $expected);
         $this->assertSame($expected, OutputCleaner::cleanOutput($process->getOutput()));
-        $this->assertSame('', $process->getErrorOutput());
+        $this->assertSameWithCleaning('', $process->getErrorOutput());
     }
 }

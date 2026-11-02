@@ -172,15 +172,18 @@ function llm_run(string $prompt, string|array|null $cli = null, ?Context $contex
  */
 function check(string $title, string $failureMessage, callable $check): void
 {
-    io()->write($title);
+    // Not in the output of the task, which may be piped to another command or redirected to a file
+    $io = io()->getErrorStyle();
+
+    $io->write($title);
 
     if (!$check()) {
-        io()->writeln(' ❌');
+        $io->writeln(' ❌');
 
         throw new ProblemException($failureMessage);
     }
 
-    io()->writeln(' ✅');
+    $io->writeln(' ✅');
 }
 
 /**

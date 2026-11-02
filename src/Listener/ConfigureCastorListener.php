@@ -10,6 +10,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Psr\Log\NullLogger;
 use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\ErrorHandler\ErrorHandler;
@@ -32,8 +33,11 @@ class ConfigureCastorListener
     public function configureCastor(BeforeBootEvent $event): void
     {
         if ($this->logger instanceof Logger) {
-            // Inside a job of parallel(), the logs are organized with its output
-            $this->logger->pushHandler(new ConsoleHandler(new JobAwareOutput($this->jobRegistry, $this->output)));
+            // On the error output, so the logs (and the deprecations) never end up in the output of a
+            // task piped to another command or redirected to a file. Inside a job of parallel(), the
+            // logs are organized with its output.
+            $errorOutput = $this->output instanceof ConsoleOutputInterface ? $this->output->getErrorOutput() : $this->output;
+            $this->logger->pushHandler(new ConsoleHandler(new JobAwareOutput($this->jobRegistry, $errorOutput)));
         }
 
         $map = [

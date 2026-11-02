@@ -1,2 +1,13 @@
 bash: line 1: i_do_not_exist: command not found
+
+ Do you want to retry the command with verbose arguments? (yes/no) [no]:
+ >
 -x: line 1: i_do_not_exist: command not found
+In verbose_arguments.php line XXXX:
+
+ [ERROR] The following process did not finish successfully (exit code XX):
+
+bash -c i_do_not_exist -x -e
+
+ // Re-run the command with the -v option to see more details.
+

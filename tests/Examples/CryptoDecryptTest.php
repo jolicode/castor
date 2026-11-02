@@ -20,6 +20,6 @@ class CryptoDecryptTest extends TaskTestCase
         $output = OutputCleaner::cleanOutput($process->getOutput());
 
         $this->assertSame("hello there\n", $output);
-        $this->assertSame('', $process->getErrorOutput());
+        $this->assertSameWithCleaning('', $process->getErrorOutput());
     }
 }

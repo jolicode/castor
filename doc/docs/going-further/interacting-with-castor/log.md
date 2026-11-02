@@ -21,6 +21,14 @@ castor -vv  # display level "info" and above
 castor -vvv # display level "debug" and above
 ```
 
+The logs are written to the error output, like the deprecations, the errors and
+the other messages of Castor. They never end up in the output of a task piped to
+another command or redirected to a file:
+
+```bash
+castor db:dump > dump.sql
+```
+
 When an error occurs, the error message is displayed and the program exits. If
 you need more information, you can re-run the task with the `-v` option.
 

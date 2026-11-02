@@ -12,15 +12,14 @@ class LogAllLevelTest extends TaskTestCase
         $process = $this->runTask(['log:all-level']);
         $this->assertSame(0, $process->getExitCode());
         $this->assertStringContainsString('Re-run with -v, -vv, -vvv for different output.', $process->getOutput());
-        $this->assertStringContainsString('EMERGENCY [castor] level: emergency', $process->getOutput());
-        $this->assertStringContainsString('ALERT     [castor] level: alert', $process->getOutput());
-        $this->assertStringContainsString('CRITICAL  [castor] level: critical', $process->getOutput());
-        $this->assertStringContainsString('ERROR     [castor] level: error', $process->getOutput());
-        $this->assertStringContainsString('WARNING   [castor] level: warning', $process->getOutput());
-        $this->assertStringNotContainsString('NOTICE    [castor] level: notice', $process->getOutput());
-        $this->assertStringNotContainsString('INFO      [castor] level: info', $process->getOutput());
-        $this->assertStringNotContainsString('DEBUG     [castor] level: debug', $process->getOutput());
-        $this->assertSame('', $process->getErrorOutput());
+        $this->assertStringContainsString('EMERGENCY [castor] level: emergency', $process->getErrorOutput());
+        $this->assertStringContainsString('ALERT     [castor] level: alert', $process->getErrorOutput());
+        $this->assertStringContainsString('CRITICAL  [castor] level: critical', $process->getErrorOutput());
+        $this->assertStringContainsString('ERROR     [castor] level: error', $process->getErrorOutput());
+        $this->assertStringContainsString('WARNING   [castor] level: warning', $process->getErrorOutput());
+        $this->assertStringNotContainsString('NOTICE    [castor] level: notice', $process->getErrorOutput());
+        $this->assertStringNotContainsString('INFO      [castor] level: info', $process->getErrorOutput());
+        $this->assertStringNotContainsString('DEBUG     [castor] level: debug', $process->getErrorOutput());
     }
 
     // log:all-level -v
@@ -28,15 +27,14 @@ class LogAllLevelTest extends TaskTestCase
     {
         $process = $this->runTask(['log:all-level', '-v']);
         $this->assertSame(0, $process->getExitCode());
-        $this->assertStringContainsString('EMERGENCY [castor] level: emergency', $process->getOutput());
-        $this->assertStringContainsString('ALERT     [castor] level: alert', $process->getOutput());
-        $this->assertStringContainsString('CRITICAL  [castor] level: critical', $process->getOutput());
-        $this->assertStringContainsString('ERROR     [castor] level: error', $process->getOutput());
-        $this->assertStringContainsString('WARNING   [castor] level: warning', $process->getOutput());
-        $this->assertStringContainsString('NOTICE    [castor] level: notice', $process->getOutput());
-        $this->assertStringNotContainsString('INFO      [castor] level: info', $process->getOutput());
-        $this->assertStringNotContainsString('DEBUG     [castor] level: debug', $process->getOutput());
-        $this->assertSame('', $process->getErrorOutput());
+        $this->assertStringContainsString('EMERGENCY [castor] level: emergency', $process->getErrorOutput());
+        $this->assertStringContainsString('ALERT     [castor] level: alert', $process->getErrorOutput());
+        $this->assertStringContainsString('CRITICAL  [castor] level: critical', $process->getErrorOutput());
+        $this->assertStringContainsString('ERROR     [castor] level: error', $process->getErrorOutput());
+        $this->assertStringContainsString('WARNING   [castor] level: warning', $process->getErrorOutput());
+        $this->assertStringContainsString('NOTICE    [castor] level: notice', $process->getErrorOutput());
+        $this->assertStringNotContainsString('INFO      [castor] level: info', $process->getErrorOutput());
+        $this->assertStringNotContainsString('DEBUG     [castor] level: debug', $process->getErrorOutput());
     }
 
     // log:all-level -vv
@@ -44,15 +42,14 @@ class LogAllLevelTest extends TaskTestCase
     {
         $process = $this->runTask(['log:all-level', '-vv']);
         $this->assertSame(0, $process->getExitCode());
-        $this->assertStringContainsString('EMERGENCY [castor] level: emergency', $process->getOutput());
-        $this->assertStringContainsString('ALERT     [castor] level: alert', $process->getOutput());
-        $this->assertStringContainsString('CRITICAL  [castor] level: critical', $process->getOutput());
-        $this->assertStringContainsString('ERROR     [castor] level: error', $process->getOutput());
-        $this->assertStringContainsString('WARNING   [castor] level: warning', $process->getOutput());
-        $this->assertStringContainsString('NOTICE    [castor] level: notice', $process->getOutput());
-        $this->assertStringContainsString('INFO      [castor] level: info', $process->getOutput());
-        $this->assertStringNotContainsString('DEBUG     [castor] level: debug', $process->getOutput());
-        $this->assertSame('', $process->getErrorOutput());
+        $this->assertStringContainsString('EMERGENCY [castor] level: emergency', $process->getErrorOutput());
+        $this->assertStringContainsString('ALERT     [castor] level: alert', $process->getErrorOutput());
+        $this->assertStringContainsString('CRITICAL  [castor] level: critical', $process->getErrorOutput());
+        $this->assertStringContainsString('ERROR     [castor] level: error', $process->getErrorOutput());
+        $this->assertStringContainsString('WARNING   [castor] level: warning', $process->getErrorOutput());
+        $this->assertStringContainsString('NOTICE    [castor] level: notice', $process->getErrorOutput());
+        $this->assertStringContainsString('INFO      [castor] level: info', $process->getErrorOutput());
+        $this->assertStringNotContainsString('DEBUG     [castor] level: debug', $process->getErrorOutput());
     }
 
     // log:all-level -vvv
@@ -60,14 +57,13 @@ class LogAllLevelTest extends TaskTestCase
     {
         $process = $this->runTask(['log:all-level', '-vvv']);
         $this->assertSame(0, $process->getExitCode());
-        $this->assertStringContainsString('EMERGENCY [castor] level: emergency', $process->getOutput());
-        $this->assertStringContainsString('ALERT     [castor] level: alert', $process->getOutput());
-        $this->assertStringContainsString('CRITICAL  [castor] level: critical', $process->getOutput());
-        $this->assertStringContainsString('ERROR     [castor] level: error', $process->getOutput());
-        $this->assertStringContainsString('WARNING   [castor] level: warning', $process->getOutput());
-        $this->assertStringContainsString('NOTICE    [castor] level: notice', $process->getOutput());
-        $this->assertStringContainsString('INFO      [castor] level: info', $process->getOutput());
-        $this->assertStringContainsString('DEBUG     [castor] level: debug', $process->getOutput());
-        $this->assertSame('', $process->getErrorOutput());
+        $this->assertStringContainsString('EMERGENCY [castor] level: emergency', $process->getErrorOutput());
+        $this->assertStringContainsString('ALERT     [castor] level: alert', $process->getErrorOutput());
+        $this->assertStringContainsString('CRITICAL  [castor] level: critical', $process->getErrorOutput());
+        $this->assertStringContainsString('ERROR     [castor] level: error', $process->getErrorOutput());
+        $this->assertStringContainsString('WARNING   [castor] level: warning', $process->getErrorOutput());
+        $this->assertStringContainsString('NOTICE    [castor] level: notice', $process->getErrorOutput());
+        $this->assertStringContainsString('INFO      [castor] level: info', $process->getErrorOutput());
+        $this->assertStringContainsString('DEBUG     [castor] level: debug', $process->getErrorOutput());
     }
 }

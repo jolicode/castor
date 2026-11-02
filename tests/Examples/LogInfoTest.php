@@ -12,7 +12,7 @@ class LogInfoTest extends TaskTestCase
         $process = $this->runTask(['log:info']);
         $this->assertSame(0, $process->getExitCode());
         $this->assertStringContainsString('Re-run with -vv, -vvv for different output.', $process->getOutput());
-        $this->assertSame('', $process->getErrorOutput());
+        $this->assertSameWithCleaning('', $process->getErrorOutput());
     }
 
     // log:info -v
@@ -21,7 +21,7 @@ class LogInfoTest extends TaskTestCase
         $process = $this->runTask(['log:info', '-v']);
         $this->assertSame(0, $process->getExitCode());
         $this->assertStringContainsString('Re-run with -vv, -vvv for different output.', $process->getOutput());
-        $this->assertSame('', $process->getErrorOutput());
+        $this->assertSameWithCleaning('', $process->getErrorOutput());
     }
 
     // log:info -vv
@@ -29,7 +29,6 @@ class LogInfoTest extends TaskTestCase
     {
         $process = $this->runTask(['log:info', '-vv']);
         $this->assertSame(0, $process->getExitCode());
-        $this->assertStringContainsString('INFO      [castor] Hello, this is an "info" log message.', $process->getOutput());
-        $this->assertSame('', $process->getErrorOutput());
+        $this->assertStringContainsString('INFO      [castor] Hello, this is an "info" log message.', $process->getErrorOutput());
     }
 }

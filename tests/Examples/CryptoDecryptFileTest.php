@@ -37,7 +37,7 @@ class CryptoDecryptFileTest extends TaskTestCase
 
         $this->assertFileExists($decryptedSecretFile);
         $this->assertSame(self::CONTENT, file_get_contents($decryptedSecretFile));
-        $this->assertSame('', $process->getErrorOutput());
+        $this->assertSameWithCleaning('', $process->getErrorOutput());
     }
 
     /**
@@ -58,7 +58,7 @@ class CryptoDecryptFileTest extends TaskTestCase
 
         $this->assertFileExists($decryptedSecretFile);
         $this->assertSame(self::CONTENT, file_get_contents($decryptedSecretFile));
-        $this->assertSame('', $process->getErrorOutput());
+        $this->assertSameWithCleaning('', $process->getErrorOutput());
     }
 
     /**
@@ -76,7 +76,7 @@ class CryptoDecryptFileTest extends TaskTestCase
 
         $this->assertFileExists($decryptedSecretFile);
         $this->assertSame(self::CONTENT, file_get_contents($decryptedSecretFile));
-        $this->assertSame('', $process->getErrorOutput());
+        $this->assertSameWithCleaning('', $process->getErrorOutput());
     }
 
     private function runDecryptTask(string $filePath): Process

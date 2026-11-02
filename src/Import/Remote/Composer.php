@@ -12,6 +12,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Console\Helper\ProgressIndicator;
 use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -81,9 +82,11 @@ class Composer
         $this->filesystem->dumpFile($vendorDirectory . '/.gitignore', "*\n");
 
         $progressIndicator = null;
+        // Not in the output of the task, which may be piped to another command or redirected to a file
+        $errorOutput = $this->output instanceof ConsoleOutputInterface ? $this->output->getErrorOutput() : $this->output;
 
         if ($displayProgress) {
-            $progressIndicator = new ProgressIndicator($this->output, null, 100, ['⠏', '⠛', '⠹', '⢸', '⣰', '⣤', '⣆', '⡇']);
+            $progressIndicator = new ProgressIndicator($errorOutput, null, 100, ['⠏', '⠛', '⠹', '⢸', '⣰', '⣤', '⣆', '⡇']);
             $progressIndicator->start('<comment>Downloading remote packages</comment>');
         }
 
@@ -105,7 +108,7 @@ class Composer
         $progressIndicator?->finish('<info>Remote packages imported</info>');
 
         if ($outdatedPackages && $displayProgress) {
-            $this->output->writeln(\sprintf('<comment>Updated in castor.composer.lock to follow the packages bundled with Castor: %s</comment>', implode(', ', $outdatedPackages)));
+            $errorOutput->writeln(\sprintf('<comment>Updated in castor.composer.lock to follow the packages bundled with Castor: %s</comment>', implode(', ', $outdatedPackages)));
         }
 
         $this->writeInstalled($vendorDirectory, $composerLockFile);

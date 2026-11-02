@@ -1,7 +1,3 @@
  Downloading remote packages
  Remote packages imported
 
-
-Hello from example!
-===================
-
