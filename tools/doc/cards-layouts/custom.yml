@@ -15,13 +15,27 @@ layers:
     background:
       image: doc/assets/logo_CASTOR_line.svg
 
+  # Tagline
+  - size: { width: 400, height: 34 }
+    offset: { x: 440, y: 86 }
+    typography:
+      content: "The PHP Task Runner"
+      align: start
+      color: "#5E577A"
+      line:
+        amount: 1
+        height: 1
+      font:
+        family: Roboto
+        style: Regular
+
   # Section, derived from the URL since page.ancestors is empty when cards are rendered
   - size: { width: 740, height: 32 }
     offset: { x: 64, y: 176 }
     typography:
       content: >-
         {%- set crumbs = (page.url | trim('/') | split('/') | list)[:-1] | join('  /  ') | replace('-', ' ') -%}
-        {{ (crumbs or 'The PHP Task Runner') | upper }}
+        {{ crumbs | upper }}
       overflow: truncate
       align: start
       color: "#FF7300"
