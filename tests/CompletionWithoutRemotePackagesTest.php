@@ -26,8 +26,8 @@ class CompletionWithoutRemotePackagesTest extends TaskTestCase
         }
 
         $this->assertDirectoryDoesNotExist(str_replace('{{ base }}', __DIR__ . '/..', self::FIXTURE) . '/.castor/vendor');
-        $this->assertStringNotContainsString('remote packages', $process->getOutput());
-        $this->assertStringNotContainsString('Could not import', $process->getOutput());
+        $this->assertStringNotContainsString('remote packages', $process->getErrorOutput());
+        $this->assertStringNotContainsString('Could not import', $process->getErrorOutput());
         $this->assertStringContainsString('list', $process->getOutput());
     }
 }

@@ -11,7 +11,6 @@ class LogWithContextTest extends TaskTestCase
     {
         $process = $this->runTask(['log:with-context']);
         $this->assertSame(0, $process->getExitCode());
-        $this->assertStringContainsString('[castor] Hello, I\'have a context! ["date" => DateTimeImmutable @', $process->getOutput());
-        $this->assertSame('', $process->getErrorOutput());
+        $this->assertStringContainsString('[castor] Hello, I\'have a context! ["date" => DateTimeImmutable @', $process->getErrorOutput());
     }
 }

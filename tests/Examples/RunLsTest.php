@@ -14,6 +14,6 @@ class RunLsTest extends TaskTestCase
         $this->assertStringContainsString('Output:', $process->getOutput());
         $this->assertStringContainsString('Error output:', $process->getOutput());
         $this->assertStringContainsString('Exit code: 0', $process->getOutput());
-        $this->assertSame('', $process->getErrorOutput());
+        $this->assertSameWithCleaning('', $process->getErrorOutput());
     }
 }

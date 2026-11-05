@@ -109,7 +109,7 @@ class UpdateCastorListener
             return;
         }
 
-        $symfonyStyle = new SymfonyStyle($input, $output);
+        $symfonyStyle = new SymfonyStyle($input, $output)->getErrorStyle();
 
         $symfonyStyle->block(\sprintf('<info>A new Castor version is available</info> (<comment>%s</comment>, currently running <comment>%s</comment>).', $latestVersion['tag_name'], Application::VERSION), escape: false);
 
@@ -156,7 +156,7 @@ class UpdateCastorListener
             return;
         }
 
-        $symfonyStyle = new SymfonyStyle($input, $output);
+        $symfonyStyle = new SymfonyStyle($input, $output)->getErrorStyle();
 
         $symfonyStyle->block(\sprintf('<info>A new Castor snapshot is available</info> (<comment>%s</comment>, currently running <comment>%s</comment>).', $snapshot['name'], Application::VERSION), escape: false);
         $symfonyStyle->block('Run the following command to update Castor:');

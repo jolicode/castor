@@ -87,8 +87,8 @@ class SelfUpdateCommandTest extends TaskTestCase
         // The fake release v99.0.0 is newer than the current version
         $process = $this->runCastor($castor, ['list'], ['CASTOR_DISABLE_VERSION_CHECK' => false]);
         $this->assertSame(0, $process->getExitCode(), $process->getOutput() . $process->getErrorOutput());
-        $this->assertStringContainsString('A new Castor version is available', $process->getOutput());
-        $this->assertStringContainsString('mise upgrade github:jolicode/castor', $process->getOutput());
+        $this->assertStringContainsString('A new Castor version is available', $process->getErrorOutput());
+        $this->assertStringContainsString('mise upgrade github:jolicode/castor', $process->getErrorOutput());
 
         $fs->remove($dir);
     }

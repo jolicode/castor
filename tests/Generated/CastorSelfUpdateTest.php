@@ -17,6 +17,6 @@ class CastorSelfUpdateTest extends TaskTestCase
         }
 
         $this->assertStringEqualsFileWithCleaning(__FILE__ . '.output.txt', $process->getOutput());
-        $this->assertSame('', $process->getErrorOutput());
+        $this->assertSameWithCleaning('', $process->getErrorOutput());
     }
 }

@@ -41,6 +41,9 @@ final readonly class Waiter
         int $intervalMs = 100,
         string $message = 'Waiting for callback to be available...',
     ): void {
+        // Not in the output of the task, which may be piped to another command or redirected to a file
+        $io = $io->getErrorStyle();
+
         if (!$quiet) {
             $io->write($message);
         }

@@ -150,22 +150,25 @@ class LlmRunner
         $howToSkip = $this->howToSkipTheChoice($source);
         $this->assertCanAsk($context, \sprintf('Castor needs you to choose the LLM CLI (from %s)', $source), $howToSkip);
 
-        $this->io->writeln($write
+        // Not in the output of the task, which may be the answer of the LLM piped to another command
+        $io = $this->io->getErrorStyle();
+
+        $io->writeln($write
             ? 'Castor is about to send this prompt to a LLM CLI, which <options=bold>may modify the project and run commands</> to do what it asks:'
             : 'Castor is about to send this prompt to a LLM CLI:');
-        $this->io->newLine();
+        $io->newLine();
 
         foreach ($this->preview($prompt) as $line) {
-            $this->io->writeln('    <comment>' . OutputFormatter::escape($line) . '</comment>');
+            $io->writeln('    <comment>' . OutputFormatter::escape($line) . '</comment>');
         }
 
-        $this->io->newLine();
+        $io->newLine();
 
         if (null !== $howToSkip) {
-            $this->io->writeln(\sprintf('<fg=gray>%s, to skip these questions.</>', $howToSkip));
+            $io->writeln(\sprintf('<fg=gray>%s, to skip these questions.</>', $howToSkip));
         }
 
-        $selection = $write ? $this->selector->selectForWriteOrRefuse($this->io) : $this->selector->selectOrRefuse($this->io);
+        $selection = $write ? $this->selector->selectForWriteOrRefuse($io) : $this->selector->selectOrRefuse($io);
 
         return $selection ?? throw new LlmException('The LLM call has been refused.');
     }

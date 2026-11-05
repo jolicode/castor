@@ -32,6 +32,6 @@ class CryptoEncryptFileTest extends TaskTestCase
 
         $this->assertFileExists($encryptedFile);
         $this->assertSame('supersecret', new SymmetricCrypto(new NullLogger())->decrypt(file_get_contents($encryptedFile), 'my super secret password'));
-        $this->assertSame('', $process->getErrorOutput());
+        $this->assertSameWithCleaning('', $process->getErrorOutput());
     }
 }

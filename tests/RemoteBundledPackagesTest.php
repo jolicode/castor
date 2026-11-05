@@ -69,7 +69,7 @@ class RemoteBundledPackagesTest extends TaskTestCase
             $process = $this->runTask(['hello'], $directory, needRemote: true);
 
             $this->assertSame(0, $process->getExitCode(), $process->getErrorOutput());
-            $this->assertStringContainsString('Updated in castor.composer.lock to follow the packages bundled with Castor: psr/log', $process->getOutput());
+            $this->assertStringContainsString('Updated in castor.composer.lock to follow the packages bundled with Castor: psr/log', $process->getErrorOutput());
             $this->assertStringContainsString('Hello from the fixture', $process->getOutput());
             $this->assertSame(['psr/log' => ['metapackage', InstalledVersions::getPrettyVersion('psr/log')]], $this->getLockedPackages($lockFile));
             $this->assertDirectoryDoesNotExist($directory . '/.castor/vendor/psr');
@@ -78,7 +78,7 @@ class RemoteBundledPackagesTest extends TaskTestCase
             $process = $this->runTask(['hello'], $directory, needRemote: true);
 
             $this->assertSame(0, $process->getExitCode(), $process->getErrorOutput());
-            $this->assertStringNotContainsString('Downloading remote packages', $process->getOutput());
+            $this->assertStringNotContainsString('Downloading remote packages', $process->getErrorOutput());
         } finally {
             new Filesystem()->remove($directory);
         }
@@ -99,7 +99,7 @@ class RemoteBundledPackagesTest extends TaskTestCase
             $process = $this->runTask(['hello'], $directory, needRemote: true);
 
             $this->assertSame(0, $process->getExitCode(), $process->getErrorOutput());
-            $this->assertStringNotContainsString('Updated in castor.composer.lock', $process->getOutput());
+            $this->assertStringNotContainsString('Updated in castor.composer.lock', $process->getErrorOutput());
             $this->assertSame(['psr/log' => ['metapackage', '3.0.0']], $this->getLockedPackages($lockFile));
             $this->assertDirectoryDoesNotExist($directory . '/.castor/vendor/psr');
         } finally {
@@ -172,7 +172,7 @@ class RemoteBundledPackagesTest extends TaskTestCase
             $process = $this->runTask(['hello'], $directory, needRemote: true);
 
             $this->assertSame(0, $process->getExitCode(), $process->getErrorOutput());
-            $this->assertStringContainsString('Updated in castor.composer.lock to follow the packages bundled with Castor: psr/http-message', $process->getOutput());
+            $this->assertStringContainsString('Updated in castor.composer.lock to follow the packages bundled with Castor: psr/http-message', $process->getErrorOutput());
             $this->assertSame('library', $this->getLockedPackages($lockFile)['psr/http-message'][0]);
             $this->assertDirectoryExists($directory . '/.castor/vendor/psr/http-message');
             $this->assertDirectoryDoesNotExist($directory . '/.castor/vendor/psr/log');

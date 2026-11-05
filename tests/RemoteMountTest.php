@@ -17,13 +17,15 @@ class RemoteMountTest extends TaskTestCase
             $this->fail($process->getErrorOutput());
         }
 
-        $this->assertStringEqualsFileWithCleaning(__FILE__ . '.output_update.txt', $process->getOutput());
+        $this->assertStringEqualsFileWithCleaning(__FILE__ . '.output.txt', $process->getOutput());
+        $this->assertStringContainsString('Remote packages imported', $process->getErrorOutput());
 
         // Vendor downloaded => should not download
         $process = $this->runTask(['remote:pyrech:hello-example'], '{{ base }}/tests/fixtures/valid/remote-mount', needRemote: true);
 
         $this->assertSame(0, $process->getExitCode());
-        $this->assertStringEqualsFileWithCleaning(__FILE__ . '.output_no_update.txt', $process->getOutput());
+        $this->assertStringEqualsFileWithCleaning(__FILE__ . '.output.txt', $process->getOutput());
+        $this->assertStringNotContainsString('Downloading remote packages', $process->getErrorOutput());
     }
 
     public function testTheRemotePackagesOfAMountedDirectoryAreLoaded(): void

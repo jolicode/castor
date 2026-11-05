@@ -47,7 +47,7 @@ class InterruptionTest extends TaskTestCase
         $process = $this->runTask(['signaled'], '{{ base }}/tests/fixtures/valid/interruption');
 
         $this->assertSame(130, $process->getExitCode(), $process->getErrorOutput());
-        $this->assertStringContainsString('[WARNING] The command "kill -INT $$" has been interrupted.', $process->getOutput());
+        $this->assertStringContainsString('[WARNING] The command "kill -INT $$" has been interrupted.', $process->getErrorOutput());
         $this->assertStringNotContainsString('Next step', $process->getOutput());
     }
 
