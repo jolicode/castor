@@ -1,0 +1,8 @@
+{
+    "name": "castor-test/functions",
+    "autoload": {
+        "files": [
+            "functions.php"
+        ]
+    }
+}
