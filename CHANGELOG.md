@@ -2,6 +2,10 @@
 
 ## Not released yet
 
+### Features
+
+* Add a `--php-cli` option to `castor compile` to embed a PHP CLI in the binary, for what the binary cannot do by itself, like running the built-in web server
+
 ### Fixes
 
 * Write the messages of Castor (logs, deprecations, errors, update reminder, remote packages progress, `check()` and `wait_for*()` statuses, its questions) to the error output, so they no longer end up in the output of a task piped to another command or redirected to a file
