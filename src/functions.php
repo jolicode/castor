@@ -997,6 +997,20 @@ function run_php(string $pharPath, array $arguments = [], ?Context $context = nu
 }
 
 /**
+ * Serves a directory with the built-in web server of PHP, until it is stopped.
+ * The URL is printed, unless a callback is given to receive it.
+ *
+ * @param (callable(string): void)|null $onStart
+ */
+function serve_php(string $documentRoot, ?callable $onStart = null, ?Context $context = null): void
+{
+    Container::get()
+        ->phpServerRunner
+        ->serve($documentRoot, $onStart ?? static fn (string $url) => io()->writeln("URL: {$url}"), $context)
+    ;
+}
+
+/**
  * Returns the value in ASCII kebab-case, like "hello-world" for "Hello World".
  */
 function slug(string $value, string $separator = '-', ?string $locale = null): string
