@@ -48,5 +48,6 @@ A web server cannot serve a directory from inside a phar: Castor copies it to a
 temporary directory, and removes it when the server stops. Use `__DIR__` to give
 the path of a directory of your application.
 
-A static binary does not include the web server of PHP: read how to [compile your
-application with it](../extending-castor/compile.md#running-a-web-server).
+A static binary does not include the web server of PHP, so Castor uses the `php`
+of the `PATH`. To run on a machine without PHP, [compile your application with a
+PHP CLI](../extending-castor/compile.md#running-a-web-server).

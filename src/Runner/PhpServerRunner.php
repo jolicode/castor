@@ -7,6 +7,7 @@ use Castor\ContextRegistry;
 use Castor\Exception\ProblemException;
 use JoliCode\PhpOsHelper\OsHelper;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Process\ExecutableFinder;
 
 /** @internal */
 final readonly class PhpServerRunner
@@ -76,7 +77,8 @@ final readonly class PhpServerRunner
         $embeddedPhpCli = \Phar::running() . '/' . self::PHP_CLI_DIRECTORY . '/' . $binary;
 
         if (!is_file($embeddedPhpCli)) {
-            throw new ProblemException('This static binary cannot start a web server: run Castor with PHP, or compile your application with the "--php-cli" option.');
+            return new ExecutableFinder()->find('php')
+                ?? throw new ProblemException('This static binary cannot start a web server: install PHP, or compile your application with the "--php-cli" option.');
         }
 
         $phpCli = "{$extractionDirectory}/{$binary}";

@@ -77,8 +77,8 @@ You can simply run it like any other executable:
 
 The binary runs your tasks with the `micro` SAPI of PHP, which does not include
 the built-in web server. To use the [`serve_php()`
-function](../helpers/serve-php.md), use the `--php-cli` option, and add the
-`pcntl` extension to the default ones:
+function](../helpers/serve-php.md) on a machine without PHP, use the `--php-cli`
+option, and add the `pcntl` extension to the default ones:
 
 ```bash
 castor compile my-custom-castor-app.phar --php-cli --php-extensions=mbstring,phar,posix,tokenizer,curl,filter,openssl,pcntl

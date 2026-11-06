@@ -16,10 +16,6 @@ class ServePhpTest extends TaskTestCase
     #[TestWith(['web-with-callback'])]
     public function test(string $task): void
     {
-        if (self::$binary) {
-            $this->markTestSkipped('This test can not be ran with the binary version of Castor: it does not embed a PHP CLI.');
-        }
-
         $this->assertServesPhpAndCleansUp(
             $this->getCommand([$task]),
             __DIR__ . '/fixtures/valid/serve-php',
@@ -34,23 +30,19 @@ class ServePhpTest extends TaskTestCase
 
     public function testMissingDocumentRoot(): void
     {
-        if (self::$binary) {
-            $this->markTestSkipped('This test can not be ran with the binary version of Castor: it does not embed a PHP CLI.');
-        }
-
         $process = $this->runTask(['web-without-document-root'], '{{ base }}/tests/fixtures/valid/serve-php');
 
         $this->assertSame(1, $process->getExitCode());
         $this->assertStringContainsString('The PHP web server could not start', $process->getErrorOutput());
     }
 
-    public function testStaticBinaryWithoutPhpCli(): void
+    public function testStaticBinaryWithoutPhp(): void
     {
         if (!self::$binary) {
             $this->markTestSkipped('This test is for the binary version of Castor.');
         }
 
-        $process = $this->runTask(['web'], '{{ base }}/tests/fixtures/valid/serve-php');
+        $process = $this->runTask(['web'], '{{ base }}/tests/fixtures/valid/serve-php', env: ['PATH' => '/nonexistent']);
 
         $this->assertSame(1, $process->getExitCode());
         $this->assertStringContainsString('--php-cli', $process->getErrorOutput());
