@@ -2,7 +2,7 @@
 
 namespace Castor\Tests\Slow;
 
-use Castor\Tests\Helper\WebServerTaskTrait;
+use Castor\Tests\Helper\ServePhpTaskTrait;
 use Castor\Tests\TaskTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\ExecutableFinder;
@@ -10,7 +10,7 @@ use Symfony\Component\Process\Process;
 
 class CompileCommandTest extends TaskTestCase
 {
-    use WebServerTaskTrait;
+    use ServePhpTaskTrait;
 
     public function test(): void
     {
@@ -57,7 +57,7 @@ class CompileCommandTest extends TaskTestCase
 
         $castorAppDirPath = RepackHelper::setupRepackedCastorApp('castor-test-compile-php-cli');
 
-        new Filesystem()->mirror(__DIR__ . '/../fixtures/valid/web-server', $castorAppDirPath, options: ['override' => true]);
+        new Filesystem()->mirror(__DIR__ . '/../fixtures/valid/serve-php', $castorAppDirPath, options: ['override' => true]);
 
         $phar = RepackHelper::repackApp(self::$castorBin, $castorAppDirPath);
 
@@ -65,7 +65,7 @@ class CompileCommandTest extends TaskTestCase
 
         $this->compile($phar, $binary, $castorAppDirPath, ['--php-cli']);
 
-        $this->assertWebServerTaskServesPhpAndCleansUp([$binary, 'web'], $castorAppDirPath);
+        $this->assertServesPhpAndCleansUp([$binary, 'web'], $castorAppDirPath);
 
         $this->assertFileExists($phar);
         $this->assertStringNotContainsString('.castor-php-cli', (string) file_get_contents($phar), 'The phar given to the compile command must not be modified.');

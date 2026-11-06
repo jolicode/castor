@@ -7,22 +7,22 @@ use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
 /**
- * For the "web" task of tests/fixtures/valid/web-server.
+ * For the tasks of tests/fixtures/valid/serve-php that start a server.
  */
-trait WebServerTaskTrait
+trait ServePhpTaskTrait
 {
     /**
      * @param list<string>          $command
      * @param array<string, string> $env
      */
-    private function assertWebServerTaskServesPhpAndCleansUp(array $command, string $cwd, array $env = []): void
+    private function assertServesPhpAndCleansUp(array $command, string $cwd, array $env = []): void
     {
         if (null === $setsid = new ExecutableFinder()->find('setsid')) {
             $this->markTestSkipped('The "setsid" command of util-linux is needed to send a CTRL+C.');
         }
 
         $fs = new Filesystem();
-        $temporaryDirectory = sys_get_temp_dir() . '/castor-test-web-server';
+        $temporaryDirectory = sys_get_temp_dir() . '/castor-test-serve-php';
         $fs->remove($temporaryDirectory);
         $fs->mkdir($temporaryDirectory);
 
@@ -31,7 +31,7 @@ trait WebServerTaskTrait
 
         $url = null;
         $process->waitUntil(static function (string $type, string $data) use (&$url): bool {
-            $url = preg_match('{^URL: (\S+)$}m', $data, $matches) ? $matches[1] : null;
+            $url = preg_match('{^URL: (\S+)}m', $data, $matches) ? $matches[1] : null;
 
             return null !== $url;
         });

@@ -3,6 +3,7 @@
 namespace Castor\Console\Command;
 
 use Castor\Helper\PathHelper;
+use Castor\Runner\PhpServerRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,7 +22,6 @@ class CompileCommand extends Command
     // this version to invalidate the cache
     private const CACHE_VERSION = '5';
     private const DEFAULT_SPC_VERSION = '2.8.5';
-    private const PHP_CLI_DIRECTORY = '.castor-php-cli';
 
     /**
      * SHA-256 checksums of the static-php-cli (spc) archives, by version and
@@ -312,7 +312,7 @@ class CompileCommand extends Command
             command: [
                 $phpCliPath, '-n', '-d', 'phar.readonly=0',
                 '-r', '$phar = new Phar($argv[1]); $phar->addFile($argv[2], $argv[3]); $phar[$argv[3]]->compress(Phar::GZ);',
-                '--', $pharWithPHPCliPath, $phpCliPath, self::PHP_CLI_DIRECTORY . '/' . basename($phpCliPath),
+                '--', $pharWithPHPCliPath, $phpCliPath, PhpServerRunner::PHP_CLI_DIRECTORY . '/' . basename($phpCliPath),
             ],
             timeout: null,
         );

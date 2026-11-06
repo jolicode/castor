@@ -4,7 +4,8 @@
 
 ### Features
 
-* Add a `--php-cli` option to `castor compile` to embed a PHP CLI in the binary, for what the binary cannot do by itself, like running the built-in web server
+* Add a `serve_php()` function to start the built-in web server of PHP from a task
+* Add a `--php-cli` option to `castor compile` to embed a PHP CLI in the binary, so `serve_php()` works in a static binary
 
 ### Fixes
 
