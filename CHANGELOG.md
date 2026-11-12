@@ -5,6 +5,7 @@
 ### Fixes
 
 * Write the messages of Castor (logs, deprecations, errors, update reminder, remote packages progress, `check()` and `wait_for*()` statuses, its questions) to the error output, so they no longer end up in the output of a task piped to another command or redirected to a file
+* Support OpenCode v2 in `llm_ask()` and `llm_run()`, which now require OpenCode 2 or later: OpenCode v1 is no longer supported. Castor runs OpenCode with `--standalone`, so that it knows the read-only agent of Castor instead of failing with `Agent not found: "castor-read-only"`, and reads the environment of the context instead of the one of its background service. The agents of OpenCode are proposed again when choosing the CLI
 
 ## 1.9.1 (2026-10-29)
 

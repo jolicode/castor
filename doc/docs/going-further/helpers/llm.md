@@ -22,7 +22,7 @@ runs them in their non-interactive mode. Castor knows the following CLIs:
 
 - [Claude Code](https://claude.com/product/claude-code) (`claude`)
 - [Codex CLI](https://developers.openai.com/codex/cli) (`codex`)
-- [OpenCode](https://opencode.ai) (`opencode`)
+- [OpenCode](https://opencode.ai) (`opencode`), version 2 or later only
 - [Gemini CLI](https://geminicli.com) (`gemini`)
 - [GitHub Copilot CLI](https://github.com/features/copilot/cli) (`copilot`)
 - [Cursor CLI](https://cursor.com/cli) (`cursor-agent`)
@@ -55,6 +55,12 @@ for all, to skip these questions.
 > environment variable, merged with the configuration you may already give in
 > this variable: Castor can only merge a JSON object, without comments nor
 > trailing commas. `llm_run()` gives this variable to OpenCode as it is.
+>
+> Castor always runs OpenCode with the `--standalone` option, so that it starts
+> its own server instead of using its background service: the background service
+> keeps the environment of the process that started it, and would ignore this
+> variable and the environment of the context. Each call therefore takes a bit
+> longer to start.
 >
 > Amp and Crush approve all the actions of the model in a non-interactive run,
 > and Gemini CLI lets the model leave its `plan` approval mode for the `yolo`

@@ -71,7 +71,7 @@ class LlmRunnerTest extends LlmTestCase
 
         $this->assertSame([
             ['claude', '--print', '--output-format', 'text', '--no-session-persistence', '--tools', '', '--model', 'opus', '--agent', 'reviewer'],
-            ['opencode', 'run', '--model', 'opencode/big-pickle', '--agent', 'build'],
+            ['opencode', 'run', '--standalone', '--model', 'opencode/big-pickle', '--agent', 'build'],
         ], $this->getRunCommands());
         $this->assertSame('What is the answer?', $this->runs[0][1]->input);
         $this->assertSame('What is the answer?', $this->runs[1][1]->input);
@@ -85,7 +85,7 @@ class LlmRunnerTest extends LlmTestCase
         $runner->ask('What is the answer?', 'opencode');
 
         [$command, $context] = $this->runs[0];
-        $this->assertSame(['opencode', 'run', '--agent', 'castor-read-only'], $command);
+        $this->assertSame(['opencode', 'run', '--standalone', '--agent', 'castor-read-only'], $command);
         $config = $context->environment['OPENCODE_CONFIG_CONTENT'];
         $this->assertStringContainsString('"provider":{"ollama":{}}', $config, 'The configuration of the user is kept.');
         $this->assertStringContainsString('"reviewer":{"mode":"primary"}', $config);
@@ -210,7 +210,7 @@ class LlmRunnerTest extends LlmTestCase
     {
         $runner = $this->createRunner(['claude', 'opencode'], [
             'opencode models' => [0, "opencode/big-pickle\nopencode/other\n", ''],
-            'opencode agent list' => [0, "build (primary)\nexplore (subagent)\nplan (primary)\n", ''],
+            'opencode debug' => [0, '[{"id": "build", "mode": "primary", "hidden": false}, {"id": "explore", "mode": "subagent", "hidden": false}, {"id": "plan", "mode": "primary", "hidden": false}, {"id": "compaction", "mode": "primary", "hidden": true}]', ''],
         ], interactive: true, inputs: "opencode\nopencode/big-pickle\nbuild\n");
         $_SERVER['CASTOR_LLM'] = 'choose';
 
@@ -222,21 +222,22 @@ class LlmRunnerTest extends LlmTestCase
         $this->assertStringContainsString('Which model?', $output);
         $this->assertStringContainsString('Which agent?', $output);
         $this->assertStringNotContainsString('explore', $output, 'Only the primary agents are proposed.');
+        $this->assertStringNotContainsString('compaction', $output, 'The hidden agents are not proposed.');
         $this->assertSame(1, substr_count($output, 'Which LLM CLI do you want to use?'), 'The choice is asked once per run.');
 
         $this->assertSame([
-            ['opencode', 'run', '--model', 'opencode/big-pickle', '--agent', 'build'],
-            ['opencode', 'run', '--model', 'opencode/big-pickle', '--agent', 'build'],
+            ['opencode', 'run', '--standalone', '--model', 'opencode/big-pickle', '--agent', 'build'],
+            ['opencode', 'run', '--standalone', '--model', 'opencode/big-pickle', '--agent', 'build'],
         ], array_values(array_filter($this->getRunCommands(), static fn (array $command): bool => 'run' === ($command[1] ?? null))));
     }
 
     public function testChooseStillWorksWhenTheCliCannotListItsModelsAndAgents(): void
     {
-        $listModels = new Process(['opencode', 'models']);
+        $listModels = new Process(['opencode', 'models', '--standalone']);
         $listModels->setTimeout(30);
         $runner = $this->createRunner(['opencode'], [
             'opencode models' => new ProcessTimedOutException($listModels, ProcessTimedOutException::TYPE_GENERAL),
-            'opencode agent' => [1, '', 'Error: unknown command'],
+            'opencode debug' => [1, '', 'Error: unknown command'],
         ], interactive: true, inputs: "opencode\nopencode/big-pickle\n\n");
         $_SERVER['CASTOR_LLM'] = 'choose';
 
@@ -246,7 +247,7 @@ class LlmRunnerTest extends LlmTestCase
         $this->assertStringContainsString('Which model? Leave empty for the default of the CLI', $output);
         $this->assertStringContainsString('Which agent? Leave empty for the default of the CLI', $output);
         $commands = $this->getRunCommands();
-        $this->assertSame(['opencode', 'run', '--model', 'opencode/big-pickle', '--agent', 'castor-read-only'], end($commands));
+        $this->assertSame(['opencode', 'run', '--standalone', '--model', 'opencode/big-pickle', '--agent', 'castor-read-only'], end($commands));
     }
 
     public function testTheCliArgumentCannotBeOverriddenToSkipTheChoice(): void
@@ -527,7 +528,7 @@ class LlmRunnerTest extends LlmTestCase
 
         $this->assertSame([
             ['claude', '--print', '--output-format', 'text', '--no-session-persistence', '--permission-mode', 'acceptEdits', '--allowedTools', 'Bash', 'PowerShell', '--model', 'opus'],
-            ['opencode', 'run', '--auto', '--agent', 'build'],
+            ['opencode', 'run', '--standalone', '--auto', '--agent', 'build'],
             ['copilot', '--silent', '--allow-all-tools', '--allow-all-urls'],
         ], $this->getRunCommands());
         $this->assertSame('Fix the typos.', $this->runs[0][1]->input);
@@ -551,7 +552,7 @@ class LlmRunnerTest extends LlmTestCase
 
         $runner->run('Fix the typos.', 'opencode --agent reviewer');
 
-        $this->assertSame([['opencode', 'run', '--auto', '--agent', 'reviewer']], $this->getRunCommands());
+        $this->assertSame([['opencode', 'run', '--standalone', '--auto', '--agent', 'reviewer']], $this->getRunCommands());
     }
 
     public function testRunRefusesACliThatCannotModifyTheProject(): void
@@ -608,7 +609,7 @@ class LlmRunnerTest extends LlmTestCase
     public function testEachModeKeepsItsOwnChoice(): void
     {
         $runner = $this->createRunner(['opencode'], [
-            'opencode agent list' => [0, "build (primary)\nplan (primary)\n", ''],
+            'opencode debug' => [0, '[{"id": "build", "mode": "primary", "hidden": false}, {"id": "plan", "mode": "primary", "hidden": false}]', ''],
         ], interactive: true, inputs: "opencode\n\n\nopencode\n\nbuild\n");
 
         $runner->ask('What is the answer?');
@@ -618,9 +619,9 @@ class LlmRunnerTest extends LlmTestCase
         $this->assertSame(2, substr_count($this->output->fetch(), 'Which LLM CLI do you want to use?'), 'The choice is asked once per mode.');
         // The agent chosen for the writes is not used for the questions
         $this->assertSame([
-            ['opencode', 'run', '--agent', 'castor-read-only'],
-            ['opencode', 'run', '--auto', '--agent', 'build'],
-            ['opencode', 'run', '--agent', 'castor-read-only'],
+            ['opencode', 'run', '--standalone', '--agent', 'castor-read-only'],
+            ['opencode', 'run', '--standalone', '--auto', '--agent', 'build'],
+            ['opencode', 'run', '--standalone', '--agent', 'castor-read-only'],
         ], array_values(array_filter($this->getRunCommands(), static fn (array $command): bool => 'run' === ($command[1] ?? null))));
     }
 
