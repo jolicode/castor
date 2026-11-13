@@ -73,5 +73,7 @@ class SelectionTest extends LlmTestCase
         yield 'option without value' => ['claude --model', 'The "--model" option needs a value, in the LLM value "claude --model".'];
         yield 'agent not supported' => ['codex --agent foo', 'The "codex" LLM CLI does not support choosing the agent.'];
         yield 'model not supported' => ['amp --model foo', 'The "amp" LLM CLI does not support choosing the model.'];
+        yield 'server of OpenCode' => ['opencode --server http://localhost:4096', 'The "--server" option of the "opencode" LLM CLI is not supported: Castor runs OpenCode with its own server (--standalone)'];
+        yield 'server of OpenCode with equals' => [['opencode', '--server=http://localhost:4096'], 'The "--server" option of the "opencode" LLM CLI is not supported'];
     }
 }

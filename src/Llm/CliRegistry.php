@@ -50,7 +50,10 @@ class CliRegistry
             new Cli('codex', ['codex', 'exec', '--skip-git-repo-check', '--ephemeral', '--color', 'never', '--output-last-message', Cli::OUTPUT_FILE_PLACEHOLDER, Cli::OPTIONS_PLACEHOLDER, '-'], readOnlyArguments: ['--sandbox', 'read-only'], writeArguments: ['--sandbox', 'workspace-write', '--config', 'sandbox_workspace_write.network_access=true'], modelOption: '--model'),
             // Without --auto, a permission that is not allowed by the configuration is rejected, which stops the agent.
             // --auto does not lift a denied permission: the default agent of the user may be "plan", which denies the edits
-            new Cli('opencode', ['opencode', 'run', Cli::OPTIONS_PLACEHOLDER], writeArguments: ['--auto'], modelOption: '--model', agentOption: '--agent', readOnlyAgent: self::OPENCODE_READ_ONLY_AGENT, writeAgent: 'build'),
+            // --standalone runs a private server instead of the background service, which keeps the environment
+            // of the process that started it: OPENCODE_CONFIG_CONTENT and the context are read, and the server
+            // stops with the CLI
+            new Cli('opencode', ['opencode', 'run', '--standalone', Cli::OPTIONS_PLACEHOLDER], writeArguments: ['--auto'], modelOption: '--model', agentOption: '--agent', readOnlyAgent: self::OPENCODE_READ_ONLY_AGENT, writeAgent: 'build', rejectedOptions: ['--server' => 'Castor runs OpenCode with its own server (--standalone), so that it reads the read-only agent of Castor and the environment of the context, which another server would ignore.']),
             // In a non-interactive run, the model may leave the plan approval mode for the yolo one
             new Cli('gemini', ['gemini', Cli::OPTIONS_PLACEHOLDER], readOnlyArguments: ['--approval-mode', 'plan'], writeArguments: ['--approval-mode', 'yolo'], modelOption: '--model', mayModifyProject: true),
             // The URLs need --allow-all-urls in the prompt mode: they are allowed, as the network is for codex
@@ -163,7 +166,7 @@ class CliRegistry
         $models = $cli->models;
 
         if ('opencode' === $cli->name) {
-            $models = [...$models, ...$this->captureLines(['opencode', 'models'])];
+            $models = [...$models, ...$this->captureLines(['opencode', 'models', '--standalone'])];
         }
 
         return array_values(array_unique($models));
@@ -177,10 +180,7 @@ class CliRegistry
     public function listAgents(Cli $cli): array
     {
         return match ($cli->name) {
-            'opencode' => array_values(array_filter(array_map(
-                static fn (string $line): ?string => preg_match('/^(\S+) \(primary\)$/', $line, $matches) ? $matches[1] : null,
-                $this->captureLines(['opencode', 'agent', 'list']),
-            ))),
+            'opencode' => $this->listOpencodeAgents(),
             'claude' => $this->listClaudeAgents(),
             default => [],
         };
@@ -263,6 +263,41 @@ class CliRegistry
         }
 
         return array_values(array_unique($agents));
+    }
+
+    /**
+     * The agents of OpenCode that may be chosen for "opencode run": the
+     * primary ones and the ones of the "all" mode, unless they are hidden.
+     *
+     * @return list<string>
+     */
+    private function listOpencodeAgents(): array
+    {
+        $output = implode("\n", $this->captureLines(['opencode', 'debug', 'agents', '--standalone']));
+        if ('' === $output) {
+            return [];
+        }
+
+        try {
+            $agents = json_decode($output, true, flags: \JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            $this->logger->warning('The agents of OpenCode cannot be read, they are ignored.', ['exception' => $e]);
+
+            return [];
+        }
+
+        if (!\is_array($agents)) {
+            return [];
+        }
+
+        $names = [];
+        foreach ($agents as $agent) {
+            if (\is_array($agent) && \is_string($agent['id'] ?? null) && \in_array($agent['mode'] ?? null, ['primary', 'all'], true) && true !== ($agent['hidden'] ?? false)) {
+                $names[] = $agent['id'];
+            }
+        }
+
+        return $names;
     }
 
     /**

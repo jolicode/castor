@@ -147,8 +147,8 @@ class LlmCommandsTest extends LlmTestCase
 
         $tester->assertCommandIsSuccessful();
         $display = $tester->getDisplay();
-        $this->assertDisplayContains("The command of llm_ask() is 'opencode' 'run' '--agent' 'castor-read-only', with the prompt on its standard input, with the environment variables OPENCODE_CONFIG_CONTENT.", $display);
-        $this->assertDisplayContains("The command of llm_run() is 'opencode' 'run' '--auto' '--agent' 'build', with the prompt on its standard input.", $display);
+        $this->assertDisplayContains("The command of llm_ask() is 'opencode' 'run' '--standalone' '--agent' 'castor-read-only', with the prompt on its standard input, with the environment variables OPENCODE_CONFIG_CONTENT.", $display);
+        $this->assertDisplayContains("The command of llm_run() is 'opencode' 'run' '--standalone' '--auto' '--agent' 'build', with the prompt on its standard input.", $display);
     }
 
     public function testDebugShowsACustomCommandAsIs(): void

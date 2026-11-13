@@ -57,6 +57,14 @@ final readonly class Selection
             throw new LlmException(\sprintf('The "%s" LLM CLI does not support choosing the agent.', $cli->name));
         }
 
+        foreach ($extraArguments as $argument) {
+            foreach ($cli->rejectedOptions as $option => $reason) {
+                if ($argument === $option || str_starts_with($argument, $option . '=')) {
+                    throw new LlmException(\sprintf('The "%s" option of the "%s" LLM CLI is not supported: %s', $option, $cli->name, $reason));
+                }
+            }
+        }
+
         return new self(cli: $cli, model: $model, agent: $agent, extraArguments: $extraArguments);
     }
 
