@@ -53,7 +53,7 @@ class CliRegistry
             // --standalone runs a private server instead of the background service, which keeps the environment
             // of the process that started it: OPENCODE_CONFIG_CONTENT and the context are read, and the server
             // stops with the CLI
-            new Cli('opencode', ['opencode', 'run', '--standalone', Cli::OPTIONS_PLACEHOLDER], writeArguments: ['--auto'], modelOption: '--model', agentOption: '--agent', readOnlyAgent: self::OPENCODE_READ_ONLY_AGENT, writeAgent: 'build'),
+            new Cli('opencode', ['opencode', 'run', '--standalone', Cli::OPTIONS_PLACEHOLDER], writeArguments: ['--auto'], modelOption: '--model', agentOption: '--agent', readOnlyAgent: self::OPENCODE_READ_ONLY_AGENT, writeAgent: 'build', rejectedOptions: ['--server' => 'Castor runs OpenCode with its own server (--standalone), so that it reads the read-only agent of Castor and the environment of the context, which another server would ignore.']),
             // In a non-interactive run, the model may leave the plan approval mode for the yolo one
             new Cli('gemini', ['gemini', Cli::OPTIONS_PLACEHOLDER], readOnlyArguments: ['--approval-mode', 'plan'], writeArguments: ['--approval-mode', 'yolo'], modelOption: '--model', mayModifyProject: true),
             // The URLs need --allow-all-urls in the prompt mode: they are allowed, as the network is for codex
@@ -266,7 +266,8 @@ class CliRegistry
     }
 
     /**
-     * The primary agents of OpenCode, which may be chosen for "opencode run".
+     * The agents of OpenCode that may be chosen for "opencode run": the
+     * primary ones and the ones of the "all" mode, unless they are hidden.
      *
      * @return list<string>
      */
@@ -291,7 +292,7 @@ class CliRegistry
 
         $names = [];
         foreach ($agents as $agent) {
-            if (\is_array($agent) && \is_string($agent['id'] ?? null) && 'primary' === ($agent['mode'] ?? null) && true !== ($agent['hidden'] ?? false)) {
+            if (\is_array($agent) && \is_string($agent['id'] ?? null) && \in_array($agent['mode'] ?? null, ['primary', 'all'], true) && true !== ($agent['hidden'] ?? false)) {
                 $names[] = $agent['id'];
             }
         }

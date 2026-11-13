@@ -60,7 +60,8 @@ for all, to skip these questions.
 > its own server instead of using its background service: the background service
 > keeps the environment of the process that started it, and would ignore this
 > variable and the environment of the context. Each call therefore takes a bit
-> longer to start.
+> longer to start. For the same reason, Castor refuses the `--server` option of
+> OpenCode.
 >
 > Amp and Crush approve all the actions of the model in a non-interactive run,
 > and Gemini CLI lets the model leave its `plan` approval mode for the `yolo`

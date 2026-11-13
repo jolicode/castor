@@ -210,7 +210,7 @@ class LlmRunnerTest extends LlmTestCase
     {
         $runner = $this->createRunner(['claude', 'opencode'], [
             'opencode models' => [0, "opencode/big-pickle\nopencode/other\n", ''],
-            'opencode debug' => [0, '[{"id": "build", "mode": "primary", "hidden": false}, {"id": "explore", "mode": "subagent", "hidden": false}, {"id": "plan", "mode": "primary", "hidden": false}, {"id": "compaction", "mode": "primary", "hidden": true}]', ''],
+            'opencode debug' => [0, '[{"id": "build", "mode": "primary", "hidden": false}, {"id": "explore", "mode": "subagent", "hidden": false}, {"id": "general", "mode": "all", "hidden": false}, {"id": "plan", "mode": "primary", "hidden": false}, {"id": "compaction", "mode": "primary", "hidden": true}]', ''],
         ], interactive: true, inputs: "opencode\nopencode/big-pickle\nbuild\n");
         $_SERVER['CASTOR_LLM'] = 'choose';
 
@@ -221,14 +221,17 @@ class LlmRunnerTest extends LlmTestCase
         $this->assertStringContainsString('Which LLM CLI do you want to use?', $output);
         $this->assertStringContainsString('Which model?', $output);
         $this->assertStringContainsString('Which agent?', $output);
-        $this->assertStringNotContainsString('explore', $output, 'Only the primary agents are proposed.');
+        $this->assertStringNotContainsString('explore', $output, 'The subagents are not proposed.');
+        $this->assertStringContainsString('general', $output, 'The agents of the "all" mode are proposed.');
         $this->assertStringNotContainsString('compaction', $output, 'The hidden agents are not proposed.');
         $this->assertSame(1, substr_count($output, 'Which LLM CLI do you want to use?'), 'The choice is asked once per run.');
 
         $this->assertSame([
+            ['opencode', 'models', '--standalone'],
+            ['opencode', 'debug', 'agents', '--standalone'],
             ['opencode', 'run', '--standalone', '--model', 'opencode/big-pickle', '--agent', 'build'],
             ['opencode', 'run', '--standalone', '--model', 'opencode/big-pickle', '--agent', 'build'],
-        ], array_values(array_filter($this->getRunCommands(), static fn (array $command): bool => 'run' === ($command[1] ?? null))));
+        ], $this->getRunCommands());
     }
 
     public function testChooseStillWorksWhenTheCliCannotListItsModelsAndAgents(): void
@@ -246,8 +249,11 @@ class LlmRunnerTest extends LlmTestCase
         $output = $this->output->fetch();
         $this->assertStringContainsString('Which model? Leave empty for the default of the CLI', $output);
         $this->assertStringContainsString('Which agent? Leave empty for the default of the CLI', $output);
-        $commands = $this->getRunCommands();
-        $this->assertSame(['opencode', 'run', '--standalone', '--model', 'opencode/big-pickle', '--agent', 'castor-read-only'], end($commands));
+        $this->assertSame([
+            ['opencode', 'models', '--standalone'],
+            ['opencode', 'debug', 'agents', '--standalone'],
+            ['opencode', 'run', '--standalone', '--model', 'opencode/big-pickle', '--agent', 'castor-read-only'],
+        ], $this->getRunCommands());
     }
 
     public function testTheCliArgumentCannotBeOverriddenToSkipTheChoice(): void
