@@ -3,6 +3,7 @@
 namespace Castor\Console\Command;
 
 use Castor\Helper\PathHelper;
+use Castor\Runner\PhpServerRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -67,6 +68,7 @@ class CompileCommand extends Command
             ->addOption('php-extensions', null, InputOption::VALUE_REQUIRED, 'PHP extensions required, in a comma-separated format. Defaults are the minimum required to run a basic "Hello World" task in Castor.', 'mbstring,phar,posix,tokenizer,curl,filter,openssl')
             ->addOption('php-ini-file', 'N', InputOption::VALUE_REQUIRED, 'ini file to inject into micro.sfx when combining')
             ->addOption('php-rebuild', null, InputOption::VALUE_NONE, 'Ignore cache and force PHP build compilation.')
+            ->addOption('php-cli', null, InputOption::VALUE_NONE, 'Also build a PHP CLI and embed it in the binary, for what the binary cannot do by itself, like running the built-in web server.')
             ->setHidden(true)
         ;
     }
@@ -95,7 +97,14 @@ class CompileCommand extends Command
             $input->getOption('spc-sha256'),
         );
 
-        if (!$this->fs->exists($spcBinaryDir . '/buildroot/bin/micro.sfx') || $input->getOption('php-rebuild')) {
+        $embedPHPCli = $input->getOption('php-cli');
+        $phpCliPath = $spcBinaryDir . '/buildroot/bin/php' . ('windows' === $os ? '.exe' : '');
+
+        if (
+            !$this->fs->exists($spcBinaryDir . '/buildroot/bin/micro.sfx')
+            || ($embedPHPCli && !$this->fs->exists($phpCliPath))
+            || $input->getOption('php-rebuild')
+        ) {
             $this->installPHPBuildTools($spcBinaryPath, $spcBinaryDir, $io);
 
             $phpExtensions = $input->getOption('php-extensions');
@@ -111,6 +120,7 @@ class CompileCommand extends Command
             $this->buildPHP(
                 $spcBinaryPath,
                 $phpExtensions,
+                $embedPHPCli ? ['--build-micro', '--build-cli'] : ['--build-micro'],
                 $os,
                 $spcBinaryDir,
                 $io,
@@ -119,15 +129,26 @@ class CompileCommand extends Command
         }
 
         $binaryPath = $this->getBinaryPath($input);
+        $pharPath = $input->getArgument('phar-path');
 
-        $this->mergePHPandPHARIntoSingleExecutable(
-            $spcBinaryPath,
-            $input->getArgument('phar-path'),
-            $binaryPath,
-            $spcBinaryDir,
-            $input->getOption('php-ini-file'),
-            $io
-        );
+        if ($embedPHPCli) {
+            $pharPath = $this->createPharWithPHPCli($pharPath, $phpCliPath, $spcBinaryDir, $io);
+        }
+
+        try {
+            $this->mergePHPandPHARIntoSingleExecutable(
+                $spcBinaryPath,
+                $pharPath,
+                $binaryPath,
+                $spcBinaryDir,
+                $input->getOption('php-ini-file'),
+                $io
+            );
+        } finally {
+            if ($embedPHPCli) {
+                $this->fs->remove($pharPath);
+            }
+        }
 
         $io->success(\sprintf('Your Castor app has been compiled into a static binary in "%s"', $binaryPath));
 
@@ -243,11 +264,12 @@ class CompileCommand extends Command
         });
     }
 
-    private function buildPHP(string $spcBinaryPath, mixed $phpExtensions, mixed $os, string $spcBinaryDir, SymfonyStyle $io, bool $debug = false): void
+    /** @param list<string> $sapiOptions */
+    private function buildPHP(string $spcBinaryPath, mixed $phpExtensions, array $sapiOptions, mixed $os, string $spcBinaryDir, SymfonyStyle $io, bool $debug = false): void
     {
         $command = [
             $spcBinaryPath, 'build', $phpExtensions,
-            '--build-micro',
+            ...$sapiOptions,
         ];
 
         // The option breaks the nmake command line of static-php-cli 2.8.x on
@@ -274,6 +296,32 @@ class CompileCommand extends Command
         $buildProcess->mustRun(static function (string $type, string $buffer): void {
             echo $buffer;
         });
+    }
+
+    /**
+     * The phar was built before the PHP CLI, so the PHP CLI is added to a copy
+     * of it. The PHP CLI does it itself: phar.readonly can only be disabled at
+     * startup, and the PHP running this command may be a static binary too.
+     */
+    private function createPharWithPHPCli(string $pharPath, string $phpCliPath, string $spcBinaryDir, SymfonyStyle $io): string
+    {
+        $pharWithPHPCliPath = $this->fs->tempnam($spcBinaryDir, 'phar-with-php-cli-', '.phar');
+        $this->fs->copy($pharPath, $pharWithPHPCliPath, true);
+
+        $addPHPCliProcess = new Process(
+            command: [
+                $phpCliPath, '-n', '-d', 'phar.readonly=0',
+                '-r', '$phar = new Phar($argv[1]); $phar->addFile($argv[2], $argv[3]); $phar[$argv[3]]->compress(Phar::GZ);',
+                '--', $pharWithPHPCliPath, $phpCliPath, PhpServerRunner::PHP_CLI_DIRECTORY . '/' . basename($phpCliPath),
+            ],
+            timeout: null,
+        );
+        $io->text('Running command: ' . $addPHPCliProcess->getCommandLine());
+        $addPHPCliProcess->mustRun(static function (string $type, string $buffer): void {
+            echo $buffer;
+        });
+
+        return $pharWithPHPCliPath;
     }
 
     private function mergePHPandPHARIntoSingleExecutable(string $spcBinaryPath, string $pharFilePath, string $appBinaryFilePath, string $spcBinaryDir, ?string $iniFile, SymfonyStyle $io): void
