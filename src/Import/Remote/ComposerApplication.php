@@ -2,6 +2,7 @@
 
 namespace Castor\Import\Remote;
 
+use Castor\Console\CommandFullNameInHelpTrait;
 use Composer\Command\SelfUpdateCommand;
 use Composer\Composer as ComposerInstance;
 use Composer\Console\Application as BaseApplication;
@@ -11,6 +12,8 @@ use Symfony\Component\DependencyInjection\Attribute\Exclude;
 #[Exclude]
 final class ComposerApplication extends BaseApplication
 {
+    use CommandFullNameInHelpTrait;
+
     private ?ComposerInstance $declaredOn = null;
 
     public function __construct(
@@ -52,6 +55,6 @@ final class ComposerApplication extends BaseApplication
             $commands[] = $command;
         }
 
-        return $commands;
+        return $this->useCommandFullNameInHelp($commands);
     }
 }
