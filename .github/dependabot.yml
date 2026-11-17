@@ -9,7 +9,10 @@ updates:
       open-pull-requests-limit: 0
 
     - package-ecosystem: 'github-actions'
-      directory: '/'
+      # "/" covers only the workflows, not the composite actions
+      directories:
+          - '/'
+          - '/.github/actions/*'
       schedule:
           interval: 'monthly'
       groups:
