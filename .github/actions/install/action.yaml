@@ -41,7 +41,7 @@ runs:
 
     - name: Setup PHP
       if: ${{ !(runner.os == 'macOS' && runner.arch == 'X64') }}
-      uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # v2
+      uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
       with:
         php-version: '${{ inputs.php-version }}'
         coverage: none
