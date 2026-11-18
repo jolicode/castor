@@ -32,7 +32,7 @@ runs:
         echo "cache_key=$(basename "${cache_dirname}")" >> "$GITHUB_OUTPUT"
 
     - name: Restore PHP static building artifacts cache for ${{ inputs.target }}
-      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v5
       with:
         path: ${{ steps.get-cache-key.outputs.cache_dirname }}
         key: php-static-${{ steps.get-cache-key.outputs.cache_key }}
