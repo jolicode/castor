@@ -7,12 +7,13 @@
 * Add a `serve_php()` function to start the built-in web server of PHP from a task
 * Add a `--php-cli` option to `castor compile` to embed a PHP CLI in the binary, so `serve_php()` works without PHP installed
 * Load the tasks, contexts and listeners of the files a package autoloads when it is imported or mounted, so a package no longer needs a `castor.php` file, even to be mounted
+* Load the tasks, contexts and listeners of the files a package autoloads as soon as a project requires it when its `composer.json` file sets `extra.castor.expose-without-import` to `true`
 * Read the `composer.json` file of a package of type `castor-plugin` in its own repository, when there is no `castor.composer.json` file: the packages of its `require` section are installed in `.castor/vendor/` and locked in `castor.composer.lock`, and its files are autoloaded from there
 * Look for the package given to `import()` or `mount()` in the vendor directories of the mounted directories too, so a mounted directory can import the packages of its own `castor.composer.json`
 
 ### Deprecations
 
-* Deprecate loading the tasks, contexts and listeners of the files a package autoloads when it is not imported: import it with `import('composer://vendor/package')`, Castor 2.0 will only load them then
+* Deprecate loading the tasks, contexts and listeners of the files a package autoloads when it is not imported: import it with `import('composer://vendor/package')`, Castor 2.0 will only load them then, or when the package sets `extra.castor.expose-without-import`
 
 ### Fixes
 

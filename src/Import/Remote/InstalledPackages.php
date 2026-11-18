@@ -14,15 +14,26 @@ use Symfony\Component\Filesystem\Path;
  */
 final class InstalledPackages
 {
+    private const EXPOSE_WITHOUT_IMPORT_EXTRA_KEY = 'expose-without-import';
+
     /** @var list<string> */
     private array $vendorDirectories = [];
 
     /** @var array<string, string> The names of the packages, by directory */
     private array $packages = [];
 
+    /**
+     * The packages exposing their tasks, contexts and listeners without being
+     * imported, by name, read once asked for.
+     *
+     * @var array<string, true>|null
+     */
+    private ?array $packagesExposedWithoutImport = null;
+
     public function addVendorDirectory(string $vendorDirectory): void
     {
         $this->vendorDirectories[] = $vendorDirectory;
+        $this->packagesExposedWithoutImport = null;
 
         if (!file_exists($file = $vendorDirectory . '/composer/installed.php')) {
             return;
@@ -83,6 +94,38 @@ final class InstalledPackages
         }
 
         return $this->packages[$packageDirectory];
+    }
+
+    /**
+     * Whether the composer.json file of the package sets
+     * "extra.castor.expose-without-import" to true: its tasks, contexts and
+     * listeners are then meant to be loaded as soon as it is required.
+     */
+    public function isExposedWithoutImport(string $package): bool
+    {
+        if (null === $this->packagesExposedWithoutImport) {
+            $this->packagesExposedWithoutImport = [];
+
+            foreach ($this->vendorDirectories as $vendorDirectory) {
+                // Unlike installed.php, it has the "extra" key of the packages
+                if (!file_exists($file = $vendorDirectory . '/composer/installed.json')) {
+                    continue;
+                }
+
+                /** @var array{packages?: list<array{name: string, extra?: array<string, mixed>}>} $installed */
+                $installed = json_decode((string) file_get_contents($file), true, flags: \JSON_THROW_ON_ERROR);
+
+                foreach ($installed['packages'] ?? [] as $definition) {
+                    $castor = $definition['extra']['castor'] ?? null;
+
+                    if (\is_array($castor) && true === ($castor[self::EXPOSE_WITHOUT_IMPORT_EXTRA_KEY] ?? false)) {
+                        $this->packagesExposedWithoutImport[$definition['name']] = true;
+                    }
+                }
+            }
+        }
+
+        return isset($this->packagesExposedWithoutImport[$package]);
     }
 
     /**

@@ -135,7 +135,8 @@ namespace, [mount it](mount.md#mounting-a-remote-package) instead.
 > [!WARNING]
 > The tasks, contexts and listeners of the files a package autoloads are still
 > loaded when the package is not imported, with a deprecation: Castor 2.0 will
-> only load them when the package is imported or mounted.
+> only load them when the package is imported or mounted, or when it
+> [exposes them without being imported](#writing-a-package).
 
 ## Writing a package
 
@@ -155,6 +156,21 @@ the `autoload` section of its `composer.json` file. It does not need a
         "files": [
             "src/functions.php"
         ]
+    }
+}
+```
+
+A project gets the tasks, contexts and listeners of the package once it imports
+it. When they are meant to be there as soon as the package is required, set
+`extra.castor.expose-without-import` to `true` in its `composer.json` file.
+Projects requiring it can then no longer leave them out.
+
+```json
+{
+    "extra": {
+        "castor": {
+            "expose-without-import": true
+        }
     }
 }
 ```

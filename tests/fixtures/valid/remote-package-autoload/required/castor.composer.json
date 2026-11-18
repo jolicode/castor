@@ -2,17 +2,22 @@
     "repositories": [
         {
             "type": "path",
-            "url": "../package"
+            "url": "../exposed"
         },
         {
             "type": "path",
             "url": "../functions"
         },
         {
+            "type": "path",
+            "url": "../package"
+        },
+        {
             "packagist.org": false
         }
     ],
     "require": {
+        "castor-test/exposed": "*@dev",
         "castor-test/functions": "*@dev",
         "castor-test/package": "*@dev"
     }

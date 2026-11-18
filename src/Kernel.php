@@ -22,6 +22,7 @@ use Castor\Helper\PlatformHelper;
 use Castor\Import\Importer;
 use Castor\Import\Mount;
 use Castor\Import\Remote\Composer;
+use Castor\Import\Remote\InstalledPackages;
 use Castor\Monolog\Processor\ProcessProcessor;
 use Joli\JoliNotif\DefaultNotifier;
 use Monolog\Logger;
@@ -386,7 +387,7 @@ final class Kernel extends AbstractKernel
                 $this->load($mount, $output);
             }
 
-            $this->deprecateNotImportedPackages($c->commandLine, $c->composer);
+            $this->deprecateNotImportedPackages($c->commandLine, $c->composer, $c->installedPackages);
 
             $c->eventDispatcher->dispatch(new AfterBootEvent($c->application));
         } catch (\Throwable $e) {
@@ -528,7 +529,8 @@ final class Kernel extends AbstractKernel
             } elseif (\in_array($package, $queuedPackages, true)) {
                 $this->pendingPackageDefinitions[$package][] = $definition;
             } else {
-                // Castor 2.0 will only load them when the package is imported
+                // Castor 2.0 will only load them when the package is imported,
+                // or exposed without being imported
                 $mountDefinitions[] = $definition;
                 $this->notImportedPackageDefinitions[$definition] = $package;
             }
@@ -537,7 +539,7 @@ final class Kernel extends AbstractKernel
         return $mountDefinitions;
     }
 
-    private function deprecateNotImportedPackages(CommandLine $commandLine, Composer $composer): void
+    private function deprecateNotImportedPackages(CommandLine $commandLine, Composer $composer, InstalledPackages $installedPackages): void
     {
         // Nothing to change in the castor.php of a repacked application, and
         // the deprecation would land in an output meant to be parsed. The
@@ -547,6 +549,10 @@ final class Kernel extends AbstractKernel
         }
 
         foreach (array_keys(array_diff_key($this->notImportedPackages, $this->importedPackages)) as $package) {
+            if ($installedPackages->isExposedWithoutImport($package)) {
+                continue;
+            }
+
             trigger_deprecation('jolicode/castor', '1.10.0', \sprintf('Loading the tasks, contexts and listeners the package "%s" autoloads without importing it is deprecated. Add "import(\'composer://%s\');" to your castor.php to keep them: from Castor 2.0, requiring a package only gives its functions and classes.', $package, $package));
         }
     }

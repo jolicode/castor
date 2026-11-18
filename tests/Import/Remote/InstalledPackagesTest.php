@@ -105,6 +105,33 @@ class InstalledPackagesTest extends TestCase
         $this->assertSame([$this->directory . '/project/.castor/vendor', $this->directory . '/mounted/.castor/vendor'], $packages->getVendorDirectories());
     }
 
+    public function testAPackageCanBeExposedWithoutBeingImported(): void
+    {
+        $fs = new Filesystem();
+        $fs->dumpFile($this->directory . '/project/.castor/vendor/composer/installed.json', json_encode(['packages' => [
+            ['name' => 'acme/exposed', 'extra' => ['castor' => ['expose-without-import' => true]]],
+            ['name' => 'acme/not-exposed', 'extra' => ['castor' => ['expose-without-import' => false]]],
+            ['name' => 'acme/other-extra', 'extra' => ['castor' => true]],
+            ['name' => 'acme/package'],
+        ]], \JSON_THROW_ON_ERROR));
+        $fs->dumpFile($this->directory . '/mounted/.castor/vendor/composer/installed.json', json_encode(['packages' => [
+            ['name' => 'acme/mounted', 'extra' => ['castor' => ['expose-without-import' => true]]],
+        ]], \JSON_THROW_ON_ERROR));
+
+        $packages = $this->createInstalledPackages();
+
+        $this->assertTrue($packages->isExposedWithoutImport('acme/exposed'));
+        $this->assertFalse($packages->isExposedWithoutImport('acme/not-exposed'));
+        $this->assertFalse($packages->isExposedWithoutImport('acme/other-extra'));
+        $this->assertFalse($packages->isExposedWithoutImport('acme/package'));
+        $this->assertFalse($packages->isExposedWithoutImport('acme/mounted'));
+
+        // From a vendor directory loaded later
+        $packages->addVendorDirectory($this->directory . '/mounted/.castor/vendor');
+
+        $this->assertTrue($packages->isExposedWithoutImport('acme/mounted'));
+    }
+
     private function createInstalledPackages(): InstalledPackages
     {
         $packages = new InstalledPackages();

@@ -42,6 +42,15 @@ class RemotePackageAutoloadTest extends TaskTestCase
         $this->assertStringNotContainsString('castor-test/functions', $process->getErrorOutput());
     }
 
+    public function testAPackageCanExposeTheTasksItAutoloadsWithoutBeingImported(): void
+    {
+        $process = $this->runTask(['exposed:hello'], $this->directory . '/required', needRemote: true);
+
+        $this->assertSame(0, $process->getExitCode(), $process->getErrorOutput());
+        $this->assertStringContainsString('Hello from the exposed package', $process->getOutput());
+        $this->assertStringNotContainsString('castor-test/exposed', $process->getErrorOutput());
+    }
+
     public function testImportingAPackageExposesTheTasksItAutoloads(): void
     {
         $process = $this->runTask(['package:hello'], $this->directory . '/imported', needRemote: true);
