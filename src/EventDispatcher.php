@@ -8,14 +8,20 @@ use Symfony\Component\DependencyInjection\Attribute\AsDecorator;
 use Symfony\Component\EventDispatcher\EventDispatcher as SymfonyEventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\ScopedEventDispatcher;
 
 #[AsDecorator(EventDispatcherInterface::class)]
 class EventDispatcher implements EventDispatcherInterface
 {
+    private readonly EventDispatcherInterface $eventDispatcher;
+
     public function __construct(
-        private readonly EventDispatcherInterface $eventDispatcher = new SymfonyEventDispatcher(),
+        EventDispatcherInterface $eventDispatcher = new SymfonyEventDispatcher(),
         private readonly LoggerInterface $logger = new NullLogger(),
     ) {
+        // The listeners of the castor files are added at runtime, while the
+        // dispatcher of the container is compiled and must not be modified
+        $this->eventDispatcher = new ScopedEventDispatcher($eventDispatcher);
     }
 
     public function dispatch(object $event, ?string $eventName = null): object

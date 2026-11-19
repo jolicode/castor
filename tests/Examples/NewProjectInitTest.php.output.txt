@@ -1,4 +1,5 @@
  [OK] A "castor.php" file has been created in the current directory. You can now edit it and write your own tasks.
 
- ! [NOTE] Learn how to get started with Castor by reading the documentation at https://castor.jolicode.com/docs/getting-started
+ ! [NOTE] Learn how to get started with Castor by reading the documentation at
+ !        https://castor.jolicode.com/docs/getting-started
 

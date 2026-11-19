@@ -482,6 +482,42 @@ function foo(): void
 > does not follow its resizing: prefer a TTY for a full screen command (`vim`,
 > `top`, ...).
 
+### Inheriting the standard streams
+
+With the `withStdioInherited` method, the process uses the standard input,
+output and error of Castor directly, like a command run from a shell script:
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\context;
+use function Castor\run;
+
+#[AsTask()]
+function foo(): void
+{
+    run('npm install', context: context()->withStdioInherited());
+}
+```
+
+The process then sees what Castor sees, on its standard output and error: the
+terminal with its real size, even when it is resized, or the file and the pipe
+of a redirection (`castor foo > foo.log`, `castor foo | less`). Unlike a TTY,
+it does not need to open `/dev/tty`, so it also works without a controlling
+terminal. It takes precedence over `withTty()` and `withPty()`. An input given
+with `withInput()` replaces the standard input only.
+
+> [!WARNING]
+> Castor does not read the output: it is empty in the process object
+> (when using `getOutput()` or `getErrorOutput()`).
+
+The standard streams are not inherited when Castor needs the output: with
+`capture()` or `withQuiet()`, with a `callback`, inside a job of `parallel()`,
+and with `CASTOR_USE_SECTION` in a terminal. The output is then read as usual.
+
+A `CTRL+C` reaches both the process and Castor: see
+[the signals documentation](../going-further/interacting-with-castor/signals.md#interrupting-a-task).
+
 ### Trapping signals
 
 By default, a signal sent to Castor - like the `SIGINT` triggered by a `CTRL+C` -

@@ -26,6 +26,8 @@ use function Symfony\Component\String\u;
 /** @internal */
 class Application extends SymfonyApplication
 {
+    use CommandFullNameInHelpTrait;
+
     public const NAME = 'castor';
     public const VERSION = 'v1.9.1';
     public const HIDE_LOGO = false;
@@ -144,6 +146,11 @@ class Application extends SymfonyApplication
         $this->command = $command;
 
         return parent::doRunCommand($command, $input, $output);
+    }
+
+    protected function getDefaultCommands(): array
+    {
+        return $this->useCommandFullNameInHelp(parent::getDefaultCommands());
     }
 
     protected function getDefaultInputDefinition(): InputDefinition

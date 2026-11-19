@@ -36,6 +36,11 @@ class SectionOutput
         return $this->consoleOutput;
     }
 
+    public function usesOutputSection(): bool
+    {
+        return null !== $this->mainOutput;
+    }
+
     public function writeProcessOutput(string $type, string $bytes, Process $process): void
     {
         if (!$this->mainOutput) {
