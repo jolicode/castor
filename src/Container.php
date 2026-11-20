@@ -21,6 +21,7 @@ use Castor\Llm\LlmRunner;
 use Castor\Runner\Parallel\JobRegistry;
 use Castor\Runner\ParallelRunner;
 use Castor\Runner\PhpRunner;
+use Castor\Runner\PhpServerRunner;
 use Castor\Runner\ProcessRunner;
 use Castor\Runner\SshRunner;
 use Castor\Runner\WatchRunner;
@@ -65,6 +66,7 @@ final class Container
         public readonly OutputInterface $output,
         public readonly ParallelRunner $parallelRunner,
         public readonly PhpRunner $phpRunner,
+        public readonly PhpServerRunner $phpServerRunner,
         public readonly ProcessRunner $processRunner,
         public readonly SectionOutput $sectionOutput,
         public readonly SshRunner $sshRunner,

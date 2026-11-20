@@ -72,3 +72,30 @@ You can simply run it like any other executable:
 ```bash
 ./castor
 ```
+
+## Running a web server
+
+The binary runs your tasks with the `micro` SAPI of PHP, which does not include
+the built-in web server. To use the [`serve_php()`
+function](../helpers/serve-php.md) on a machine without PHP, use the `--php-cli`
+option, and add the `pcntl` extension to the default ones:
+
+```bash
+castor compile my-custom-castor-app.phar --php-cli --php-extensions=mbstring,phar,posix,tokenizer,curl,filter,openssl,pcntl
+```
+
+It also builds a PHP CLI, with the same PHP version and extensions, and embeds
+it in the binary. This adds around 8 MB to the binary. Without `pcntl`, CTRL+C
+stops the task too, and the temporary files of the server stay on the disk.
+
+> [!NOTE]
+> Building the PHP CLI requires a working network connection:
+> static-php-cli checks the `openssl` extension by connecting to remote hosts.
+
+Add the files to serve to the phar with a [`box.json` file](repack.md):
+
+```json
+{
+    "directories": ["web"]
+}
+```
