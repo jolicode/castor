@@ -1,0 +1,17 @@
+{
+    "name": "castor-test/package",
+    "type": "castor-plugin",
+    "repositories": [
+        {
+            "packagist.org": false
+        }
+    ],
+    "autoload": {
+        "files": [
+            "src/functions.php"
+        ]
+    },
+    "require-dev": {
+        "castor-test/not-installable": "^1.0"
+    }
+}

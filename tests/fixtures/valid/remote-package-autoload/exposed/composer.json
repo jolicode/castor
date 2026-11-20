@@ -1,0 +1,13 @@
+{
+    "name": "castor-test/exposed",
+    "autoload": {
+        "files": [
+            "tasks.php"
+        ]
+    },
+    "extra": {
+        "castor": {
+            "expose-without-import": true
+        }
+    }
+}
