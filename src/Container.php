@@ -19,7 +19,7 @@ use Castor\Import\Mounter;
 use Castor\Import\Remote\Composer;
 use Castor\Import\Remote\InstalledPackages;
 use Castor\Llm\LlmRunner;
-use Castor\Runner\Parallel\JobRegistry;
+use Castor\Runner\Job\JobRegistry;
 use Castor\Runner\ParallelRunner;
 use Castor\Runner\PhpRunner;
 use Castor\Runner\PhpServerRunner;
@@ -59,7 +59,6 @@ final class Container
         public readonly Importer $importer,
         public readonly InputInterface $input,
         public readonly InstalledPackages $installedPackages,
-        public readonly JobRegistry $jobRegistry,
         public readonly Kernel $kernel,
         public readonly LlmRunner $llmRunner,
         public readonly LoggerInterface $logger,
@@ -72,6 +71,7 @@ final class Container
         public readonly ProcessRunner $processRunner,
         public readonly SectionOutput $sectionOutput,
         public readonly SshRunner $sshRunner,
+        public readonly JobRegistry $jobRegistry,
         public readonly SymfonyStyle $symfonyStyle,
         public readonly Terminal $terminal,
         public readonly Waiter $waiter,

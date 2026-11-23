@@ -251,6 +251,7 @@ add_test(['context:context', '--context', 'updated'], 'ContextContextUpdated');
 add_test(['context-info', '-c', 'run', '--test'], 'ContextIsParsedAnywhereOnTheCommandLine');
 add_test(['configuration:hello', '--context', 'production'], 'EnabledInProduction');
 add_test(['list', '--raw', '--format', 'txt', '--short'], 'List', needRemote: true, skipOnBinary: true);
+add_test(['job:sequential'], 'JobSequentialSuccess');
 add_test(['parallel:jobs'], 'ParallelJobsSuccess');
 add_test(['run:exception', '-v'], 'RunExceptionVerbose');
 add_test(['run:verbose-arguments'], 'RunVerboseArgumentsTrue', input: "yes\n");

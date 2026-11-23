@@ -6,7 +6,8 @@ use Castor\Exception\ProblemException;
 use Castor\Exception\ProcessInterruptedException;
 use Castor\Helper\PlatformHelper;
 use Castor\Kernel;
-use Castor\Runner\Parallel\JobOutput;
+use Castor\Runner\Job\JobOutput;
+use Castor\Runner\Job\JobRegistry;
 use Castor\Runner\ProcessRunner;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Command\Command;
@@ -39,6 +40,8 @@ class Application extends SymfonyApplication
         private readonly SymfonyStyle $io,
         #[Autowire(lazy: true)]
         private readonly ProcessRunner $processRunner,
+        #[Autowire(lazy: true)]
+        private readonly JobRegistry $jobRegistry,
         #[Autowire('%test%')]
         public readonly bool $test,
         public readonly bool $hasCastorFile,
@@ -80,6 +83,9 @@ class Application extends SymfonyApplication
             }
 
             throw $e;
+        } finally {
+            // Before the error, if any, is rendered
+            $this->jobRegistry->stop();
         }
     }
 
@@ -97,8 +103,8 @@ class Application extends SymfonyApplication
     {
         if (!$output->isVerbose()) {
             $this->enhanceException($e);
-            // The given output is the error output, or the one of a job of
-            // parallel() so the error is organized with the output of the job
+            // The given output is the error output, or the one of a job so
+            // the error is organized with the output of the job
             $io = new SymfonyStyle(new ArrayInput([]), $output);
 
             if ($e instanceof ProblemException) {

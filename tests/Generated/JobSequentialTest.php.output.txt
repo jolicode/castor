@@ -1,0 +1,9 @@
+[install] Resolving dependencies
+[install] Installed 42 packages
+[install] ✔ Done in X.Xs
+[test]    Running the test suite
+[test]    Test 1: OK
+[test]    ✘ Failed after X.Xs
+
+[install] ✔ Done in X.Xs
+[test]    ✘ Failed after X.Xs

@@ -338,16 +338,30 @@ function input(): InputInterface
 
 function output(): OutputInterface
 {
-    // Inside a job of parallel(), the output is captured to be organized
-    $job = Container::get()->jobRegistry->getCurrent();
+    $jobRegistry = Container::get()->jobRegistry;
 
-    return $job ? $job->output : Container::get()->output;
+    // Inside a job, the output is captured to be organized
+    if ($job = $jobRegistry->getCurrent()) {
+        return $job->output;
+    }
+
+    $jobRegistry->suspend();
+
+    return Container::get()->output;
 }
 
 function io(): SymfonyStyle
 {
-    // Inside a job of parallel(), the output is captured to be organized
-    return Container::get()->jobRegistry->getCurrentIo() ?? Container::get()->symfonyStyle;
+    $jobRegistry = Container::get()->jobRegistry;
+
+    // Inside a job, the output is captured to be organized
+    if ($io = $jobRegistry->getCurrentIo()) {
+        return $io;
+    }
+
+    $jobRegistry->suspend();
+
+    return Container::get()->symfonyStyle;
 }
 
 /**
@@ -509,6 +523,9 @@ function load_dot_env(?string $path = null): array
  * or a new Context by default (not the current one), modified by the other
  * arguments.
  *
+ * With a job, the callback is part of this job while it runs: its output,
+ * and the one of the commands it runs, is organized under its name.
+ *
  * @template T
  *
  * @param (callable(Context) :T)                       $callback
@@ -527,6 +544,7 @@ function with(
     ?bool $allowFailure = null,
     ?bool $notify = null,
     Context|string|null $context = null,
+    ?string $job = null,
 ): mixed {
     $contextRegistry = Container::get()->contextRegistry;
 
@@ -576,15 +594,38 @@ function with(
         $context = $context->withNotify($notify);
     }
 
+    if (null !== $job) {
+        $context = $context->withJob($job);
+    }
+
     $contextRegistry->setCurrentContext($context);
 
+    // The job runs as long as the callback
+    $jobRegistry = Container::get()->jobRegistry;
+    $currentJob = null !== $context->job ? $jobRegistry->get($context->job) : null;
+    if ($currentJob) {
+        $jobRegistry->begin($currentJob);
+    }
+
     try {
-        return $callback($context);
+        $result = $callback($context);
+    } catch (\Throwable $e) {
+        if ($currentJob) {
+            $jobRegistry->end($currentJob, $e);
+        }
+
+        throw $e;
     } finally {
         if ($initialContext) {
             $contextRegistry->setCurrentContext($initialContext);
         }
     }
+
+    if ($currentJob) {
+        $jobRegistry->end($currentJob);
+    }
+
+    return $result;
 }
 
 /**

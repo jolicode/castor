@@ -512,6 +512,29 @@ caught, and are rejected with an `InvalidArgumentException`.
 See [the signals documentation](../going-further/interacting-with-castor/signals.md#trapping-signals-sent-to-castor)
 for more information.
 
+### Job
+
+The `withJob()` method makes the commands run with the context part of a job:
+their output is organized under its name, with the output of the other
+commands of the same job:
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\context;
+use function Castor\run;
+
+#[AsTask()]
+function foo(): void
+{
+    run('composer install', context: context()->withJob('install'));
+    run('npm install', context: context()->withJob('install'));
+}
+```
+
+See [the jobs documentation](../going-further/helpers/jobs.md) for more
+information.
+
 ### Interactive environment
 
 Some commands (a shell, `vim`, an interactive prompt, ...) only make sense

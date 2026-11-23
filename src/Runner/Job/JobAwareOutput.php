@@ -1,6 +1,6 @@
 <?php
 
-namespace Castor\Runner\Parallel;
+namespace Castor\Runner\Job;
 
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -27,7 +27,7 @@ final readonly class JobAwareOutput implements OutputInterface
      */
     public function write(string|iterable $messages, bool $newline = false, int $options = 0): void
     {
-        $this->getOutput()->write($messages, $newline, $options);
+        $this->getOutputToWrite()->write($messages, $newline, $options);
     }
 
     /**
@@ -35,7 +35,7 @@ final readonly class JobAwareOutput implements OutputInterface
      */
     public function writeln(string|iterable $messages, int $options = 0): void
     {
-        $this->getOutput()->writeln($messages, $options);
+        $this->getOutputToWrite()->writeln($messages, $options);
     }
 
     public function setVerbosity(int $level): void
@@ -96,5 +96,16 @@ final readonly class JobAwareOutput implements OutputInterface
     private function getOutput(): OutputInterface
     {
         return $this->jobRegistry->getCurrent()->errorOutput ?? $this->output;
+    }
+
+    private function getOutputToWrite(): OutputInterface
+    {
+        if ($job = $this->jobRegistry->getCurrent()) {
+            return $job->errorOutput;
+        }
+
+        $this->jobRegistry->suspend();
+
+        return $this->output;
     }
 }
