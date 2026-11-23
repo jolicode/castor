@@ -40,7 +40,7 @@ function echoing(): void
     with(static function (): void {
         echo "Echoed\n";
         run('sleep 0.2');
-    }, context: context(), job: 'echo');
+    }, job: 'echo');
 }
 
 #[AsTask]
@@ -61,5 +61,5 @@ function nested(): void
             test: static fn () => run('echo "Testing"; sleep 0.3'),
         );
         run('echo "Reporting"');
-    }, context: context(), job: 'ci');
+    }, job: 'ci');
 }

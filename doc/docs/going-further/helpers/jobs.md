@@ -27,11 +27,6 @@ The `with()` function runs a whole function in a job, with its `job` argument:
 the output of this function (`io()`, `output()`, `echo`, the logs) and the
 one of the commands it runs are organized under the name of the job.
 
-> [!NOTE]
-> Like its other arguments, the `job` argument of `with()` modifies a new
-> context, unless you give it one: pass `context: context()` to keep the
-> current context.
-
 The functions given to [`parallel()`](parallel.md#organizing-the-output-with-named-jobs)
 can be jobs too: name them, and each one becomes the job of the code it runs.
 

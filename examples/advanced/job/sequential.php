@@ -23,7 +23,7 @@ function sequential(bool $fail = false): void
         if ($fail) {
             run('echo "Test 2: KO" >&2; exit 1');
         }
-    }, context: context(), job: 'test');
+    }, job: 'test');
 
     // A job can run again: its output is shown with the one of its first run
     run('sleep 0.3; echo "Dependencies are up to date"', context: context()->withJob('install'));
