@@ -1,6 +1,6 @@
 <?php
 
-namespace Castor\Runner\Parallel;
+namespace Castor\Runner\Job;
 
 use Symfony\Component\Console\Terminal;
 use Symfony\Component\Tui\Terminal\TerminalInterface;

@@ -3,8 +3,8 @@
 namespace Castor\Listener;
 
 use Castor\Event\BeforeBootEvent;
-use Castor\Runner\Parallel\JobAwareOutput;
-use Castor\Runner\Parallel\JobRegistry;
+use Castor\Runner\Job\JobAwareOutput;
+use Castor\Runner\Job\JobRegistry;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
@@ -34,8 +34,8 @@ class ConfigureCastorListener
     {
         if ($this->logger instanceof Logger) {
             // On the error output, so the logs (and the deprecations) never end up in the output of a
-            // task piped to another command or redirected to a file. Inside a job of parallel(), the
-            // logs are organized with its output.
+            // task piped to another command or redirected to a file. Inside a job, the logs are
+            // organized with its output.
             $errorOutput = $this->output instanceof ConsoleOutputInterface ? $this->output->getErrorOutput() : $this->output;
             $this->logger->pushHandler(new ConsoleHandler(new JobAwareOutput($this->jobRegistry, $errorOutput)));
         }

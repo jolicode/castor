@@ -4,7 +4,7 @@ namespace Castor\Tests\Runner;
 
 use Castor\Console\Application;
 use Castor\ContextRegistry;
-use Castor\Runner\Parallel\JobRegistry;
+use Castor\Runner\Job\JobRegistry;
 use Castor\Runner\ParallelRunner;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -45,7 +45,7 @@ class ParallelRunnerTest extends TestCase
                 throw new \LogicException('parallel() does not use sections.');
             }
         };
-        $this->jobRegistry = new JobRegistry(new ArrayInput([]));
+        $this->jobRegistry = new JobRegistry(new ArrayInput([]), $this->output, $this->createStub(ContextRegistry::class));
 
         $app = $this->createStub(Application::class);
         $app->method('renderThrowable')->willReturnCallback(static function (\Throwable $e, OutputInterface $output): void {
@@ -53,6 +53,11 @@ class ParallelRunnerTest extends TestCase
         });
 
         $this->runner = new ParallelRunner($app, $this->output, $this->createStub(ContextRegistry::class), $this->jobRegistry);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->jobRegistry->stop();
     }
 
     public function testTheResultsOfNamedFunctionsAreKeyedByTheirName(): void
@@ -105,7 +110,7 @@ class ParallelRunnerTest extends TestCase
         $this->assertSame("[lint] warning\n", $this->errorOutput->fetch());
     }
 
-    public function testAFailureIsPrintedInItsJobAndTheJobsAreSummarized(): void
+    public function testAFailureIsPrintedInItsJobAndTheJobsAreSummarizedAtTheEnd(): void
     {
         try {
             $this->runner->parallel(
@@ -116,6 +121,7 @@ class ParallelRunnerTest extends TestCase
         } catch (\RuntimeException $e) {
             $this->assertSame('One or more exceptions were thrown in parallel.', $e->getMessage());
         }
+        $this->jobRegistry->stop();
 
         $this->assertSame(<<<'TXT'
             [lint] lint 1
@@ -177,7 +183,7 @@ class ParallelRunnerTest extends TestCase
         $this->assertSame("[test] no new line\n[test] Error: boom\n", $this->errorOutput->fetch());
     }
 
-    public function testNamedFunctionsNestedInAJobArePrefixedInIt(): void
+    public function testNamedFunctionsNestedInAJobAreJobsOfTheirOwn(): void
     {
         $this->runner->parallel(
             build: fn () => $this->runner->parallel(
@@ -185,7 +191,12 @@ class ParallelRunnerTest extends TestCase
             ),
         );
 
-        $this->assertStringStartsWith("[build] [assets] compiled\n", $this->fetch($this->output));
+        $this->assertSame(<<<'TXT'
+            [assets] compiled
+            [assets] ✔ Done in X.Xs
+            [build]  ✔ Done in X.Xs
+
+            TXT, $this->fetch($this->output));
     }
 
     public function testTheErrorOfUnnamedFunctionsNestedInAJobStaysInIt(): void

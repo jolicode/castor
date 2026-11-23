@@ -1,6 +1,6 @@
 <?php
 
-namespace Castor\Runner\Parallel;
+namespace Castor\Runner\Job;
 
 use Symfony\Component\Tui\Render\RenderContext;
 use Symfony\Component\Tui\Widget\LoaderWidget;

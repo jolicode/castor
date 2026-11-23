@@ -6,7 +6,7 @@ use Castor\Context;
 use Castor\ContextRegistry;
 use Castor\Exception\LlmException;
 use Castor\Helper\PlatformHelper;
-use Castor\Runner\Parallel\JobRegistry;
+use Castor\Runner\Job\JobRegistry;
 use Castor\Runner\ProcessRunner;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Formatter\OutputFormatter;
@@ -230,8 +230,8 @@ class LlmRunner
         $end = null !== $howToSkip ? " {$howToSkip}." : '';
 
         // The output of a job is captured: nobody would see the question
-        if ($this->jobRegistry->getCurrent()) {
-            throw new LlmException(\sprintf('%s, but a job of parallel() cannot ask a question.%s', $need, $end));
+        if ($this->jobRegistry->getCurrent($context)) {
+            throw new LlmException(\sprintf('%s, but a job cannot ask a question.%s', $need, $end));
         }
 
         if (!$this->input->isInteractive() || !$context->supportsInteraction()) {

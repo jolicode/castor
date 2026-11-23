@@ -13,7 +13,8 @@ use Castor\Event\ProcessStartEvent;
 use Castor\Event\ProcessTerminateEvent;
 use Castor\Exception\ProcessInterruptedException;
 use Castor\Helper\Notifier;
-use Castor\Runner\Parallel\JobRegistry;
+use Castor\Runner\Job\Job;
+use Castor\Runner\Job\JobRegistry;
 use JoliCode\PhpOsHelper\OsHelper;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -87,12 +88,12 @@ class ProcessRunner
             ;
         }
 
-        // Inside a job of parallel(), the output is captured to be organized.
-        // The tools must not draw for a terminal they do not own.
-        $job = $this->jobRegistry->getCurrent();
+        // Inside a job, the output is captured to be organized. The tools
+        // must not draw for a terminal they do not own.
+        $job = $this->jobRegistry->getCurrent($context);
         if ($job && !$context->quiet && !$callback) {
             if ($context->tty) {
-                $this->logger->warning(\sprintf('The command "%s" runs without TTY: the output of a job of parallel() is captured.', u($process->getCommandLine())->truncate(40, '...')));
+                $this->logger->warning(\sprintf('The command "%s" runs without TTY: the output of a job is captured.', u($process->getCommandLine())->truncate(40, '...')));
             }
 
             $context = $context
@@ -125,6 +126,8 @@ class ProcessRunner
 
         if (!$context->quiet && !$callback) {
             $callback = function ($type, $bytes, $process): void {
+                // Written straight to the console, outside of the jobs
+                $this->jobRegistry->suspend();
                 $this->sectionOutput->writeProcessOutput($type, $bytes, $process);
             };
         }
@@ -138,83 +141,21 @@ class ProcessRunner
 
         if (!$job) {
             $this->sectionOutput->initProcess($process);
+
+            return $this->execute($process, $command, $context, $callback, null);
         }
 
-        $process->start(static function ($type, $bytes) use ($callback, $process): void {
-            if ($callback) {
-                $callback($type, $bytes, $process);
-            }
-        });
-
-        $this->signalTrapper->trap($process, $context->trappedSignals);
-
-        $this->eventDispatcher->dispatch(new ProcessStartEvent($process));
+        $this->jobRegistry->begin($job);
 
         try {
-            if (\Fiber::getCurrent()) {
-                while ($process->isRunning()) {
-                    if (!$job) {
-                        $this->sectionOutput->tickProcess($process);
-                    }
-                    $process->checkTimeout();
-                    // parallel() pauses once all its fibers had their turn
-                    \Fiber::suspend();
-                }
-            }
+            $process = $this->execute($process, $command, $context, $callback, $job);
+        } catch (\Throwable $e) {
+            $this->jobRegistry->end($job, $e);
 
-            $exitCode = $process->wait();
-        } catch (ProcessSignaledException $e) {
-            if (!\in_array($e->getSignal(), $context->trappedSignals, true)) {
-                // Castor would already have stopped if it had received this
-                // SIGINT too: the task stops as if it had
-                if (self::SIGINT === $e->getSignal()) {
-                    throw new ProcessInterruptedException($process, $e);
-                }
-
-                throw $e;
-            }
-
-            $exitCode = $process->getExitCode() ?? 128 + $e->getSignal();
-        } finally {
-            $this->signalTrapper->release($process, $context->trappedSignals);
-            if (!$job) {
-                $this->sectionOutput->finishProcess($process);
-            }
-            $this->eventDispatcher->dispatch(new ProcessTerminateEvent($process));
+            throw $e;
         }
 
-        if ($context->notify) {
-            $this->notifier->send(\sprintf('The command "%s" has been finished %s.', $process->getCommandLine(), 0 === $exitCode ? 'successfully' : 'with an error'));
-        }
-
-        if (0 !== $exitCode) {
-            $this->logger->notice(\sprintf('Command finished with an error (exit code=%d).', $process->getExitCode()));
-
-            if ($this->isInterruptedInTerminal($process, $exitCode, $context)) {
-                throw new ProcessInterruptedException($process);
-            }
-
-            // Nobody can answer the question while the output of a job is captured
-            if ($context->verboseArguments && !$context->verbosityLevel->isVerbose() && !$job) {
-                $retry = $this->io->getErrorStyle()->confirm('Do you want to retry the command with verbose arguments?', false);
-
-                if ($retry) {
-                    return $this->run(
-                        command: $command,
-                        context: $context->withVerbosityLevel(VerbosityLevel::VERBOSE),
-                        callback: $callback,
-                    );
-                }
-            }
-
-            if (!$context->allowFailure) {
-                throw new ProcessFailedException($process);
-            }
-
-            return $process;
-        }
-
-        $this->logger->debug('Command finished successfully.');
+        $this->jobRegistry->end($job);
 
         return $process;
     }
@@ -273,6 +214,99 @@ class ProcessRunner
         }
 
         return rtrim($runnable, ' ');
+    }
+
+    /**
+     * @param string|array<string>                           $command
+     * @param (callable(string, string, Process) :void)|null $callback
+     */
+    private function execute(Process $process, string|array $command, Context $context, ?callable $callback, ?Job $job): Process
+    {
+        $process->start(static function ($type, $bytes) use ($callback, $process): void {
+            if ($callback) {
+                $callback($type, $bytes, $process);
+            }
+        });
+
+        $this->signalTrapper->trap($process, $context->trappedSignals);
+
+        $this->eventDispatcher->dispatch(new ProcessStartEvent($process));
+
+        try {
+            if (\Fiber::getCurrent()) {
+                while ($process->isRunning()) {
+                    if (!$job) {
+                        $this->sectionOutput->tickProcess($process);
+                    }
+                    $process->checkTimeout();
+                    // parallel() pauses once all its fibers had their turn
+                    \Fiber::suspend();
+                }
+            } elseif ($job) {
+                // Nothing else refreshes the display of the jobs meanwhile
+                while ($process->isRunning()) {
+                    $process->checkTimeout();
+                    $this->jobRegistry->tick();
+                    usleep(20_000);
+                }
+            }
+
+            $exitCode = $process->wait();
+        } catch (ProcessSignaledException $e) {
+            if (!\in_array($e->getSignal(), $context->trappedSignals, true)) {
+                // Castor would already have stopped if it had received this
+                // SIGINT too: the task stops as if it had
+                if (self::SIGINT === $e->getSignal()) {
+                    throw new ProcessInterruptedException($process, $e);
+                }
+
+                throw $e;
+            }
+
+            $exitCode = $process->getExitCode() ?? 128 + $e->getSignal();
+        } finally {
+            $this->signalTrapper->release($process, $context->trappedSignals);
+            if (!$job) {
+                $this->sectionOutput->finishProcess($process);
+            }
+            $this->eventDispatcher->dispatch(new ProcessTerminateEvent($process));
+        }
+
+        if ($context->notify) {
+            $this->notifier->send(\sprintf('The command "%s" has been finished %s.', $process->getCommandLine(), 0 === $exitCode ? 'successfully' : 'with an error'));
+        }
+
+        if (0 !== $exitCode) {
+            $this->logger->notice(\sprintf('Command finished with an error (exit code=%d).', $process->getExitCode()));
+
+            if ($this->isInterruptedInTerminal($process, $exitCode, $context)) {
+                throw new ProcessInterruptedException($process);
+            }
+
+            // Nobody can answer the question while the output of a job is captured
+            if ($context->verboseArguments && !$context->verbosityLevel->isVerbose() && !$job) {
+                $this->jobRegistry->suspend();
+                $retry = $this->io->getErrorStyle()->confirm('Do you want to retry the command with verbose arguments?', false);
+
+                if ($retry) {
+                    return $this->run(
+                        command: $command,
+                        context: $context->withVerbosityLevel(VerbosityLevel::VERBOSE),
+                        callback: $callback,
+                    );
+                }
+            }
+
+            if (!$context->allowFailure) {
+                throw new ProcessFailedException($process);
+            }
+
+            return $process;
+        }
+
+        $this->logger->debug('Command finished successfully.');
+
+        return $process;
     }
 
     /**

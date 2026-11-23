@@ -1,0 +1,9 @@
+[test]    Test 2: KO
+In sequential.php line XXXX:
+
+ [ERROR] The following process did not finish successfully (exit code XX):
+
+echo "Test 2: KO" >&2; exit 1
+
+ // Re-run the command with the -v option to see more details.
+

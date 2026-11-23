@@ -6,8 +6,8 @@ use Castor\Context;
 use Castor\Exception\LlmException;
 use Castor\Llm\LlmRunner;
 use Castor\Llm\Selector;
-use Castor\Runner\Parallel\Job;
-use Castor\Runner\Parallel\JobRegistry;
+use Castor\Runner\Job\Job;
+use Castor\Runner\Job\JobRegistry;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\NullOutput;
@@ -332,7 +332,7 @@ class LlmRunnerTest extends LlmTestCase
             $this->runInJob(static fn (): string => $runner->ask('What is the answer?'));
             $this->fail('An exception should have been thrown.');
         } catch (LlmException $e) {
-            $this->assertSame('Castor needs you to choose the LLM CLI (from the default), but a job of parallel() cannot ask a question. Set the CASTOR_LLM environment variable to the CLI to use, or run "castor castor:llm:configure".', $e->getMessage());
+            $this->assertSame('Castor needs you to choose the LLM CLI (from the default), but a job cannot ask a question. Set the CASTOR_LLM environment variable to the CLI to use, or run "castor castor:llm:configure".', $e->getMessage());
         }
 
         $this->assertSame('', $this->output->fetch());
@@ -664,7 +664,7 @@ class LlmRunnerTest extends LlmTestCase
 
         $this->output = new BufferedOutput();
         $this->logger = new BufferingLogger();
-        $this->jobRegistry = new JobRegistry($input);
+        $this->jobRegistry = new JobRegistry($input, new NullOutput(), $this->createContextRegistry($interactive));
         $this->runs = [];
 
         return new LlmRunner(

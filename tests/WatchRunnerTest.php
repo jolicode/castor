@@ -8,7 +8,7 @@ use Castor\Context;
 use Castor\ContextRegistry;
 use Castor\Helper\Architecture;
 use Castor\Helper\Installation;
-use Castor\Runner\Parallel\JobRegistry;
+use Castor\Runner\Job\JobRegistry;
 use Castor\Runner\ParallelRunner;
 use Castor\Runner\ProcessRunner;
 use Castor\Runner\WatchRunner;
@@ -45,7 +45,7 @@ class WatchRunnerTest extends TestCase
 
         $runner = new WatchRunner(
             $this->createStub(ContextRegistry::class),
-            new ParallelRunner($this->createStub(Application::class), new NullOutput(), $this->createStub(ContextRegistry::class), new JobRegistry(new ArrayInput([]))),
+            new ParallelRunner($this->createStub(Application::class), new NullOutput(), $this->createStub(ContextRegistry::class), new JobRegistry(new ArrayInput([]), new NullOutput(), $this->createStub(ContextRegistry::class))),
             $this->createStub(ProcessRunner::class),
             $this->createStub(SectionOutput::class),
             $this->createStub(Installation::class),
@@ -97,7 +97,7 @@ class WatchRunnerTest extends TestCase
 
         new WatchRunner(
             $this->createStub(ContextRegistry::class),
-            new ParallelRunner($this->createStub(Application::class), new NullOutput(), $this->createStub(ContextRegistry::class), new JobRegistry(new ArrayInput([]))),
+            new ParallelRunner($this->createStub(Application::class), new NullOutput(), $this->createStub(ContextRegistry::class), new JobRegistry(new ArrayInput([]), new NullOutput(), $this->createStub(ContextRegistry::class))),
             $processRunner,
             $this->createStub(SectionOutput::class),
             $installation,

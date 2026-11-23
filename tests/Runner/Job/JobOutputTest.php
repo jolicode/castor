@@ -1,8 +1,8 @@
 <?php
 
-namespace Castor\Tests\Runner\Parallel;
+namespace Castor\Tests\Runner\Job;
 
-use Castor\Runner\Parallel\JobOutput;
+use Castor\Runner\Job\JobOutput;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\BufferedOutput;

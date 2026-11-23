@@ -6,7 +6,7 @@ use Castor\Console\Command\LlmConfigureCommand;
 use Castor\Console\Command\LlmDebugCommand;
 use Castor\Llm\LlmRunner;
 use Castor\Llm\Selector;
-use Castor\Runner\Parallel\JobRegistry;
+use Castor\Runner\Job\JobRegistry;
 use Psr\Log\NullLogger;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
@@ -225,7 +225,7 @@ class LlmCommandsTest extends LlmTestCase
         $processRunner = $this->createProcessRunner($results);
         $clis = $this->createCliRegistry($installedClis, processRunner: $processRunner);
         $input = new ArrayInput([]);
-        $runner = new LlmRunner($clis, $this->configStorage, new Selector($clis), $this->createContextRegistry(), $processRunner, new Filesystem(), $input, new SymfonyStyle($input, new NullOutput()), new JobRegistry($input), new NullLogger(), false);
+        $runner = new LlmRunner($clis, $this->configStorage, new Selector($clis), $this->createContextRegistry(), $processRunner, new Filesystem(), $input, new SymfonyStyle($input, new NullOutput()), new JobRegistry($input, new NullOutput(), $this->createContextRegistry()), new NullLogger(), false);
 
         return new CommandTester(new Application()->addCommand(new LlmDebugCommand($clis, $this->configStorage, $runner)) ?? throw new \LogicException('The command could not be added.'));
     }

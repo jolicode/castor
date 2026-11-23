@@ -58,9 +58,10 @@ name:
 The values returned by the jobs are keyed by their name. The functions must be
 either all named or all unnamed.
 
-In an interactive terminal, each job is displayed as a block, with a spinner,
-its duration and the last lines it printed. Once all the jobs are finished,
-the full output of the failed ones is printed, with their error:
+The jobs are displayed like [any other job](jobs.md#how-jobs-are-displayed):
+in an interactive terminal, each one is a block with a spinner, its duration
+and the last lines it printed, and the full output of the failed ones is
+printed at the end:
 
 ```text
 ✔ lint   0.9s
@@ -72,10 +73,8 @@ the full output of the failed ones is printed, with their error:
 ⠹ build  1.5s
 ```
 
-Otherwise, each line is printed as soon as it comes, prefixed with the name of
-its job. What a job writes to the error output goes to the error output. When
-a job fails, its error is printed with its output, and a summary of the jobs
-comes at the end:
+When the output is not an interactive terminal (CI, pipe, file…), and in
+verbose and quiet modes, each line is prefixed with the name of its job:
 
 ```text
 [test]  Running the test suite
@@ -85,11 +84,11 @@ comes at the end:
 [lint]  ✔ Done in 0.9s
 [test]  Test 2: OK
 [test]  Test 3: KO
+[test]  ✘ Failed after 1.3s
 [test]  In jobs.php line 21:
 [test]   [ERROR] The following process did not finish successfully (exit code 1):
 [test]  echo "Test 3: KO" >&2; exit 1
 [test]   // Re-run the command with the -v option to see more details.
-[test]  ✘ Failed after 1.3s
 [build] Assets compiled
 [build] ✔ Done in 1.6s
 
@@ -98,27 +97,13 @@ comes at the end:
 [build] ✔ Done in 1.6s
 ```
 
-The lines are prefixed:
+A single display shows all the jobs: the jobs of a `parallel()` called inside
+a job, or next to another one, are displayed with the others.
 
-* when the output is not an interactive terminal (CI, pipe, file…);
-* in verbose and quiet modes;
-* when there are more jobs than lines in the terminal;
-* when `parallel()` is called from a function run by another `parallel()`
-  (or by `watch()`): the jobs of a `parallel()` called inside a job are
-  prefixed in the output of this job.
-
-Inside a job, the output of `run()`, `io()`, `output()`, `echo` and the logs
-is captured. Unless they have their own callback, the commands run without
-TTY nor PTY, so they print plain logs instead of drawing for a terminal they
-do not own.
-
-The jobs run like any other function given to `parallel()`, so:
-
-* a job only lets the others run, and the display refresh, while it waits for
-  a command started with `run()`;
-* a job cannot ask a question: its output is captured, so `io()->ask()` and
-  the like get their default answer;
-* `dump()` is not captured, it writes straight to the terminal.
+The jobs run like any other function given to `parallel()`, so a job only lets
+the others run, and the display refresh, while it waits for a command started
+with `run()`. Inside a job, the output is captured, see
+[what happens inside a job](jobs.md#what-happens-inside-a-job).
 
 > [!TIP]
 > To build the jobs from a list, spread an array with string keys:

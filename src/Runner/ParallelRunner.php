@@ -4,11 +4,8 @@ namespace Castor\Runner;
 
 use Castor\Console\Application;
 use Castor\ContextRegistry;
-use Castor\Runner\Parallel\Job;
-use Castor\Runner\Parallel\JobDisplayInterface;
-use Castor\Runner\Parallel\JobRegistry;
-use Castor\Runner\Parallel\PrefixedJobDisplay;
-use Castor\Runner\Parallel\TuiJobDisplay;
+use Castor\Runner\Job\Job;
+use Castor\Runner\Job\JobRegistry;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -39,16 +36,17 @@ final readonly class ParallelRunner
         // The callbacks inherit the job they are run from, if any, so their
         // output still lands in this job
         $parentJob = $this->jobRegistry->getCurrent();
-        // Named callbacks get their own job, and their output is organized
-        $display = null;
-        if ($callbacks && !array_is_list($callbacks)) {
+        // Named callbacks are jobs of their own, and their output is organized
+        $isNamed = $callbacks && !array_is_list($callbacks);
+        if ($isNamed) {
             if (array_filter(array_keys($callbacks), is_int(...))) {
                 throw new \InvalidArgumentException('The functions given to parallel() must be either all named or all unnamed.');
             }
 
-            /** @var non-empty-list<string> $names */
-            $names = array_keys($callbacks);
-            $display = $this->createDisplay($names, $parentJob, $errorOutput);
+            // All at once, to align their names
+            foreach (array_keys($callbacks) as $name) {
+                $this->jobRegistry->get((string) $name);
+            }
         }
 
         // Each fiber gets its own "current context" slot, since Fiber::start() /
@@ -63,119 +61,117 @@ final readonly class ParallelRunner
 
         /** @var \SplObjectStorage<\Fiber<mixed, mixed, mixed, mixed>, \Castor\Context> $fiberContexts */
         $fiberContexts = new \SplObjectStorage();
-        /** @var \SplObjectStorage<\Fiber<mixed, mixed, mixed, mixed>, Job> $fiberJobs */
+        /** @var \SplObjectStorage<\Fiber<mixed, mixed, mixed, mixed>, Job> $fiberJobs The jobs of the named callbacks */
         $fiberJobs = new \SplObjectStorage();
 
-        $handleThrowable = function (\Throwable $e, \Fiber $fiber) use ($display, $errorOutput, $fiberJobs, $parentJob, &$exceptions): void {
+        $handleThrowable = function (\Throwable $e, \Fiber $fiber) use ($errorOutput, $fiberJobs, $parentJob, &$exceptions): void {
             $exceptions[] = $e;
 
-            if (!$display) {
+            if (!isset($fiberJobs[$fiber])) {
+                if (!$parentJob) {
+                    $this->jobRegistry->suspend();
+                }
                 $this->app->renderThrowable($e, $parentJob->errorOutput ?? $errorOutput);
 
                 return;
             }
 
-            // Finished first, so what it was writing comes before its error
-            $fiberJobs[$fiber]->finish($e);
+            $job = $fiberJobs[$fiber];
+            // Ended first, so what it was writing comes before its error
+            $this->jobRegistry->end($job, $e);
             // Separated from the output of the job, which renderThrowable()
             // does not know about
-            $fiberJobs[$fiber]->errorOutput->writeln('', OutputInterface::VERBOSITY_QUIET);
-            $this->app->renderThrowable($e, $fiberJobs[$fiber]->errorOutput);
-            $display->finish($fiberJobs[$fiber]);
+            $job->errorOutput->writeln('', OutputInterface::VERBOSITY_QUIET);
+            $this->app->renderThrowable($e, $job->errorOutput);
         };
-        $handleTermination = static function (\Fiber $fiber) use ($display, $fiberJobs): void {
-            if ($display && $fiber->isTerminated()) {
-                $fiberJobs[$fiber]->finish();
-                $display->finish($fiberJobs[$fiber]);
+        $handleTermination = function (\Fiber $fiber) use ($fiberJobs): void {
+            if (isset($fiberJobs[$fiber]) && $fiber->isTerminated()) {
+                $this->jobRegistry->end($fiberJobs[$fiber]);
             }
         };
 
-        // Without it, echo, print or var_dump() in a job would write straight
-        // to the console. Only when nothing else runs: the output buffers are
-        // a stack, which fibers would not pop in order.
-        $capturesOutput = $display && null === \Fiber::getCurrent();
-        if ($capturesOutput) {
-            ob_start($this->writeToCurrentJob(...), 1);
+        foreach ($callbacks as $key => $callback) {
+            $fiber = new \Fiber($callback);
+            $context = $outerContext;
+
+            if ($isNamed) {
+                $job = $this->jobRegistry->get((string) $key);
+                $fiberJobs[$fiber] = $job;
+                $this->jobRegistry->attach($fiber, $job);
+                // The job of the context comes first, it must not be the
+                // one parallel() is called from
+                $context = $context?->withJob((string) $key);
+                $this->jobRegistry->begin($job);
+            } elseif ($parentJob) {
+                $this->jobRegistry->attach($fiber, $parentJob);
+            }
+
+            if ($context) {
+                $this->contextRegistry->setCurrentContext($context);
+            }
+
+            try {
+                $fiber->start();
+                $handleTermination($fiber);
+            } catch (\Throwable $e) {
+                $handleThrowable($e, $fiber);
+            }
+
+            if ($this->contextRegistry->hasCurrentContext()) {
+                $fiberContexts[$fiber] = $this->contextRegistry->getCurrentContext();
+            }
+
+            $fibers[$key] = $fiber;
         }
 
-        try {
-            foreach ($callbacks as $key => $callback) {
-                $fiber = new \Fiber($callback);
+        $isRunning = true;
 
-                $job = $display ? $display->getJob((string) $key) : $parentJob;
-                if ($job) {
-                    $this->jobRegistry->attach($fiber, $job);
-                    $fiberJobs[$fiber] = $job;
-                }
+        while ($isRunning) {
+            $isRunning = false;
 
-                if ($outerContext) {
-                    $this->contextRegistry->setCurrentContext($outerContext);
-                }
+            foreach ($fibers as $fiber) {
+                $isRunning = $isRunning || !$fiber->isTerminated();
 
-                try {
-                    $fiber->start();
-                    $handleTermination($fiber);
-                } catch (\Throwable $e) {
-                    $handleThrowable($e, $fiber);
-                }
+                if (!$fiber->isTerminated() && $fiber->isSuspended()) {
+                    if (isset($fiberContexts[$fiber])) {
+                        $this->contextRegistry->setCurrentContext($fiberContexts[$fiber]);
+                    }
 
-                if ($this->contextRegistry->hasCurrentContext()) {
-                    $fiberContexts[$fiber] = $this->contextRegistry->getCurrentContext();
-                }
+                    try {
+                        $fiber->resume();
+                        $handleTermination($fiber);
+                    } catch (\Throwable $e) {
+                        $handleThrowable($e, $fiber);
+                    }
 
-                $fibers[$key] = $fiber;
-            }
-
-            $isRunning = true;
-
-            while ($isRunning) {
-                $isRunning = false;
-
-                foreach ($fibers as $fiber) {
-                    $isRunning = $isRunning || !$fiber->isTerminated();
-
-                    if (!$fiber->isTerminated() && $fiber->isSuspended()) {
-                        if (isset($fiberContexts[$fiber])) {
-                            $this->contextRegistry->setCurrentContext($fiberContexts[$fiber]);
-                        }
-
-                        try {
-                            $fiber->resume();
-                            $handleTermination($fiber);
-                        } catch (\Throwable $e) {
-                            $handleThrowable($e, $fiber);
-                        }
-
-                        if ($this->contextRegistry->hasCurrentContext()) {
-                            $fiberContexts[$fiber] = $this->contextRegistry->getCurrentContext();
-                        }
+                    if ($this->contextRegistry->hasCurrentContext()) {
+                        $fiberContexts[$fiber] = $this->contextRegistry->getCurrentContext();
                     }
                 }
-
-                $display?->tick();
-
-                if (!$isRunning) {
-                    break;
-                }
-
-                // A single pause per round, whatever the number of fibers: a
-                // parallel() nested in a fiber leaves it to the outermost one.
-                if (\Fiber::getCurrent()) {
-                    \Fiber::suspend();
-                } else {
-                    usleep(20_000);
-                }
-            }
-        } finally {
-            if ($capturesOutput) {
-                ob_end_flush();
             }
 
-            $display?->stop();
+            $this->jobRegistry->tick();
+
+            if (!$isRunning) {
+                break;
+            }
+
+            // A single pause per round, whatever the number of fibers: a
+            // parallel() nested in a fiber leaves it to the outermost one.
+            if (\Fiber::getCurrent()) {
+                \Fiber::suspend();
+            } else {
+                usleep(20_000);
+            }
         }
 
         if ($outerContext) {
             $this->contextRegistry->setCurrentContext($outerContext);
+        }
+
+        // Done with its jobs: what comes next is shown below them
+        if ($isNamed && !$parentJob && null === \Fiber::getCurrent()) {
+            $this->jobRegistry->suspend();
         }
 
         if ($exceptions) {
@@ -183,37 +179,5 @@ final readonly class ParallelRunner
         }
 
         return array_map(static fn ($fiber): mixed => $fiber->getReturn(), $fibers);
-    }
-
-    /**
-     * @param non-empty-list<string> $names
-     */
-    private function createDisplay(array $names, ?Job $parentJob, OutputInterface $errorOutput): JobDisplayInterface
-    {
-        // Nested in another job: everything goes in the output of this job
-        if ($parentJob) {
-            return new PrefixedJobDisplay($parentJob->output, $parentJob->errorOutput, $names);
-        }
-
-        // In a fiber that is not a job (unnamed parallel(), watch()), the code
-        // running next to this one writes to the console too: only prefixed
-        // lines can mix with it
-        if (null === \Fiber::getCurrent() && TuiJobDisplay::isSupported($this->output, \count($names))) {
-            return new TuiJobDisplay($this->output, $errorOutput, $names);
-        }
-
-        return new PrefixedJobDisplay($this->output, $errorOutput, $names);
-    }
-
-    private function writeToCurrentJob(string $buffer): string
-    {
-        if (!$job = $this->jobRegistry->getCurrent()) {
-            return $buffer;
-        }
-
-        // Shown even in quiet mode, like when it is not in a job
-        $job->output->write($buffer, false, OutputInterface::OUTPUT_RAW | OutputInterface::VERBOSITY_QUIET);
-
-        return '';
     }
 }

@@ -23,6 +23,7 @@ In ProcessRunner.php line XXXX:
 
 Exception trace:
   at .../src/Runner/ProcessRunner.php:XXXX
+ Castor\Runner\ProcessRunner->execute() at .../src/Runner/ProcessRunner.php:XXXX
  Castor\Runner\ProcessRunner->run() at .../src/functions.php:XXXX
  Castor\run() at .../examples/basic/run/exception.php:XXXX
  run\exception() at .../src/Console/Command/TaskCommand.php:XXXX

@@ -96,6 +96,10 @@ function foo(): void
 }
 ```
 
+With its `job` argument, `with()` runs the function in a job: its output is
+organized under the name of the job, see
+[the jobs documentation](../helpers/jobs.md).
+
 ## The `#[AsContextGenerator()]` attribute
 
 In some case, you may want to programmatically define contexts. You can use the

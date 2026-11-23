@@ -29,6 +29,8 @@ class Context implements \ArrayAccess
      *                                                                                well-known signals (CI env var, STDIN being a TTY).
      * @param int[]                                              $trappedSignals      A list of signals Castor must trap and forward to the
      *                                                                                process it runs, instead of being interrupted by them
+     * @param ?string                                            $job                 The job the commands are part of: their output is
+     *                                                                                organized under its name
      *
      * @phpstan-param ContextData $data The input parameter accepts an array or an Object
      */
@@ -53,6 +55,7 @@ class Context implements \ArrayAccess
         public readonly mixed $input = null,
         ?bool $supportsInteraction = null,
         public readonly array $trappedSignals = [],
+        public readonly ?string $job = null,
     ) {
         $this->workingDirectory = $workingDirectory ?? PathHelper::getDefaultWorkingDirectory();
         $this->supportsInteraction = $supportsInteraction ?? self::detectSupportsInteraction();
@@ -76,6 +79,7 @@ class Context implements \ArrayAccess
             'notificationTitle' => $this->notificationTitle,
             'supportsInteraction' => $this->supportsInteraction,
             'trappedSignals' => $this->trappedSignals,
+            'job' => $this->job,
         ];
     }
 
@@ -232,6 +236,22 @@ class Context implements \ArrayAccess
 
         return $this->clone([
             'trappedSignals' => array_values(array_unique($signals)),
+        ]);
+    }
+
+    /**
+     * Makes the commands run with this context part of the job: their output
+     * is organized under its name, with the output of the other commands of
+     * the same job. Pass null to not use a job.
+     */
+    public function withJob(?string $job): self
+    {
+        if ('' === $job) {
+            $job = null;
+        }
+
+        return $this->clone([
+            'job' => $job,
         ]);
     }
 
