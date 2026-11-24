@@ -96,6 +96,29 @@ function foo(): void
 }
 ```
 
+To modify the context the callback runs with, give it the options with the
+`context()` function:
+
+```php
+use function Castor\context;
+use function Castor\run;
+use function Castor\with;
+
+#[AsTask()]
+function foo(): void
+{
+    with(function () {
+        run('pwd'); // will print /tmp/app
+        run('ls'); // will not display its output
+    }, context: context('my_context', workingDirectory: 'app', quiet: true));
+}
+```
+
+> [!NOTE]
+> The `data`, `environment`, `workingDirectory`, `tty`, `pty`, `timeout`,
+> `quiet`, `allowFailure` and `notify` arguments of `with()` are deprecated:
+> give these options to the context instead.
+
 ## The `#[AsContextGenerator()]` attribute
 
 In some case, you may want to programmatically define contexts. You can use the

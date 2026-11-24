@@ -14,6 +14,7 @@
 
 ### Deprecations
 
+* Deprecate the `data`, `environment`, `workingDirectory`, `tty`, `pty`, `timeout`, `quiet`, `allowFailure` and `notify` arguments of `with()`: give these options to the context instead, `with($callback, context: context(pty: false))`. Unlike these arguments, `context()` starts from the current context, not from a new one
 * Deprecate loading the tasks, contexts and listeners of the files a package autoloads when it is not imported: import it with `import('composer://vendor/package')`, Castor 2.0 will only load them then, or when the package sets `extra.castor.expose-without-import`
 
 ### Fixes

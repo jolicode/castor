@@ -99,12 +99,13 @@ constant too, and a second bare `define()` would raise
 Castor then changes the current directory of its own process to the working
 directory of the context, so relative paths mean the same thing everywhere,
 whatever directory you called `castor` from. This also applies while a
-`with(workingDirectory: ...)` block runs, and the previous directory is restored
+`with()` block runs in another working directory, and the previous directory is restored
 when it ends:
 
 ```php
 use Castor\Attribute\AsTask;
 
+use function Castor\context;
 use function Castor\io;
 use function Castor\with;
 
@@ -116,7 +117,7 @@ function foo(): void
     with(static function () {
         io()->writeln(getcwd()); // "/tmp"
         file_put_contents('foo.txt', 'bar'); // writes "/tmp/foo.txt"
-    }, workingDirectory: '/tmp');
+    }, context: context(workingDirectory: '/tmp'));
 
     io()->writeln(getcwd()); // the directory of the castor.php file, again
 }

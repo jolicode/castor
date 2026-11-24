@@ -24,6 +24,17 @@ function cwd_with(): void
     with(static function () {
         echo 'inside: ' . basename((string) getcwd()) . "\n";
         echo 'inside run: ' . basename(capture('pwd')) . "\n";
+    }, context: context(workingDirectory: 'sub'));
+
+    echo 'outside: ' . basename((string) getcwd()) . "\n";
+}
+
+#[AsTask(name: 'cwd-with-deprecated-argument')]
+function cwd_with_deprecated_argument(): void
+{
+    with(static function () {
+        echo 'inside: ' . basename((string) getcwd()) . "\n";
+        echo 'inside run: ' . basename(capture('pwd')) . "\n";
     }, workingDirectory: 'sub');
 
     echo 'outside: ' . basename((string) getcwd()) . "\n";

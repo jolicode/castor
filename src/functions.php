@@ -517,14 +517,23 @@ function load_dot_env(?string $path = null): array
 /**
  * Runs the callback with a context, and returns its result: the commands it
  * runs use this context, unless they get another one. The context is $context,
- * or a new Context by default (not the current one), modified by the other
- * arguments.
+ * or a new Context by default (not the current one).
+ *
+ * To modify the context, give it the options: with($callback, context:
+ * context(workingDirectory: 'app', pty: false)).
  *
  * @template T
  *
  * @param (callable(Context) :T)                       $callback
- * @param array<string, string|\Stringable|false>|null $data
- * @param array<string, string|\Stringable|false>|null $environment
+ * @param array<string, string|\Stringable|false>|null $data             Deprecated, use context(data: ...) instead
+ * @param array<string, string|\Stringable|false>|null $environment      Deprecated, use context(environment: ...) instead
+ * @param ?string                                      $workingDirectory Deprecated, use context(workingDirectory: ...) instead
+ * @param ?bool                                        $tty              Deprecated, use context(tty: ...) instead
+ * @param ?bool                                        $pty              Deprecated, use context(pty: ...) instead
+ * @param ?float                                       $timeout          Deprecated, use context(timeout: ...) instead
+ * @param ?bool                                        $quiet            Deprecated, use context(quiet: ...) instead
+ * @param ?bool                                        $allowFailure     Deprecated, use context(allowFailure: ...) instead
+ * @param ?bool                                        $notify           Deprecated, use context(notify: ...) instead
  */
 function with(
     callable $callback,
@@ -551,40 +560,22 @@ function with(
         $context = $contextRegistry->get($context);
     }
 
-    if (null !== $data) {
-        $context = $context->withData($data);
-    }
+    $shortcuts = array_filter([
+        'data' => $data,
+        'environment' => $environment,
+        'workingDirectory' => $workingDirectory ?: null,
+        'tty' => $tty,
+        'pty' => $pty,
+        'timeout' => $timeout,
+        'quiet' => $quiet,
+        'allowFailure' => $allowFailure,
+        'notify' => $notify,
+    ], static fn (mixed $value): bool => null !== $value);
 
-    if (null !== $environment) {
-        $context = $context->withEnvironment($environment);
-    }
+    if ($shortcuts) {
+        trigger_deprecation('jolicode/castor', '1.10.0', \sprintf('Passing the "%s" argument(s) to with() is deprecated, pass them to the context instead: with($callback, context: context(%s)).', implode('", "', array_keys($shortcuts)), implode(', ', array_map(static fn (string $name): string => $name . ': ...', array_keys($shortcuts)))));
 
-    if ($workingDirectory) {
-        $context = $context->withWorkingDirectory($workingDirectory);
-    }
-
-    if (null !== $tty) {
-        $context = $context->withTty($tty);
-    }
-
-    if (null !== $pty) {
-        $context = $context->withPty($pty);
-    }
-
-    if (null !== $timeout) {
-        $context = $context->withTimeout($timeout);
-    }
-
-    if (null !== $quiet) {
-        $context = $context->withQuiet($quiet);
-    }
-
-    if (null !== $allowFailure) {
-        $context = $context->withAllowFailure($allowFailure);
-    }
-
-    if (null !== $notify) {
-        $context = $context->withNotify($notify);
+        $context = $context->with(...$shortcuts);
     }
 
     $contextRegistry->setCurrentContext($context);

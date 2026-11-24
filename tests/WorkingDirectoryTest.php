@@ -57,4 +57,18 @@ class WorkingDirectoryTest extends TaskTestCase
 
             TXT, $process->getOutput());
     }
+
+    public function testTheDeprecatedWorkingDirectoryArgumentOfWithStillWorks(): void
+    {
+        $process = $this->runTask(['cwd-with-deprecated-argument'], '{{ base }}/tests/fixtures/valid/working-directory');
+
+        $this->assertSame(0, $process->getExitCode(), $process->getErrorOutput());
+        $this->assertStringContainsString('Passing the "workingDirectory" argument(s) to with() is deprecated, pass them to the context instead: with($callback, context: context(workingDirectory: ...)).', $process->getErrorOutput());
+        $this->assertSame(<<<'TXT'
+            inside: sub
+            inside run: sub
+            outside: working-directory
+
+            TXT, $process->getOutput());
+    }
 }
