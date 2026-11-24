@@ -2,6 +2,7 @@
 
 namespace Castor\Runner;
 
+use Castor\Context;
 use Castor\ContextRegistry;
 use Spatie\Ssh\Ssh;
 use Symfony\Component\Process\Process;
@@ -39,6 +40,7 @@ final readonly class SshRunner
         ?bool $notify = null,
         ?float $timeout = null,
         ?callable $callback = null,
+        ?Context $context = null,
     ): Process {
         $ssh = $this->buildSsh($host, $user, $sshOptions);
 
@@ -46,7 +48,7 @@ final readonly class SshRunner
             $command = \sprintf('cd %s && %s', self::quotePath($path), $command);
         }
 
-        return $this->run($ssh->getExecuteCommand($command), $quiet, $allowFailure, $notify, $timeout, $callback);
+        return $this->run('ssh_run', $ssh->getExecuteCommand($command), $context, $quiet, $allowFailure, $notify, $timeout, $callback);
     }
 
     /** @phpstan-param SshOptions $sshOptions */
@@ -61,10 +63,11 @@ final readonly class SshRunner
         ?bool $notify = null,
         ?float $timeout = null,
         ?callable $callback = null,
+        ?Context $context = null,
     ): Process {
         $ssh = $this->buildSsh($host, $user, $sshOptions);
 
-        return $this->run($ssh->getUploadCommand($sourcePath, $destinationPath), $quiet, $allowFailure, $notify, $timeout, $callback);
+        return $this->run('ssh_upload', $ssh->getUploadCommand($sourcePath, $destinationPath), $context, $quiet, $allowFailure, $notify, $timeout, $callback);
     }
 
     /** @phpstan-param SshOptions $sshOptions */
@@ -79,31 +82,56 @@ final readonly class SshRunner
         ?bool $notify = null,
         ?float $timeout = null,
         ?callable $callback = null,
+        ?Context $context = null,
     ): Process {
         $ssh = $this->buildSsh($host, $user, $sshOptions);
 
-        return $this->run($ssh->getDownloadCommand($sourcePath, $destinationPath), $quiet, $allowFailure, $notify, $timeout, $callback);
+        return $this->run('ssh_download', $ssh->getDownloadCommand($sourcePath, $destinationPath), $context, $quiet, $allowFailure, $notify, $timeout, $callback);
     }
 
+    /**
+     * Without a context, the command runs in the current one, but its quiet,
+     * allowFailure, notify and timeout options are reset, as they always have
+     * been. The SSH client handles the terminal: the TTY and the PTY are always
+     * disabled.
+     */
     private function run(
+        string $function,
         string $command,
+        ?Context $context,
         ?bool $quiet = null,
         ?bool $allowFailure = null,
         ?bool $notify = null,
         ?float $timeout = null,
         ?callable $callback = null,
     ): Process {
+        $context ??= $this->contextRegistry
+            ->getCurrentContext()
+            ->withQuiet(false)
+            ->withAllowFailure(false)
+            ->withNotify(null)
+            ->withTimeout(null)
+        ;
+
+        $shortcuts = array_filter([
+            'quiet' => $quiet,
+            'allowFailure' => $allowFailure,
+            'notify' => $notify,
+            'timeout' => $timeout,
+        ], static fn (mixed $value): bool => null !== $value);
+
+        if ($shortcuts) {
+            trigger_deprecation('jolicode/castor', '1.10.0', \sprintf('Passing the "%s" argument(s) to %s() is deprecated, pass them to the context instead: %2$s(..., context: context(%s)).', implode('", "', array_keys($shortcuts)), $function, implode(', ', array_map(static fn (string $name): string => $name . ': ...', array_keys($shortcuts)))));
+
+            $context = $context->with(...$shortcuts);
+        }
+
         return $this->processRunner->run(
             $command,
-            context: $this->contextRegistry
-                          ->getCurrentContext()
-                          ->withPty(false)
-                          ->withTty(false)
-                          ->withEnvironment([])
-                          ->withQuiet($quiet ?? false)
-                          ->withAllowFailure($allowFailure ?? false)
-                          ->withNotify($notify)
-                          ->withTimeout($timeout),
+            context: $context
+                ->withPty(false)
+                ->withTty(false)
+                ->withEnvironment([]),
             callback: $callback,
         );
     }

@@ -42,6 +42,41 @@ function foo(): void
 }
 ```
 
+### Modifying the context on the fly
+
+The `context()` function also accepts any option of the context: it returns a
+copy of the current context, or of the context with the given name, modified by
+these options. This is the shortest way to run a command with different
+settings:
+
+```php
+use Castor\Attribute\AsTask;
+
+use function Castor\context;
+use function Castor\run;
+
+#[AsTask()]
+function foo(): void
+{
+    run('pwd', context: context(workingDirectory: '/tmp', pty: false)); // will print "/tmp"
+    run('ls', context: context('my_context', quiet: true)); // starts from the "my_context" context
+}
+```
+
+Each option behaves like the `with*()` method of the same name: the `data` and
+the `environment` are merged with the existing ones, a relative
+`workingDirectory` is resolved from the current one, and `timeout: null`
+removes the timeout. The options are `data`, `environment`, `workingDirectory`,
+`tty`, `pty`, `timeout`, `quiet`, `allowFailure`, `notify`, `verbosityLevel`,
+`notificationTitle`, `verboseArguments`, `input`, `supportsInteraction` and
+`trappedSignals`.
+
+> [!NOTE]
+> The options must be named: their order is not part of the backward
+> compatibility promise, and an option given by position throws an exception.
+> The same options are available on any context, with
+> `$context->with(pty: false)`.
+
 ### The working directory
 
 By default, only `run()` executes in the working directory of the context.
@@ -64,12 +99,13 @@ constant too, and a second bare `define()` would raise
 Castor then changes the current directory of its own process to the working
 directory of the context, so relative paths mean the same thing everywhere,
 whatever directory you called `castor` from. This also applies while a
-`with(workingDirectory: ...)` block runs, and the previous directory is restored
+`with()` block runs in another working directory, and the previous directory is restored
 when it ends:
 
 ```php
 use Castor\Attribute\AsTask;
 
+use function Castor\context;
 use function Castor\io;
 use function Castor\with;
 
@@ -81,7 +117,7 @@ function foo(): void
     with(static function () {
         io()->writeln(getcwd()); // "/tmp"
         file_put_contents('foo.txt', 'bar'); // writes "/tmp/foo.txt"
-    }, workingDirectory: '/tmp');
+    }, context: context(workingDirectory: '/tmp'));
 
     io()->writeln(getcwd()); // the directory of the castor.php file, again
 }

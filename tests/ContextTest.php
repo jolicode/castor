@@ -38,6 +38,60 @@ class ContextTest extends TestCase
         $this->assertFalse($context->supportsInteraction());
     }
 
+    public function testWithAppliesTheOptionsLikeTheirWithers(): void
+    {
+        $context = new Context(data: ['foo' => ['a' => 1]], environment: ['A' => 'a'], workingDirectory: '/tmp', timeout: 10);
+
+        $modified = $context->with(
+            data: ['foo' => ['b' => 2]],
+            environment: ['B' => 'b'],
+            workingDirectory: '/',
+            pty: false,
+            quiet: true,
+            notificationTitle: 'My App',
+        );
+
+        $this->assertNotSame($context, $modified);
+        $this->assertSame(['foo' => ['a' => 1, 'b' => 2]], $modified->data);
+        $this->assertSame(['A' => 'a', 'B' => 'b'], $modified->environment);
+        $this->assertSame('/', $modified->workingDirectory);
+        $this->assertFalse($modified->pty);
+        $this->assertTrue($modified->quiet);
+        $this->assertSame('My App', $modified->notificationTitle);
+        $this->assertSame(10.0, $modified->timeout);
+        // The original context is left untouched
+        $this->assertTrue($context->pty);
+        $this->assertSame('/tmp', $context->workingDirectory);
+    }
+
+    public function testWithAppliesANullOption(): void
+    {
+        $this->assertNull(new Context(timeout: 10)->with(timeout: null)->timeout);
+    }
+
+    public function testWithoutOptionsReturnsTheSameSettings(): void
+    {
+        $context = new Context(quiet: true);
+
+        $this->assertEquals($context, $context->with());
+    }
+
+    public function testWithRejectsAnOptionGivenByPosition(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('must be named');
+
+        new Context()->with(true);
+    }
+
+    public function testWithRejectsAnUnknownOption(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('The option "name" of Castor\Context::with() does not exist. The available options are: "data", "environment", ');
+
+        new Context()->with(name: 'foo');
+    }
+
     public function testToInteractiveSwitchesFlagsWhenEnvSupportsInteraction(): void
     {
         $context = new Context(supportsInteraction: true)->toInteractive();

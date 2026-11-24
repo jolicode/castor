@@ -10,10 +10,14 @@
 * Load the tasks, contexts and listeners of the files a package autoloads as soon as a project requires it when its `composer.json` file sets `extra.castor.expose-without-import` to `true`
 * Read the `composer.json` file of a package of type `castor-plugin` in its own repository, when there is no `castor.composer.json` file: the packages of its `require` section are installed in `.castor/vendor/` and locked in `castor.composer.lock`, and its files are autoloaded from there
 * Look for the package given to `import()` or `mount()` in the vendor directories of the mounted directories too, so a mounted directory can import the packages of its own `castor.composer.json`
+* Accept the options of the context in `context()`, to get a modified copy of the current or of a named context in one call: `run('ls', context: context(workingDirectory: 'app', pty: false))`. They are applied by the new `Context::with()` method, available on any context, and must be named
+* Add a `context` argument to `ssh_run()`, `ssh_upload()` and `ssh_download()`: their TTY and PTY are still always disabled
 
 ### Deprecations
 
+* Deprecate the `data`, `environment`, `workingDirectory`, `tty`, `pty`, `timeout`, `quiet`, `allowFailure` and `notify` arguments of `with()`: give these options to the context instead, `with($callback, context: context(pty: false))`. Unlike these arguments, `context()` starts from the current context, not from a new one
 * Deprecate loading the tasks, contexts and listeners of the files a package autoloads when it is not imported: import it with `import('composer://vendor/package')`, Castor 2.0 will only load them then, or when the package sets `extra.castor.expose-without-import`
+* Deprecate the `quiet`, `allowFailure`, `notify` and `timeout` arguments of `ssh_run()`, `ssh_upload()` and `ssh_download()`: give these options to the context instead, `ssh_run('ls', host: 'server', context: context(quiet: true))`
 
 ### Fixes
 

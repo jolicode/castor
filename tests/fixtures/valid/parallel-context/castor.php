@@ -16,11 +16,11 @@ function par(): void
         static fn () => with(static function () {
             capture('sleep 0.1');
             echo 'a after resume: context=' . basename(context()->workingDirectory) . ' run=' . basename(capture('pwd')) . "\n";
-        }, workingDirectory: 'a'),
+        }, context: context(workingDirectory: 'a')),
         static fn () => with(static function () {
             capture('sleep 0.3');
             echo 'b after resume: context=' . basename(context()->workingDirectory) . "\n";
-        }, workingDirectory: 'b'),
+        }, context: context(workingDirectory: 'b')),
     );
 
     echo 'after parallel: context=' . basename(context()->workingDirectory) . "\n";

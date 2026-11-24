@@ -5,6 +5,7 @@ namespace context;
 use Castor\Attribute\AsTask;
 use Castor\Context;
 
+use function Castor\context;
 use function Castor\io;
 use function Castor\with;
 
@@ -17,8 +18,7 @@ function display_context_info_with(): void
 
             return $context->data['foo'] ?? 'N/A';
         },
-        data: ['foo' => 'bar'],
-        context: 'dynamic',
+        context: context('dynamic', data: ['foo' => 'bar']),
     );
 
     io()->writeln($result);

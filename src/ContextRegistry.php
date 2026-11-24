@@ -131,7 +131,7 @@ class ContextRegistry
 
         // Keep the process where the context says it is, so that fs() and the raw PHP
         // functions resolve their relative paths against the same directory run() executes
-        // in, including inside a with(workingDirectory: ...) block and once it is left.
+        // in, including inside a with() block in another working directory and once it is left.
         // Opt-in until Castor 2.0, where it becomes the default.
         if (!(\defined('CASTOR_USE_CHDIR') && CASTOR_USE_CHDIR) || $context->workingDirectory === getcwd()) {
             return;
