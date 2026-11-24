@@ -12,8 +12,8 @@ use Symfony\Component\Tui\Widget\TextWidget;
 
 /**
  * Shows one block per job: a spinner, its name, its duration, and the last
- * lines it printed. Once all the jobs are finished, the full output of the
- * failed ones is printed.
+ * lines it printed. A job waiting for its turn is shown as waiting. Once all
+ * the jobs are finished, the full output of the failed ones is printed.
  *
  * @internal
  */
@@ -25,6 +25,8 @@ final class TuiJobDisplay implements JobDisplayInterface
     // clear the screen behind the back of symfony/tui
     private const UNSAFE_SEQUENCES = '{\e\[[\x30-\x3F]*+[\x20-\x2F]*+[\x40-\x6C\x6E-\x7E]|\e\][^\a\e]*+(?:\a|\e\\\)?|\e(?![\[\]])|[\x00-\x08\x0A-\x1A\x1C-\x1F\x7F]}';
 
+    /** @var array<string, int> The number of lines left under each failed job */
+    private array $failedLines = [];
     /** @var array<string, resource> */
     private array $fullOutputs = [];
     /** @var array<string, Job> */
@@ -56,6 +58,10 @@ final class TuiJobDisplay implements JobDisplayInterface
                 '.failed::message' => new Style()->withColor('red'),
                 '.failed::spinner' => new Style()->withColor('red'),
                 '.log' => new Style()->withColor('gray'),
+                '.pending::message' => new Style()->withColor('gray'),
+                '.pending::spinner' => new Style()->withColor('gray'),
+                '.skipped::message' => new Style()->withColor('default'),
+                '.skipped::spinner' => new Style()->withColor('yellow'),
                 '.succeeded::message' => new Style()->withColor('default'),
                 '.succeeded::spinner' => new Style()->withColor('green'),
             ]),
@@ -64,7 +70,12 @@ final class TuiJobDisplay implements JobDisplayInterface
 
         foreach ($names as $name) {
             $this->jobs[$name] = new Job($name, $output, $errorOutput, $this->addLine(...), $this->addLine(...));
-            $this->loaders[$name] = new JobLoaderWidget($this->nameColumn->format($name));
+            // Stopped, a loader shows its finished indicator: the spinner only
+            // starts with the job
+            $this->loaders[$name] = new JobLoaderWidget("{$this->nameColumn->format($name)}  waiting");
+            $this->loaders[$name]->addStyleClass('pending');
+            $this->loaders[$name]->setFinishedIndicator('·');
+            $this->loaders[$name]->stop();
             $this->logs[$name] = new TextWidget(truncate: true);
             $this->logs[$name]->addStyleClass('log');
             $this->lastLines[$name] = [];
@@ -73,7 +84,6 @@ final class TuiJobDisplay implements JobDisplayInterface
 
             $this->tui->add($this->loaders[$name]);
             $this->tui->add($this->logs[$name]);
-            $this->loaders[$name]->start();
         }
 
         // Driven by tick(), never by run(): the jobs are fibers of their own,
@@ -116,12 +126,17 @@ final class TuiJobDisplay implements JobDisplayInterface
         $this->refreshedAt = microtime(true);
 
         foreach ($this->jobs as $name => $job) {
-            if ($job->isFinished()) {
+            if ($job->isFinished() || !$job->isStarted()) {
                 continue;
             }
 
-            $this->loaders[$name]->setMessage(\sprintf('%s  %.1fs', $this->nameColumn->format($name), $job->getDuration()));
-            $this->logs[$name]->setText($this->formatLastLines($job));
+            if (!$this->loaders[$name]->isRunning()) {
+                $this->loaders[$name]->removeStyleClass('pending');
+                $this->loaders[$name]->start();
+            }
+
+            $this->loaders[$name]->setMessage($this->formatMessage($job, \sprintf('%.1fs', $job->getDuration())));
+            $this->logs[$name]->setText(implode("\n", $this->getLastLines($job)));
         }
 
         $this->tui->tick();
@@ -132,18 +147,22 @@ final class TuiJobDisplay implements JobDisplayInterface
         $name = $job->name;
         $duration = number_format($job->getDuration(), 1);
         $loader = $this->loaders[$name];
+        // A job can finish before the display is refreshed
+        $loader->removeStyleClass('pending');
 
-        if ($job->isSuccessful()) {
-            $loader->addStyleClass('succeeded');
-            $loader->setFinishedIndicator('✔');
-            $loader->setMessage("{$this->nameColumn->format($name)}  {$duration}s");
+        if (!$job->isFailed()) {
+            $loader->addStyleClass($job->isSkipped() ? 'skipped' : 'succeeded');
+            $loader->setFinishedIndicator($job->isSkipped() ? '-' : '✔');
+            $loader->setMessage($this->formatMessage($job, "{$duration}s"));
             $this->logs[$name]->setText('');
         } else {
             $loader->addStyleClass('failed');
             $loader->setFinishedIndicator('✘');
-            $loader->setMessage("{$this->nameColumn->format($name)}  failed after {$duration}s");
+            $loader->setMessage($this->formatMessage($job, "failed after {$duration}s"));
             // The last lines of a failure usually hold the error
-            $this->logs[$name]->setText($this->formatLastLines($job));
+            $lastLines = $this->getLastLines($job);
+            $this->failedLines[$name] = \count($lastLines);
+            $this->logs[$name]->setText(implode("\n", $lastLines));
         }
 
         $loader->stop();
@@ -164,7 +183,8 @@ final class TuiJobDisplay implements JobDisplayInterface
         $this->output->writeln('');
 
         foreach ($this->jobs as $name => $job) {
-            if (!$job->isSuccessful()) {
+            // A job marked as failed may not have printed anything
+            if ($job->isFailed() && ftell($this->fullOutputs[$name]) > 0) {
                 $this->output->writeln(\sprintf('<error> %s failed, its full output: </error>', OutputFormatter::escape($name)));
                 rewind($this->fullOutputs[$name]);
                 while (false !== $line = fgets($this->fullOutputs[$name])) {
@@ -241,13 +261,29 @@ final class TuiJobDisplay implements JobDisplayInterface
         }
     }
 
-    private function formatLastLines(Job $job): string
+    private function formatMessage(Job $job, string $duration): string
     {
-        $count = \count($this->jobs);
-        // Keep all the blocks on the screen, they could not be redrawn otherwise
-        $maxLines = min(self::MAX_LINES, intdiv($this->tui->getTerminal()->getRows() - 1 - $count, $count));
+        $status = '' === $job->status ? '' : "{$job->status}  ";
+
+        return "{$this->nameColumn->format($job->name)}  {$status}{$duration}";
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function getLastLines(Job $job): array
+    {
+        // Keep all the blocks on the screen, they could not be redrawn
+        // otherwise: the lines left by the names of the jobs, and by the
+        // failed ones, are shared between the running ones
+        $runningCount = \count(array_filter(
+            $this->jobs,
+            static fn (Job $other) => $other === $job || ($other->isStarted() && !$other->isFinished()),
+        ));
+        $freeLines = $this->tui->getTerminal()->getRows() - 1 - \count($this->jobs) - array_sum($this->failedLines);
+        $maxLines = min(self::MAX_LINES, intdiv($freeLines, $runningCount));
         if ($maxLines <= 0) {
-            return '';
+            return [];
         }
 
         // The lines being written show the progress bars
@@ -256,10 +292,10 @@ final class TuiJobDisplay implements JobDisplayInterface
             static fn (string $line) => '' !== trim($line),
         );
 
-        return implode("\n", array_map(
+        return array_map(
             static fn (string $line) => '    ' . self::removeUnsafeSequences($line),
             \array_slice([...$this->lastLines[$job->name], ...$pendingLines], -$maxLines),
-        ));
+        );
     }
 
     private static function removeUnsafeSequences(string $line): string

@@ -1,0 +1,5 @@
+[web2] No space left on device
+[web2] In map.php line XXXX:
+[web2]  [ERROR] The following process did not finish successfully (exit code XX):
+[web2] sleep 1.2; echo "No space left on device" >&2; exit 1
+[web2]  // Re-run the command with the -v option to see more details.

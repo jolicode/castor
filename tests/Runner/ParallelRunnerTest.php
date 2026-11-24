@@ -4,6 +4,7 @@ namespace Castor\Tests\Runner;
 
 use Castor\Console\Application;
 use Castor\ContextRegistry;
+use Castor\Exception\ParallelException;
 use Castor\Runner\Parallel\JobRegistry;
 use Castor\Runner\ParallelRunner;
 use PHPUnit\Framework\TestCase;
@@ -77,6 +78,69 @@ class ParallelRunnerTest extends TestCase
         $this->runner->parallel(...[static fn () => 1, 'test' => static fn () => 2]);
     }
 
+    public function testTheResultsOfMapAreKeyedLikeTheItems(): void
+    {
+        $double = static fn (int $item) => $item * 2;
+
+        $this->assertSame([2, 4], $this->runner->map([1, 2], $double));
+        $this->assertSame([3 => 2, 7 => 4], $this->runner->map([3 => 1, 7 => 2], $double));
+        $this->assertSame('', $this->output->fetch(), 'Items keyed by an integer are not jobs.');
+
+        $this->assertSame(['web1' => 2, 'web2' => 4], $this->runner->map(['web1' => 1, 'web2' => 2], $double));
+        $this->assertStringContainsString('[web1] ✔ Done in', $this->output->fetch());
+    }
+
+    public function testMixingItemsKeyedByANameAndByAnIntegerIsRejected(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('The items given to parallel_map() must be either all keyed by a name or all keyed by an integer.');
+
+        $this->runner->map([1, 'web1' => 2], static fn (int $item) => $item);
+    }
+
+    public function testMapLimitsHowManyFunctionsRunAtTheSameTime(): void
+    {
+        $running = 0;
+        $maxRunning = 0;
+        $started = [];
+
+        $results = $this->runner->map([1, 2, 3, 4, 5], static function (int $item) use (&$running, &$maxRunning, &$started): int {
+            $started[] = $item;
+            $maxRunning = max($maxRunning, ++$running);
+            \Fiber::suspend();
+            --$running;
+
+            return $item * 2;
+        }, 2);
+
+        $this->assertSame(2, $maxRunning);
+        $this->assertSame([1, 2, 3, 4, 5], $started);
+        $this->assertSame([2, 4, 6, 8, 10], $results);
+    }
+
+    public function testAConcurrencyBelowOneIsRejected(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('The concurrency given to parallel_map() must be at least 1.');
+
+        $this->runner->map([1], static fn (int $item) => $item, 0);
+    }
+
+    public function testAFailureGivesTheResultsOfTheOtherFunctions(): void
+    {
+        try {
+            $this->runner->map(
+                ['web1' => 1, 'web2' => 2, 'web3' => 3],
+                static fn (int $item) => 2 === $item ? throw new \RuntimeException('boom') : $item * 2,
+            );
+            $this->fail('The failure of a job is not reported.');
+        } catch (ParallelException $e) {
+            $this->assertSame(['web1' => 2, 'web3' => 6], $e->results);
+            $this->assertSame(['web2'], array_keys($e->exceptions));
+            $this->assertSame('boom', $e->exceptions['web2']->getMessage());
+        }
+    }
+
     public function testEachLineIsPrefixedWithTheNameOfItsJob(): void
     {
         $this->runner->parallel(
@@ -91,6 +155,50 @@ class ParallelRunnerTest extends TestCase
             [lint] ✔ Done in X.Xs
             [test] test 2
             [test] ✔ Done in X.Xs
+
+            TXT, $this->fetch($this->output));
+        $this->assertSame('', $this->errorOutput->fetch());
+    }
+
+    /**
+     * Each change of the status would flood the lines of the job.
+     */
+    public function testTheLastStatusOfAJobIsPrintedOnceItIsFinished(): void
+    {
+        $this->runner->parallel(
+            lint: function (): void {
+                $this->jobRegistry->getCurrent()?->setStatus('linting');
+                \Fiber::suspend();
+                $this->jobRegistry->getCurrent()?->setStatus('3 files <linted>');
+            },
+        );
+
+        $this->assertSame("[lint] ✔ Done in X.Xs: 3 files <linted>\n", $this->fetch($this->output));
+    }
+
+    public function testAJobMarkedAsFailedOrSkippedStillReturnsItsResult(): void
+    {
+        $results = $this->runner->parallel(
+            lint: function (): string {
+                $this->jobRegistry->getCurrent()?->setStatus('unreachable');
+                $this->jobRegistry->getCurrent()?->markAsFailed();
+
+                return 'lint';
+            },
+            test: function (): string {
+                $this->jobRegistry->getCurrent()?->markAsSkipped();
+
+                return 'test';
+            },
+        );
+
+        $this->assertSame(['lint' => 'lint', 'test' => 'test'], $results);
+        $this->assertSame(<<<'TXT'
+            [lint] ✘ Failed after X.Xs: unreachable
+            [test] - Skipped after X.Xs
+
+            [lint] ✘ Failed after X.Xs: unreachable
+            [test] - Skipped after X.Xs
 
             TXT, $this->fetch($this->output));
         $this->assertSame('', $this->errorOutput->fetch());

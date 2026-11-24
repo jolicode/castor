@@ -4,6 +4,7 @@ namespace Castor\Runner;
 
 use Castor\Console\Application;
 use Castor\ContextRegistry;
+use Castor\Exception\ParallelException;
 use Castor\Runner\Parallel\Job;
 use Castor\Runner\Parallel\JobDisplayInterface;
 use Castor\Runner\Parallel\JobRegistry;
@@ -28,8 +29,46 @@ final readonly class ParallelRunner
      */
     public function parallel(callable ...$callbacks): array
     {
+        return $this->run($callbacks, null, 'The functions given to parallel() must be either all named or all unnamed.');
+    }
+
+    /**
+     * @template TKey of array-key
+     * @template TItem
+     * @template TResult
+     *
+     * @param array<TKey, TItem>       $items
+     * @param callable(TItem): TResult $callback
+     *
+     * @return array<TKey, TResult>
+     */
+    public function map(array $items, callable $callback, ?int $concurrency = null): array
+    {
+        if (null !== $concurrency && $concurrency < 1) {
+            throw new \InvalidArgumentException('The concurrency given to parallel_map() must be at least 1.');
+        }
+
+        /** @var array<TKey, TResult> $results */
+        $results = $this->run(
+            array_map(static fn (mixed $item) => static fn () => $callback($item), $items),
+            $concurrency,
+            'The items given to parallel_map() must be either all keyed by a name or all keyed by an integer.',
+        );
+
+        return $results;
+    }
+
+    /**
+     * @param array<array-key, callable> $callbacks
+     * @param ?int                       $concurrency How many callbacks run at the same time, all of them when null
+     *
+     * @return array<array-key, mixed>
+     */
+    private function run(array $callbacks, ?int $concurrency, string $mixedKeysMessage): array
+    {
         /** @var array<\Fiber<mixed, mixed, mixed, mixed>> $fibers */
         $fibers = [];
+        /** @var array<array-key, \Throwable> $exceptions */
         $exceptions = [];
         $errorOutput = $this->output;
         if ($errorOutput instanceof ConsoleOutputInterface) {
@@ -41,13 +80,11 @@ final readonly class ParallelRunner
         $parentJob = $this->jobRegistry->getCurrent();
         // Named callbacks get their own job, and their output is organized
         $display = null;
-        if ($callbacks && !array_is_list($callbacks)) {
-            if (array_filter(array_keys($callbacks), is_int(...))) {
-                throw new \InvalidArgumentException('The functions given to parallel() must be either all named or all unnamed.');
+        if ($names = array_values(array_filter(array_keys($callbacks), is_string(...)))) {
+            if (\count($names) !== \count($callbacks)) {
+                throw new \InvalidArgumentException($mixedKeysMessage);
             }
 
-            /** @var non-empty-list<string> $names */
-            $names = array_keys($callbacks);
             $display = $this->createDisplay($names, $parentJob, $errorOutput);
         }
 
@@ -66,8 +103,8 @@ final readonly class ParallelRunner
         /** @var \SplObjectStorage<\Fiber<mixed, mixed, mixed, mixed>, Job> $fiberJobs */
         $fiberJobs = new \SplObjectStorage();
 
-        $handleThrowable = function (\Throwable $e, \Fiber $fiber) use ($display, $errorOutput, $fiberJobs, $parentJob, &$exceptions): void {
-            $exceptions[] = $e;
+        $handleThrowable = function (\Throwable $e, \Fiber $fiber, int|string $key) use ($display, $errorOutput, $fiberJobs, $parentJob, &$exceptions): void {
+            $exceptions[$key] = $e;
 
             if (!$display) {
                 $this->app->renderThrowable($e, $parentJob->errorOutput ?? $errorOutput);
@@ -98,43 +135,18 @@ final readonly class ParallelRunner
             ob_start($this->writeToCurrentJob(...), 1);
         }
 
+        $pending = $callbacks;
+
         try {
-            foreach ($callbacks as $key => $callback) {
-                $fiber = new \Fiber($callback);
+            while (true) {
+                $running = 0;
 
-                $job = $display ? $display->getJob((string) $key) : $parentJob;
-                if ($job) {
-                    $this->jobRegistry->attach($fiber, $job);
-                    $fiberJobs[$fiber] = $job;
-                }
+                foreach ($fibers as $key => $fiber) {
+                    if ($fiber->isTerminated()) {
+                        continue;
+                    }
 
-                if ($outerContext) {
-                    $this->contextRegistry->setCurrentContext($outerContext);
-                }
-
-                try {
-                    $fiber->start();
-                    $handleTermination($fiber);
-                } catch (\Throwable $e) {
-                    $handleThrowable($e, $fiber);
-                }
-
-                if ($this->contextRegistry->hasCurrentContext()) {
-                    $fiberContexts[$fiber] = $this->contextRegistry->getCurrentContext();
-                }
-
-                $fibers[$key] = $fiber;
-            }
-
-            $isRunning = true;
-
-            while ($isRunning) {
-                $isRunning = false;
-
-                foreach ($fibers as $fiber) {
-                    $isRunning = $isRunning || !$fiber->isTerminated();
-
-                    if (!$fiber->isTerminated() && $fiber->isSuspended()) {
+                    if ($fiber->isSuspended()) {
                         if (isset($fiberContexts[$fiber])) {
                             $this->contextRegistry->setCurrentContext($fiberContexts[$fiber]);
                         }
@@ -143,18 +155,63 @@ final readonly class ParallelRunner
                             $fiber->resume();
                             $handleTermination($fiber);
                         } catch (\Throwable $e) {
-                            $handleThrowable($e, $fiber);
+                            $handleThrowable($e, $fiber, $key);
                         }
 
                         if ($this->contextRegistry->hasCurrentContext()) {
                             $fiberContexts[$fiber] = $this->contextRegistry->getCurrentContext();
                         }
                     }
+
+                    if (!$fiber->isTerminated()) {
+                        ++$running;
+                    }
+                }
+
+                // Started in the order they were given, as soon as there is
+                // room for them
+                while ($pending && (null === $concurrency || $running < $concurrency)) {
+                    $key = array_key_first($pending);
+                    $fiber = new \Fiber($pending[$key]);
+                    unset($pending[$key]);
+
+                    if ($display) {
+                        $job = $display->getJob((string) $key);
+                        $job->start();
+                    } else {
+                        $job = $parentJob;
+                    }
+
+                    if ($job) {
+                        $this->jobRegistry->attach($fiber, $job);
+                        $fiberJobs[$fiber] = $job;
+                    }
+
+                    if ($outerContext) {
+                        $this->contextRegistry->setCurrentContext($outerContext);
+                    }
+
+                    try {
+                        $fiber->start();
+                        $handleTermination($fiber);
+                    } catch (\Throwable $e) {
+                        $handleThrowable($e, $fiber, $key);
+                    }
+
+                    if ($this->contextRegistry->hasCurrentContext()) {
+                        $fiberContexts[$fiber] = $this->contextRegistry->getCurrentContext();
+                    }
+
+                    $fibers[$key] = $fiber;
+
+                    if (!$fiber->isTerminated()) {
+                        ++$running;
+                    }
                 }
 
                 $display?->tick();
 
-                if (!$isRunning) {
+                if (!$pending && 0 === $running) {
                     break;
                 }
 
@@ -178,11 +235,13 @@ final readonly class ParallelRunner
             $this->contextRegistry->setCurrentContext($outerContext);
         }
 
+        $getReturn = static fn (\Fiber $fiber): mixed => $fiber->getReturn();
+
         if ($exceptions) {
-            throw new \RuntimeException('One or more exceptions were thrown in parallel.');
+            throw new ParallelException($exceptions, array_map($getReturn, array_diff_key($fibers, $exceptions)));
         }
 
-        return array_map(static fn ($fiber): mixed => $fiber->getReturn(), $fibers);
+        return array_map($getReturn, $fibers);
     }
 
     /**

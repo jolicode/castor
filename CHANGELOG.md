@@ -10,6 +10,10 @@
 * Load the tasks, contexts and listeners of the files a package autoloads as soon as a project requires it when its `composer.json` file sets `extra.castor.expose-without-import` to `true`
 * Read the `composer.json` file of a package of type `castor-plugin` in its own repository, when there is no `castor.composer.json` file: the packages of its `require` section are installed in `.castor/vendor/` and locked in `castor.composer.lock`, and its files are autoloaded from there
 * Look for the package given to `import()` or `mount()` in the vendor directories of the mounted directories too, so a mounted directory can import the packages of its own `castor.composer.json`
+* Add the `parallel_map()` function to run a function for each item of an array in parallel, with an optional `concurrency` limit
+* Add the `job()` function to get the current job of `parallel()` or `parallel_map()`, set a status shown next to its name, and mark it as failed or skipped
+* Show more output lines per job of `parallel()`, by sharing the terminal between the running jobs only
+* Throw a `ParallelException` holding the exceptions and the results of the functions when `parallel()` or `parallel_map()` fails
 
 ### Deprecations
 
