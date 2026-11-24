@@ -1,0 +1,12 @@
+[web1] Upgraded
+[web1] ✔ Done in X.Xs: upgraded
+[db1]  Upgraded
+[db1]  ✔ Done in X.Xs: upgraded
+[web2] ✘ Failed after X.Xs: upgrading
+
+[web1] ✔ Done in X.Xs: upgraded
+[web2] ✘ Failed after X.Xs: upgrading
+[db1]  ✔ Done in X.Xs: upgraded
+
+ [WARNING] Upgraded: web1, db1. Failed: web2.
+

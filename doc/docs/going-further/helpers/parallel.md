@@ -59,7 +59,8 @@ The values returned by the jobs are keyed by their name. The functions must be
 either all named or all unnamed.
 
 In an interactive terminal, each job is displayed as a block, with a spinner,
-its duration and the last lines it printed. Once all the jobs are finished,
+its duration and the last lines it printed: the lines of the terminal are
+shared between the jobs that are running. Once all the jobs are finished,
 the full output of the failed ones is printed, with their error:
 
 ```text
@@ -123,6 +124,58 @@ The jobs run like any other function given to `parallel()`, so:
 > [!TIP]
 > To build the jobs from a list, spread an array with string keys:
 > `parallel(...$jobs)`.
+
+## The `parallel_map()` function
+
+The `parallel_map()` function runs the same function for each item of an
+array, and returns the results keyed like the items. When the items are keyed
+by a name, each one becomes a job, like the named functions of `parallel()`.
+
+Its `concurrency` argument limits how many functions run at the same time. The
+others wait for their turn, in the order of the items: in an interactive
+terminal, they are shown as `waiting`, and their duration only starts when
+they do.
+
+```php
+{{ php("examples/advanced/parallel/map.php") }}
+```
+
+## The `job()` function
+
+The `job()` function only works in the jobs of `parallel()` and
+`parallel_map()`: called in a named function given to `parallel()`, or for an
+item keyed by a name given to `parallel_map()`, it returns the job the code is
+run in.
+
+The `name` of the job is the name of the function, or the key of the item, and
+its `setStatus()` method sets a text shown next to this name: what the job is
+doing, then what it did once it is finished.
+
+```text
+✔ web1  upgraded  0.3s
+⠹ web2  upgrading  0.7s
+⠙ db1   upgrading  0.4s
+```
+
+When the lines are prefixed, only the last status is printed, once the job is
+finished: `[web1] ✔ Done in 0.3s: upgraded`.
+
+A job fails when its function throws. Its `markAsFailed()` and
+`markAsSkipped()` methods show it as failed (`✘`) or skipped (`-`) once it is
+finished, without throwing: the function still returns its result, and no
+`ParallelException` is thrown for it.
+
+Anywhere else, like directly in a task or in an unnamed function given to
+`parallel()`, there is no job: it throws a `LogicException`.
+
+## Handling the failures
+
+When a function fails, the others still run until they finish. Then
+`parallel()` and `parallel_map()` throw a `Castor\Exception\ParallelException`,
+which holds what happened to each function, keyed like them:
+
+* `exceptions`: the exception of each function that failed;
+* `results`: the value returned by each function that succeeded.
 
 ## Watching in parallel
 

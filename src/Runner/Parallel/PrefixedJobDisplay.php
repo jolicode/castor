@@ -52,29 +52,34 @@ final class PrefixedJobDisplay implements JobDisplayInterface
 
     public function finish(Job $job): void
     {
-        $this->output->writeln($this->prefixes[$job->name] . $this->formatStatus($job));
+        $this->output->writeln($this->prefixes[$job->name] . $this->formatOutcome($job));
     }
 
     public function stop(): void
     {
-        if (!array_any($this->jobs, static fn (Job $job) => !$job->isSuccessful())) {
+        if (!array_any($this->jobs, static fn (Job $job) => $job->isFailed())) {
             return;
         }
 
         // The failures are lost in the middle of the output of the other jobs
         $this->output->writeln('');
         foreach ($this->jobs as $job) {
-            $this->output->writeln($this->prefixes[$job->name] . $this->formatStatus($job));
+            $this->output->writeln($this->prefixes[$job->name] . $this->formatOutcome($job));
         }
     }
 
-    private function formatStatus(Job $job): string
+    private function formatOutcome(Job $job): string
     {
         $duration = number_format($job->getDuration(), 1);
+        // The status is only printed once the job is finished: each of its
+        // changes would flood the lines of the job
+        $status = '' === $job->status ? '' : ': ' . OutputFormatter::escape($job->status);
 
-        return $job->isSuccessful()
-            ? "<fg=green>✔ Done in {$duration}s</>"
-            : "<fg=red>✘ Failed after {$duration}s</>";
+        return match (true) {
+            $job->isFailed() => "<fg=red>✘ Failed after {$duration}s{$status}</>",
+            $job->isSkipped() => "<fg=yellow>- Skipped after {$duration}s{$status}</>",
+            default => "<fg=green>✔ Done in {$duration}s{$status}</>",
+        };
     }
 
     private function writeLine(Job $job, string $line): void

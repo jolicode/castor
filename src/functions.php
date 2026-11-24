@@ -7,6 +7,7 @@ use Castor\Console\Application;
 use Castor\Exception\ExecutableNotFoundException;
 use Castor\Exception\LlmException;
 use Castor\Exception\MinimumVersionRequirementNotMetException;
+use Castor\Exception\ParallelException;
 use Castor\Exception\ProblemException;
 use Castor\Exception\WaitFor\DockerContainerStateException;
 use Castor\Exception\WaitFor\ExitedBeforeTimeoutException;
@@ -14,6 +15,7 @@ use Castor\Exception\WaitFor\TimeoutReachedException;
 use Castor\Helper\CompressionMethod;
 use Castor\Helper\HasherHelper;
 use Castor\Helper\PathHelper;
+use Castor\Runner\Parallel\Job;
 use JoliCode\PhpOsHelper\OsHelper;
 use Monolog\Level;
 use Psr\Cache\CacheItemInterface;
@@ -47,10 +49,49 @@ use function Symfony\Component\String\u;
  * output is organized, and its result is keyed by its name.
  *
  * @return array<array-key, mixed>
+ *
+ * @throws ParallelException Once all the functions are finished, when some of them failed
  */
 function parallel(callable ...$callbacks): array
 {
     return Container::get()->parallelRunner->parallel(...$callbacks);
+}
+
+/**
+ * Runs the function for each item in parallel, and returns their results,
+ * keyed like the items.
+ *
+ * Keyed by a name, like ['web1' => …, 'web2' => …], each item becomes a job:
+ * its output is organized.
+ *
+ * @template TKey of array-key
+ * @template TItem
+ * @template TResult
+ *
+ * @param array<TKey, TItem>       $items
+ * @param callable(TItem): TResult $callback
+ * @param positive-int|null        $concurrency How many functions run at the same time, all of them by default
+ *
+ * @return array<TKey, TResult>
+ *
+ * @throws ParallelException Once all the functions are finished, when some of them failed
+ */
+function parallel_map(array $items, callable $callback, ?int $concurrency = null): array
+{
+    return Container::get()->parallelRunner->map($items, $callback, $concurrency);
+}
+
+/**
+ * Returns the job of parallel() or parallel_map() the code is run in: a named
+ * function given to parallel(), or an item keyed by a name given to
+ * parallel_map().
+ *
+ * @throws \LogicException Anywhere else, like directly in a task: there is no job
+ */
+function job(): Job
+{
+    return Container::get()->jobRegistry->getCurrent()
+        ?? throw new \LogicException('job() must be called in a job: a named function given to parallel(), or an item keyed by a name given to parallel_map().');
 }
 
 /**
