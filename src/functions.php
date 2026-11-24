@@ -351,11 +351,22 @@ function io(): SymfonyStyle
 }
 
 /**
- * Returns the current context, or the context with this name.
+ * Returns the current context, or the context with this name, modified by the
+ * given options (see Context::with()): they must be named.
+ *
+ *     run('ls', context: context(workingDirectory: 'app', pty: false));
+ *
+ * @throws \InvalidArgumentException When an option is not named, or is unknown
  */
-function context(?string $name = null): Context
+function context(?string $name = null, mixed ...$options): Context
 {
-    return Container::get()->getContext($name);
+    $context = Container::get()->getContext($name);
+
+    if (!$options) {
+        return $context;
+    }
+
+    return $context->with(...$options);
 }
 
 /**

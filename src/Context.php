@@ -16,6 +16,27 @@ use Symfony\Component\DependencyInjection\Attribute\Exclude;
 #[Exclude]
 class Context implements \ArrayAccess
 {
+    /**
+     * The options with() accepts: each one is applied by its with*() method.
+     */
+    private const OPTIONS = [
+        'data',
+        'environment',
+        'workingDirectory',
+        'tty',
+        'pty',
+        'timeout',
+        'quiet',
+        'allowFailure',
+        'notify',
+        'verbosityLevel',
+        'notificationTitle',
+        'verboseArguments',
+        'input',
+        'supportsInteraction',
+        'trappedSignals',
+    ];
+
     public readonly string $workingDirectory;
 
     public readonly bool $supportsInteraction;
@@ -77,6 +98,56 @@ class Context implements \ArrayAccess
             'supportsInteraction' => $this->supportsInteraction,
             'trappedSignals' => $this->trappedSignals,
         ];
+    }
+
+    /**
+     * Returns a copy of the context with the given options: each one is
+     * applied by its with*() method, so it behaves the same way (the data and
+     * the environment are merged with the existing ones, a relative working
+     * directory is resolved from the current one, a null timeout removes it...).
+     *
+     * The options must be named, their order is not part of the backward
+     * compatibility promise:
+     *
+     *     $context->with(workingDirectory: 'app', pty: false, timeout: 60);
+     *
+     * The available options are:
+     *
+     * - array<(int|string), mixed>                         $data
+     * - array<string, string|\Stringable|false>            $environment
+     * - string                                             $workingDirectory
+     * - bool                                               $tty
+     * - bool                                               $pty
+     * - ?float                                             $timeout
+     * - bool                                               $quiet
+     * - bool                                               $allowFailure
+     * - ?bool                                              $notify
+     * - VerbosityLevel                                     $verbosityLevel
+     * - string                                             $notificationTitle
+     * - string[]                                           $verboseArguments
+     * - string|\Stringable|resource|\Iterator<string>|null $input
+     * - bool                                               $supportsInteraction
+     * - int[]|null                                         $trappedSignals
+     *
+     * @throws \InvalidArgumentException When an option is not named, or is unknown
+     */
+    public function with(mixed ...$options): self
+    {
+        $context = $this;
+
+        foreach ($options as $name => $value) {
+            if (\is_int($name)) {
+                throw new \InvalidArgumentException(\sprintf('The options of %s() must be named, like "pty: false". The available options are: "%s".', __METHOD__, implode('", "', self::OPTIONS)));
+            }
+
+            if (!\in_array($name, self::OPTIONS, true)) {
+                throw new \InvalidArgumentException(\sprintf('The option "%s" of %s() does not exist. The available options are: "%s".', $name, __METHOD__, implode('", "', self::OPTIONS)));
+            }
+
+            $context = $context->{'with' . ucfirst($name)}($value);
+        }
+
+        return $context;
     }
 
     /**

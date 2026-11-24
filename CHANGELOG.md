@@ -10,6 +10,7 @@
 * Load the tasks, contexts and listeners of the files a package autoloads as soon as a project requires it when its `composer.json` file sets `extra.castor.expose-without-import` to `true`
 * Read the `composer.json` file of a package of type `castor-plugin` in its own repository, when there is no `castor.composer.json` file: the packages of its `require` section are installed in `.castor/vendor/` and locked in `castor.composer.lock`, and its files are autoloaded from there
 * Look for the package given to `import()` or `mount()` in the vendor directories of the mounted directories too, so a mounted directory can import the packages of its own `castor.composer.json`
+* Accept the options of the context in `context()`, to get a modified copy of the current or of a named context in one call: `run('ls', context: context(workingDirectory: 'app', pty: false))`. They are applied by the new `Context::with()` method, available on any context, and must be named
 
 ### Deprecations
 
