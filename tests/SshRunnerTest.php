@@ -7,6 +7,7 @@ use Castor\ContextRegistry;
 use Castor\Runner\ProcessRunner;
 use Castor\Runner\SshRunner;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\TestCase;
 use Spatie\Ssh\Ssh;
 use Symfony\Component\Process\Process;
@@ -123,6 +124,69 @@ class SshRunnerTest extends TestCase
         yield 'home path' => ['~/app', "cd ~'/app'"];
         yield 'other user home path' => ['~deploy/app', "cd ~deploy'/app'"];
         yield 'bare home' => ['~', 'cd ~'];
+    }
+
+    public function testTheGivenContextIsUsedWithoutTerminal(): void
+    {
+        $context = $this->runInContext(
+            new Context(),
+            new Context(tty: true, pty: true, quiet: true, allowFailure: true, notify: true, timeout: 30),
+        );
+
+        $this->assertFalse($context->tty);
+        $this->assertFalse($context->pty);
+        $this->assertTrue($context->quiet);
+        $this->assertTrue($context->allowFailure);
+        $this->assertTrue($context->notify);
+        $this->assertSame(30.0, $context->timeout);
+    }
+
+    public function testWithoutContextTheCurrentOneIsUsedWithItsOptionsReset(): void
+    {
+        $context = $this->runInContext(new Context(data: ['foo' => 'bar'], quiet: true, allowFailure: true, notify: true, timeout: 30));
+
+        $this->assertSame(['foo' => 'bar'], $context->data);
+        $this->assertFalse($context->tty);
+        $this->assertFalse($context->pty);
+        $this->assertFalse($context->quiet);
+        $this->assertFalse($context->allowFailure);
+        $this->assertNull($context->notify);
+        $this->assertNull($context->timeout);
+    }
+
+    #[IgnoreDeprecations]
+    public function testTheDeprecatedArgumentsOverrideTheContext(): void
+    {
+        $this->expectUserDeprecationMessage('Since jolicode/castor 1.10.0: Passing the "quiet", "timeout" argument(s) to ssh_run() is deprecated, pass them to the context instead: ssh_run(..., context: context(quiet: ..., timeout: ...)).');
+
+        $context = $this->runInContext(new Context(), new Context(quiet: false, timeout: 30), quiet: true, timeout: 10);
+
+        $this->assertTrue($context->quiet);
+        $this->assertSame(10.0, $context->timeout);
+    }
+
+    private function runInContext(Context $currentContext, ?Context $context = null, ?bool $quiet = null, ?float $timeout = null): Context
+    {
+        $usedContext = null;
+
+        $processRunner = $this->createStub(ProcessRunner::class);
+        $processRunner
+            ->method('run')
+            ->willReturnCallback(static function (string $command, ?Context $context) use (&$usedContext): Process {
+                $usedContext = $context;
+
+                return new Process([]);
+            })
+        ;
+
+        $contextRegistry = $this->createStub(ContextRegistry::class);
+        $contextRegistry->method('getCurrentContext')->willReturn($currentContext);
+
+        new SshRunner($processRunner, $contextRegistry)->execute('ls', null, 'server-1.example.com', 'debian', quiet: $quiet, timeout: $timeout, context: $context);
+
+        $this->assertInstanceOf(Context::class, $usedContext);
+
+        return $usedContext;
     }
 
     /**

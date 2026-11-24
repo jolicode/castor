@@ -17,6 +17,18 @@ The following parameters are common to all of the `ssh_*()` functions:
 - `$host` (string): Host to connect to.
 - `$user` (string): Optional user to connect with.
 - `$ssh_options` (array): Optional configuration of the connexion.
+- `$context` (Context): Optional context to run the SSH client with. By
+  default, it is the current context, without its `quiet`, `allowFailure`,
+  `notify` and `timeout` options. The TTY and the PTY are always disabled: the
+  SSH client handles the terminal.
+
+```php
+ssh_run('ls -alh', host: 'server-1.example.com', context: context(quiet: true, timeout: 30));
+```
+
+> [!NOTE]
+> The `quiet`, `allowFailure`, `notify` and `timeout` arguments of the `ssh_*()`
+> functions are deprecated: give these options to the context instead.
 
 The `ssh_options` argument supports the following options:
 

@@ -198,7 +198,13 @@ function check(string $title, string $failureMessage, callable $check): void
  *     'enable_strict_check'?: bool,
  *     'password_authentication'?: bool,
  * } $sshOptions
- * @param ?string $path The directory to run the command in, on the host
+ * @param ?string  $path         The directory to run the command in, on the host
+ * @param ?bool    $quiet        Deprecated, use context(quiet: ...) instead
+ * @param ?bool    $allowFailure Deprecated, use context(allowFailure: ...) instead
+ * @param ?bool    $notify       Deprecated, use context(notify: ...) instead
+ * @param ?float   $timeout      Deprecated, use context(timeout: ...) instead
+ * @param ?Context $context      The context to run the command in (its TTY and PTY are disabled). By default,
+ *                               the current one, without its quiet, allowFailure, notify and timeout options
  */
 function ssh_run(
     string $command,
@@ -211,8 +217,9 @@ function ssh_run(
     ?bool $notify = null,
     ?float $timeout = null,
     ?callable $callback = null,
+    ?Context $context = null,
 ): Process {
-    return Container::get()->sshRunner->execute($command, $path, $host, $user, $sshOptions, $quiet, $allowFailure, $notify, $timeout, $callback);
+    return Container::get()->sshRunner->execute($command, $path, $host, $user, $sshOptions, $quiet, $allowFailure, $notify, $timeout, $callback, $context);
 }
 
 /**
@@ -227,6 +234,12 @@ function ssh_run(
  *     'enable_strict_check'?: bool,
  *     'password_authentication'?: bool,
  * } $sshOptions
+ * @param ?bool    $quiet        Deprecated, use context(quiet: ...) instead
+ * @param ?bool    $allowFailure Deprecated, use context(allowFailure: ...) instead
+ * @param ?bool    $notify       Deprecated, use context(notify: ...) instead
+ * @param ?float   $timeout      Deprecated, use context(timeout: ...) instead
+ * @param ?Context $context      The context to run the copy in (its TTY and PTY are disabled). By default,
+ *                               the current one, without its quiet, allowFailure, notify and timeout options
  */
 function ssh_upload(
     string $sourcePath,
@@ -238,8 +251,9 @@ function ssh_upload(
     ?bool $allowFailure = null,
     ?bool $notify = null,
     ?float $timeout = null,
+    ?Context $context = null,
 ): Process {
-    return Container::get()->sshRunner->upload($sourcePath, $destinationPath, $host, $user, $sshOptions, $quiet, $allowFailure, $notify, $timeout);
+    return Container::get()->sshRunner->upload($sourcePath, $destinationPath, $host, $user, $sshOptions, $quiet, $allowFailure, $notify, $timeout, context: $context);
 }
 
 /**
@@ -254,6 +268,12 @@ function ssh_upload(
  *     'enable_strict_check'?: bool,
  *     'password_authentication'?: bool,
  * } $sshOptions
+ * @param ?bool    $quiet        Deprecated, use context(quiet: ...) instead
+ * @param ?bool    $allowFailure Deprecated, use context(allowFailure: ...) instead
+ * @param ?bool    $notify       Deprecated, use context(notify: ...) instead
+ * @param ?float   $timeout      Deprecated, use context(timeout: ...) instead
+ * @param ?Context $context      The context to run the copy in (its TTY and PTY are disabled). By default,
+ *                               the current one, without its quiet, allowFailure, notify and timeout options
  */
 function ssh_download(
     string $sourcePath,
@@ -265,8 +285,9 @@ function ssh_download(
     ?bool $allowFailure = null,
     ?bool $notify = null,
     ?float $timeout = null,
+    ?Context $context = null,
 ): Process {
-    return Container::get()->sshRunner->download($sourcePath, $destinationPath, $host, $user, $sshOptions, $quiet, $allowFailure, $notify, $timeout);
+    return Container::get()->sshRunner->download($sourcePath, $destinationPath, $host, $user, $sshOptions, $quiet, $allowFailure, $notify, $timeout, context: $context);
 }
 
 /**
