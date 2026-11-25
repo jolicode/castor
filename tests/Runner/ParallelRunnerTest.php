@@ -3,6 +3,7 @@
 namespace Castor\Tests\Runner;
 
 use Castor\Console\Application;
+use Castor\Context;
 use Castor\ContextRegistry;
 use Castor\Runner\Parallel\JobRegistry;
 use Castor\Runner\ParallelRunner;
@@ -12,9 +13,11 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class ParallelRunnerTest extends TestCase
 {
+    private Application $app;
     private BufferedOutput $errorOutput;
     private JobRegistry $jobRegistry;
     private BufferedOutput $output;
@@ -47,7 +50,7 @@ class ParallelRunnerTest extends TestCase
         };
         $this->jobRegistry = new JobRegistry(new ArrayInput([]));
 
-        $app = $this->createStub(Application::class);
+        $this->app = $app = $this->createStub(Application::class);
         $app->method('renderThrowable')->willReturnCallback(static function (\Throwable $e, OutputInterface $output): void {
             $output->writeln("Error: {$e->getMessage()}", OutputInterface::VERBOSITY_QUIET);
         });
@@ -204,6 +207,69 @@ class ParallelRunnerTest extends TestCase
         $this->assertStringStartsWith("[build] Error: inner\n", $this->errorOutput->fetch());
     }
 
+    public function testAFunctionWhoseWorkingDirectoryIsRemovedWhileItWaitsFailsAlone(): void
+    {
+        $contextRegistry = $this->createContextRegistryWithMissingDirectories();
+        $runner = new ParallelRunner($this->app, $this->output, $contextRegistry, $this->jobRegistry);
+        $contextRegistry->setCurrentContext(new Context(workingDirectory: '/project'));
+
+        try {
+            $runner->parallel(
+                build: static function () use ($contextRegistry): void {
+                    $contextRegistry->setCurrentContext(new Context(workingDirectory: '/tmp/build'));
+                    for ($i = 0; $i < 3; ++$i) {
+                        \Fiber::suspend();
+                    }
+                },
+                clean: static function () use ($contextRegistry): void {
+                    \Fiber::suspend();
+                    $contextRegistry->missing[] = '/tmp/build';
+                    \Fiber::suspend();
+                },
+                test: function (): void {
+                    for ($i = 0; $i < 3; ++$i) {
+                        \Fiber::suspend();
+                    }
+                    $this->jobRegistry->getCurrent()?->output->writeln('tested');
+                },
+            );
+            $this->fail('The failure of a job is not reported.');
+        } catch (\RuntimeException $e) {
+            $this->assertSame('One or more exceptions were thrown in parallel.', $e->getMessage());
+        }
+
+        $this->assertStringContainsString('[build] Error: The working directory "/tmp/build" does not exist.', $this->errorOutput->fetch());
+        $this->assertStringContainsString('[test]  tested', $this->fetch($this->output));
+        $this->assertSame('/project', $contextRegistry->getCurrentContext()->workingDirectory);
+    }
+
+    public function testAFunctionCanCatchTheRemovalOfItsWorkingDirectory(): void
+    {
+        $contextRegistry = $this->createContextRegistryWithMissingDirectories();
+        $runner = new ParallelRunner($this->app, $this->output, $contextRegistry, $this->jobRegistry);
+        $contextRegistry->setCurrentContext(new Context(workingDirectory: '/project'));
+
+        $results = $runner->parallel(
+            static function () use ($contextRegistry): string {
+                try {
+                    $contextRegistry->setCurrentContext(new Context(workingDirectory: '/tmp/build'));
+                    \Fiber::suspend();
+
+                    return 'built';
+                } catch (\RuntimeException $e) {
+                    return $e->getMessage();
+                }
+            },
+            static function () use ($contextRegistry): string {
+                $contextRegistry->missing[] = '/tmp/build';
+
+                return 'cleaned';
+            },
+        );
+
+        $this->assertSame(['The working directory "/tmp/build" does not exist.', 'cleaned'], $results);
+    }
+
     private function writeInTwoSteps(string $name): void
     {
         $this->jobRegistry->getCurrent()?->output->writeln("{$name} 1");
@@ -214,5 +280,37 @@ class ParallelRunnerTest extends TestCase
     private function fetch(BufferedOutput $output): string
     {
         return (string) preg_replace('{\d+\.\ds}', 'X.Xs', $output->fetch());
+    }
+
+    /**
+     * Fails to move to the directories listed in $missing, as when the working
+     * directory of a context no longer exists.
+     */
+    private function createContextRegistryWithMissingDirectories(): ContextRegistry
+    {
+        return new class(new EventDispatcher()) extends ContextRegistry {
+            /** @var list<string> */
+            public array $missing = [];
+            private ?Context $current = null;
+
+            public function hasCurrentContext(): bool
+            {
+                return null !== $this->current;
+            }
+
+            public function setCurrentContext(Context $context): void
+            {
+                $this->current = $context;
+
+                if (\in_array($context->workingDirectory, $this->missing, true)) {
+                    throw new \RuntimeException(\sprintf('The working directory "%s" does not exist.', $context->workingDirectory));
+                }
+            }
+
+            public function getCurrentContext(): Context
+            {
+                return $this->current ?? throw new \LogicException('No current context.');
+            }
+        };
     }
 }
