@@ -454,16 +454,14 @@ function http_client(): HttpClientInterface
 }
 
 /**
- * Loads the tasks, contexts and listeners of a PHP file, of the PHP files of a
- * directory, or of a Composer package like "composer://vendor/package", required
- * in castor.composer.json: the ones of its castor.php and of the files it
- * autoloads. Unlike mount(), it does not change the working directory of the
- * tasks.
+ * Loads the tasks, contexts and listeners of a PHP file, or of the PHP files of
+ * a directory. Unlike mount(), it does not change the working directory of the
+ * tasks. Use register_plugin() for a Composer package.
  *
  * Classes are not imported: they are autoloaded, from the "autoload" section of
  * castor.composer.json.
  *
- * @param ?string $file The file to load from the package. Defaults to its castor.php
+ * @param ?string $file Deprecated, only for a package: the file to load from it
  */
 function import(string $path, ?string $file = null): void
 {
@@ -472,8 +470,8 @@ function import(string $path, ?string $file = null): void
 
 /**
  * Loads the tasks of another Castor application, a directory with its own
- * castor.php or a Composer package like "composer://vendor/package", the tasks
- * of the files it autoloads included: they run in its directory.
+ * castor.php: they run in its directory. Use register_plugin() for a Composer
+ * package.
  *
  * @param ?string $namespacePrefix Prepended to the namespace of its tasks, like "app" for "app:build"
  * @param ?string $file            The file to load instead of its castor.php
@@ -481,6 +479,21 @@ function import(string $path, ?string $file = null): void
 function mount(string $path, ?string $namespacePrefix = null, ?string $file = null): void
 {
     Container::get()->mounter->mount($path, $namespacePrefix, $file);
+}
+
+/**
+ * Exposes the tasks, contexts and listeners of a plugin, a Composer package
+ * required in castor.composer.json: by default, the ones of the files it
+ * autoloads, or the features it declares in the "extra.castor.features"
+ * section of its composer.json file.
+ *
+ * @param string                   $package  The name of the package, like "vendor/package"
+ * @param string|list<string>|null $features The features to load, instead of its "default" one
+ * @param ?string                  $prefix   Prepended to the namespace of its tasks, like "app" for "app:build"
+ */
+function register_plugin(string $package, string|array|null $features = null, ?string $prefix = null): void
+{
+    Container::get()->pluginRegistrar->register($package, $features, $prefix);
 }
 
 /**

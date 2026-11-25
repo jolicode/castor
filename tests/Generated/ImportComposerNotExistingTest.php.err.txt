@@ -1,5 +1,7 @@
+hh:mm:ss WARNING   [castor] User Deprecated: Since jolicode/castor 1.10.0: Importing a package with "import('composer://foo/bar')" is deprecated, use "register_plugin('foo/bar')" instead: it loads the tasks, contexts and listeners of the files the package autoloads, or of the "default" feature it declares, but no longer its castor.php file. ["exception" => ErrorException { …}]
+
 In castor.php line XXXX:
 
-  The package "foo/bar" is not installed, make sure you required it in your castor.composer.json file.
+  The package "foo/bar" is not installed, require it with "castor composer require foo/bar".
 
 

@@ -105,31 +105,30 @@ class InstalledPackagesTest extends TestCase
         $this->assertSame([$this->directory . '/project/.castor/vendor', $this->directory . '/mounted/.castor/vendor'], $packages->getVendorDirectories());
     }
 
-    public function testAPackageCanBeExposedWithoutBeingImported(): void
+    public function testTheDefinitionOfAPackageComesFromTheInstalledJsonFile(): void
     {
         $fs = new Filesystem();
         $fs->dumpFile($this->directory . '/project/.castor/vendor/composer/installed.json', json_encode(['packages' => [
-            ['name' => 'acme/exposed', 'extra' => ['castor' => ['expose-without-import' => true]]],
-            ['name' => 'acme/not-exposed', 'extra' => ['castor' => ['expose-without-import' => false]]],
-            ['name' => 'acme/other-extra', 'extra' => ['castor' => true]],
-            ['name' => 'acme/package'],
+            ['name' => 'acme/package', 'extra' => ['castor' => ['features' => ['qa' => ['qa.php']]]]],
+            ['name' => 'acme/both', 'type' => 'library'],
         ]], \JSON_THROW_ON_ERROR));
         $fs->dumpFile($this->directory . '/mounted/.castor/vendor/composer/installed.json', json_encode(['packages' => [
-            ['name' => 'acme/mounted', 'extra' => ['castor' => ['expose-without-import' => true]]],
+            ['name' => 'acme/mounted', 'type' => 'castor-plugin'],
+            ['name' => 'acme/both', 'type' => 'castor-plugin'],
         ]], \JSON_THROW_ON_ERROR));
 
         $packages = $this->createInstalledPackages();
 
-        $this->assertTrue($packages->isExposedWithoutImport('acme/exposed'));
-        $this->assertFalse($packages->isExposedWithoutImport('acme/not-exposed'));
-        $this->assertFalse($packages->isExposedWithoutImport('acme/other-extra'));
-        $this->assertFalse($packages->isExposedWithoutImport('acme/package'));
-        $this->assertFalse($packages->isExposedWithoutImport('acme/mounted'));
+        $this->assertSame(['qa' => ['qa.php']], $packages->getDefinition('acme/package')['extra']['castor']['features'] ?? null);
+        $this->assertNull($packages->getDefinition('acme/mounted'));
+        $this->assertNull($packages->getDefinition('acme/unknown'));
 
         // From a vendor directory loaded later
         $packages->addVendorDirectory($this->directory . '/mounted/.castor/vendor');
 
-        $this->assertTrue($packages->isExposedWithoutImport('acme/mounted'));
+        $this->assertSame('castor-plugin', $packages->getDefinition('acme/mounted')['type'] ?? null);
+        // The first vendor directory wins
+        $this->assertSame('library', $packages->getDefinition('acme/both')['type'] ?? null);
     }
 
     private function createInstalledPackages(): InstalledPackages

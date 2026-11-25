@@ -109,7 +109,9 @@ Here is the built-in events triggered by Castor:
 The `FunctionsResolvedEvent` is dispatched **once per mount**, not once per
 application. When you [mount another application](mount.md), Castor resolves the
 functions of the root application and then of each mounted application
-separately, dispatching a `FunctionsResolvedEvent` for each of them.
+separately, dispatching a `FunctionsResolvedEvent` for each of them. The same
+goes for each call to `register_plugin()` loading something new: its
+`mountPath` is the directory of the [plugin](plugins.md).
 
 This means a listener attached to `FunctionsResolvedEvent` runs several times
 when mounts are involved: once for the root application and once for every

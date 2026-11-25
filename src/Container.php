@@ -16,6 +16,7 @@ use Castor\Helper\ZipArchiver;
 use Castor\Http\HttpDownloader;
 use Castor\Import\Importer;
 use Castor\Import\Mounter;
+use Castor\Import\PluginRegistrar;
 use Castor\Import\Remote\Composer;
 use Castor\Import\Remote\InstalledPackages;
 use Castor\Llm\LlmRunner;
@@ -68,6 +69,7 @@ final class Container
         public readonly OutputInterface $output,
         public readonly ParallelRunner $parallelRunner,
         public readonly PhpRunner $phpRunner,
+        public readonly PluginRegistrar $pluginRegistrar,
         public readonly PhpServerRunner $phpServerRunner,
         public readonly ProcessRunner $processRunner,
         public readonly SectionOutput $sectionOutput,

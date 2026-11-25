@@ -4,22 +4,19 @@ namespace remote_import;
 
 use Castor\Attribute\AsTask;
 
-use function Castor\import;
+use function Castor\register_plugin;
 use function Castor\Tests\autoload\loadme;
+use function castor_example\greet;
 
-// Importing tasks from a Composer package
-import('composer://pyrech/castor-example');
-import('composer://pyrech/castor-example', file: 'foobar.php');
-// Importing tasks from a Composer package not published on packagist (but still having a composer.json)
-import('composer://pyrech/castor-example-package-not-published');
-// Importing tasks from a repository not using Composer
-import('composer://pyrech/foobar');
+// Exposing the tasks of a plugin required in castor.composer.json: the ones of
+// the files it autoloads (its "default" feature), and the ones of its "foobar"
+// feature
+register_plugin('castor-example/plugin', ['default', 'foobar']);
 
-#[AsTask(description: 'Use functions imported from remote packages')]
+#[AsTask(description: 'Use functions of a remote package')]
 function remote_tasks(): void
 {
-    \pyrech\helloExample(); // from composer://pyrech/castor-example
-    \pyrech\foobar(); // from package://pyrech/foobar
+    echo greet('remote_import') . \PHP_EOL;
 }
 
 #[AsTask(description: 'Can invoke autoloaded files from castor.composer.json')]

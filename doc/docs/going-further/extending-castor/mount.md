@@ -50,20 +50,6 @@ A mounted application can have its own `castor.composer.json` file (see
 [remote imports](./remote-imports.md)): its packages are installed in its own
 `.castor/vendor/` directory, and loaded with it, as when it runs on its own.
 
-## Mounting a remote package
-
-Like [`import()`](./remote-imports.md), `mount()` can also mount a Composer
-package instead of a local directory:
-
-```php
-use function Castor\mount;
-
-mount('composer://vendor/package', 'project:package');
-```
-
-The tasks of the package, the ones of the files it autoloads included, run in
-its own directory, exactly as with a local mount, and get the prefix.
-
 ## `mount()` vs `import()`
 
 You may wonder when to use `mount()` vs `import()`. This really depends on the
@@ -86,3 +72,10 @@ Then you should use `mount()` to avoid repeating the `workingDirectory`
 argument.
 
 Otherwise, you can continue to use `import()`.
+
+> [!NOTE]
+> `mount()` and `import()` only load local files and directories. To use the
+> tasks of a Composer package, [register it as a plugin](plugins.md): a plugin
+> uses `__DIR__` for its own files, so its tasks run in the working directory of
+> the context. `mount()` stays useful for code that does not know it is loaded
+> by another application.

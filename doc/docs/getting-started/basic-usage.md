@@ -119,8 +119,9 @@ still be detected by Castor and just need to import the other files:
 ```
 
 > [!NOTE]
-> You can also import functions from a remote resource. See the
-> [related documentation](../going-further/extending-castor/remote-imports.md).
+> You can also use the functions of a Composer package, and the tasks of a
+> plugin. See the [remote packages](../going-further/extending-castor/remote-imports.md)
+> and [plugins](../going-further/extending-castor/plugins.md) documentation.
 
 ## Overriding task name, namespace or description
 

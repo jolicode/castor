@@ -7,15 +7,13 @@ use Symfony\Component\Filesystem\Path;
 /**
  * The packages of the vendor directories whose autoloader Castor loaded, to
  * know which package a function or a class comes from: requiring a package
- * makes its code available, only importing it exposes its tasks, contexts and
- * listeners.
+ * makes its code available, only registering it exposes its tasks, contexts
+ * and listeners.
  *
  * @internal
  */
 final class InstalledPackages
 {
-    private const EXPOSE_WITHOUT_IMPORT_EXTRA_KEY = 'expose-without-import';
-
     /** @var list<string> */
     private array $vendorDirectories = [];
 
@@ -23,17 +21,17 @@ final class InstalledPackages
     private array $packages = [];
 
     /**
-     * The packages exposing their tasks, contexts and listeners without being
-     * imported, by name, read once asked for.
+     * The definitions of the packages in the installed.json files, by name,
+     * read once asked for.
      *
-     * @var array<string, true>|null
+     * @var array<string, array<string, mixed>>|null
      */
-    private ?array $packagesExposedWithoutImport = null;
+    private ?array $definitions = null;
 
     public function addVendorDirectory(string $vendorDirectory): void
     {
         $this->vendorDirectories[] = $vendorDirectory;
-        $this->packagesExposedWithoutImport = null;
+        $this->definitions = null;
 
         if (!file_exists($file = $vendorDirectory . '/composer/installed.php')) {
             return;
@@ -97,14 +95,16 @@ final class InstalledPackages
     }
 
     /**
-     * Whether the composer.json file of the package sets
-     * "extra.castor.expose-without-import" to true: its tasks, contexts and
-     * listeners are then meant to be loaded as soon as it is required.
+     * The definition of the package in the installed.json file of the vendor
+     * directory holding it, like its "extra" and "autoload" sections, or null
+     * when it is not installed.
+     *
+     * @return array<string, mixed>|null
      */
-    public function isExposedWithoutImport(string $package): bool
+    public function getDefinition(string $package): ?array
     {
-        if (null === $this->packagesExposedWithoutImport) {
-            $this->packagesExposedWithoutImport = [];
+        if (null === $this->definitions) {
+            $this->definitions = [];
 
             foreach ($this->vendorDirectories as $vendorDirectory) {
                 // Unlike installed.php, it has the "extra" key of the packages
@@ -112,20 +112,17 @@ final class InstalledPackages
                     continue;
                 }
 
-                /** @var array{packages?: list<array{name: string, extra?: array<string, mixed>}>} $installed */
+                /** @var array{packages?: list<array<string, mixed>&array{name: string}>} $installed */
                 $installed = json_decode((string) file_get_contents($file), true, flags: \JSON_THROW_ON_ERROR);
 
                 foreach ($installed['packages'] ?? [] as $definition) {
-                    $castor = $definition['extra']['castor'] ?? null;
-
-                    if (\is_array($castor) && true === ($castor[self::EXPOSE_WITHOUT_IMPORT_EXTRA_KEY] ?? false)) {
-                        $this->packagesExposedWithoutImport[$definition['name']] = true;
-                    }
+                    // The first vendor directory wins, like for findPackageDirectory()
+                    $this->definitions[$definition['name']] ??= $definition;
                 }
             }
         }
 
-        return isset($this->packagesExposedWithoutImport[$package]);
+        return $this->definitions[$package] ?? null;
     }
 
     /**

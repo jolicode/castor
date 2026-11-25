@@ -18,7 +18,7 @@ class ListOnStaticBinTest extends TaskTestCase
 
         $this->assertSame(0, $process->getExitCode());
         $expected = file_get_contents(__DIR__ . '/../Generated/ListTest.php.output.txt');
-        $expected = preg_replace('{^(pyrech\:.*\n)}m', '', $expected);
+        $expected = preg_replace('{^(castor-example\:.*\n)}m', '', $expected);
         $this->assertSame($expected, OutputCleaner::cleanOutput($process->getOutput()));
         $this->assertSameWithCleaning('', $process->getErrorOutput());
     }

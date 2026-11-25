@@ -55,6 +55,8 @@ castor:watcher:build                                     Build watcher for all s
 castor:watcher:darwin                                    Build watcher for MacOS system
 castor:watcher:linux                                     Build watcher for Linux system
 castor:watcher:windows                                   Build watcher for Windows system
+castor-example:foobar                                    Foobar from the example plugin!
+castor-example:hello                                     Hello from the example plugin!
 command-builder:ls                                       Run a sub-process and display information about it
 configuration:bar:bar                                    Prints bar, but also executes foo
 configuration:foo:foo                                    Prints foo
@@ -100,9 +102,6 @@ parallel:exception                                       Sleep and throw an exce
 parallel:jobs                                            Runs named jobs in parallel, and organizes their output
 parallel:sleep                                           Sleeps for 3 and 4 seconds in parallel
 phar:phar                                                Run a phar in a sub process
-pyrech:foobar                                            Hello from foobar!
-pyrech:hello-example                                     Hello from example!
-pyrech:not-imported                                      Not imported task
 qa:cs:cs                                                 Fix CS
 qa:cs:install                                            install dependencies
 qa:cs:update                                             Update dependencies
@@ -111,7 +110,7 @@ qa:phpstan:phpstan                                       Run PHPStan
 qa:phpstan:update                                        update dependencies
 remote-import:autoload                                   Can invoke autoloaded files from castor.composer.json
 remote-import:import-class                               Use a class that extends a class imported from a remote package
-remote-import:remote-tasks                               Use functions imported from remote packages
+remote-import:remote-tasks                               Use functions of a remote package
 run:allow-failure                                        A failing task authorized to fail
 run:capture                                              Run a sub-process and display information about it, with capture() function
 run:env-override                                         Display environment variables

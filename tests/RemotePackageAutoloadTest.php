@@ -6,7 +6,7 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class RemotePackageAutoloadTest extends TaskTestCase
 {
-    private const string DEPRECATION = 'Loading the tasks, contexts and listeners the package "castor-test/package" autoloads without importing it is deprecated';
+    private const string DEPRECATION = 'Loading the tasks, contexts and listeners the package "castor-test/package" autoloads without registering it is deprecated';
 
     private string $directory;
 
@@ -40,15 +40,7 @@ class RemotePackageAutoloadTest extends TaskTestCase
         $this->assertStringContainsString(self::DEPRECATION, $process->getErrorOutput());
         // It only gives functions
         $this->assertStringNotContainsString('castor-test/functions', $process->getErrorOutput());
-    }
-
-    public function testAPackageCanExposeTheTasksItAutoloadsWithoutBeingImported(): void
-    {
-        $process = $this->runTask(['exposed:hello'], $this->directory . '/required', needRemote: true);
-
-        $this->assertSame(0, $process->getExitCode(), $process->getErrorOutput());
-        $this->assertStringContainsString('Hello from the exposed package', $process->getOutput());
-        $this->assertStringNotContainsString('castor-test/exposed', $process->getErrorOutput());
+        $this->assertStringContainsString('Add "register_plugin(\'castor-test/package\');" to your castor.php to keep them', $process->getErrorOutput());
     }
 
     public function testImportingAPackageExposesTheTasksItAutoloads(): void
@@ -58,6 +50,7 @@ class RemotePackageAutoloadTest extends TaskTestCase
         $this->assertSame(0, $process->getExitCode(), $process->getErrorOutput());
         $this->assertStringContainsString('Hello from the package', $process->getOutput());
         $this->assertStringNotContainsString(self::DEPRECATION, $process->getErrorOutput());
+        $this->assertStringContainsString('Importing a package with "import(\'composer://castor-test/package\')" is deprecated, use "register_plugin(\'castor-test/package\')" instead', $process->getErrorOutput());
     }
 
     public function testMountingAPackageGivesItsPrefixAndItsWorkingDirectoryToTheTasksItAutoloads(): void
@@ -68,6 +61,7 @@ class RemotePackageAutoloadTest extends TaskTestCase
         $this->assertStringContainsString('Hello from the package', $process->getOutput());
         $this->assertStringContainsString('Working directory: ' . realpath($this->directory . '/package') . "\n", $process->getOutput());
         $this->assertStringNotContainsString(self::DEPRECATION, $process->getErrorOutput());
+        $this->assertStringContainsString('Mounting a package with "mount(\'composer://castor-test/package\')" is deprecated, use "register_plugin(\'castor-test/package\', prefix: \'mounted\')" instead', $process->getErrorOutput());
     }
 
     public function testThePackagesOfACastorPluginAreTheOnesOfItsComposerJsonInItsOwnRepository(): void

@@ -1,3 +1,5 @@
  Downloading remote packages
  Remote packages imported
 
+hh:mm:ss WARNING   [castor] User Deprecated: Since jolicode/castor 1.10.0: Importing a package with "import('composer://pyrech/castor-example')" is deprecated, use "register_plugin('pyrech/castor-example')" instead: it loads the tasks, contexts and listeners of the files the package autoloads, or of the "default" feature it declares, but no longer its castor.php file. ["exception" => ErrorException { …}]
+hh:mm:ss WARNING   [castor] User Deprecated: Since jolicode/castor 1.10.0: Importing a file of a package with "import('composer://pyrech/castor-example', file: 'castor.php')" is deprecated, use "register_plugin('pyrech/castor-example', '<feature>')" instead: ask the author of the package to declare this file in a feature, in the "extra.castor.features" section of its composer.json file. ["exception" => ErrorException { …}]
