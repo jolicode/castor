@@ -17,6 +17,7 @@
 
 ### Fixes
 
+* Fail only the function of `parallel()` whose working directory was removed while it was waiting, instead of stopping all the others, when `CASTOR_USE_CHDIR` is enabled
 * Write the messages of Castor (logs, deprecations, errors, update reminder, remote packages progress, `check()` and `wait_for*()` statuses, its questions) to the error output, so they no longer end up in the output of a task piped to another command or redirected to a file
 * Support OpenCode v2 in `llm_ask()` and `llm_run()`, which now require OpenCode 2 or later: OpenCode v1 is no longer supported. Castor runs OpenCode with `--standalone`, so that it knows the read-only agent of Castor instead of failing with `Agent not found: "castor-read-only"`, and reads the environment of the context instead of the one of its background service. The agents of OpenCode are proposed again when choosing the CLI
 * Give the prefix and the working directory of `mount('composer://vendor/package', 'prefix')` to the tasks of the files the package autoloads, which were added to the root application

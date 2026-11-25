@@ -108,15 +108,20 @@ final readonly class ParallelRunner
                     $fiberJobs[$fiber] = $job;
                 }
 
-                if ($outerContext) {
-                    $this->contextRegistry->setCurrentContext($outerContext);
-                }
-
                 try {
+                    if ($outerContext) {
+                        $this->contextRegistry->setCurrentContext($outerContext);
+                    }
+
                     $fiber->start();
                     $handleTermination($fiber);
                 } catch (\Throwable $e) {
                     $handleThrowable($e, $fiber);
+                }
+
+                // If it fail to start the fiber (error when setting current context)
+                if (!$fiber->isStarted()) {
+                    continue;
                 }
 
                 if ($this->contextRegistry->hasCurrentContext()) {
@@ -135,12 +140,20 @@ final readonly class ParallelRunner
                     $isRunning = $isRunning || !$fiber->isTerminated();
 
                     if (!$fiber->isTerminated() && $fiber->isSuspended()) {
-                        if (isset($fiberContexts[$fiber])) {
-                            $this->contextRegistry->setCurrentContext($fiberContexts[$fiber]);
+                        $error = null;
+
+                        try {
+                            if (isset($fiberContexts[$fiber])) {
+                                $this->contextRegistry->setCurrentContext($fiberContexts[$fiber]);
+                            }
+                        } catch (\Throwable $error) {
                         }
 
                         try {
-                            $fiber->resume();
+                            // Its working directory may have been removed while it
+                            // was waiting: the error is raised where the function
+                            // waits, which can catch it, and the others keep running
+                            $error ? $fiber->throw($error) : $fiber->resume();
                             $handleTermination($fiber);
                         } catch (\Throwable $e) {
                             $handleThrowable($e, $fiber);
