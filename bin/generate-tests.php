@@ -136,9 +136,9 @@ $taskFilterList = [
     'slug:slugify',
     'symfony:greet',
     'symfony:hello',
-    // Imported tasks
-    'pyrech:hello-example',
-    'pyrech:foobar',
+    // Tasks of a plugin, which need the remote packages
+    'castor-example:foobar',
+    'castor-example:hello',
 ];
 $optionFilterList = array_flip(['help', 'quiet', 'verbose', 'silent', 'version', 'ansi', 'no-ansi', 'no-interaction', 'context', 'no-remote', 'update-remotes']);
 

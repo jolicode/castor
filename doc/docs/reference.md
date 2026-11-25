@@ -48,6 +48,7 @@ Castor provides the following built-in functions:
 - [`open`](going-further/helpers/open.md)
 - [`output`](going-further/helpers/console-and-io.md#the-output-function)
 - [`parallel`](going-further/helpers/parallel.md#the-parallel-function)
+- [`register_plugin`](going-further/extending-castor/plugins.md)
 - [`run`](getting-started/run.md#the-run-function)
 - [`run_php`](going-further/helpers/run-php.md)
 - [`serve_php`](going-further/helpers/serve-php.md)

@@ -184,26 +184,41 @@ class Composer
             return null;
         }
 
+        $package = $this->getPackageName($path);
+
+        if (!$packageDirectory = $this->findInstalledPackage($package)) {
+            return null;
+        }
+
+        if ($file && !file_exists($packageDirectory . '/' . $file)) {
+            throw new ImportError(\sprintf('The file "%s" does not exist in the package "%s".', $file, $package));
+        }
+
+        return $packageDirectory;
+    }
+
+    /**
+     * Returns the directory of an installed package, like "vendor/package",
+     * or null when the remote packages are disabled (which is logged).
+     *
+     * @throws ImportError When the package is not installed
+     */
+    public function findInstalledPackage(string $package): ?string
+    {
         if ($this->skippedForCompletion) {
-            $this->logger->debug(\sprintf('Could not import "%s": Remote packages are not installed during a shell completion.', $path));
+            $this->logger->debug(\sprintf('Could not import "%s": Remote packages are not installed during a shell completion.', $package));
 
             return null;
         }
 
         if (!$this->isRemoteAllowed()) {
-            $this->logger->warning(\sprintf('Could not import "%s": Remote imports are disabled.', $path));
+            $this->logger->warning(\sprintf('Could not import "%s": Remote imports are disabled.', $package));
 
             return null;
         }
 
-        $package = $this->getPackageName($path);
-
         if (!$packageDirectory = $this->findPackageDirectory($package)) {
-            throw new ImportError(\sprintf('The package "%s" is not installed, make sure you required it in your castor.composer.json file.', $package));
-        }
-
-        if ($file && !file_exists($packageDirectory . '/' . $file)) {
-            throw new ImportError(\sprintf('The file "%s" does not exist in the package "%s".', $file, $package));
+            throw new ImportError(\sprintf('The package "%s" is not installed, require it with "castor composer require %s".', $package, $package));
         }
 
         return $packageDirectory;

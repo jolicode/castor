@@ -9,6 +9,7 @@ parameters:
         - examples
         - tools/phpstan/src
         - tests/autoload/loadme.php
+        - tools/example-plugin/src
     tmpDir: 'var/phpstan/tmp'
     inferPrivatePropertyTypeFromConstructor: true
     # Defined by the user in their own castor.php, so its value is not fixed. The examples
@@ -26,10 +27,6 @@ parameters:
             }
         '''
     ignoreErrors:
-        -
-            message: "#^Function pyrech\\\\.* not found\\.$#"
-            count: 2
-            path: examples/
         -
             identifier: missingType.generics
 

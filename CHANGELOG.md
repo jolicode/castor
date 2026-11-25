@@ -6,14 +6,15 @@
 
 * Add a `serve_php()` function to start the built-in web server of PHP from a task
 * Add a `--php-cli` option to `castor compile` to embed a PHP CLI in the binary, so `serve_php()` works without PHP installed
-* Load the tasks, contexts and listeners of the files a package autoloads when it is imported or mounted, so a package no longer needs a `castor.php` file, even to be mounted
-* Load the tasks, contexts and listeners of the files a package autoloads as soon as a project requires it when its `composer.json` file sets `extra.castor.expose-without-import` to `true`
+* Add a `register_plugin()` function to expose the tasks, contexts and listeners of a Composer package: the ones of the files it autoloads, or of the features it declares in the `extra.castor.features` section of its `composer.json` file, with an optional prefix for the namespace of its tasks. A plugin no longer needs a `castor.php` file
+* Offer to add `register_plugin()` to `castor.php` when `castor composer require` installs a plugin, or tell how to do it
 * Read the `composer.json` file of a package of type `castor-plugin` in its own repository, when there is no `castor.composer.json` file: the packages of its `require` section are installed in `.castor/vendor/` and locked in `castor.composer.lock`, and its files are autoloaded from there
-* Look for the package given to `import()` or `mount()` in the vendor directories of the mounted directories too, so a mounted directory can import the packages of its own `castor.composer.json`
+* Look for the package given to `register_plugin()`, `import()` or `mount()` in the vendor directories of the mounted directories too, so a mounted directory can import the packages of its own `castor.composer.json`
 
 ### Deprecations
 
-* Deprecate loading the tasks, contexts and listeners of the files a package autoloads when it is not imported: import it with `import('composer://vendor/package')`, Castor 2.0 will only load them then, or when the package sets `extra.castor.expose-without-import`
+* Deprecate loading the tasks, contexts and listeners of the files a package autoloads when it is not registered: register it with `register_plugin('vendor/package')`, Castor 2.0 will only load them then
+* Deprecate `import('composer://vendor/package')` and `mount('composer://vendor/package')` in favor of `register_plugin('vendor/package')`, which does not load the `castor.php` file of the package unless it declares it in a feature, and does not run its tasks in the directory of the package
 
 ### Fixes
 

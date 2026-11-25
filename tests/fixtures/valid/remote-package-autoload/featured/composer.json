@@ -1,0 +1,19 @@
+{
+    "name": "castor-test/featured",
+    "type": "castor-plugin",
+    "autoload": {
+        "files": [
+            "tasks.php"
+        ]
+    },
+    "extra": {
+        "castor": {
+            "features": {
+                "qa": ["qa.php"],
+                "tools": ["tools"],
+                "outside": ["../package/src/functions.php"],
+                "autoloaded": ["tasks.php"]
+            }
+        }
+    }
+}

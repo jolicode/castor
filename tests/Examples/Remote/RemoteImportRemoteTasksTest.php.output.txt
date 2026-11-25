@@ -1,6 +1,1 @@
-Hello from example!
-===================
-
-This is foobar!
-===============
-
+Hello remote_import, from the example plugin!

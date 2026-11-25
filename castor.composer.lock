@@ -4,8 +4,39 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "41123b229f03835f3279a4a0843f9e4b",
+    "content-hash": "987f62f957e2bfdbccdcc6522420fe8a",
     "packages": [
+        {
+            "name": "castor-example/plugin",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "tools/example-plugin",
+                "reference": "9c97edaad97a58c3155e2e13f0e16a02e3bf6f4d"
+            },
+            "type": "castor-plugin",
+            "extra": {
+                "castor": {
+                    "features": {
+                        "foobar": [
+                            "src/foobar.php"
+                        ]
+                    }
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/functions.php"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "A Castor plugin used by the examples of Castor",
+            "transport-options": {
+                "relative": true
+            }
+        },
         {
             "name": "doctrine/collections",
             "version": "2.2.2",
@@ -90,24 +121,25 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-04-18T06:56:21+00:00"
+            "time": "2024-04-18T06:56:21+00:00",
+            "published-time": "2024-04-18T06:57:26+00:00"
         },
         {
             "name": "doctrine/deprecations",
-            "version": "1.1.6",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/deprecations.git",
-                "reference": "d4fe3e6fd9bb9e72557a19674f44d8ac7db4c6ca"
+                "reference": "d2e16653a734c8784c1851ad68b02f997b53ca82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/deprecations/zipball/d4fe3e6fd9bb9e72557a19674f44d8ac7db4c6ca",
-                "reference": "d4fe3e6fd9bb9e72557a19674f44d8ac7db4c6ca",
+                "url": "https://api.github.com/repos/doctrine/deprecations/zipball/d2e16653a734c8784c1851ad68b02f997b53ca82",
+                "reference": "d2e16653a734c8784c1851ad68b02f997b53ca82",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1 || ^8.0"
+                "php": "^7.4 || ^8.0"
             },
             "conflict": {
                 "phpunit/phpunit": "<=7.5 || >=14"
@@ -136,64 +168,10 @@
             "homepage": "https://www.doctrine-project.org/",
             "support": {
                 "issues": "https://github.com/doctrine/deprecations/issues",
-                "source": "https://github.com/doctrine/deprecations/tree/1.1.6"
+                "source": "https://github.com/doctrine/deprecations/tree/1.2.0"
             },
-            "time": "2026-02-07T07:09:04+00:00"
-        },
-        {
-            "name": "pyrech/castor-example",
-            "version": "v1.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/pyrech/castor-example.git",
-                "reference": "5ad3b4540e6023844f402fc6f2e0cda60082fa6d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/pyrech/castor-example/zipball/5ad3b4540e6023844f402fc6f2e0cda60082fa6d",
-                "reference": "5ad3b4540e6023844f402fc6f2e0cda60082fa6d",
-                "shasum": ""
-            },
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "support": {
-                "issues": "https://github.com/pyrech/castor-example/issues",
-                "source": "https://github.com/pyrech/castor-example/tree/v1.2.0"
-            },
-            "time": "2024-05-06T22:02:35+00:00"
-        },
-        {
-            "name": "pyrech/castor-example-package-not-published",
-            "version": "v1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/pyrech/castor-example-package-not-published.git",
-                "reference": "e87fa3f71b9784800caadca8ca3e001bb646f201"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/pyrech/castor-example-package-not-published/zipball/e87fa3f71b9784800caadca8ca3e001bb646f201",
-                "reference": "e87fa3f71b9784800caadca8ca3e001bb646f201",
-                "shasum": ""
-            },
-            "type": "project",
-            "license": [
-                "MIT"
-            ],
-            "time": "2024-02-26T13:09:56+00:00"
-        },
-        {
-            "name": "pyrech/foobar",
-            "version": "v1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/pyrech/castor-example-misc.git",
-                "reference": "main"
-            },
-            "type": "library"
+            "time": "2026-11-11T10:04:49+00:00",
+            "published-time": "2026-11-11T10:12:24+00:00"
         }
     ],
     "packages-dev": [],
@@ -204,5 +182,5 @@
     "prefer-lowest": false,
     "platform": {},
     "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.11.0"
 }

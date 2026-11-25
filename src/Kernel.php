@@ -22,7 +22,6 @@ use Castor\Helper\PlatformHelper;
 use Castor\Import\Importer;
 use Castor\Import\Mount;
 use Castor\Import\Remote\Composer;
-use Castor\Import\Remote\InstalledPackages;
 use Castor\Monolog\Processor\ProcessProcessor;
 use Joli\JoliNotif\DefaultNotifier;
 use Monolog\Logger;
@@ -74,12 +73,12 @@ final class Kernel extends AbstractKernel
      */
     private array $pendingPackageDefinitions = [];
 
-    /** @var array<string, true> The packages loaded by import() or mount(), by name */
+    /** @var array<string, true> The packages loaded by register_plugin(), or by import() or mount(), by name */
     private array $importedPackages = [];
 
     /**
-     * The functions and the classes loaded although no import() nor mount()
-     * asked for their package, with the name of the package.
+     * The functions and the classes loaded although no register_plugin() nor
+     * import() nor mount() asked for their package, with the name of the package.
      *
      * @var \WeakMap<\ReflectionFunction|\ReflectionClass<object>, string>
      */
@@ -87,11 +86,14 @@ final class Kernel extends AbstractKernel
 
     /**
      * The packages whose tasks, contexts or listeners are loaded although no
-     * import() nor mount() asked for them, by name.
+     * register_plugin() nor import() nor mount() asked for them, by name.
      *
      * @var array<string, true>
      */
     private array $notImportedPackages = [];
+
+    /** @var array<string, true> The plugins registered while the remote packages are disabled, by name */
+    private array $skippedPackages = [];
 
     private bool $chdirDeprecationTriggered = false;
 
@@ -194,6 +196,15 @@ final class Kernel extends AbstractKernel
     public function addMount(Mount $mount): void
     {
         $this->mounts[] = $mount;
+    }
+
+    /**
+     * A plugin registered while the remote packages are disabled: the tasks,
+     * contexts and listeners of the files it autoloads are not exposed.
+     */
+    public function addSkippedPackage(string $package): void
+    {
+        $this->skippedPackages[$package] = true;
     }
 
     public function configureContainer(ContainerConfigurator $c): void
@@ -387,7 +398,7 @@ final class Kernel extends AbstractKernel
                 $this->load($mount, $output);
             }
 
-            $this->deprecateNotImportedPackages($c->commandLine, $c->composer, $c->installedPackages);
+            $this->deprecateNotImportedPackages($c->commandLine, $c->composer);
 
             $c->eventDispatcher->dispatch(new AfterBootEvent($c->application));
         } catch (\Throwable $e) {
@@ -433,8 +444,12 @@ final class Kernel extends AbstractKernel
 
         if (null !== $mount->package) {
             $this->importedPackages[$mount->package] = true;
-            $definitions = [...($this->pendingPackageDefinitions[$mount->package] ?? []), ...$definitions];
-            unset($this->pendingPackageDefinitions[$mount->package]);
+
+            // Not when only some features of a plugin are asked for
+            if ($mount->exposeAutoload) {
+                $definitions = [...($this->pendingPackageDefinitions[$mount->package] ?? []), ...$definitions];
+                unset($this->pendingPackageDefinitions[$mount->package]);
+            }
         }
 
         $descriptorsCollection = $c->functionResolver->resolveFunctions($definitions);
@@ -528,9 +543,10 @@ final class Kernel extends AbstractKernel
                 $mountDefinitions[] = $definition;
             } elseif (\in_array($package, $queuedPackages, true)) {
                 $this->pendingPackageDefinitions[$package][] = $definition;
+            } elseif (isset($this->skippedPackages[$package])) {
+                continue;
             } else {
-                // Castor 2.0 will only load them when the package is imported,
-                // or exposed without being imported
+                // Castor 2.0 will only load them when the package is registered
                 $mountDefinitions[] = $definition;
                 $this->notImportedPackageDefinitions[$definition] = $package;
             }
@@ -539,7 +555,7 @@ final class Kernel extends AbstractKernel
         return $mountDefinitions;
     }
 
-    private function deprecateNotImportedPackages(CommandLine $commandLine, Composer $composer, InstalledPackages $installedPackages): void
+    private function deprecateNotImportedPackages(CommandLine $commandLine, Composer $composer): void
     {
         // Nothing to change in the castor.php of a repacked application, and
         // the deprecation would land in an output meant to be parsed. The
@@ -549,17 +565,22 @@ final class Kernel extends AbstractKernel
         }
 
         foreach (array_keys(array_diff_key($this->notImportedPackages, $this->importedPackages)) as $package) {
-            if ($installedPackages->isExposedWithoutImport($package)) {
-                continue;
-            }
-
-            trigger_deprecation('jolicode/castor', '1.10.0', \sprintf('Loading the tasks, contexts and listeners the package "%s" autoloads without importing it is deprecated. Add "import(\'composer://%s\');" to your castor.php to keep them: from Castor 2.0, requiring a package only gives its functions and classes.', $package, $package));
+            trigger_deprecation('jolicode/castor', '1.10.0', \sprintf('Loading the tasks, contexts and listeners the package "%s" autoloads without registering it is deprecated. Add "register_plugin(\'%s\');" to your castor.php to keep them: from Castor 2.0, requiring a package only gives its functions and classes.', $package, $package));
         }
     }
 
     private function requireEntrypoint(Mount $mount, Importer $importer): void
     {
         $path = $mount->path;
+
+        // The features of a plugin
+        if (null !== $mount->files) {
+            foreach ($mount->files as $file) {
+                $importer->importFile($file);
+            }
+
+            return;
+        }
 
         // It's an import, via a remote package, with a file specified
         if ($mount->file) {
