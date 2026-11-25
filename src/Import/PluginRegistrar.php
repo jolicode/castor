@@ -58,6 +58,9 @@ class PluginRegistrar
         }
 
         if (!$packageDirectory = $this->composer->findInstalledPackage($package)) {
+            // The remote packages are disabled, but their autoloader may be loaded
+            $this->kernel->addSkippedPackage($package);
+
             return;
         }
 

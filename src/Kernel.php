@@ -92,6 +92,9 @@ final class Kernel extends AbstractKernel
      */
     private array $notImportedPackages = [];
 
+    /** @var array<string, true> The plugins registered while the remote packages are disabled, by name */
+    private array $skippedPackages = [];
+
     private bool $chdirDeprecationTriggered = false;
 
     public function __construct(
@@ -193,6 +196,15 @@ final class Kernel extends AbstractKernel
     public function addMount(Mount $mount): void
     {
         $this->mounts[] = $mount;
+    }
+
+    /**
+     * A plugin registered while the remote packages are disabled: the tasks,
+     * contexts and listeners of the files it autoloads are not exposed.
+     */
+    public function addSkippedPackage(string $package): void
+    {
+        $this->skippedPackages[$package] = true;
     }
 
     public function configureContainer(ContainerConfigurator $c): void
@@ -531,6 +543,8 @@ final class Kernel extends AbstractKernel
                 $mountDefinitions[] = $definition;
             } elseif (\in_array($package, $queuedPackages, true)) {
                 $this->pendingPackageDefinitions[$package][] = $definition;
+            } elseif (isset($this->skippedPackages[$package])) {
+                continue;
             } else {
                 // Castor 2.0 will only load them when the package is registered
                 $mountDefinitions[] = $definition;

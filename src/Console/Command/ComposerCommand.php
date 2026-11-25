@@ -118,8 +118,6 @@ final class ComposerCommand extends Command
         $call = \sprintf("register_plugin('%s');", $package);
         $featuresHint = $features ? \sprintf(' It also declares the features "%s", to load instead with "register_plugin(\'%s\', \'<feature>\')".', implode('", "', $features), $package) : '';
 
-        $newCode = null;
-
         if (null === $castorFile) {
             $reason = 'there is no castor.php file';
         } else {
@@ -129,30 +127,40 @@ final class ComposerCommand extends Command
                 return;
             }
 
-            try {
-                $newCode = $this->pluginRegistrationWriter->add($code, $package);
-                $reason = $input->isInteractive() ? null : 'the command is not interactive';
-            } catch (ImportError $e) {
-                $reason = $e->getMessage();
-            }
-        }
-
-        if (null === $reason && null !== $newCode && null !== $castorFile) {
-            $relativeFile = Path::makeRelative($castorFile, $this->rootDir);
-
-            if (!$io->confirm(\sprintf('The package "%s" is a Castor plugin, register it in %s to expose its tasks, contexts and listeners?', $package, $relativeFile), true)) {
-                $io->note(\sprintf('Add "%s" to %s to expose them later.', $call, $relativeFile) . $featuresHint);
-
+            if (!$input->isInteractive()) {
+                $reason = 'the command is not interactive';
+            } elseif (null === $reason = $this->register($io, $castorFile, $code, $package, $call, $featuresHint)) {
                 return;
             }
-
-            file_put_contents($castorFile, $newCode);
-            $io->success(\sprintf('Added "%s" to %s.', $call, $relativeFile) . $featuresHint);
-
-            return;
         }
 
         $io->note(\sprintf('The package "%s" is a Castor plugin: add "use function Castor\register_plugin;" and "%s" to your castor.php file to expose its tasks, contexts and listeners (Castor could not do it, as %s).', $package, $call, $reason) . $featuresHint);
+    }
+
+    /**
+     * Adds the call to register_plugin() to castor.php once confirmed, or
+     * returns why it cannot.
+     */
+    private function register(SymfonyStyle $io, string $castorFile, string $code, string $package, string $call, string $featuresHint): ?string
+    {
+        try {
+            $newCode = $this->pluginRegistrationWriter->add($code, $package);
+        } catch (ImportError $e) {
+            return $e->getMessage();
+        }
+
+        $relativeFile = Path::makeRelative($castorFile, $this->rootDir);
+
+        if (!$io->confirm(\sprintf('The package "%s" is a Castor plugin, register it in %s to expose its tasks, contexts and listeners?', $package, $relativeFile), true)) {
+            $io->note(\sprintf('Add "%s" to %s to expose them later.', $call, $relativeFile) . $featuresHint);
+
+            return null;
+        }
+
+        file_put_contents($castorFile, $newCode);
+        $io->success(\sprintf('Added "%s" to %s.', $call, $relativeFile) . $featuresHint);
+
+        return null;
     }
 
     /**

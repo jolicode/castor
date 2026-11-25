@@ -151,6 +151,21 @@ class RegisterPluginTest extends TaskTestCase
         $this->assertStringContainsString('Could not import "castor-test/unknown": Remote imports are disabled.', $process->getErrorOutput());
     }
 
+    public function testAnInstalledPluginIsNotExposedWhenTheRemotePackagesAreDisabled(): void
+    {
+        $this->writeCastorFile("register_plugin('castor-test/package');");
+
+        // Installs the packages
+        $process = $this->runTask(['list', '--raw'], $this->directory . '/registered', needRemote: true);
+        $this->assertStringContainsString('package:hello', $process->getOutput());
+
+        // Their autoloader is still loaded
+        $process = $this->runTask(['list', '--raw'], $this->directory . '/registered');
+
+        $this->assertSame(0, $process->getExitCode(), $process->getErrorOutput());
+        $this->assertStringNotContainsString('package:hello', $process->getOutput());
+    }
+
     public function testRequiringAPluginRegistersItInTheCastorFile(): void
     {
         $this->writeCastorFile('', 'required');
