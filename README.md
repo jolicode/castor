@@ -151,5 +151,5 @@ Discover more by reading the docs:
 
 <br><br>
 <div align="center">
-<a href="https://jolicode.com/"><img src="https://jolicode.com/media/original/oss/footer-github.png?v3" alt="JoliCode is sponsoring this project"></a>
+<a href="https://jolicode.com/"><img src="https://jolicode.com/media/original/oss/footer-github.png?v4" alt="JoliCode is sponsoring this project"></a>
 </div>
